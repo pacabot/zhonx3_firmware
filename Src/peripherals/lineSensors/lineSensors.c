@@ -22,8 +22,6 @@
 extern ADC_HandleTypeDef hadc1;
 extern ADC_HandleTypeDef hadc3;
 
-extern TIM_HandleTypeDef htim10;
-
 __IO uint16_t ADC1ConvertedValues[2] = {0};
 __IO uint16_t ADC3ConvertedValues[3] = {0};
 
@@ -109,51 +107,28 @@ void LineSensors_Init(void)
 	  {
 
 	  }
-
-	  /*##-1- Configure the TIM peripheral #######################################*/
-	  /* -----------------------------------------------------------------------
-	    In this example TIM3 input clock (TIM3CLK) is set to 2 * APB1 clock (PCLK1),
-	    since APB1 prescaler is different from 1.
-	      TIM3CLK = 2 * PCLK1
-	      PCLK1 = HCLK / 4
-	      => TIM3CLK = HCLK / 2 = SystemCoreClock /2
-	    To get TIM3 counter clock at 10 KHz, the Prescaler is computed as following:
-	    Prescaler = (TIM3CLK / TIM3 counter clock) - 1
-	    Prescaler = ((SystemCoreClock /2) /10 KHz) - 1
-	      ----------------------------------------------------------------------- */
-
-	  uint32_t uwPrescalerValue = 0;
-	  /* Compute the prescaler value to have TIM3 counter clock equal to 100 KHz */
-
-	  uwPrescalerValue = (uint32_t) ((SystemCoreClock /2) / 100000) - 1;
-
-	  htim10.Instance = TIM10;
-	  htim10.Init.Prescaler =  uwPrescalerValue;
-	  htim10.Init.CounterMode = TIM_COUNTERMODE_UP;
-	  htim10.Init.Period = 5-1;
-	  HAL_TIM_Base_Init(&htim10);
 }
 
 void LineSensors_Start(void)
 {
-	  /*##-2- Start the TIM Base generation in interrupt mode ####################*/
-	  /* Start Channel1 */
-	  if(HAL_TIM_Base_Start_IT(&htim10) != HAL_OK)
-	  {
-	    /* Starting Error */
-	    //Error_Handler();
-	  }
+//	  /*##-2- Start the TIM Base generation in interrupt mode ####################*/
+//	  /* Start Channel1 */
+//	  if(HAL_TIM_Base_Start_IT(&htim10) != HAL_OK)
+//	  {
+//	    /* Starting Error */
+//	    //Error_Handler();
+//	  }
 }
 
 void LineSensors_Stop(void)
 {
-	  /*##-2- Stop the TIM Base generation in interrupt mode ####################*/
-	  /* Start Channel1 */
-	  if(HAL_TIM_Base_Stop_IT(&htim10) != HAL_OK)
-	  {
-	    /* Starting Error */
-	    //Error_Handler();
-	  }
+//	  /*##-2- Stop the TIM Base generation in interrupt mode ####################*/
+//	  /* Start Channel1 */
+//	  if(HAL_TIM_Base_Stop_IT(&htim10) != HAL_OK)
+//	  {
+//	    /* Starting Error */
+//	    //Error_Handler();
+//	  }
 	  HAL_GPIO_WritePin(GPIOA, TX_LINESENSORS, RESET);
 	  lineSensors.active_state = FALSE;
 }

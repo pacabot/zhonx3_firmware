@@ -14,6 +14,7 @@
 
 #include "peripherals/gyroscope/adxrs620.h"
 #include "peripherals/telemeters/telemeters.h"
+#include "peripherals/lineSensors/lineSensors.h"
 #include "controls/pid/pid.h"
 
 #include "times_base/times_base.h"
@@ -24,7 +25,7 @@ extern TIM_HandleTypeDef htim7;
 
 GPIO_InitTypeDef GPIO_InitStruct;
 
-volatile int32_t Blink[3] = {500, 500, 0};
+volatile int32_t Blink[3] = {500, 10, 0};
 
 /**
   * @brief  Period elapsed callback in non blocking mode
@@ -100,20 +101,18 @@ void Led_Blink_IT(void)
 {
 	  static unsigned int cnt_led = 0;
 
-	  GPIO_InitStruct.Pin = GPIO_PIN_13;
+	  GPIO_InitStruct.Pin = GPIO_PIN_15;
 	  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-	  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+	  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
 	  cnt_led++;
 	  if(cnt_led <= (Blink[0]))
 	  {
 		  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, RESET);
-		  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_13, RESET);
 	  }
 	  else
 	  {
 		  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, SET);
-		  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_13, SET);
 	  }
 	  if(cnt_led >= ((Blink[0]+Blink[1])))
 		  cnt_led = 0;
@@ -123,6 +122,7 @@ void High_Freq_IT(void)
 {
 	Pids_IT();
 	ADXRS620_IT();
+	LineSensors_IT();
 //	Telemeters_IT();
 }
 

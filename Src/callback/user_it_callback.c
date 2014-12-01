@@ -21,8 +21,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
 	  if( htim == &htim10)
 	  {
-		  LineSensors_IT();
-//		  Telemeters_IT();
+		  Telemeters_IT();
 	  }
 	  if( htim == &htim7)
 	  {
