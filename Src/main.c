@@ -124,15 +124,15 @@ int main(void)
   /* USER CODE END 2 */
 
   /* USER CODE BEGIN 3 */
-//  test_Beeper();
-//  test_Expander();
-  ssd1306Init(0);
+  test_Beeper();
+  test_Expander();
+  ssd1306Init(0); //afficheur OLED
   TimesBase_Init();
   Led_Power_Blink(990, 10, 0);
-//  test_Encoders();
+  test_Encoders();
   test_LineSensors();
 
-  test_Telemeters();
+//  test_Telemeters();
   ADXRS620_Init();
   TimesBase_Init();
   Led_Power_Blink(990, 10, 0);

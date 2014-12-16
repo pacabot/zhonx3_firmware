@@ -129,7 +129,8 @@ void test_Gyro(void)
 {
 	ADXRS620_Init();
 	ssd1306Init(0);
-	while(1)
+	int i=1;
+	while(i)
 	{
 	  ssd1306ClearScreen();
 	  ssd1306PrintInt(10,  25, "Angle = ", (int) gyro_Current_Angle, &Font_5x8);
@@ -162,7 +163,8 @@ void test_Vbat(void)
 	  ssd1306ClearScreen();
 	  ssd1306Refresh();
 
-	  while(1)
+	  int i=1;
+	  while(i)
 	  {
 	  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, SET);
 	  ssd1306ClearScreen();
@@ -278,7 +280,8 @@ void test_Motor_Move() {
 	  PWM = consigne;
 //	  PWM_R = consigne;
 
-	  while(1)
+	  int i=1;
+	  while(i)
 	  {
 		  	      PWMOld = PWM;
 		  		  errorOld = error;
@@ -357,8 +360,8 @@ void test_Motors(void)
 	  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_11, SET);
 
 	  HAL_Delay(5000);
-
-	  while(1)
+	  int i=1;
+	  while(i)
 	  {
 
 	  }
@@ -373,8 +376,8 @@ void test_Encoders(void)
 	  ssd1306Refresh();
 
 	  Encoders_Init();
-
-	  while(1)
+	  int i=1;
+	  while(i)
 	  {
 		  ssd1306ClearScreen();
 //		  ssd1306PrintInt(0, 6, "REV = ", toto, &Font_3x6);
@@ -545,7 +548,8 @@ void test_LineSensors(void)
 {
 	  LineSensors_Init();
 	  LineSensors_Start();
-	  while(1)
+	  int i=1;
+	  while(i)
 	  {
 		  ssd1306ClearScreen();
 		  ssd1306PrintInt(10, 5,  "LEFT_EXT  =  ", (uint16_t) lineSensors.left_ext.adc_value, &Font_5x8);
