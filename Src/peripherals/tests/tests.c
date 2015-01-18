@@ -132,11 +132,11 @@ void test_Gyro(void)
 	while(1)
 	{
 	  ssd1306ClearScreen();
-	  ssd1306PrintInt(10,  25, "Angle = ", (int) gyro_Current_Angle, &Font_5x8);
+//	  ssd1306PrintInt(10,  25, "Angle = ", (int) gyro_Current_Angle, &Font_5x8);
 	  int y = 0;
 	  for(int i = 0; i<100; i++)
 	  {
-		  y +=  uhADCxConvertedValue_Gyro, &Font_5x8;
+//		  y +=  uhADCxConvertedValue_Gyro, &Font_5x8;
 		  HAL_Delay(1);
 	  }
 
@@ -543,8 +543,8 @@ void test_Telemeters(void)
 
 void test_LineSensors(void)
 {
-	  LineSensors_Init();
-	  LineSensors_Start();
+//	  LineSensors_Init();
+//	  LineSensors_Start();
 	  while(1)
 	  {
 		  ssd1306ClearScreen();

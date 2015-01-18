@@ -15,6 +15,7 @@
 #include "peripherals/display/ssd1306.h"
 #include "peripherals/expander/pcf8574.h"
 #include "peripherals/telemeters/telemeters.h"
+#include "peripherals/multimeter/multimeter.h"
 
 #include "times_base/times_base.h"
 

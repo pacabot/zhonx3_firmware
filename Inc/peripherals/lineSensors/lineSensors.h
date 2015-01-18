@@ -37,6 +37,8 @@ typedef struct
 	lineSensors_state front;
 	lineSensors_state right;
 	lineSensors_state right_ext;
+	char active_ADC1;
+	char active_ADC3;
 	char active_state;
 } lineSensors_struct;
 
@@ -44,7 +46,8 @@ volatile lineSensors_struct lineSensors;
 
 void LineSensors_Init(void);
 void LineSensors_Start(void);
-void LineSensors_Stop(void);
+void LineSensors_Stop_DMA_ADC1(void);
+void LineSensors_Stop_DMA_ADC3(void);
 void LineSensors_Calibrate(void);
 void LineSensors_IT(void);
 
