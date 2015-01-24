@@ -17,11 +17,9 @@
 #include "peripherals/display/ssd1306.h"
 #include "peripherals/telemeters/telemeters.h"
 
-#define FREQ_TELEMETERS_DIVIDER (10) //freq telemeters = 50KHz/DIVIDER
-
 extern ADC_HandleTypeDef hadc2;
 
-__IO uint32_t ADC2ConvertedValues[4] = {0};
+__IO uint16_t ADC2ConvertedValues[4] = {0};
 
 GPIO_InitTypeDef GPIO_InitStruct;
 
@@ -43,8 +41,9 @@ void Telemeters_Init(void)
 void Telemeters_Start(void)
 {
 	telemeters.emitter_state = TRUE;
+	telemeters.selector = 0;
 	HAL_ADC_Start_DMA(&hadc2, (uint32_t*)ADC2ConvertedValues, 4);
-	Telemeters_Calibrate();
+//	Telemeters_Calibrate();
 }
 
 void Telemeters_Stop(void)
@@ -59,13 +58,8 @@ void Telemeters_Stop(void)
 
 void Telemeters_Calibrate(void)
 {
-	uint32_t current_conversion = 0;
 	uint32_t nb_conversion = 0;
 
-	//	current_conversion = telemeters.end_of_conversion;
-	//
-	//	while ((telemeters.end_of_conversion - current_conversion) < 5000);
-	//	{
 	for (nb_conversion = 0; nb_conversion < 1000; nb_conversion++)
 	{
 		telemeters.left_front.offset 	+= telemeters.left_front.adc_value;
@@ -93,66 +87,79 @@ void Telemeters_Get_Wall(struct telemeters *telemeters)
 
 void Telemeters_IT(void)
 {
+
+//	telemeters.selector = (__IO uint32_t) &hadc2.NbrOfCurrentConversionRank;
 	switch (telemeters.selector)
 	{
 	case 0:
-		telemeters.right_front.emitter_state = 1;
+		telemeters.it_cnt++;
 		HAL_GPIO_WritePin(GPIOB, TX_RIGHT_FRONT, SET);
 		break;
 	case 1:
-		telemeters.left_front.emitter_state = 1;
+		telemeters.right_front.adc_value = ADC2ConvertedValues[0];
+		telemeters.right_front.telemeter_value = telemeters.right_front.adc_value - telemeters.right_front.offset;
+		HAL_GPIO_WritePin(GPIOB, TX_RIGHT_FRONT, RESET);
+		break;
+	case 4:
 		HAL_GPIO_WritePin(GPIOB, TX_LEFT_FRONT, SET);
 		break;
-	case 2:
-		telemeters.right_diag.emitter_state = 1;
+	case 5:
+		telemeters.left_front.adc_value = ADC2ConvertedValues[1];
+		telemeters.left_front.telemeter_value = telemeters.left_front.adc_value - telemeters.left_front.offset;
+		HAL_GPIO_WritePin(GPIOB, TX_LEFT_FRONT, RESET);
+		break;
+	case 8:
 		HAL_GPIO_WritePin(GPIOB, TX_DUAL_DIAG, SET);
 		break;
-	case 3:
-		telemeters.left_diag.emitter_state = 1;
-		HAL_GPIO_WritePin(GPIOB, TX_DUAL_DIAG, SET);
+	case 9:
+		telemeters.right_diag.adc_value = ADC2ConvertedValues[2];
+		telemeters.right_diag.telemeter_value = telemeters.right_diag.adc_value - telemeters.right_diag.offset;
+		telemeters.left_diag.adc_value = ADC2ConvertedValues[3];
+		telemeters.left_diag.telemeter_value = telemeters.left_diag.adc_value - telemeters.left_diag.offset;
+		HAL_GPIO_WritePin(GPIOB, TX_DUAL_DIAG, RESET);
 		break;
 	}
 
 	telemeters.selector++;
-	if (telemeters.selector > 3)
+	if (telemeters.selector > 9)
 		telemeters.selector = 0;
 
-	telemeters.it_cnt++;
 }
-
 
 void Telemeters_REGULAR_ADC_IT(void)
 {
-	HAL_GPIO_WritePin(GPIOB, TX_LEFT_FRONT, RESET);
-	HAL_GPIO_WritePin(GPIOB, TX_RIGHT_FRONT, RESET);
-	HAL_GPIO_WritePin(GPIOB, TX_DUAL_DIAG, RESET);
+//	telemeters.selector = (__IO uint32_t) &hadc2.NbrOfCurrentConversionRank;
+
+//	HAL_GPIO_WritePin(GPIOB, TX_DUAL_DIAG, RESET);
+//	HAL_GPIO_WritePin(GPIOB, TX_RIGHT_FRONT, RESET);
+//	HAL_GPIO_WritePin(GPIOB, TX_LEFT_FRONT, RESET);
 
 	if (telemeters.right_front.emitter_state == 1)
 	{
 		telemeters.right_front.adc_value = ADC2ConvertedValues[0];
-//		if ( telemeters.right_front.adc_value - telemeters.right_front.offset <= 4095)
 		telemeters.right_front.telemeter_value = telemeters.right_front.adc_value - telemeters.right_front.offset;
+		HAL_GPIO_WritePin(GPIOB, TX_RIGHT_FRONT, RESET);
 		telemeters.right_front.emitter_state = 0;
 	}
 	if (telemeters.left_front.emitter_state == 1)
 	{
 		telemeters.left_front.adc_value = ADC2ConvertedValues[1];
-//		if (telemeters.left_front.adc_value - telemeters.left_front.offset <= 4095)
 		telemeters.left_front.telemeter_value = telemeters.left_front.adc_value - telemeters.left_front.offset;
+		HAL_GPIO_WritePin(GPIOB, TX_LEFT_FRONT, RESET);
 		telemeters.left_front.emitter_state = 0;
 	}
 	if (telemeters.right_diag.emitter_state == 1)
 	{
 		telemeters.right_diag.adc_value = ADC2ConvertedValues[2];
-//		if (telemeters.right_diag.adc_value - telemeters.right_diag.offset <= 4095)
 		telemeters.right_diag.telemeter_value = telemeters.right_diag.adc_value - telemeters.right_diag.offset;
+		HAL_GPIO_WritePin(GPIOB, TX_DUAL_DIAG, RESET);
 		telemeters.right_diag.emitter_state = 0;
 	}
 	if (telemeters.left_diag.emitter_state == 1)
 	{
 		telemeters.left_diag.adc_value = ADC2ConvertedValues[3];
-//		if (telemeters.left_diag.adc_value - telemeters.left_diag.offset <= 4095)
 		telemeters.left_diag.telemeter_value = telemeters.left_diag.adc_value - telemeters.left_diag.offset;
+		HAL_GPIO_WritePin(GPIOB, TX_DUAL_DIAG, RESET);
 		telemeters.left_diag.emitter_state = 0;
 	}
 
@@ -174,4 +181,3 @@ void Debug_Telemeter(void)
 		ssd1306Refresh();
 	}
 }
-

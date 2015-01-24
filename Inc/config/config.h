@@ -14,9 +14,9 @@
 /**************************************************************************************/
 #define LOW_TIME_FREQ			100
 #define HI_TIME_FREQ			10000
-#define REGULAR_TIME_FREQ		10000
+#define REGULAR_TIME_FREQ		50000
 #define INJECTED_TIME_FREQ		5000
-#define MULTIMMETER_TIME_FREQ	1
+#define MULTIMMETER_TIME_FREQ	0.1
 
 /**************************************************************************************/
 /***************                 Gyro definitions                  ********************/

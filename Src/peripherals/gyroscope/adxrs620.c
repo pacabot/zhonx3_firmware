@@ -31,7 +31,6 @@ GPIO_InitTypeDef GPIO_InitStruct;
 void ADXRS620_Init(void)
 {
 	ADXRS620_Calibrate(50);
-//	HAL_ADC_Start_IT(&hadc1);
 	HAL_ADCEx_InjectedStart_IT(&hadc1);
 }
 
