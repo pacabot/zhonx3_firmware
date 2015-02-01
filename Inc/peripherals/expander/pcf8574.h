@@ -13,10 +13,18 @@
 
 #include "stdbool.h"
 
+#define UP 		1
+#define DOWN 	2
+#define LEFT 	3
+#define RIGHT 	4
+
 void Expander_Led_State(char led, char val);
+char Expander_Joy_State(void);
 
 void ExpanderSetbit(char pin, char val);
 char ExpanderGetbit(char pin);
 void ExpanderReset(void);
+
+void Debug_Joystic(void);
 
 #endif

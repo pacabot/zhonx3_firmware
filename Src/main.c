@@ -113,6 +113,8 @@ int main(void)
   Led_Power_Blink(990, 10, 0);
   Expander_Led_State(1, 0);
 
+  Debug_Joystic();
+
 //  Debug_Encoder();
 //  test_LineSensors();
 
