@@ -12,6 +12,7 @@
 #include <stdio.h>
 #include <stdint.h>
 
+#include "peripherals/display/ssd1306.h"
 #include "peripherals/encoders/ie512.h"
 
 extern TIM_HandleTypeDef htim1;
@@ -102,5 +103,27 @@ void Right_Encoder_IT(void)
 	}
 }
 
+void Debug_Encoder(void)
+{
+	ssd1306Init(0);
+	ssd1306ClearScreen();
+	ssd1306Refresh();
+
+	while(1)
+	{
+		ssd1306ClearScreen();
+		//		  ssd1306PrintInt(0, 6, "REV = ", toto, &Font_3x6);
+		//		  ssd1306PrintInt(0, 13, "CNT = ",  (&htim1)->Instance->CNT, &Font_3x6);
+		ssd1306PrintInt(0, 7, "L_REV =  ", left_encoder.nb_revolutions, &Font_3x6);
+		ssd1306PrintInt(0, 14, "L_CNT =  ",  __HAL_TIM_GetCounter(&htim1), &Font_3x6);
+		ssd1306PrintInt(0, 21, "L_DIR =  ",  __HAL_TIM_DIRECTION_STATUS(&htim1), &Font_3x6);
+
+		ssd1306PrintInt(0, 35, "R_REV =  ", right_encoder.nb_revolutions, &Font_3x6);
+		ssd1306PrintInt(0, 42, "R_CNT =  ",  __HAL_TIM_GetCounter(&htim3), &Font_3x6);
+		ssd1306PrintInt(0, 49, "R_DIR =  ",  __HAL_TIM_DIRECTION_STATUS(&htim3), &Font_3x6);
+		ssd1306Refresh();
+		HAL_Delay(10);
+	}
+}
 
 

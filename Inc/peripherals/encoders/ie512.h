@@ -20,5 +20,6 @@ typedef struct
 void Encoders_Init(void);
 void Left_Encoder_IT(void);
 void Right_Encoder_IT(void);
+void Debug_Encoder(void);
 
 #endif

@@ -12,22 +12,33 @@
 #include <stdio.h>
 
 #include "stm32f4xx_hal.h"
+#include "config/basetypes.h"
+#include "peripherals/expander/pcf8574.h"
 
 #include "stdbool.h"
 
 /* extern variables ---------------------------------------------------------*/
 extern I2C_HandleTypeDef hi2c1;
 
-void ledState(char state)
+void Expander_Led_State(char led, char val)
 {
-	if(state == true)
+	switch (led)
 	{
-		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12, SET);
+	case 1:
+		ExpanderSetbit(4, reverse_bit(val));
+		break;
+	case 2:
+		ExpanderSetbit(5, reverse_bit(val));
+		break;
+	case 3:
+		ExpanderSetbit(6, reverse_bit(val));
+		break;
 	}
-	else
-	{
-		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12, RESET);
-	}
+}
+
+void Expander_Joy_State(char led, char val)
+{
+	ExpanderGetbit(char pin);
 }
 
 //Send DATA

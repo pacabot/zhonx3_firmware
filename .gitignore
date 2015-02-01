@@ -1,0 +1,7 @@
+# Les ligne commençant par '#' sont des commentaires.
+/Debug
+/Release
+
+# Ignorer tous les fichiers html
+*.o
+

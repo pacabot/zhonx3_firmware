@@ -14,6 +14,7 @@ void Led_Power_Blink(unsigned int off_time, unsigned int on_time, unsigned int r
 void Led_Blink_IT(void);
 void High_Freq_IT(void);
 void Low_Freq_IT(void);
+void Gyro_Freq_IT(void);
 
 
 #endif

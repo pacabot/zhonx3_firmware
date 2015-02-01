@@ -13,7 +13,9 @@
 
 #include "stdbool.h"
 
-void ExpanderSetbit(char pin, bool val);
+void Expander_Led_State(char led, char val);
+
+void ExpanderSetbit(char pin, char val);
 char ExpanderGetbit(char pin);
 void ExpanderReset(void);
 
