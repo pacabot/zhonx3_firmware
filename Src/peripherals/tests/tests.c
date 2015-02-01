@@ -546,16 +546,15 @@ void test_Telemeters(void)
 
 void test_LineSensors(void)
 {
-<<<<<<< HEAD
+
 	  LineSensors_Init();
 	  LineSensors_Start();
 	  int i=1;
 	  while(i)
-=======
+
 //	  LineSensors_Init();
 //	  LineSensors_Start();
 	  while(1)
->>>>>>> master
 	  {
 		  ssd1306ClearScreen();
 		  ssd1306PrintInt(10, 5,  "LEFT_EXT  =  ", (uint16_t) lineSensors.left_ext.adc_value, &Font_5x8);

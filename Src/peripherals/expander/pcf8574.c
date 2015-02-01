@@ -38,7 +38,7 @@ void Expander_Led_State(char led, char val)
 
 void Expander_Joy_State(char led, char val)
 {
-	ExpanderGetbit(char pin);
+//	ExpanderGetbit(char, pin);
 }
 
 //Send DATA
