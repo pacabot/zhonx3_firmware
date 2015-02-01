@@ -1,7 +1,12 @@
 # Les ligne commençant par '#' sont des commentaires.
 /Debug
 /Release
+/.settings
 
 # Ignorer tous les fichiers html
 *.o
+*.cproject
+*.project
+
+
 
