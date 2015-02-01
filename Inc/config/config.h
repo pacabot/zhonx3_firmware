@@ -14,8 +14,8 @@
 /**************************************************************************************/
 #define LOW_TIME_FREQ			100
 #define HI_TIME_FREQ			10000
-#define REGULAR_TIME_FREQ		50000
-#define INJECTED_TIME_FREQ		5000
+#define TELEMETERS_TIME_FREQ	3000  	//each telemeter use 1/3 of TELEMETERS_TIME_FREQ
+#define GYRO_TIME_FREQ			5000
 #define MULTIMMETER_TIME_FREQ	0.1
 
 /**************************************************************************************/
@@ -25,7 +25,6 @@
 #define GYRO_ROUT				90.00  	//90KHz Rout
 #define GYRO_SENSITIVITY		6.00   	//Our example gyro is 6mV/deg/sec @5V
 #define ROTATION_THRESHOLD		1.00   	//Minimum deg/sec to keep track of - helps with gyro drifting
-#define GYRO_TIME_FREQ			INJECTED_TIME_FREQ //Gyro is clocking at 10KHz
 
 #define GYRO_ZERO_VOLTAGE		(GYRO_VRATIO/2.00) 	//Gyro is zeroed at Vrate/2 (mV)
 #define GYRO_OUTPUT_RATIO	    (GYRO_ROUT/(GYRO_ROUT+180.00)) 	//output resistor ratio (low-pass filter)

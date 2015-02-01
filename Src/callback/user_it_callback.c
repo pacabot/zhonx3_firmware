@@ -29,7 +29,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
 	  if( htim == &htim2)
 	  {
-//		  Telemeters_IT();
+		  Telemeters_IT();
 	  }
 	  if( htim == &htim5)
 	  {
@@ -37,7 +37,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 	  }
 	  if( htim == &htim7)
 	  {
-//		  High_Freq_IT();
+		  High_Freq_IT();
 	  }
 	  if( htim == &htim6)
 	  {
@@ -67,6 +67,10 @@ void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
 	if (hadc == &hadc1)
 	{
 		Gyroscope_INJECTED_ADC_IT();
+	}
+	if (hadc == &hadc2)
+	{
+		Telemeters_INJECTED_ADC_IT();
 	}
 }
 

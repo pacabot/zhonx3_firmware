@@ -1,7 +1,7 @@
 /**
   ******************************************************************************
   * File Name          : main.c
-  * Date               : 23/01/2015 23:47:59
+  * Date               : 29/01/2015 22:48:24
   * Description        : Main program body
   ******************************************************************************
   *
@@ -92,9 +92,8 @@ int main(void)
   MX_TIM6_Init();
   MX_TIM7_Init();
   MX_TIM8_Init();
-  MX_TIM10_Init();
   MX_TIM11_Init();
-//  MX_USART3_UART_Init();
+  MX_USART3_UART_Init();
 
   /* USER CODE BEGIN 2 */
   HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, SET);
@@ -103,17 +102,24 @@ int main(void)
   /* USER CODE BEGIN 3 */
 //test_Beeper();
 //  test_Expander();
+
   ssd1306Init(0);
+  Expander_Led_State(1, 1);
   TimesBase_Init();
-//  Telemeters_Init();
+  Telemeters_Init();
   ADXRS620_Init();
+  Encoders_Init();
   Init_Mulimeter();
   Led_Power_Blink(990, 10, 0);
-//  test_Encoders();
+  Expander_Led_State(1, 0);
+
+//  Debug_Encoder();
 //  test_LineSensors();
 
+//  Telemeters_Start();
 //  Debug_Telemeter();
-//  Debug_Mulimeter();
+
+  Debug_Mulimeter();
   Debug_ADXRS620();
 
   Straight_Control_Start(GYRO);

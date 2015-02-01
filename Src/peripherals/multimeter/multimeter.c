@@ -17,7 +17,6 @@
 #include "peripherals/display/ssd1306.h"
 #include "peripherals/multimeter/multimeter.h"
 
-extern TIM_HandleTypeDef htim2;
 extern ADC_HandleTypeDef hadc1;
 
 //volatile double gyro  = (ADC_VOLTAGE/(4095*GYRO_TEMP_COEFF));
@@ -35,6 +34,50 @@ __IO uint16_t ADC1MultimeterConvertedValues[10] = {0};
 /**************************************************************************/
 void Init_Mulimeter(void)
 {
+	ADC_ChannelConfTypeDef sConfig;
+	ADC_InjectionConfTypeDef sConfigInjected;
+
+	/**Configure the global features of the ADC (Clock, Resolution, Data Alignment and number of conversion)
+	 */
+	hadc1.Instance = ADC1;
+	hadc1.Init.ClockPrescaler = ADC_CLOCKPRESCALER_PCLK_DIV2;
+	hadc1.Init.Resolution = ADC_RESOLUTION12b;
+	hadc1.Init.ScanConvMode = ENABLE;
+	hadc1.Init.ContinuousConvMode = DISABLE;
+	hadc1.Init.DiscontinuousConvMode = DISABLE;
+	hadc1.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_RISING;
+	hadc1.Init.ExternalTrigConv = ADC_EXTERNALTRIGCONV_T4_CC4;
+	hadc1.Init.DataAlign = ADC_DATAALIGN_RIGHT;
+	hadc1.Init.NbrOfConversion = 4;
+	hadc1.Init.DMAContinuousRequests = ENABLE;
+	hadc1.Init.EOCSelection = EOC_SINGLE_CONV;
+	HAL_ADC_Init(&hadc1);
+
+	/**Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time.
+	 */
+	sConfig.Channel = ADC_CHANNEL_TEMPSENSOR;
+	sConfig.Rank = 4;
+	sConfig.SamplingTime = ADC_SAMPLETIME_28CYCLES;
+	HAL_ADC_ConfigChannel(&hadc1, &sConfig);
+
+	/**Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time.
+	 */
+	sConfig.Channel = ADC_CHANNEL_15;
+	sConfig.Rank = 3;
+	HAL_ADC_ConfigChannel(&hadc1, &sConfig);
+
+	/**Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time.
+	 */
+	sConfig.Channel = ADC_CHANNEL_TEMPSENSOR;
+	sConfig.Rank = 2;
+	HAL_ADC_ConfigChannel(&hadc1, &sConfig);
+
+	/**Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time.
+	 */
+	sConfig.Channel = ADC_CHANNEL_7;
+	sConfig.Rank = 1;
+	HAL_ADC_ConfigChannel(&hadc1, &sConfig);
+
 	multimeter.timer_cnt = 0;
 	multimeter.get_vbat_state = 0;
 	HAL_ADC_Start_DMA(&hadc1, (uint32_t*)ADC1MultimeterConvertedValues,4);
@@ -49,12 +92,12 @@ void Multimeter_IT(void)
 
 void Multimeter_REGULAR_ADC_IT(void)
 {
-			HAL_GPIO_WritePin(GPIOB, GET_ADC_BAT, RESET);
-			multimeter.get_vbat_state++;
+	HAL_GPIO_WritePin(GPIOB, GET_ADC_BAT, RESET);
+	multimeter.get_vbat_state++;
 
-			multimeter.gyro_temp.value = (GYRO_T_COEFF_A * ADC1MultimeterConvertedValues[0]) + GYRO_T_COEFF_B;
-			multimeter.stm32_temp.value = (STM32_T_COEFF_A * ADC1MultimeterConvertedValues[1]) + STM32_T_COEFF_B;
-			multimeter.vbat.value = (ADC1MultimeterConvertedValues[2])*VBAT_BRIDGE_COEFF;
+	multimeter.gyro_temp.value = (GYRO_T_COEFF_A * ADC1MultimeterConvertedValues[0]) + GYRO_T_COEFF_B;
+	multimeter.stm32_temp.value = (STM32_T_COEFF_A * ADC1MultimeterConvertedValues[1]) + STM32_T_COEFF_B;
+	multimeter.vbat.value = (ADC1MultimeterConvertedValues[2])*VBAT_BRIDGE_COEFF;
 }
 
 void Debug_Mulimeter(void)

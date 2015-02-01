@@ -67,11 +67,11 @@ void TimesBase_Init(void)
 	  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
 	  HAL_TIMEx_MasterConfigSynchronization(&htim7, &sMasterConfig);
 
-	  if(HAL_TIM_Base_Start_IT(&htim7) != HAL_OK)
-	  {
-	    /* Starting Error */
-//	    Error_Handler();
-	  }
+//	  if(HAL_TIM_Base_Start_IT(&htim7) != HAL_OK)
+//	  {
+//	    /* Starting Error */
+////	    Error_Handler();
+//	  }
 
 	  uwPrescalerValue = (uint32_t) ((SystemCoreClock /2) / (LOW_TIME_FREQ * 100)) - 1;
 
@@ -94,12 +94,12 @@ void TimesBase_Init(void)
 	  /*## Configure the TIM peripheral for ADC123 injected trigger ####################*/
 	 	  /* -----------------------------------------------------------------------
 	 	    Use TIM5 for start Injected conversion on ADC1 (gyro rate).
-	 	    Use TIM5 for start Injected conversion on ADC2 (1/2 telemeters).
-	 	    Use TIM5 for start Injected conversion on ADC3 (1/2 telemeters).
+	 	    Use TIM5 for start Injected conversion on ADC2 (not use).
+	 	    Use TIM5 for start Injected conversion on ADC3 (not use).
 	 	     ----------------------------------------------------------------------- */
 
 	 	  /* Compute the prescaler value to have TIM5 counter clock equal to 10 KHz */
-	  uwPrescalerValue = (uint32_t) ((SystemCoreClock /2) / (INJECTED_TIME_FREQ * 100)) - 1;
+	  uwPrescalerValue = (uint32_t) ((SystemCoreClock /2) / (GYRO_TIME_FREQ * 100)) - 1;
 
 	  htim5.Instance = TIM5;
 	  htim5.Init.Prescaler =  uwPrescalerValue;
@@ -121,11 +121,11 @@ void TimesBase_Init(void)
 	  /*## Configure the TIM peripheral for ADC23 regular trigger ####################*/
 	 	  /* -----------------------------------------------------------------------
 	 	    Use TIM2 for start Regular conversion on ADC2 (telemeters).
-	 	    Use TIM2 for start Regular conversion on ADC3 (line sensors).
+	 	    Use TIM2 for start Regular conversion on ADC3 (not use).
 	 	     ----------------------------------------------------------------------- */
 
  	  /* Compute the prescaler value to have TIM2 counter clock equal to 10 KHz */
-	  uwPrescalerValue = (uint32_t) ((SystemCoreClock /2) / (REGULAR_TIME_FREQ * 100)) - 1;
+	  uwPrescalerValue = (uint32_t) ((SystemCoreClock /2) / (TELEMETERS_TIME_FREQ * 100)) - 1;
 
 	  htim2.Instance = TIM2;
 	  htim2.Init.Prescaler =  uwPrescalerValue;
@@ -141,8 +141,6 @@ void TimesBase_Init(void)
 	  sMasterConfig.MasterOutputTrigger = TIM_TRGO_UPDATE;
 	  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
 	  HAL_TIMEx_MasterConfigSynchronization(&htim2, &sMasterConfig);
-
-	  HAL_TIM_Base_Start_IT(&htim2);
 
 	  /*## Configure the TIM peripheral for ADC1 regular trigger ####################*/
 	 	  /* -----------------------------------------------------------------------

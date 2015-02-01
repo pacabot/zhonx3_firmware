@@ -30,6 +30,38 @@ GPIO_InitTypeDef GPIO_InitStruct;
   */
 void ADXRS620_Init(void)
 {
+	ADC_ChannelConfTypeDef sConfig;
+	ADC_InjectionConfTypeDef sConfigInjected;
+
+	/**Configure the global features of the ADC (Clock, Resolution, Data Alignment and number of conversion)
+	 */
+	hadc1.Instance = ADC1;
+	hadc1.Init.ClockPrescaler = ADC_CLOCKPRESCALER_PCLK_DIV2;
+	hadc1.Init.Resolution = ADC_RESOLUTION12b;
+	hadc1.Init.ScanConvMode = ENABLE;
+	hadc1.Init.ContinuousConvMode = DISABLE;
+	hadc1.Init.DiscontinuousConvMode = DISABLE;
+	hadc1.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_RISING;
+	hadc1.Init.ExternalTrigConv = ADC_EXTERNALTRIGCONV_T4_CC4;
+	hadc1.Init.DataAlign = ADC_DATAALIGN_RIGHT;
+	hadc1.Init.NbrOfConversion = 4;
+	hadc1.Init.DMAContinuousRequests = ENABLE;
+	hadc1.Init.EOCSelection = EOC_SINGLE_CONV;
+	HAL_ADC_Init(&hadc1);
+
+	/**Configures for the selected ADC injected channel its corresponding rank in the sequencer and its sample time
+	 */
+	sConfigInjected.InjectedChannel = ADC_CHANNEL_14;
+	sConfigInjected.InjectedRank = 1;
+	sConfigInjected.InjectedNbrOfConversion = 1;
+	sConfigInjected.InjectedSamplingTime = ADC_SAMPLETIME_3CYCLES;
+	sConfigInjected.ExternalTrigInjecConvEdge = ADC_EXTERNALTRIGINJECCONVEDGE_RISING;
+	sConfigInjected.ExternalTrigInjecConv = ADC_EXTERNALTRIGINJECCONV_T5_TRGO;
+	sConfigInjected.AutoInjectedConv = DISABLE;
+	sConfigInjected.InjectedDiscontinuousConvMode = DISABLE;
+	sConfigInjected.InjectedOffset = 0;
+	HAL_ADCEx_InjectedConfigChannel(&hadc1, &sConfigInjected);
+
 	ADXRS620_Calibrate(50);
 	HAL_ADCEx_InjectedStart_IT(&hadc1);
 }
