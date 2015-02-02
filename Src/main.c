@@ -113,6 +113,8 @@ int main(void)
   Led_Power_Blink(990, 10, 0);
   Expander_Led_State(1, 0);
 
+  Eeprom_WP(OFF);
+  Debug_Eeprom();
   Debug_Joystic();
 
 //  Debug_Encoder();

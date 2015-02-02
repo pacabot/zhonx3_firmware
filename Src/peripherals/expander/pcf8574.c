@@ -101,6 +101,7 @@ char Expander_Joy_State(void)
 	}
 	return 0;
 }
+
 void Debug_Joystic(void)
 {
 	int state;
