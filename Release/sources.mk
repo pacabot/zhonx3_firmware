@@ -29,6 +29,7 @@ Src/peripherals/lineSensors \
 Src/peripherals/gyroscope \
 Src/peripherals/expander \
 Src/peripherals/encoders \
+Src/peripherals/eepreom \
 Src/peripherals/display \
 Src/peripherals/bluetooth \
 Src/dsp_lib \

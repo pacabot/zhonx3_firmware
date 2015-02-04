@@ -4,14 +4,17 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
+../Src/peripherals/display/menu.c \
 ../Src/peripherals/display/smallfonts.c \
 ../Src/peripherals/display/ssd1306.c 
 
 OBJS += \
+./Src/peripherals/display/menu.o \
 ./Src/peripherals/display/smallfonts.o \
 ./Src/peripherals/display/ssd1306.o 
 
 C_DEPS += \
+./Src/peripherals/display/menu.d \
 ./Src/peripherals/display/smallfonts.d \
 ./Src/peripherals/display/ssd1306.d 
 

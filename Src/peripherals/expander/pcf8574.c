@@ -98,6 +98,11 @@ char Expander_Joy_State(void)
 	case 2:
 		return RIGHT;
 		break;
+	case 0:
+		return 0;
+		break;
+	default :
+		return SEVERAL;
 	}
 	return 0;
 }

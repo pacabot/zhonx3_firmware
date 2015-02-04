@@ -60,6 +60,8 @@ void SystemClock_Config(void);
 
 /* USER CODE BEGIN 0 */
 #include "main.h"
+#include "peripherals/display/menu.h"
+extern menuItem mainMenu;
 
 /* USER CODE END 0 */
 
@@ -100,8 +102,8 @@ int main(void)
   /* USER CODE END 2 */
 
   /* USER CODE BEGIN 3 */
-//test_Beeper();
-//  test_Expander();
+  test_Beeper();
+  test_Expander();
 
   ssd1306Init(0);
   Expander_Led_State(1, 1);
@@ -110,11 +112,14 @@ int main(void)
   ADXRS620_Init();
   Encoders_Init();
   Init_Mulimeter();
+  init_display();
   Led_Power_Blink(990, 10, 0);
   Expander_Led_State(1, 0);
 
-  Eeprom_WP(OFF);
-  Debug_Eeprom();
+ // Eeprom_WP(OFF);
+ // Debug_Eeprom();
+  while (i)
+	  menu(mainMenu);
   Debug_Joystic();
 
 //  Debug_Encoder();

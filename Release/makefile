@@ -17,6 +17,7 @@ RM := rm -rf
 -include Src/peripherals/gyroscope/subdir.mk
 -include Src/peripherals/expander/subdir.mk
 -include Src/peripherals/encoders/subdir.mk
+-include Src/peripherals/eepreom/subdir.mk
 -include Src/peripherals/display/subdir.mk
 -include Src/peripherals/bluetooth/subdir.mk
 -include Src/dsp_lib/subdir.mk
@@ -50,38 +51,38 @@ endif
 
 # Add inputs and outputs from these tool invocations to the build variables 
 SECONDARY_FLASH += \
-ZHONX_III.bin \
+zhonx3.bin \
 
 SECONDARY_SIZE += \
-ZHONX_III.siz \
+zhonx3.siz \
 
 
 # All Target
-all: ZHONX_III.elf secondary-outputs
+all: zhonx3.elf secondary-outputs
 
 # Tool invocations
-ZHONX_III.elf: $(OBJS) $(USER_OBJS)
+zhonx3.elf: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: Cross ARM C Linker'
-	arm-none-eabi-gcc -mcpu=cortex-m4 -mthumb -mlittle-endian -mfloat-abi=hard -mfpu=fpv4-sp-d16 -O3 -fmessage-length=0 -fsigned-char -ffunction-sections -fdata-sections -Wall -T "" -Xlinker --gc-sections -Wl,-Map,"ZHONX_III.map" -Wl,-cref,-u,Reset_Handler -o "ZHONX_III.elf" $(OBJS) $(USER_OBJS) $(LIBS)
+	arm-none-eabi-gcc -mcpu=cortex-m4 -mthumb -mlittle-endian -mfloat-abi=hard -mfpu=fpv4-sp-d16 -O3 -fmessage-length=0 -fsigned-char -ffunction-sections -fdata-sections -Wall -T "" -Xlinker --gc-sections -Wl,-Map,"zhonx3.map" -Wl,-cref,-u,Reset_Handler -o "zhonx3.elf" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 
-ZHONX_III.bin: ZHONX_III.elf
+zhonx3.bin: zhonx3.elf
 	@echo 'Invoking: Cross ARM GNU Create Flash Image'
-	arm-none-eabi-objcopy -O binary "ZHONX_III.elf"  "ZHONX_III.bin"
+	arm-none-eabi-objcopy -O binary "zhonx3.elf"  "zhonx3.bin"
 	@echo 'Finished building: $@'
 	@echo ' '
 
-ZHONX_III.siz: ZHONX_III.elf
+zhonx3.siz: zhonx3.elf
 	@echo 'Invoking: Cross ARM GNU Print Size'
-	arm-none-eabi-size --format=berkeley "ZHONX_III.elf"
+	arm-none-eabi-size --format=berkeley "zhonx3.elf"
 	@echo 'Finished building: $@'
 	@echo ' '
 
 # Other Targets
 clean:
-	-$(RM) $(SECONDARY_SIZE)$(OBJS)$(C_DEPS)$(ASM_DEPS)$(SECONDARY_FLASH)$(S_DEPS)$(S_UPPER_DEPS) ZHONX_III.elf
+	-$(RM) $(SECONDARY_SIZE)$(OBJS)$(C_DEPS)$(ASM_DEPS)$(SECONDARY_FLASH)$(S_DEPS)$(S_UPPER_DEPS) zhonx3.elf
 	-@echo ' '
 
 secondary-outputs: $(SECONDARY_FLASH) $(SECONDARY_SIZE)
