@@ -66,14 +66,6 @@ extern ENCODER_DEF right_encoder;   // right encoder structure
 
 void test_EasterEgg(void)
 {
-	ExpanderSetbit(7,0);
-	HAL_Delay(100);
-	ExpanderSetbit(7,1);
-	HAL_Delay(100);
-
-	ssd1306Init(0);
-	ssd1306ClearScreen();
-	ssd1306Refresh();
 
 	// I2C
 	uint8_t aTxBuffer[3]; // = {control, c};
@@ -120,17 +112,27 @@ float gyroRate;
 
 void init_display()
 {
-	  ssd1306Init(0);
-	  ssd1306ClearScreen();
-	  ssd1306Refresh();
+	int i=0;
+	ssd1306ClearScreen();
+	ssd1306Refresh();
+	ssd1306ClearScreen();
+	ssd1306Refresh();
+
+	ssd1306DrawBmp(Pacabot_bmp, 1, 1, 128, 40);
+	ssd1306Refresh();
+
+	for (i = 0; i <= 100; i+=5)
+	{
+	    ssd1306ProgressBar(10, 35, i);
+	    //HAL_Delay(1);
+	    ssd1306Refresh();
+	}
 }
 
 void test_Gyro(void)
 {
 	ADXRS620_Init();
-	ssd1306Init(0);
-	int i=1;
-	while(i)
+	while(Expander_Joy_State()!=LEFT)
 	{
 	  ssd1306ClearScreen();
 //	  ssd1306PrintInt(10,  25, "Angle = ", (int) gyro_Current_Angle, &Font_5x8);
@@ -154,17 +156,7 @@ void test_Vbat(void)
 	  int vref = 3300;  //mV
 	  int coeff = 33;  //%
 
-	  ExpanderSetbit(7,0);
-	  HAL_Delay(100);
-	  ExpanderSetbit(7,1);
-	  HAL_Delay(100);
-
-	  ssd1306Init(0);
-	  ssd1306ClearScreen();
-	  ssd1306Refresh();
-
-	  int i=1;
-	  while(i)
+	  while(Expander_Joy_State()!=LEFT)
 	  {
 	  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, SET);
 	  ssd1306ClearScreen();
@@ -279,9 +271,7 @@ void test_Motor_Move() {
 	  consigne = 200;
 	  PWM = consigne;
 //	  PWM_R = consigne;
-
-	  int i=1;
-	  while(i)
+	  while(Expander_Joy_State()!=LEFT)
 	  {
 		  	      PWMOld = PWM;
 		  		  errorOld = error;
@@ -360,8 +350,7 @@ void test_Motors(void)
 	  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_11, SET);
 
 	  HAL_Delay(5000);
-	  int i=1;
-	  while(i)
+	  while(Expander_Joy_State()!=LEFT)
 	  {
 
 	  }
@@ -371,13 +360,9 @@ void test_Motors(void)
 
 void test_Encoders(void)
 {
-	  ssd1306Init(0);
-	  ssd1306ClearScreen();
-	  ssd1306Refresh();
 
 	  Encoders_Init();
-	  int i=1;
-	  while(i)
+	  while(Expander_Joy_State()!=LEFT)
 	  {
 		  ssd1306ClearScreen();
 //		  ssd1306PrintInt(0, 6, "REV = ", toto, &Font_3x6);
@@ -478,16 +463,7 @@ void test_PWled(void)
 void test_Oled(void)
 {
   int i;
-
-  ExpanderSetbit(7,0);
-  HAL_Delay(100);
-  ExpanderSetbit(7,1);
-  HAL_Delay(100);
-
-  ssd1306Init(0);
   ssd1306ClearScreen();
-  ssd1306Refresh();
-
   ssd1306DrawBmp(Pacabot_bmp, 1, 10, 128, 40);
   ssd1306Refresh();
   HAL_Delay(3500);
@@ -549,12 +525,10 @@ void test_LineSensors(void)
 
 	  LineSensors_Init();
 	  LineSensors_Start();
-	  int i=1;
-	  while(i)
 
 //	  LineSensors_Init();
 //	  LineSensors_Start();
-	  while(1)
+	  while(Expander_Joy_State()!=LEFT)
 	  {
 		  ssd1306ClearScreen();
 		  ssd1306PrintInt(10, 5,  "LEFT_EXT  =  ", (uint16_t) lineSensors.left_ext.adc_value, &Font_5x8);
@@ -565,4 +539,8 @@ void test_LineSensors(void)
 		  ssd1306Refresh();
 	  }
 
+}
+long _pow(long x, long y)
+{
+	return pow(x,y);
 }

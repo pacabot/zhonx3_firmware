@@ -17,6 +17,7 @@
 #define DOWN 	2
 #define LEFT 	3
 #define RIGHT 	4
+#define SEVERAL 255
 
 void Expander_Led_State(char led, char val);
 char Expander_Joy_State(void);

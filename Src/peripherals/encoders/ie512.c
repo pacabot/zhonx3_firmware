@@ -102,12 +102,9 @@ void Right_Encoder_IT(void)
 		break;
 	}
 }
-
+// test encoder
 void Debug_Encoder(void)
 {
-	ssd1306Init(0);
-	ssd1306ClearScreen();
-	ssd1306Refresh();
 
 	while(1)
 	{
