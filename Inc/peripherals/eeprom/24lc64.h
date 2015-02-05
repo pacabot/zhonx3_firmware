@@ -13,7 +13,7 @@
 
 #include "stdbool.h"
 
-#define WRITE_PROTECT 3
+#define WRITE_PROTECT GPIO_PIN_3
 
 void Eeprom_WP(char state);
 void Eeeprom_Write_Byte(unsigned int eeaddress, unsigned char data);
