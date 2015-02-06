@@ -118,7 +118,7 @@ int main(void)
 
  // Eeprom_WP(OFF);
  // Debug_Eeprom();
-  while (i)
+  while (1)
 	  menu(mainMenu);
   Debug_Joystic();
 

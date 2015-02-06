@@ -22,6 +22,7 @@ void test_Expander(void);
 void test_Oled(void);
 void test_Telemeters(void);
 long _pow(long x, long y);
+void init_display();
 
 
 #endif
