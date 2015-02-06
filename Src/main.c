@@ -68,6 +68,7 @@ extern menuItem mainMenu;
 
 int main(void)
 {
+	int i;
 
   /* USER CODE BEGIN 1 */
   /* USER CODE END 1 */
