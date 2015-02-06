@@ -1,7 +1,7 @@
 # Les ligne commençant par '#' sont des commentaires.
 .settings
-Debug
-Release
+Debug/
+Release/
 
 # Ignorer tous les fichiers html
 *.o

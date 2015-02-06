@@ -60,6 +60,7 @@ void SystemClock_Config(void);
 
 /* USER CODE BEGIN 0 */
 #include "main.h"
+#include "peripherals/tests/tests.h"
 #include "peripherals/display/menu.h"
 extern menuItem mainMenu;
 
@@ -118,6 +119,7 @@ int main(void)
 
  // Eeprom_WP(OFF);
  // Debug_Eeprom();
+  int i=1;
   while (i)
 	  menu(mainMenu);
   Debug_Joystic();

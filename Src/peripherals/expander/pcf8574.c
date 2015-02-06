@@ -111,7 +111,7 @@ void Debug_Joystic(void)
 {
 	int state;
 
-	while(1)
+	while(Expander_Joy_State()!=LEFT)
 	{
 		state = Expander_Joy_State();
 
@@ -139,4 +139,14 @@ void Debug_Joystic(void)
 
 		ssd1306Refresh();
 	}
+	antiBounceJoystic();
+}
+void antiBounceJoystic(void)
+{
+	unsigned long int time_base = HAL_GetTick();
+	do
+	{
+		if (Expander_Joy_State()!=0)
+			time_base = HAL_GetTick();
+	}while (time_base!=(HAL_GetTick()-200));
 }

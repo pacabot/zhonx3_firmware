@@ -27,5 +27,6 @@ char ExpanderGetbit(char pin);
 void ExpanderReset(void);
 
 void Debug_Joystic(void);
+void antiBounceJoystic(void);
 
 #endif

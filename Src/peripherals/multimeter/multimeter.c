@@ -102,7 +102,7 @@ void Multimeter_REGULAR_ADC_IT(void)
 
 void Debug_Mulimeter(void)
 {
-	while(1)
+	while(Expander_Joy_State()!=LEFT)
 	{
 		ssd1306ClearScreen();
 		ssd1306PrintInt(10,  5,  "timer count =  ", (int32_t) multimeter.timer_cnt, &Font_5x8);
@@ -112,4 +112,5 @@ void Debug_Mulimeter(void)
 		ssd1306PrintInt(10,  55,  "ADC1 3 =  ", multimeter.vbat.value, &Font_5x8);
 		ssd1306Refresh();
 	}
+	antiBounceJoystic();
 }

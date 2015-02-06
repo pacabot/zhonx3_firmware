@@ -494,7 +494,7 @@ void test_Oled(void)
   ssd1306DrawString(1, 25, "Driver for STM32f4xx", &Font_5x8); // 3x6 is UPPER CASE only
   ssd1306Refresh();
   HAL_Delay(500);
-  ssd1306DrawString(1, 35, "2 Wire SPI mode", &Font_5x8); // 3x6 is UPPER CASE only
+  ssd1306DrawString(1, 35, "I2C mode", &Font_5x8); // 3x6 is UPPER CASE only
   ssd1306Refresh();
   HAL_Delay(1500);
   ssd1306DrawString(10, 55, "BY PLF, PACABOT TEAM", &Font_3x6); // 3x6 is UPPER CASE only

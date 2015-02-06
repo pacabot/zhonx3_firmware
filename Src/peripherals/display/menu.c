@@ -22,10 +22,13 @@
 
 #include "peripherals/tests/tests.h"
 
-
-//long pow (long nombre, long pow_);
-
-
+/*external fonctions */
+extern void Debug_Eeprom ();
+extern void Debug_Eeprom ();
+extern void Debug_Encoder ();
+extern void Debug_ADXRS620 ();
+extern void Debug_Mulimeter ();
+extern void Debug_Telemeter ();
 /*
  * pour cree un nouveau menu il suffit de
  * créer une nouvelle variable de type "menuItem"
@@ -40,13 +43,10 @@
  * 		}
  * }
  */
+// les variables si dessous existe juste pour montrer comment modifier des variables
 int toto=0;
 long tata=0;
 bool titi=false;
-void hal_ui_clear_scr()
-{
-	ssd1306ClearScreen();
-}
 menuItem maze_menu={0,{{0,0,0}}};
 menuItem parameters_menu=
 {
@@ -62,13 +62,13 @@ menuItem tests_menu=
 {
 		"test menu",
 		{
-				{"test gyro",'f',(void*)test_Gyro},
-				{"test batteries",'f', (void*)test_Vbat},
-				{"test encoder",'f', (void*)test_Encoders},
-				//{"test beeper",'f', (void*)test_Beeper},
-				//{"test expander",'f', (void*)test_Expander},
+				{"test multimeter",'f', (void*)Debug_Mulimeter},
 				{"test OLED",'f', (void*)test_Oled},
-				{"test line sensors",'f', (void*)test_LineSensors},
+				{"test eeprom",'f', (void*)Debug_Eeprom},
+				{"test encoder",'f', (void*)Debug_Encoder},
+				{"test joys",'f', (void*)Debug_Joystic},
+				{"test gyro",'f', (void*)Debug_ADXRS620},
+				{"test telemeter",'f', (void*)Debug_Telemeter},
 				{0,0,0}
 		}
 };
@@ -97,13 +97,13 @@ int menu(menuItem Menu)
 		switch (joystick)
 		{
 			case LEFT:
-				anti_rebonds();
+				antiBounceJoystic();
 				return SUCCESS;
 				break;
 		// Joystick down
 			case DOWN:
 				//beeper
-				anti_rebonds();
+				antiBounceJoystic();
 				if(Menu.line[line_menu+1].name!=null)
 				{
 					line_menu++;
@@ -122,7 +122,7 @@ int menu(menuItem Menu)
 				}
 				break;
 			case UP :
-				anti_rebonds();
+				antiBounceJoystic();
 				//beeper
 				if(line_screen==1)
 				{
@@ -143,7 +143,7 @@ int menu(menuItem Menu)
 				break;
 			case RIGHT :// Validate button joystick right
 				//hal_beeper_beep(app_context.beeper, 4000, 10);
-				anti_rebonds();
+				antiBounceJoystic();
 				switch(Menu.line[line_menu].type)
 				{
 					case 'b':
@@ -175,15 +175,7 @@ int menu(menuItem Menu)
 		}
 	return -1;
 }
-void anti_rebonds ()
-{
-	unsigned long int time_base = HAL_GetTick();
-	do
-	{
-		if (Expander_Joy_State()!=0)
-			time_base = HAL_GetTick();
-	}while (time_base!=(HAL_GetTick()-200));
-}
+
 void menu_animate(unsigned char y, unsigned char max_y)
 {
 //	unsigned char y=y_;
@@ -258,7 +250,7 @@ int modify_bool_param( char *param_name, unsigned char *param)
     char str[4];
     bool param_copy = (bool)*param;
 
-    hal_ui_clear_scr();
+    ssd1306ClearScreen();
 
     // Write the parameter name
     ssd1306DrawString(0, 0,param_name, &Font_5x8);
@@ -284,13 +276,13 @@ int modify_bool_param( char *param_name, unsigned char *param)
     	{
     		case LEFT :
     			// Wait until button is released
-    			anti_rebonds();
+    			antiBounceJoystic();
     			return SUCCESS;
     			break;
 
     		case DOWN:
     		case UP :
-    			anti_rebonds();
+    			antiBounceJoystic();
 				if (param_copy == true)
 				{
 					param_copy = false;
@@ -307,10 +299,10 @@ int modify_bool_param( char *param_name, unsigned char *param)
 				break;
 
     		case RIGHT:
-    			anti_rebonds();
+    			antiBounceJoystic();
 
     			*param = param_copy;
-				hal_ui_clear_scr();
+				ssd1306ClearScreen();
 				ssd1306Refresh();
 				return SUCCESS;
 				break;
@@ -320,19 +312,19 @@ int modify_bool_param( char *param_name, unsigned char *param)
 }
 
 
-int modify_long_param( char *param_name,unsigned long *param)
+int modify_long_param( char *param_name,long *param)
 {
 	int step=1;
     char str[40];
-    unsigned long param_copy = *param;
+    long param_copy = *param;
     char collone=0;
-    hal_ui_clear_scr();
+    ssd1306ClearScreen();
 
     // Write the parameter name
     ssd1306DrawString(0, 0,param_name, &Font_5x8);
     ssd1306DrawLine(0, 9, 128, 9);
 
-    sprintf(str, "%10d", (int)param_copy);
+    sprintf(str, "%10i", (int)param_copy);
     ssd1306DrawString(0, 28, str, &Font_8x8);
     ssd1306DrawString(0, 50, "PRESS 'RIGHT' TO VALIDATE", &Font_3x6);
     ssd1306DrawString(0, 57, "      'LEFT'  TO RETURN.", &Font_3x6);
@@ -347,7 +339,7 @@ int modify_long_param( char *param_name,unsigned long *param)
     	switch (joystick)
     	{
     		case LEFT :
-    			anti_rebonds();
+    			antiBounceJoystic();
     			if (collone==10)
     				return SUCCESS;
     			else
@@ -361,25 +353,25 @@ int modify_long_param( char *param_name,unsigned long *param)
     			}
             break;
     		case UP:
-    			anti_rebonds();
-    			param_copy +=1;
-    			//param_copy += (step*pow(10,collone));
+    			antiBounceJoystic();
+    			//param_copy +=1;
+    			param_copy += (step*pow(10,collone));
 				ssd1306ClearRect(0, 28, 164, 8);
-				sprintf(str, "%10d", param_copy);
+				sprintf(str, "%10i", (int)param_copy);
 				ssd1306DrawString(0, 28, str, &Font_8x8);
 				ssd1306Refresh();
 				break;
     		case DOWN :
-    			anti_rebonds();
-				//param_copy -= (step*pow(10,collone));
-				param_copy -= 1;
+    			antiBounceJoystic();
+				param_copy -= (step*pow(10,collone));
+				//param_copy -= 1;
 				ssd1306ClearRect(0, 28, 164, 8);
 				sprintf(str, "%10i", (int)param_copy);
 				ssd1306DrawString(0, 28, str, &Font_8x8);
 				ssd1306Refresh();
 				break;
     		case RIGHT :
-    			anti_rebonds();
+    			antiBounceJoystic();
     			if(collone==0)
 				{
 					*param = param_copy;

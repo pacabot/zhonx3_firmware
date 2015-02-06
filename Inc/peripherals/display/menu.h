@@ -22,8 +22,7 @@ typedef struct{
 int menu(menuItem);
 void menu_animate(unsigned char y, unsigned char max_y);
 void affiche_menu(menuItem menu,int first_line);
-void anti_rebonds ();
 int modify_bool_param( char *param_name, unsigned char *param);
-int modify_long_param(char *param_name,unsigned long *param);
+int modify_long_param( char *param_name,long *param);
 
 #endif /* MENU_COLIN_H_ */

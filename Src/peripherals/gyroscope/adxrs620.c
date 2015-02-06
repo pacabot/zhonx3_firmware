@@ -103,7 +103,7 @@ void Gyroscope_INJECTED_ADC_IT(void)
 
 void Debug_ADXRS620(void)
 {
-	while(1)
+	while(Expander_Joy_State()!=LEFT)
 	{
 		ssd1306ClearScreen();
 		ssd1306PrintInt(10,  5,  "Angle =  ", (int32_t) gyro.current_angle, &Font_5x8);
