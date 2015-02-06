@@ -1,10 +1,18 @@
 # Les ligne commençant par '#' sont des commentaires.
 .settings
-Debug
-Release
+.cproject
+.project
+Debug/
+Release/
 
-# Ignorer tous les fichiers html
+*.elf
+*.map
+
+# Ignorer tous les fichiers intermédiares de construction
 *.o
+*.a
+*.so
 
-
-
+*~
+*.swp
+*.swo

@@ -106,7 +106,7 @@ void Right_Encoder_IT(void)
 void Debug_Encoder(void)
 {
 
-	while(1)
+	while(Expander_Joy_State()!=LEFT)
 	{
 		ssd1306ClearScreen();
 		//		  ssd1306PrintInt(0, 6, "REV = ", toto, &Font_3x6);
@@ -121,6 +121,7 @@ void Debug_Encoder(void)
 		ssd1306Refresh();
 		HAL_Delay(10);
 	}
+	antiBounceJoystic();
 }
 
 

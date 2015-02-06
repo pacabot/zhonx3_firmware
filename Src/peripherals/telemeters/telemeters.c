@@ -198,7 +198,7 @@ void Telemeters_INJECTED_ADC_IT(void)
 
 void Debug_Telemeter(void)
 {
-	while(1)
+	while(Expander_Joy_State()!=LEFT)
 	{
 		ssd1306ClearScreen();
 		ssd1306PrintInt(10, 0,  "LFRONT  = ", (int32_t) telemeters.left_front.telemeter_value, &Font_5x8);
@@ -210,4 +210,5 @@ void Debug_Telemeter(void)
 		ssd1306PrintInt(10, 57, "end of conv.  =  ", (int32_t) telemeters.end_of_conversion/1000, &Font_5x8);
 		ssd1306Refresh();
 	}
+	antiBounceJoystic();
 }
