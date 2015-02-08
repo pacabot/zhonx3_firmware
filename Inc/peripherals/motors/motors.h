@@ -35,8 +35,9 @@ typedef struct
 #define RIGHT_MOTOR_IN2 	TIM_CHANNEL_4
 
 void Motors_Pwm_Init(void);
-void setMotor(motor *mot, int isForward, int duty, int isSlowDecay);
-void freeMotor(motor *mot);
-void motors_test(void);
+void Motors_Enable_Driver(char isOn);
+void Motor_Set(motor *mot, int isForward, int duty, int isSlowDecay);
+void Motors_Brake(void);
+void Motors_Test(void);
 
 #endif

@@ -52,7 +52,7 @@ void Motors_Pwm_Init(void)
 	HAL_TIM_PWM_Init(&htim8);
 
 	sConfigOC.OCMode = TIM_OCMODE_PWM1;
-	sConfigOC.Pulse = 50;
+	sConfigOC.Pulse = 0;
 	sConfigOC.OCPolarity = TIM_OCPOLARITY_LOW;
 	sConfigOC.OCNPolarity = TIM_OCPOLARITY_LOW;
 	sConfigOC.OCFastMode = TIM_OCFAST_ENABLE;
@@ -76,30 +76,37 @@ void Motors_Pwm_Init(void)
 	sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
 	sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
 	HAL_TIMEx_MasterConfigSynchronization(&htim8, &sMasterConfig);
+
+	Motors_Sleep_Driver(ON);
 }
 
-//void Motors_Decay_Mode()
-//{
-//	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, SET);
-//	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_8, SET);
-//
-//	HAL_TIM_PWM_Start(&htim8,  R_MOTOR_TIN2);
-//	HAL_TIM_PWM_Start(&htim8,  L_MOTOR_TIN1);
-//}
-
-void Motors_Start()
+void Motors_Sleep_Driver(char isOn)
 {
-	HAL_GPIO_WritePin(GPIOA, MOTORS_STANDBY, SET);
+	if (isOn == 1)
+		HAL_GPIO_WritePin(GPIOA, MOTORS_STANDBY, RESET);
+	else
+		HAL_GPIO_WritePin(GPIOA, MOTORS_STANDBY, SET);
+
 }
 
-void Motors_Stop()
-{
-	HAL_GPIO_WritePin(GPIOA, MOTORS_STANDBY, RESET);
-}
-
-void setMotor(motor *mot, int isForward, int duty, int isSlowDecay)
+void Motor_Set(motor *mot, int isForward, int duty, int isSlowDECAY_FAST)
 {
 	TIM_OC_InitTypeDef sConfigOC;
+
+	sConfigOC.OCMode = TIM_OCMODE_PWM1;
+	sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
+	sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
+	sConfigOC.OCIdleState = TIM_OCIDLESTATE_RESET;
+	sConfigOC.OCNIdleState = TIM_OCNIDLESTATE_RESET;
+	sConfigOC.OCNPolarity = TIM_OCNIDLESTATE_RESET;
+
+	if (duty == 0)
+	{
+		// Free motor
+		HAL_TIM_PWM_Stop(&MOTORS_TIMER, mot->IN1);
+		HAL_TIM_PWM_Stop(&MOTORS_TIMER, mot->IN2);
+		return;
+	}
 
 	// Limit duty cycle to its maximum value
 	if (duty > 99)
@@ -113,22 +120,7 @@ void setMotor(motor *mot, int isForward, int duty, int isSlowDecay)
 		isForward = reverse_bit(isForward);
 	}
 
-	sConfigOC.OCMode = TIM_OCMODE_PWM1;
-	sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
-	sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
-	sConfigOC.OCIdleState = TIM_OCIDLESTATE_RESET;
-	sConfigOC.OCNIdleState = TIM_OCNIDLESTATE_RESET;
-	sConfigOC.OCNPolarity = TIM_OCNIDLESTATE_RESET;
-
-	if (duty == 0)
-	{
-		// Brake
-		HAL_TIM_PWM_Stop(&MOTORS_TIMER, mot->IN1);
-		HAL_TIM_PWM_Stop(&MOTORS_TIMER, mot->IN2);
-		return;
-	}
-
-	if (isSlowDecay == 1)
+	if (isSlowDECAY_FAST == 1)
 	{
 		sConfigOC.Pulse = 99 - duty;
 	}
@@ -138,11 +130,11 @@ void setMotor(motor *mot, int isForward, int duty, int isSlowDecay)
 	}
 
 	/* if:
-	 * 	- Forward Fast Decay
+	 * 	- Forward Fast DECAY_FAST
 	 * 	or
-	 * 	- Backward Fast Decay
+	 * 	- Backward Fast DECAY_FAST
 	 */
-	if ((isForward == 1) && (isSlowDecay == 0))
+	if ((isForward == 1) && (isSlowDECAY_FAST == 0))
 	{
 		// Send PWM on IN1
 		HAL_TIM_PWM_ConfigChannel(&MOTORS_TIMER, &sConfigOC, mot->IN1);
@@ -153,7 +145,7 @@ void setMotor(motor *mot, int isForward, int duty, int isSlowDecay)
 		HAL_TIM_PWM_ConfigChannel(&MOTORS_TIMER, &sConfigOC, mot->IN2);
 		HAL_TIM_PWM_Start(&MOTORS_TIMER, mot->IN2);
 	}
-	else if ((isForward == 0) && (isSlowDecay == 0))
+	else if ((isForward == 0) && (isSlowDECAY_FAST == 0))
 	{
 		// Send PWM on IN2
 		HAL_TIM_PWM_ConfigChannel(&MOTORS_TIMER, &sConfigOC, mot->IN2);
@@ -166,11 +158,11 @@ void setMotor(motor *mot, int isForward, int duty, int isSlowDecay)
 	}
 
 	/* if:
-	 * 	- Forward Slow Decay
+	 * 	- Forward Slow DECAY_FAST
 	 * 	or
-	 * 	- Backward Slow Decay
+	 * 	- Backward Slow DECAY_FAST
 	 */
-	if ((isForward == 1) && (isSlowDecay == 1))
+	if ((isForward == 1) && (isSlowDECAY_FAST == 1))
 	{
 		// Send PWM on IN2
 		HAL_TIM_PWM_ConfigChannel(&MOTORS_TIMER, &sConfigOC, mot->IN2);
@@ -181,7 +173,7 @@ void setMotor(motor *mot, int isForward, int duty, int isSlowDecay)
 		HAL_TIM_PWM_ConfigChannel(&MOTORS_TIMER, &sConfigOC, mot->IN1);
 		HAL_TIM_PWM_Start(&MOTORS_TIMER, mot->IN1);
 	}
-	else if ((isForward == 0) && (isSlowDecay == 1))
+	else if ((isForward == 0) && (isSlowDECAY_FAST == 1))
 	{
 		// Send PWM on IN1
 		HAL_TIM_PWM_ConfigChannel(&MOTORS_TIMER, &sConfigOC, mot->IN1);
@@ -194,7 +186,7 @@ void setMotor(motor *mot, int isForward, int duty, int isSlowDecay)
 	}
 }
 
-void freeMotor(motor *mot)
+void Motors_Brake(void)
 {
 	TIM_OC_InitTypeDef sConfigOC;
 
@@ -204,110 +196,132 @@ void freeMotor(motor *mot)
 	sConfigOC.OCIdleState = TIM_OCIDLESTATE_RESET;
 	sConfigOC.OCNIdleState = TIM_OCNIDLESTATE_RESET;
 	sConfigOC.OCNPolarity = TIM_OCNIDLESTATE_RESET;
-	sConfigOC.Pulse = 0;
-	HAL_TIM_PWM_ConfigChannel(&MOTORS_TIMER, &sConfigOC, mot->IN1);
-	HAL_TIM_PWM_ConfigChannel(&MOTORS_TIMER, &sConfigOC, mot->IN2);
-	HAL_TIM_PWM_Start(&MOTORS_TIMER, mot->IN1);
-	HAL_TIM_PWM_Start(&MOTORS_TIMER, mot->IN2);
+	sConfigOC.Pulse = 99;
+	HAL_TIM_PWM_ConfigChannel(&MOTORS_TIMER, &sConfigOC, left_motor.IN1);
+	HAL_TIM_PWM_ConfigChannel(&MOTORS_TIMER, &sConfigOC, left_motor.IN2);
+	HAL_TIM_PWM_ConfigChannel(&MOTORS_TIMER, &sConfigOC, right_motor.IN1);
+	HAL_TIM_PWM_ConfigChannel(&MOTORS_TIMER, &sConfigOC, right_motor.IN2);
+	HAL_TIM_PWM_Start(&MOTORS_TIMER, left_motor.IN1);
+	HAL_TIM_PWM_Start(&MOTORS_TIMER, left_motor.IN2);
+	HAL_TIM_PWM_Start(&MOTORS_TIMER, right_motor.IN1);
+	HAL_TIM_PWM_Start(&MOTORS_TIMER, right_motor.IN2);
 }
 
 void motors_test(void)
 {
-	volatile long leftCounter = 0;
-	volatile long rightCounter = 0;
-	volatile int direction = 0;
-	volatile int cnt = 0;
-	volatile int sum = 0;
+	int i = 0;
 
 	// Forward Fast (PWM on IN1, LOW on IN2)
-//	setMotor(&left_motor, 1, 20, 0);
-	cnt = 0;
-	sum = 0;
-	leftCounter = 0;
+	Motor_Set(&left_motor, 1, 0, DECAY_FAST);
+	Motor_Set(&right_motor, 1, 0, DECAY_FAST);
+	Motors_Sleep_Driver(OFF);
 
-	int i = 0;
-	int decay = DECAY_SLOW;
-	int result = 0;
-
-	result = sum / (cnt * 2048);
-
-	//	  freeMotor(&left_motor);
-	//	  //setMotor(&left_motor, 1, 0, 0);
-	//	  HAL_Delay(1000);
-	//
-	//	  // Reverse Fast (LOW on IN1, PWM on IN2)
-	//	  setMotor(&left_motor, 0, 20, 0);
-	//	  HAL_Delay(2000);
-	//	  freeMotor(&left_motor);
-	////	  setMotor(&left_motor, 0, 0, 0);
-	//	  HAL_Delay(1000);
-	//
-	//	  // Forward Slow (HIGH on IN1, PWM on IN2)
-	//	  setMotor(&left_motor, 1, 20, 1);
-	//	  HAL_Delay(2000);
-	//	  freeMotor(&left_motor);
-	////	  setMotor(&left_motor, 1, 0, 1);
-	//	  HAL_Delay(1000);
-	//
-	//	  // Reverse Slow (PWM on IN1, HIGH on IN2)
-	//	  setMotor(&left_motor, 0, 20, 1);
-	//	  HAL_Delay(2000);
-	//	  freeMotor(&left_motor);
-	////	  setMotor(&left_motor, 0, 0, 1);
-	//	  HAL_Delay(1000);
-	//
-
-//	Motors_Start();
+	ssd1306ClearScreen();
+	ssd1306DrawString(1,  20,  "FWD FAST DECAY 0->20%", &Font_5x8);
+	ssd1306Refresh();
 	for (i = 0; i < 20; i += 1)
 	{
-		setMotor(&left_motor, DIRECTION_FORWARD, i, decay);
-		Motors_Start();
-		setMotor(&right_motor, DIRECTION_FORWARD, i, decay);
+		Motor_Set(&left_motor, DIRECTION_FORWARD, i, DECAY_FAST);
+		Motor_Set(&right_motor, DIRECTION_FORWARD, i, DECAY_FAST);
 		HAL_Delay(50);
 	}
-
+	ssd1306ClearScreen();
+	ssd1306DrawString(1,  20,  "FWD FAST DECAY 20%", &Font_5x8);
+	ssd1306Refresh();
 	HAL_Delay(1000);
-
+	ssd1306ClearScreen();
+	ssd1306DrawString(1,  20,  "FWD FAST DECAY 20->0%", &Font_5x8);
+	ssd1306Refresh();
 	for (i = 20; i > 0; i -= 1)
 	{
-		setMotor(&left_motor, DIRECTION_FORWARD, i, decay);
-		setMotor(&right_motor, DIRECTION_FORWARD, i, decay);
+		Motor_Set(&left_motor, DIRECTION_FORWARD, i, DECAY_FAST);
+		Motor_Set(&right_motor, DIRECTION_FORWARD, i, DECAY_FAST);
 		HAL_Delay(50);
 	}
-
-	setMotor(&left_motor, DIRECTION_FORWARD, 0, decay);
-	HAL_Delay(1000);
-
+	ssd1306ClearScreen();
+	ssd1306DrawString(1,  20,  "BRAKE FAST DECAY 0%", &Font_5x8);
+	ssd1306Refresh();
+	Motors_Brake();
+	HAL_Delay(4000);
+	ssd1306ClearScreen();
+	ssd1306DrawString(1,  20,  "BWD FAST DECAY 0->20%", &Font_5x8);
+	ssd1306Refresh();
 	for (i = 0; i < 20; i += 1)
 	{
-		setMotor(&left_motor, DIRECTION_BACKWARD, i, decay);
-		setMotor(&right_motor, DIRECTION_BACKWARD, i, decay);
+		Motor_Set(&left_motor, DIRECTION_BACKWARD, i, DECAY_FAST);
+		Motor_Set(&right_motor, DIRECTION_BACKWARD, i, DECAY_FAST);
 		HAL_Delay(50);
 	}
-
+	ssd1306ClearScreen();
+	ssd1306DrawString(1,  20,  "BWD FAST DECAY 20%", &Font_5x8);
+	ssd1306Refresh();
 	HAL_Delay(1000);
-
+	ssd1306ClearScreen();
+	ssd1306DrawString(1,  20,  "BWD FAST DECAY 20->0%", &Font_5x8);
+	ssd1306Refresh();
 	for (i = 20; i > 0; i -= 1)
 	{
-		setMotor(&left_motor, DIRECTION_BACKWARD, i, decay);
-		setMotor(&right_motor, DIRECTION_BACKWARD, i, decay);
+		Motor_Set(&left_motor, DIRECTION_BACKWARD, i, DECAY_FAST);
+		Motor_Set(&right_motor, DIRECTION_BACKWARD, i, DECAY_FAST);
 		HAL_Delay(50);
 	}
-
-	setMotor(&left_motor, DIRECTION_BACKWARD, 0, decay);
-	setMotor(&right_motor, DIRECTION_BACKWARD, 0, decay);
-}
-
-void Debug_Motors(void)
-{
-	while(1)
+	ssd1306ClearScreen();
+	ssd1306DrawString(1,  20,  "BRAKE FAST DECAY 0%", &Font_5x8);
+	ssd1306Refresh();
+	Motors_Brake();
+	// Slow decay
+	HAL_Delay(4000);
+	ssd1306ClearScreen();
+	ssd1306DrawString(1,  20,  "FWD SLOW DECAY 0->20%", &Font_5x8);
+	ssd1306Refresh();
+	for (i = 0; i < 20; i += 1)
 	{
-		ssd1306ClearScreen();
-		//		ssd1306PrintInt(10,  5,  "Angle =  ", (int32_t) gyro.current_angle, &Font_5x8);
-		//		ssd1306PrintInt(10,  15,  "cnt =  ", (int32_t) gyro.callback_cnt/10000, &Font_5x8);
-		//
-		//		ssd1306PrintInt(10,  35,  "Beta =  ", (volatile double) (gyro.beta * 1000), &Font_5x8);
-		//		ssd1306DrawString(80,  35,  ".10^-3", &Font_5x8);
-		ssd1306Refresh();
+		Motor_Set(&left_motor, DIRECTION_FORWARD, i, DECAY_SLOW);
+		Motor_Set(&right_motor, DIRECTION_FORWARD, i, DECAY_SLOW);
+		HAL_Delay(50);
 	}
+	ssd1306ClearScreen();
+	ssd1306DrawString(1,  20,  "FWD SLOW DECAY 20%", &Font_5x8);
+	ssd1306Refresh();
+	HAL_Delay(1000);
+	ssd1306ClearScreen();
+	ssd1306DrawString(1,  20,  "FWD SLOW DECAY 20->0%", &Font_5x8);
+	ssd1306Refresh();
+	for (i = 20; i > 0; i -= 1)
+	{
+		Motor_Set(&left_motor, DIRECTION_FORWARD, i, DECAY_SLOW);
+		Motor_Set(&right_motor, DIRECTION_FORWARD, i, DECAY_SLOW);
+		HAL_Delay(50);
+	}
+	ssd1306ClearScreen();
+	ssd1306DrawString(1,  20,  "BRAKE SLOW DECAY 0%", &Font_5x8);
+	ssd1306Refresh();
+	Motors_Brake();
+	HAL_Delay(4000);
+	ssd1306ClearScreen();
+	ssd1306DrawString(1,  20,  "BWD SLOW DECAY 0->20%", &Font_5x8);
+	ssd1306Refresh();
+	for (i = 0; i < 20; i += 1)
+	{
+		Motor_Set(&left_motor, DIRECTION_BACKWARD, i, DECAY_SLOW);
+		Motor_Set(&right_motor, DIRECTION_BACKWARD, i, DECAY_SLOW);
+		HAL_Delay(50);
+	}
+	ssd1306ClearScreen();
+	ssd1306DrawString(1,  20,  "BWD SLOW DECAY 20%", &Font_5x8);
+	ssd1306Refresh();
+	HAL_Delay(1000);
+	ssd1306ClearScreen();
+	ssd1306DrawString(1,  20,  "BWD SLOW DECAY 20->0%", &Font_5x8);
+	ssd1306Refresh();
+	for (i = 20; i > 0; i -= 1)
+	{
+		Motor_Set(&left_motor, DIRECTION_BACKWARD, i, DECAY_SLOW);
+		Motor_Set(&right_motor, DIRECTION_BACKWARD, i, DECAY_SLOW);
+		HAL_Delay(50);
+	}
+	ssd1306ClearScreen();
+	ssd1306DrawString(1,  20,  "BRAK SLOW DECAY 0%", &Font_5x8);
+	ssd1306Refresh();
+	Motors_Brake();
 }
