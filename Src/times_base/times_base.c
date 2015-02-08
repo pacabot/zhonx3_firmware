@@ -166,13 +166,13 @@ void TimesBase_Init(void)
 	  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
 	  HAL_TIMEx_MasterConfigSynchronization(&htim4, &sMasterConfig);
 
-	  sConfigOC.OCMode = TIM_OCMODE_TOGGLE;
-	  sConfigOC.Pulse = 1;
-	  sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
-	  sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
-	  HAL_TIM_OC_ConfigChannel(&htim4, &sConfigOC, TIM_CHANNEL_4);
-
-	  HAL_TIM_OC_Start_IT(&htim4, TIM_CHANNEL_4);
+//	  sConfigOC.OCMode = TIM_OCMODE_TOGGLE;
+//	  sConfigOC.Pulse = 1;
+//	  sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
+//	  sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
+//	  HAL_TIM_OC_ConfigChannel(&htim4, &sConfigOC, TIM_CHANNEL_4);
+//
+//	  HAL_TIM_OC_Start_IT(&htim4, TIM_CHANNEL_4);
 }
 
 void Led_Power_Blink(unsigned int off_time, unsigned int on_time, unsigned int repeat)

@@ -1,7 +1,7 @@
 /**
   ******************************************************************************
   * File Name          : TIM.c
-  * Date               : 29/01/2015 22:48:23
+  * Date               : 07/02/2015 23:59:18
   * Description        : This file provides code for the configuration
   *                      of the TIM instances.
   ******************************************************************************
@@ -50,6 +50,7 @@ TIM_HandleTypeDef htim5;
 TIM_HandleTypeDef htim6;
 TIM_HandleTypeDef htim7;
 TIM_HandleTypeDef htim8;
+TIM_HandleTypeDef htim10;
 TIM_HandleTypeDef htim11;
 
 /* TIM1 init function */
@@ -87,16 +88,16 @@ void MX_TIM2_Init(void)
   TIM_MasterConfigTypeDef sMasterConfig;
 
   htim2.Instance = TIM2;
-  htim2.Init.Prescaler = 60000;
+  htim2.Init.Prescaler = 0;
   htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim2.Init.Period = 10;
+  htim2.Init.Period = 0;
   htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   HAL_TIM_Base_Init(&htim2);
 
   sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
   HAL_TIM_ConfigClockSource(&htim2, &sClockSourceConfig);
 
-  sMasterConfig.MasterOutputTrigger = TIM_TRGO_UPDATE;
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
   sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
   HAL_TIMEx_MasterConfigSynchronization(&htim2, &sMasterConfig);
 
@@ -133,10 +134,9 @@ void MX_TIM4_Init(void)
 {
   TIM_ClockConfigTypeDef sClockSourceConfig;
   TIM_MasterConfigTypeDef sMasterConfig;
-  TIM_OC_InitTypeDef sConfigOC;
 
   htim4.Instance = TIM4;
-  htim4.Init.Prescaler = 6000;
+  htim4.Init.Prescaler = 1800;
   htim4.Init.CounterMode = TIM_COUNTERMODE_UP;
   htim4.Init.Period = 10;
   htim4.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
@@ -145,17 +145,9 @@ void MX_TIM4_Init(void)
   sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
   HAL_TIM_ConfigClockSource(&htim4, &sClockSourceConfig);
 
-  HAL_TIM_OC_Init(&htim4);
-
   sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
   sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
   HAL_TIMEx_MasterConfigSynchronization(&htim4, &sMasterConfig);
-
-  sConfigOC.OCMode = TIM_OCMODE_TOGGLE;
-  sConfigOC.Pulse = 1;
-  sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
-  sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
-  HAL_TIM_OC_ConfigChannel(&htim4, &sConfigOC, TIM_CHANNEL_4);
 
 }
 /* TIM5 init function */
@@ -165,16 +157,16 @@ void MX_TIM5_Init(void)
   TIM_MasterConfigTypeDef sMasterConfig;
 
   htim5.Instance = TIM5;
-  htim5.Init.Prescaler = 60000;
+  htim5.Init.Prescaler = 0;
   htim5.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim5.Init.Period = 10;
+  htim5.Init.Period = 0;
   htim5.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   HAL_TIM_Base_Init(&htim5);
 
   sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
   HAL_TIM_ConfigClockSource(&htim5, &sClockSourceConfig);
 
-  sMasterConfig.MasterOutputTrigger = TIM_TRGO_UPDATE;
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
   sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
   HAL_TIMEx_MasterConfigSynchronization(&htim5, &sMasterConfig);
 
@@ -232,6 +224,8 @@ void MX_TIM8_Init(void)
 
   HAL_TIM_PWM_Init(&htim8);
 
+  HAL_TIM_OC_Init(&htim8);
+
   sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
   sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
   HAL_TIMEx_MasterConfigSynchronization(&htim8, &sMasterConfig);
@@ -246,15 +240,37 @@ void MX_TIM8_Init(void)
   HAL_TIMEx_ConfigBreakDeadTime(&htim8, &sBreakDeadTimeConfig);
 
   sConfigOC.OCMode = TIM_OCMODE_PWM1;
-  sConfigOC.Pulse = 500;
-  sConfigOC.OCPolarity = TIM_OCPOLARITY_LOW;
+  sConfigOC.Pulse = 0;
+  sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
   sConfigOC.OCNPolarity = TIM_OCNPOLARITY_HIGH;
-  sConfigOC.OCFastMode = TIM_OCFAST_ENABLE;
-  sConfigOC.OCIdleState = TIM_OCIDLESTATE_SET;
+  sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
+  sConfigOC.OCIdleState = TIM_OCIDLESTATE_RESET;
   sConfigOC.OCNIdleState = TIM_OCNIDLESTATE_RESET;
   HAL_TIM_PWM_ConfigChannel(&htim8, &sConfigOC, TIM_CHANNEL_1);
 
+  HAL_TIM_PWM_ConfigChannel(&htim8, &sConfigOC, TIM_CHANNEL_2);
+
+  sConfigOC.OCMode = TIM_OCMODE_TIMING;
+  HAL_TIM_OC_ConfigChannel(&htim8, &sConfigOC, TIM_CHANNEL_3);
+
+  sConfigOC.OCMode = TIM_OCMODE_PWM1;
+  sConfigOC.Pulse = 500;
+  sConfigOC.OCPolarity = TIM_OCPOLARITY_LOW;
+  sConfigOC.OCFastMode = TIM_OCFAST_ENABLE;
+  sConfigOC.OCIdleState = TIM_OCIDLESTATE_SET;
   HAL_TIM_PWM_ConfigChannel(&htim8, &sConfigOC, TIM_CHANNEL_4);
+
+}
+/* TIM10 init function */
+void MX_TIM10_Init(void)
+{
+
+  htim10.Instance = TIM10;
+  htim10.Init.Prescaler = 60000;
+  htim10.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim10.Init.Period = 10;
+  htim10.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  HAL_TIM_Base_Init(&htim10);
 
 }
 /* TIM11 init function */
@@ -303,7 +319,7 @@ void HAL_TIM_Encoder_MspInit(TIM_HandleTypeDef* htim_encoder)
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
     /* Peripheral interrupt init*/
-    HAL_NVIC_SetPriority(TIM1_UP_TIM10_IRQn, 0, 3);
+    HAL_NVIC_SetPriority(TIM1_UP_TIM10_IRQn, 0, 0);
     HAL_NVIC_EnableIRQ(TIM1_UP_TIM10_IRQn);
   /* USER CODE BEGIN TIM1_MspInit 1 */
 
@@ -329,7 +345,7 @@ void HAL_TIM_Encoder_MspInit(TIM_HandleTypeDef* htim_encoder)
     HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
     /* Peripheral interrupt init*/
-    HAL_NVIC_SetPriority(TIM3_IRQn, 0, 2);
+    HAL_NVIC_SetPriority(TIM3_IRQn, 0, 0);
     HAL_NVIC_EnableIRQ(TIM3_IRQn);
   /* USER CODE BEGIN TIM3_MspInit 1 */
 
@@ -348,10 +364,6 @@ void HAL_TIM_Base_MspInit(TIM_HandleTypeDef* htim_base)
   /* USER CODE END TIM2_MspInit 0 */
     /* Peripheral clock enable */
     __TIM2_CLK_ENABLE();
-
-    /* Peripheral interrupt init*/
-    HAL_NVIC_SetPriority(TIM2_IRQn, 0, 2);
-    HAL_NVIC_EnableIRQ(TIM2_IRQn);
   /* USER CODE BEGIN TIM2_MspInit 1 */
 
   /* USER CODE END TIM2_MspInit 1 */
@@ -363,10 +375,6 @@ void HAL_TIM_Base_MspInit(TIM_HandleTypeDef* htim_base)
   /* USER CODE END TIM4_MspInit 0 */
     /* Peripheral clock enable */
     __TIM4_CLK_ENABLE();
-
-    /* Peripheral interrupt init*/
-    HAL_NVIC_SetPriority(TIM4_IRQn, 0, 2);
-    HAL_NVIC_EnableIRQ(TIM4_IRQn);
   /* USER CODE BEGIN TIM4_MspInit 1 */
 
   /* USER CODE END TIM4_MspInit 1 */
@@ -378,10 +386,6 @@ void HAL_TIM_Base_MspInit(TIM_HandleTypeDef* htim_base)
   /* USER CODE END TIM5_MspInit 0 */
     /* Peripheral clock enable */
     __TIM5_CLK_ENABLE();
-
-    /* Peripheral interrupt init*/
-    HAL_NVIC_SetPriority(TIM5_IRQn, 0, 3);
-    HAL_NVIC_EnableIRQ(TIM5_IRQn);
   /* USER CODE BEGIN TIM5_MspInit 1 */
 
   /* USER CODE END TIM5_MspInit 1 */
@@ -395,7 +399,7 @@ void HAL_TIM_Base_MspInit(TIM_HandleTypeDef* htim_base)
     __TIM6_CLK_ENABLE();
 
     /* Peripheral interrupt init*/
-    HAL_NVIC_SetPriority(TIM6_DAC_IRQn, 0, 3);
+    HAL_NVIC_SetPriority(TIM6_DAC_IRQn, 1, 2);
     HAL_NVIC_EnableIRQ(TIM6_DAC_IRQn);
   /* USER CODE BEGIN TIM6_MspInit 1 */
 
@@ -408,6 +412,10 @@ void HAL_TIM_Base_MspInit(TIM_HandleTypeDef* htim_base)
   /* USER CODE END TIM7_MspInit 0 */
     /* Peripheral clock enable */
     __TIM7_CLK_ENABLE();
+
+    /* Peripheral interrupt init*/
+    HAL_NVIC_SetPriority(TIM7_IRQn, 0, 0);
+    HAL_NVIC_EnableIRQ(TIM7_IRQn);
   /* USER CODE BEGIN TIM7_MspInit 1 */
 
   /* USER CODE END TIM7_MspInit 1 */
@@ -422,6 +430,8 @@ void HAL_TIM_Base_MspInit(TIM_HandleTypeDef* htim_base)
   
     /**TIM8 GPIO Configuration    
     PC6     ------> TIM8_CH1
+    PC7     ------> TIM8_CH2
+    PC8     ------> TIM8_CH3
     PC9     ------> TIM8_CH4 
     */
     GPIO_InitStruct.Pin = GPIO_PIN_6|GPIO_PIN_9;
@@ -431,9 +441,31 @@ void HAL_TIM_Base_MspInit(TIM_HandleTypeDef* htim_base)
     GPIO_InitStruct.Alternate = GPIO_AF3_TIM8;
     HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
+    GPIO_InitStruct.Pin = GPIO_PIN_7|GPIO_PIN_8;
+    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    GPIO_InitStruct.Speed = GPIO_SPEED_LOW;
+    GPIO_InitStruct.Alternate = GPIO_AF3_TIM8;
+    HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+
   /* USER CODE BEGIN TIM8_MspInit 1 */
 
   /* USER CODE END TIM8_MspInit 1 */
+  }
+  else if(htim_base->Instance==TIM10)
+  {
+  /* USER CODE BEGIN TIM10_MspInit 0 */
+
+  /* USER CODE END TIM10_MspInit 0 */
+    /* Peripheral clock enable */
+    __TIM10_CLK_ENABLE();
+
+    /* Peripheral interrupt init*/
+    HAL_NVIC_SetPriority(TIM1_UP_TIM10_IRQn, 0, 0);
+    HAL_NVIC_EnableIRQ(TIM1_UP_TIM10_IRQn);
+  /* USER CODE BEGIN TIM10_MspInit 1 */
+
+  /* USER CODE END TIM10_MspInit 1 */
   }
   else if(htim_base->Instance==TIM11)
   {
@@ -477,7 +509,13 @@ void HAL_TIM_Encoder_MspDeInit(TIM_HandleTypeDef* htim_encoder)
     HAL_GPIO_DeInit(GPIOA, GPIO_PIN_8|GPIO_PIN_9);
 
     /* Peripheral interrupt Deinit*/
-    HAL_NVIC_DisableIRQ(TIM1_UP_TIM10_IRQn);
+  /* USER CODE BEGIN TIM1:TIM1_UP_TIM10_IRQn disable */
+    /**
+    * Uncomment the line below to disable the "TIM1_UP_TIM10_IRQn" interrupt
+    * Be aware, disabling shared interrupt may affect other IPs
+    */
+    /* HAL_NVIC_DisableIRQ(TIM1_UP_TIM10_IRQn); */
+  /* USER CODE END TIM1:TIM1_UP_TIM10_IRQn disable */
 
   /* USER CODE BEGIN TIM1_MspDeInit 1 */
 
@@ -516,10 +554,6 @@ void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef* htim_base)
   /* USER CODE END TIM2_MspDeInit 0 */
     /* Peripheral clock disable */
     __TIM2_CLK_DISABLE();
-
-    /* Peripheral interrupt Deinit*/
-    HAL_NVIC_DisableIRQ(TIM2_IRQn);
-
   /* USER CODE BEGIN TIM2_MspDeInit 1 */
 
   /* USER CODE END TIM2_MspDeInit 1 */
@@ -531,10 +565,6 @@ void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef* htim_base)
   /* USER CODE END TIM4_MspDeInit 0 */
     /* Peripheral clock disable */
     __TIM4_CLK_DISABLE();
-
-    /* Peripheral interrupt Deinit*/
-    HAL_NVIC_DisableIRQ(TIM4_IRQn);
-
   /* USER CODE BEGIN TIM4_MspDeInit 1 */
 
   /* USER CODE END TIM4_MspDeInit 1 */
@@ -546,10 +576,6 @@ void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef* htim_base)
   /* USER CODE END TIM5_MspDeInit 0 */
     /* Peripheral clock disable */
     __TIM5_CLK_DISABLE();
-
-    /* Peripheral interrupt Deinit*/
-    HAL_NVIC_DisableIRQ(TIM5_IRQn);
-
   /* USER CODE BEGIN TIM5_MspDeInit 1 */
 
   /* USER CODE END TIM5_MspDeInit 1 */
@@ -576,6 +602,10 @@ void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef* htim_base)
   /* USER CODE END TIM7_MspDeInit 0 */
     /* Peripheral clock disable */
     __TIM7_CLK_DISABLE();
+
+    /* Peripheral interrupt Deinit*/
+    HAL_NVIC_DisableIRQ(TIM7_IRQn);
+
   /* USER CODE BEGIN TIM7_MspDeInit 1 */
 
   /* USER CODE END TIM7_MspDeInit 1 */
@@ -590,13 +620,36 @@ void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef* htim_base)
   
     /**TIM8 GPIO Configuration    
     PC6     ------> TIM8_CH1
+    PC7     ------> TIM8_CH2
+    PC8     ------> TIM8_CH3
     PC9     ------> TIM8_CH4 
     */
-    HAL_GPIO_DeInit(GPIOC, GPIO_PIN_6|GPIO_PIN_9);
+    HAL_GPIO_DeInit(GPIOC, GPIO_PIN_6|GPIO_PIN_7|GPIO_PIN_8|GPIO_PIN_9);
 
   /* USER CODE BEGIN TIM8_MspDeInit 1 */
 
   /* USER CODE END TIM8_MspDeInit 1 */
+  }
+  else if(htim_base->Instance==TIM10)
+  {
+  /* USER CODE BEGIN TIM10_MspDeInit 0 */
+
+  /* USER CODE END TIM10_MspDeInit 0 */
+    /* Peripheral clock disable */
+    __TIM10_CLK_DISABLE();
+
+    /* Peripheral interrupt Deinit*/
+  /* USER CODE BEGIN TIM10:TIM1_UP_TIM10_IRQn disable */
+    /**
+    * Uncomment the line below to disable the "TIM1_UP_TIM10_IRQn" interrupt
+    * Be aware, disabling shared interrupt may affect other IPs
+    */
+    /* HAL_NVIC_DisableIRQ(TIM1_UP_TIM10_IRQn); */
+  /* USER CODE END TIM10:TIM1_UP_TIM10_IRQn disable */
+
+  /* USER CODE BEGIN TIM10_MspDeInit 1 */
+
+  /* USER CODE END TIM10_MspDeInit 1 */
   }
   else if(htim_base->Instance==TIM11)
   {

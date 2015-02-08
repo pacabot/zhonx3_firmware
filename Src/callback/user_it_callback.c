@@ -29,7 +29,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
 	  if( htim == &htim2)
 	  {
-		  Telemeters_IT();
+		  //Telemeters_IT();
 	  }
 	  if( htim == &htim5)
 	  {

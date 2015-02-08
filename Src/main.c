@@ -1,7 +1,7 @@
 /**
   ******************************************************************************
   * File Name          : main.c
-  * Date               : 29/01/2015 22:48:24
+  * Date               : 07/02/2015 23:59:20
   * Description        : Main program body
   ******************************************************************************
   *
@@ -68,7 +68,6 @@ extern menuItem mainMenu;
 
 int main(void)
 {
-	int i;
 
   /* USER CODE BEGIN 1 */
   /* USER CODE END 1 */
@@ -96,6 +95,7 @@ int main(void)
   MX_TIM6_Init();
   MX_TIM7_Init();
   MX_TIM8_Init();
+  MX_TIM10_Init();
   MX_TIM11_Init();
   MX_USART3_UART_Init();
 
@@ -104,13 +104,13 @@ int main(void)
   /* USER CODE END 2 */
 
   /* USER CODE BEGIN 3 */
-  test_Beeper();
-  test_Expander();
+//  test_Beeper();
 
   ssd1306Init(0);
   Expander_Led_State(1, 1);
   TimesBase_Init();
-  Telemeters_Init();
+  Motors_Pwm_Init();
+  //Telemeters_Init();
   ADXRS620_Init();
   Encoders_Init();
   Init_Mulimeter();
@@ -118,10 +118,12 @@ int main(void)
   Led_Power_Blink(990, 10, 0);
   Expander_Led_State(1, 0);
 
+  motors_test();
+
  // Eeprom_WP(OFF);
  // Debug_Eeprom();
-  int i=1;
-  while (i)
+
+  while (1)
 	  menu(mainMenu);
   Debug_Joystic();
 

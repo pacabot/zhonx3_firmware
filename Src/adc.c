@@ -1,7 +1,7 @@
 /**
   ******************************************************************************
   * File Name          : ADC.c
-  * Date               : 29/01/2015 22:48:22
+  * Date               : 07/02/2015 23:59:17
   * Description        : This file provides code for the configuration
   *                      of the ADC instances.
   ******************************************************************************
@@ -47,13 +47,13 @@ ADC_HandleTypeDef hadc1;
 ADC_HandleTypeDef hadc2;
 ADC_HandleTypeDef hadc3;
 DMA_HandleTypeDef hdma_adc1;
+DMA_HandleTypeDef hdma_adc2;
 DMA_HandleTypeDef hdma_adc3;
 
 /* ADC1 init function */
 void MX_ADC1_Init(void)
 {
   ADC_ChannelConfTypeDef sConfig;
-  ADC_InjectionConfTypeDef sConfigInjected;
 
     /**Configure the global features of the ADC (Clock, Resolution, Data Alignment and number of conversion) 
     */
@@ -62,32 +62,44 @@ void MX_ADC1_Init(void)
   hadc1.Init.Resolution = ADC_RESOLUTION12b;
   hadc1.Init.ScanConvMode = ENABLE;
   hadc1.Init.ContinuousConvMode = DISABLE;
-  hadc1.Init.DiscontinuousConvMode = DISABLE;
-  hadc1.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_RISING;
-  hadc1.Init.ExternalTrigConv = ADC_EXTERNALTRIGCONV_T4_CC4;
+  hadc1.Init.DiscontinuousConvMode = ENABLE;
+  hadc1.Init.NbrOfDiscConversion = 6;
+  hadc1.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
   hadc1.Init.DataAlign = ADC_DATAALIGN_RIGHT;
-  hadc1.Init.NbrOfConversion = 4;
+  hadc1.Init.NbrOfConversion = 6;
   hadc1.Init.DMAContinuousRequests = ENABLE;
   hadc1.Init.EOCSelection = EOC_SINGLE_CONV;
   HAL_ADC_Init(&hadc1);
 
     /**Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time. 
     */
-  sConfig.Channel = ADC_CHANNEL_TEMPSENSOR;
-  sConfig.Rank = 4;
-  sConfig.SamplingTime = ADC_SAMPLETIME_28CYCLES;
+  sConfig.Channel = ADC_CHANNEL_15;
+  sConfig.Rank = 5;
+  sConfig.SamplingTime = ADC_SAMPLETIME_3CYCLES;
   HAL_ADC_ConfigChannel(&hadc1, &sConfig);
 
     /**Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time. 
     */
-  sConfig.Channel = ADC_CHANNEL_15;
+  sConfig.Channel = ADC_CHANNEL_14;
+  sConfig.Rank = 2;
+  HAL_ADC_ConfigChannel(&hadc1, &sConfig);
+
+    /**Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time. 
+    */
+  sConfig.Channel = ADC_CHANNEL_4;
   sConfig.Rank = 3;
   HAL_ADC_ConfigChannel(&hadc1, &sConfig);
 
     /**Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time. 
     */
+  sConfig.Channel = ADC_CHANNEL_13;
+  sConfig.Rank = 4;
+  HAL_ADC_ConfigChannel(&hadc1, &sConfig);
+
+    /**Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time. 
+    */
   sConfig.Channel = ADC_CHANNEL_TEMPSENSOR;
-  sConfig.Rank = 2;
+  sConfig.Rank = 6;
   HAL_ADC_ConfigChannel(&hadc1, &sConfig);
 
     /**Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time. 
@@ -96,25 +108,15 @@ void MX_ADC1_Init(void)
   sConfig.Rank = 1;
   HAL_ADC_ConfigChannel(&hadc1, &sConfig);
 
-    /**Configures for the selected ADC injected channel its corresponding rank in the sequencer and its sample time 
+    /**Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time. 
     */
-  sConfigInjected.InjectedChannel = ADC_CHANNEL_14;
-  sConfigInjected.InjectedRank = 1;
-  sConfigInjected.InjectedNbrOfConversion = 1;
-  sConfigInjected.InjectedSamplingTime = ADC_SAMPLETIME_3CYCLES;
-  sConfigInjected.ExternalTrigInjecConvEdge = ADC_EXTERNALTRIGINJECCONVEDGE_RISING;
-  sConfigInjected.ExternalTrigInjecConv = ADC_EXTERNALTRIGINJECCONV_T5_TRGO;
-  sConfigInjected.AutoInjectedConv = DISABLE;
-  sConfigInjected.InjectedDiscontinuousConvMode = DISABLE;
-  sConfigInjected.InjectedOffset = 0;
-  HAL_ADCEx_InjectedConfigChannel(&hadc1, &sConfigInjected);
+  HAL_ADC_ConfigChannel(&hadc1, &sConfig);
 
 }
 /* ADC2 init function */
 void MX_ADC2_Init(void)
 {
   ADC_ChannelConfTypeDef sConfig;
-  ADC_InjectionConfTypeDef sConfigInjected;
 
     /**Configure the global features of the ADC (Clock, Resolution, Data Alignment and number of conversion) 
     */
@@ -123,50 +125,38 @@ void MX_ADC2_Init(void)
   hadc2.Init.Resolution = ADC_RESOLUTION12b;
   hadc2.Init.ScanConvMode = ENABLE;
   hadc2.Init.ContinuousConvMode = DISABLE;
-  hadc2.Init.DiscontinuousConvMode = DISABLE;
+  hadc2.Init.DiscontinuousConvMode = ENABLE;
+  hadc2.Init.NbrOfDiscConversion = 4;
   hadc2.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
   hadc2.Init.DataAlign = ADC_DATAALIGN_RIGHT;
-  hadc2.Init.NbrOfConversion = 1;
+  hadc2.Init.NbrOfConversion = 4;
   hadc2.Init.DMAContinuousRequests = DISABLE;
-  hadc2.Init.EOCSelection = EOC_SINGLE_CONV;
+  hadc2.Init.EOCSelection = EOC_SEQ_CONV;
   HAL_ADC_Init(&hadc2);
 
     /**Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time. 
     */
-  sConfig.Channel = ADC_CHANNEL_4;
-  sConfig.Rank = 1;
+  sConfig.Channel = ADC_CHANNEL_5;
+  sConfig.Rank = 4;
   sConfig.SamplingTime = ADC_SAMPLETIME_3CYCLES;
   HAL_ADC_ConfigChannel(&hadc2, &sConfig);
 
-    /**Configures for the selected ADC injected channel its corresponding rank in the sequencer and its sample time 
+    /**Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time. 
     */
-  sConfigInjected.InjectedChannel = ADC_CHANNEL_5;
-  sConfigInjected.InjectedRank = 1;
-  sConfigInjected.InjectedNbrOfConversion = 4;
-  sConfigInjected.InjectedSamplingTime = ADC_SAMPLETIME_56CYCLES;
-  sConfigInjected.ExternalTrigInjecConvEdge = ADC_EXTERNALTRIGINJECCONVEDGE_NONE;
-  sConfigInjected.AutoInjectedConv = DISABLE;
-  sConfigInjected.InjectedDiscontinuousConvMode = DISABLE;
-  sConfigInjected.InjectedOffset = 0;
-  HAL_ADCEx_InjectedConfigChannel(&hadc2, &sConfigInjected);
+  sConfig.Channel = ADC_CHANNEL_10;
+  sConfig.Rank = 3;
+  HAL_ADC_ConfigChannel(&hadc2, &sConfig);
 
-    /**Configures for the selected ADC injected channel its corresponding rank in the sequencer and its sample time 
+    /**Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time. 
     */
-  sConfigInjected.InjectedChannel = ADC_CHANNEL_10;
-  sConfigInjected.InjectedRank = 2;
-  HAL_ADCEx_InjectedConfigChannel(&hadc2, &sConfigInjected);
+  sConfig.Rank = 2;
+  HAL_ADC_ConfigChannel(&hadc2, &sConfig);
 
-    /**Configures for the selected ADC injected channel its corresponding rank in the sequencer and its sample time 
+    /**Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time. 
     */
-  sConfigInjected.InjectedChannel = ADC_CHANNEL_6;
-  sConfigInjected.InjectedRank = 3;
-  HAL_ADCEx_InjectedConfigChannel(&hadc2, &sConfigInjected);
-
-    /**Configures for the selected ADC injected channel its corresponding rank in the sequencer and its sample time 
-    */
-  sConfigInjected.InjectedChannel = ADC_CHANNEL_11;
-  sConfigInjected.InjectedRank = 4;
-  HAL_ADCEx_InjectedConfigChannel(&hadc2, &sConfigInjected);
+  sConfig.Channel = ADC_CHANNEL_6;
+  sConfig.Rank = 1;
+  HAL_ADC_ConfigChannel(&hadc2, &sConfig);
 
 }
 /* ADC3 init function */
@@ -186,26 +176,27 @@ void MX_ADC3_Init(void)
   hadc3.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
   hadc3.Init.DataAlign = ADC_DATAALIGN_RIGHT;
   hadc3.Init.NbrOfConversion = 3;
-  hadc3.Init.DMAContinuousRequests = ENABLE;
+  hadc3.Init.DMAContinuousRequests = DISABLE;
   hadc3.Init.EOCSelection = EOC_SEQ_CONV;
   HAL_ADC_Init(&hadc3);
 
     /**Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time. 
     */
   sConfig.Channel = ADC_CHANNEL_3;
-  sConfig.Rank = 3;
+  sConfig.Rank = 1;
   sConfig.SamplingTime = ADC_SAMPLETIME_3CYCLES;
   HAL_ADC_ConfigChannel(&hadc3, &sConfig);
 
     /**Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time. 
     */
+  sConfig.Channel = ADC_CHANNEL_1;
   sConfig.Rank = 2;
   HAL_ADC_ConfigChannel(&hadc3, &sConfig);
 
     /**Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time. 
     */
-  sConfig.Channel = ADC_CHANNEL_1;
-  sConfig.Rank = 1;
+  sConfig.Channel = ADC_CHANNEL_12;
+  sConfig.Rank = 3;
   HAL_ADC_ConfigChannel(&hadc3, &sConfig);
 
 }
@@ -223,19 +214,21 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef* hadc)
     __ADC1_CLK_ENABLE();
   
     /**ADC1 GPIO Configuration    
+    PC3     ------> ADC1_IN13
+    PA4     ------> ADC1_IN4
     PA7     ------> ADC1_IN7
     PC4     ------> ADC1_IN14
     PC5     ------> ADC1_IN15 
     */
-    GPIO_InitStruct.Pin = GPIO_PIN_7;
-    GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
-    GPIO_InitStruct.Pull = GPIO_NOPULL;
-    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
-    GPIO_InitStruct.Pin = GPIO_PIN_4|GPIO_PIN_5;
+    GPIO_InitStruct.Pin = GPIO_PIN_3|GPIO_PIN_4|GPIO_PIN_5;
     GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+
+    GPIO_InitStruct.Pin = GPIO_PIN_4|GPIO_PIN_7;
+    GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
     /* Peripheral DMA init*/
   
@@ -254,7 +247,7 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef* hadc)
     __HAL_LINKDMA(hadc,DMA_Handle,hdma_adc1);
 
     /* Peripheral interrupt init*/
-    HAL_NVIC_SetPriority(ADC_IRQn, 0, 1);
+    HAL_NVIC_SetPriority(ADC_IRQn, 0, 0);
     HAL_NVIC_EnableIRQ(ADC_IRQn);
   /* USER CODE BEGIN ADC1_MspInit 1 */
 
@@ -271,23 +264,37 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef* hadc)
     /**ADC2 GPIO Configuration    
     PC0     ------> ADC2_IN10
     PC1     ------> ADC2_IN11
-    PC3     ------> ADC2_IN13
-    PA4     ------> ADC2_IN4
     PA5     ------> ADC2_IN5
     PA6     ------> ADC2_IN6 
     */
-    GPIO_InitStruct.Pin = GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_3;
+    GPIO_InitStruct.Pin = GPIO_PIN_0|GPIO_PIN_1;
     GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
-    GPIO_InitStruct.Pin = GPIO_PIN_4|GPIO_PIN_5|GPIO_PIN_6;
+    GPIO_InitStruct.Pin = GPIO_PIN_5|GPIO_PIN_6;
     GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
+    /* Peripheral DMA init*/
+  
+    hdma_adc2.Instance = DMA2_Stream2;
+    hdma_adc2.Init.Channel = DMA_CHANNEL_1;
+    hdma_adc2.Init.Direction = DMA_PERIPH_TO_MEMORY;
+    hdma_adc2.Init.PeriphInc = DMA_PINC_DISABLE;
+    hdma_adc2.Init.MemInc = DMA_MINC_ENABLE;
+    hdma_adc2.Init.PeriphDataAlignment = DMA_PDATAALIGN_HALFWORD;
+    hdma_adc2.Init.MemDataAlignment = DMA_MDATAALIGN_HALFWORD;
+    hdma_adc2.Init.Mode = DMA_CIRCULAR;
+    hdma_adc2.Init.Priority = DMA_PRIORITY_HIGH;
+    hdma_adc2.Init.FIFOMode = DMA_FIFOMODE_DISABLE;
+    HAL_DMA_Init(&hdma_adc2);
+
+    __HAL_LINKDMA(hadc,DMA_Handle,hdma_adc2);
+
     /* Peripheral interrupt init*/
-    HAL_NVIC_SetPriority(ADC_IRQn, 0, 1);
+    HAL_NVIC_SetPriority(ADC_IRQn, 0, 0);
     HAL_NVIC_EnableIRQ(ADC_IRQn);
   /* USER CODE BEGIN ADC2_MspInit 1 */
 
@@ -333,7 +340,7 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef* hadc)
     __HAL_LINKDMA(hadc,DMA_Handle,hdma_adc3);
 
     /* Peripheral interrupt init*/
-    HAL_NVIC_SetPriority(ADC_IRQn, 0, 1);
+    HAL_NVIC_SetPriority(ADC_IRQn, 0, 0);
     HAL_NVIC_EnableIRQ(ADC_IRQn);
   /* USER CODE BEGIN ADC3_MspInit 1 */
 
@@ -353,13 +360,15 @@ void HAL_ADC_MspDeInit(ADC_HandleTypeDef* hadc)
     __ADC1_CLK_DISABLE();
   
     /**ADC1 GPIO Configuration    
+    PC3     ------> ADC1_IN13
+    PA4     ------> ADC1_IN4
     PA7     ------> ADC1_IN7
     PC4     ------> ADC1_IN14
     PC5     ------> ADC1_IN15 
     */
-    HAL_GPIO_DeInit(GPIOA, GPIO_PIN_7);
+    HAL_GPIO_DeInit(GPIOC, GPIO_PIN_3|GPIO_PIN_4|GPIO_PIN_5);
 
-    HAL_GPIO_DeInit(GPIOC, GPIO_PIN_4|GPIO_PIN_5);
+    HAL_GPIO_DeInit(GPIOA, GPIO_PIN_4|GPIO_PIN_7);
 
     /* Peripheral DMA DeInit*/
     HAL_DMA_DeInit(hadc->DMA_Handle);
@@ -388,14 +397,15 @@ void HAL_ADC_MspDeInit(ADC_HandleTypeDef* hadc)
     /**ADC2 GPIO Configuration    
     PC0     ------> ADC2_IN10
     PC1     ------> ADC2_IN11
-    PC3     ------> ADC2_IN13
-    PA4     ------> ADC2_IN4
     PA5     ------> ADC2_IN5
     PA6     ------> ADC2_IN6 
     */
-    HAL_GPIO_DeInit(GPIOC, GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_3);
+    HAL_GPIO_DeInit(GPIOC, GPIO_PIN_0|GPIO_PIN_1);
 
-    HAL_GPIO_DeInit(GPIOA, GPIO_PIN_4|GPIO_PIN_5|GPIO_PIN_6);
+    HAL_GPIO_DeInit(GPIOA, GPIO_PIN_5|GPIO_PIN_6);
+
+    /* Peripheral DMA DeInit*/
+    HAL_DMA_DeInit(hadc->DMA_Handle);
 
     /* Peripheral interrupt Deinit*/
   /* USER CODE BEGIN ADC2:ADC_IRQn disable */

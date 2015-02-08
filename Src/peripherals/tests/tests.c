@@ -121,7 +121,7 @@ void init_display()
 	ssd1306DrawBmp(Pacabot_bmp, 1, 1, 128, 40);
 	ssd1306Refresh();
 
-	for (i = 0; i <= 100; i+=5)
+	for (i = 0; i <= 100; i+=10)
 	{
 	    ssd1306ProgressBar(10, 35, i);
 	    //HAL_Delay(1);

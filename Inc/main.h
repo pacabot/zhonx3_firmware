@@ -19,6 +19,7 @@
 #include "peripherals/multimeter/multimeter.h"
 #include "peripherals/encoders/ie512.h"
 #include "peripherals/eeprom/24lc64.h"
+#include "peripherals/motors/motors.h"
 
 
 #include "times_base/times_base.h"

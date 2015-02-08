@@ -1,7 +1,7 @@
 /**
   ******************************************************************************
   * File Name          : I2C.c
-  * Date               : 29/01/2015 22:48:22
+  * Date               : 07/02/2015 23:59:17
   * Description        : This file provides code for the configuration
   *                      of the I2C instances.
   ******************************************************************************
@@ -53,7 +53,7 @@ void MX_I2C1_Init(void)
 
   hi2c1.Instance = I2C1;
   hi2c1.Init.ClockSpeed = 400000;
-  hi2c1.Init.DutyCycle = I2C_DUTYCYCLE_16_9;
+  hi2c1.Init.DutyCycle = I2C_DUTYCYCLE_2;
   hi2c1.Init.OwnAddress1 = 0;
   hi2c1.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
   hi2c1.Init.DualAddressMode = I2C_DUALADDRESS_DISABLED;
@@ -111,7 +111,7 @@ void HAL_I2C_MspInit(I2C_HandleTypeDef* hi2c)
     hdma_i2c1_rx.Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
     hdma_i2c1_rx.Init.MemDataAlignment = DMA_MDATAALIGN_BYTE;
     hdma_i2c1_rx.Init.Mode = DMA_NORMAL;
-    hdma_i2c1_rx.Init.Priority = DMA_PRIORITY_LOW;
+    hdma_i2c1_rx.Init.Priority = DMA_PRIORITY_MEDIUM;
     hdma_i2c1_rx.Init.FIFOMode = DMA_FIFOMODE_DISABLE;
     HAL_DMA_Init(&hdma_i2c1_rx);
 
