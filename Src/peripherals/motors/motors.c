@@ -41,7 +41,7 @@ void Motors_Pwm_Init(void)
 	htim8.Instance = TIM8;
 	htim8.Init.Prescaler = 40;
 	htim8.Init.CounterMode = TIM_COUNTERMODE_UP;
-	htim8.Init.Period = 100;
+	htim8.Init.Period = 99;
 	htim8.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
 	htim8.Init.RepetitionCounter = 0;
 	HAL_TIM_Base_Init(&htim8);
@@ -128,54 +128,69 @@ void setMotor(motor *mot, int isForward, int duty, int isSlowDecay)
 		return;
 	}
 
-	sConfigOC.Pulse = duty;
 	if (isSlowDecay == 1)
 	{
 		sConfigOC.Pulse = 99 - duty;
+	}
+	else
+	{
+		sConfigOC.Pulse = duty;
 	}
 
 	/* if:
 	 * 	- Forward Fast Decay
 	 * 	or
-	 * 	- Backward SlowDecay
+	 * 	- Backward Fast Decay
 	 */
-
-	if (((isForward == 1) && (isSlowDecay == 0)) ||
-			((isForward == 0) && (isSlowDecay == 1)))
+	if ((isForward == 1) && (isSlowDecay == 0))
 	{
 		// Send PWM on IN1
 		HAL_TIM_PWM_ConfigChannel(&MOTORS_TIMER, &sConfigOC, mot->IN1);
 		HAL_TIM_PWM_Start(&MOTORS_TIMER, mot->IN1);
-		if (isForward == 1)
-		{
-			// Set IN2 to 0
-			sConfigOC.Pulse = 0;
-			HAL_TIM_PWM_ConfigChannel(&MOTORS_TIMER, &sConfigOC, mot->IN2);
-			HAL_TIM_PWM_Start(&MOTORS_TIMER, mot->IN2);
-		}
-		else
-		{
-			// Set IN2 to 1
-			HAL_TIM_PWM_Stop(&MOTORS_TIMER, mot->IN2);
-		}
+
+		//Set IN2 to 0
+		sConfigOC.Pulse = 0;
+		HAL_TIM_PWM_ConfigChannel(&MOTORS_TIMER, &sConfigOC, mot->IN2);
+		HAL_TIM_PWM_Start(&MOTORS_TIMER, mot->IN2);
 	}
-	else
+	else if ((isForward == 0) && (isSlowDecay == 0))
 	{
 		// Send PWM on IN2
 		HAL_TIM_PWM_ConfigChannel(&MOTORS_TIMER, &sConfigOC, mot->IN2);
 		HAL_TIM_PWM_Start(&MOTORS_TIMER, mot->IN2);
-		if (isForward == 1)
-		{
-			// Set IN1 to 1
-			HAL_TIM_PWM_Stop(&MOTORS_TIMER, mot->IN1);
-		}
-		else
-		{
-			// Set IN1 to 0
-			sConfigOC.Pulse = 0;
-			HAL_TIM_PWM_ConfigChannel(&MOTORS_TIMER, &sConfigOC, mot->IN1);
-			HAL_TIM_PWM_Start(&MOTORS_TIMER, mot->IN1);
-		}
+
+		// Set IN1 to 0
+		sConfigOC.Pulse = 0;
+		HAL_TIM_PWM_ConfigChannel(&MOTORS_TIMER, &sConfigOC, mot->IN1);
+		HAL_TIM_PWM_Start(&MOTORS_TIMER, mot->IN1);
+	}
+
+	/* if:
+	 * 	- Forward Slow Decay
+	 * 	or
+	 * 	- Backward Slow Decay
+	 */
+	if ((isForward == 1) && (isSlowDecay == 1))
+	{
+		// Send PWM on IN2
+		HAL_TIM_PWM_ConfigChannel(&MOTORS_TIMER, &sConfigOC, mot->IN2);
+		HAL_TIM_PWM_Start(&MOTORS_TIMER, mot->IN2);
+
+		// Set IN1 to 1
+		sConfigOC.Pulse = 99;
+		HAL_TIM_PWM_ConfigChannel(&MOTORS_TIMER, &sConfigOC, mot->IN1);
+		HAL_TIM_PWM_Start(&MOTORS_TIMER, mot->IN1);
+	}
+	else if ((isForward == 0) && (isSlowDecay == 1))
+	{
+		// Send PWM on IN1
+		HAL_TIM_PWM_ConfigChannel(&MOTORS_TIMER, &sConfigOC, mot->IN1);
+		HAL_TIM_PWM_Start(&MOTORS_TIMER, mot->IN1);
+
+		// Set IN2 to 1
+		sConfigOC.Pulse = 99;
+		HAL_TIM_PWM_ConfigChannel(&MOTORS_TIMER, &sConfigOC, mot->IN2);
+		HAL_TIM_PWM_Start(&MOTORS_TIMER, mot->IN2);
 	}
 }
 
@@ -205,13 +220,13 @@ void motors_test(void)
 	volatile int sum = 0;
 
 	// Forward Fast (PWM on IN1, LOW on IN2)
-	setMotor(&left_motor, 1, 20, 0);
+//	setMotor(&left_motor, 1, 20, 0);
 	cnt = 0;
 	sum = 0;
 	leftCounter = 0;
 
 	int i = 0;
-	int decay = DECAY_FAST;
+	int decay = DECAY_SLOW;
 	int result = 0;
 
 	result = sum / (cnt * 2048);
@@ -242,10 +257,11 @@ void motors_test(void)
 	//	  HAL_Delay(1000);
 	//
 
-	Motors_Start();
+//	Motors_Start();
 	for (i = 0; i < 20; i += 1)
 	{
 		setMotor(&left_motor, DIRECTION_FORWARD, i, decay);
+		Motors_Start();
 		setMotor(&right_motor, DIRECTION_FORWARD, i, decay);
 		HAL_Delay(50);
 	}
