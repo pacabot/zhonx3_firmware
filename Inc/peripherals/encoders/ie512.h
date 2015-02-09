@@ -17,9 +17,9 @@ typedef struct
     signed char *direction;
 } ENCODER_DEF;
 
-void Encoders_Init(void);
-void Left_Encoder_IT(void);
-void Right_Encoder_IT(void);
-void Debug_Encoder(void);
+void encoders_Init(void);
+void encoderLeft_IT(void);
+void encoderRight_IT(void);
+void encoderTest(void);
 
 #endif

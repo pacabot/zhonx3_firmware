@@ -31,7 +31,7 @@ motor right_motor =
 
 extern TIM_HandleTypeDef MOTORS_TIMER;
 
-void Motors_Pwm_Init(void)
+void motorsInit(void)
 {
 	TIM_OC_InitTypeDef sConfigOC;
 	TIM_ClockConfigTypeDef sClockSourceConfig;
@@ -77,10 +77,10 @@ void Motors_Pwm_Init(void)
 	sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
 	HAL_TIMEx_MasterConfigSynchronization(&htim8, &sMasterConfig);
 
-	Motors_Sleep_Driver(ON);
+	motorsSleepDriver(ON);
 }
 
-void Motors_Sleep_Driver(char isOn)
+void motorsSleepDriver(int isOn)
 {
 	if (isOn == 1)
 		HAL_GPIO_WritePin(GPIOA, MOTORS_STANDBY, RESET);
@@ -89,7 +89,7 @@ void Motors_Sleep_Driver(char isOn)
 
 }
 
-void Motor_Set(motor *mot, int isForward, int duty, int isSlowDECAY_FAST)
+void motorSet(motor *mot, int isForward, int duty, int isSlowDECAY_FAST)
 {
 	TIM_OC_InitTypeDef sConfigOC;
 
@@ -186,7 +186,7 @@ void Motor_Set(motor *mot, int isForward, int duty, int isSlowDECAY_FAST)
 	}
 }
 
-void Motors_Brake(void)
+void motorsBrake(void)
 {
 	TIM_OC_InitTypeDef sConfigOC;
 
@@ -207,22 +207,23 @@ void Motors_Brake(void)
 	HAL_TIM_PWM_Start(&MOTORS_TIMER, right_motor.IN2);
 }
 
-void motors_test(void)
+void motorsTest(void)
 {
 	int i = 0;
+	motorsInit();
 
 	// Forward Fast (PWM on IN1, LOW on IN2)
-	Motor_Set(&left_motor, 1, 0, DECAY_FAST);
-	Motor_Set(&right_motor, 1, 0, DECAY_FAST);
-	Motors_Sleep_Driver(OFF);
+	motorSet(&left_motor, 1, 0, DECAY_FAST);
+	motorSet(&right_motor, 1, 0, DECAY_FAST);
+	motorsSleepDriver(OFF);
 
 	ssd1306ClearScreen();
 	ssd1306DrawString(1,  20,  "FWD FAST DECAY 0->20%", &Font_5x8);
 	ssd1306Refresh();
 	for (i = 0; i < 20; i += 1)
 	{
-		Motor_Set(&left_motor, DIRECTION_FORWARD, i, DECAY_FAST);
-		Motor_Set(&right_motor, DIRECTION_FORWARD, i, DECAY_FAST);
+		motorSet(&left_motor, DIRECTION_FORWARD, i, DECAY_FAST);
+		motorSet(&right_motor, DIRECTION_FORWARD, i, DECAY_FAST);
 		HAL_Delay(50);
 	}
 	ssd1306ClearScreen();
@@ -234,22 +235,22 @@ void motors_test(void)
 	ssd1306Refresh();
 	for (i = 20; i > 0; i -= 1)
 	{
-		Motor_Set(&left_motor, DIRECTION_FORWARD, i, DECAY_FAST);
-		Motor_Set(&right_motor, DIRECTION_FORWARD, i, DECAY_FAST);
+		motorSet(&left_motor, DIRECTION_FORWARD, i, DECAY_FAST);
+		motorSet(&right_motor, DIRECTION_FORWARD, i, DECAY_FAST);
 		HAL_Delay(50);
 	}
 	ssd1306ClearScreen();
 	ssd1306DrawString(1,  20,  "BRAKE FAST DECAY 0%", &Font_5x8);
 	ssd1306Refresh();
-	Motors_Brake();
+	motorsBrake();
 	HAL_Delay(4000);
 	ssd1306ClearScreen();
 	ssd1306DrawString(1,  20,  "BWD FAST DECAY 0->20%", &Font_5x8);
 	ssd1306Refresh();
 	for (i = 0; i < 20; i += 1)
 	{
-		Motor_Set(&left_motor, DIRECTION_BACKWARD, i, DECAY_FAST);
-		Motor_Set(&right_motor, DIRECTION_BACKWARD, i, DECAY_FAST);
+		motorSet(&left_motor, DIRECTION_BACKWARD, i, DECAY_FAST);
+		motorSet(&right_motor, DIRECTION_BACKWARD, i, DECAY_FAST);
 		HAL_Delay(50);
 	}
 	ssd1306ClearScreen();
@@ -261,14 +262,14 @@ void motors_test(void)
 	ssd1306Refresh();
 	for (i = 20; i > 0; i -= 1)
 	{
-		Motor_Set(&left_motor, DIRECTION_BACKWARD, i, DECAY_FAST);
-		Motor_Set(&right_motor, DIRECTION_BACKWARD, i, DECAY_FAST);
+		motorSet(&left_motor, DIRECTION_BACKWARD, i, DECAY_FAST);
+		motorSet(&right_motor, DIRECTION_BACKWARD, i, DECAY_FAST);
 		HAL_Delay(50);
 	}
 	ssd1306ClearScreen();
 	ssd1306DrawString(1,  20,  "BRAKE FAST DECAY 0%", &Font_5x8);
 	ssd1306Refresh();
-	Motors_Brake();
+	motorsBrake();
 	// Slow decay
 	HAL_Delay(4000);
 	ssd1306ClearScreen();
@@ -276,8 +277,8 @@ void motors_test(void)
 	ssd1306Refresh();
 	for (i = 0; i < 20; i += 1)
 	{
-		Motor_Set(&left_motor, DIRECTION_FORWARD, i, DECAY_SLOW);
-		Motor_Set(&right_motor, DIRECTION_FORWARD, i, DECAY_SLOW);
+		motorSet(&left_motor, DIRECTION_FORWARD, i, DECAY_SLOW);
+		motorSet(&right_motor, DIRECTION_FORWARD, i, DECAY_SLOW);
 		HAL_Delay(50);
 	}
 	ssd1306ClearScreen();
@@ -289,22 +290,22 @@ void motors_test(void)
 	ssd1306Refresh();
 	for (i = 20; i > 0; i -= 1)
 	{
-		Motor_Set(&left_motor, DIRECTION_FORWARD, i, DECAY_SLOW);
-		Motor_Set(&right_motor, DIRECTION_FORWARD, i, DECAY_SLOW);
+		motorSet(&left_motor, DIRECTION_FORWARD, i, DECAY_SLOW);
+		motorSet(&right_motor, DIRECTION_FORWARD, i, DECAY_SLOW);
 		HAL_Delay(50);
 	}
 	ssd1306ClearScreen();
 	ssd1306DrawString(1,  20,  "BRAKE SLOW DECAY 0%", &Font_5x8);
 	ssd1306Refresh();
-	Motors_Brake();
+	motorsBrake();
 	HAL_Delay(4000);
 	ssd1306ClearScreen();
 	ssd1306DrawString(1,  20,  "BWD SLOW DECAY 0->20%", &Font_5x8);
 	ssd1306Refresh();
 	for (i = 0; i < 20; i += 1)
 	{
-		Motor_Set(&left_motor, DIRECTION_BACKWARD, i, DECAY_SLOW);
-		Motor_Set(&right_motor, DIRECTION_BACKWARD, i, DECAY_SLOW);
+		motorSet(&left_motor, DIRECTION_BACKWARD, i, DECAY_SLOW);
+		motorSet(&right_motor, DIRECTION_BACKWARD, i, DECAY_SLOW);
 		HAL_Delay(50);
 	}
 	ssd1306ClearScreen();
@@ -316,12 +317,14 @@ void motors_test(void)
 	ssd1306Refresh();
 	for (i = 20; i > 0; i -= 1)
 	{
-		Motor_Set(&left_motor, DIRECTION_BACKWARD, i, DECAY_SLOW);
-		Motor_Set(&right_motor, DIRECTION_BACKWARD, i, DECAY_SLOW);
+		motorSet(&left_motor, DIRECTION_BACKWARD, i, DECAY_SLOW);
+		motorSet(&right_motor, DIRECTION_BACKWARD, i, DECAY_SLOW);
 		HAL_Delay(50);
 	}
 	ssd1306ClearScreen();
 	ssd1306DrawString(1,  20,  "BRAK SLOW DECAY 0%", &Font_5x8);
 	ssd1306Refresh();
-	Motors_Brake();
+	motorsBrake();
+
+	motorsSleepDriver(ON);
 }

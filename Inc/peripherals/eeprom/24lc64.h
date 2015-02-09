@@ -15,11 +15,11 @@
 
 #define WRITE_PROTECT GPIO_PIN_3
 
-void Eeprom_WP(char state);
-void Eeeprom_Write_Byte(unsigned int eeaddress, unsigned char data);
-void Eeprom_Write_Page(unsigned int eeaddresspage, unsigned char* data, unsigned char length);
-char Eeprom_Read_Byte(unsigned int eeaddress);
-void Eeprom_Read_Buffer(unsigned int eeaddress, unsigned char *buffer, int length);
-void Debug_Eeprom(void);
+void eepromWP(char state);
+void eeepromWriteByte(unsigned int eeaddress, unsigned char data);
+void eepromWritePage(unsigned int eeaddresspage, unsigned char* data, unsigned char length);
+char eepromReadByte(unsigned int eeaddress);
+void eepromReadBuffer(unsigned int eeaddress, unsigned char *buffer, int length);
+void eepromTest(void);
 
 #endif

@@ -20,9 +20,9 @@ typedef struct
 	arm_pid_instance_f32 * pid_instance;
 } CONTROL_DEF;
 
-void Pid_Init(arm_pid_instance_f32 * instance);
-void Pid_Reset(arm_pid_instance_f32 * instance);
-float32_t Pid(arm_pid_instance_f32 * instance, float32_t error);
-void Pids_IT(void);
+void pidInit(arm_pid_instance_f32 * instance);
+void pidReset(arm_pid_instance_f32 * instance);
+float32_t pid(arm_pid_instance_f32 * instance, float32_t error);
+void pids_IT(void);
 
 #endif

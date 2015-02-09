@@ -28,9 +28,8 @@ GPIO_InitTypeDef GPIO_InitStruct;
   * @param  htim : TIM handle
   * @retval None
   */
-void ADXRS620_Init(void)
+void adxrs620Init(void)
 {
-	ADC_ChannelConfTypeDef sConfig;
 	ADC_InjectionConfTypeDef sConfigInjected;
 
 	/**Configure the global features of the ADC (Clock, Resolution, Data Alignment and number of conversion)
@@ -62,11 +61,11 @@ void ADXRS620_Init(void)
 	sConfigInjected.InjectedOffset = 0;
 	HAL_ADCEx_InjectedConfigChannel(&hadc1, &sConfigInjected);
 
-	ADXRS620_Calibrate(50);
+	adxrs620Calibrate(50);
 	HAL_ADCEx_InjectedStart_IT(&hadc1);
 }
 
-void ADXRS620_Calibrate(int nb_ech)
+void adxrs620Calibrate(int nb_ech)
 {
 	gyro.calibration_current_cycle = 0;
 	gyro.calibration_nb_cycle = nb_ech;
@@ -79,7 +78,7 @@ void ADXRS620_Calibrate(int nb_ech)
 	  /* -----------------------------------------------------------------------
 	    Use TIM5 for start Injected conversion on ADC1 (gyro rate).
 	      ----------------------------------------------------------------------- */
-void Gyroscope_INJECTED_ADC_IT(void)
+void adxrs620_INJECTED_ADC_IT(void)
 {
 	if (gyro.calibration_state == 0)
 	{
@@ -101,9 +100,10 @@ void Gyroscope_INJECTED_ADC_IT(void)
 	}
 }
 
-void Debug_ADXRS620(void)
+void adxrs620Test(void)
 {
-	while(Expander_Joy_State()!=LEFT)
+    adxrs620Init();
+	while(expanderJoyState()!=LEFT)
 	{
 		ssd1306ClearScreen();
 		ssd1306PrintInt(10,  5,  "Angle =  ", (int32_t) gyro.current_angle, &Font_5x8);

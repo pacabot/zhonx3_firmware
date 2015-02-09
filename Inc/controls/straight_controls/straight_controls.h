@@ -17,8 +17,8 @@ enum TypeOfSensors
     GYRO, ENCODERS, TELEMETERS
 };
 
-void Straight_Control_Start(TypeOfSensors Sensor_x);
-void Straight_Control_IT(void);
-void Debug_Straight_Control(void);
+void straightControlStart(TypeOfSensors Sensor_x);
+void straightControl_IT(void);
+void straightControlTest(void);
 
 #endif

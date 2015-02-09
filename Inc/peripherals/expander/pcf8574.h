@@ -19,14 +19,14 @@
 #define RIGHT 	4
 #define SEVERAL 255
 
-void Expander_Led_State(char led, char val);
-char Expander_Joy_State(void);
+void expanderLedState(char led, char val);
+char expanderJoyState(void);
 
-void ExpanderSetbit(char pin, char val);
-char ExpanderGetbit(char pin);
-void ExpanderReset(void);
+void expanderSetbit(char pin, char val);
+char expanderGetbit(char pin);
+void expanderReset(void);
 
-void Debug_Joystic(void);
-void antiBounceJoystic(void);
+void joystickTest(void);
+void antiBounceJoystick(void);
 
 #endif

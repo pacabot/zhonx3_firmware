@@ -41,7 +41,7 @@ static char getData(void)
 	return aRxBuffer[0];
 }
 
-void ExpanderSetbit(char pin, char val)
+void expanderSetbit(char pin, char val)
 {
 	if(val == true)
 	{
@@ -53,33 +53,33 @@ void ExpanderSetbit(char pin, char val)
 	}
 }
 
-char ExpanderGetbit(char pin)
+char expanderGetbit(char pin)
 {
 	return getData();
 }
 
-void ExpanderReset(void)
+void expanderReset(void)
 {
 	sendData(0xF);
 }
 
-void Expander_Led_State(char led, char val)
+void expanderLedState(char led, char val)
 {
 	switch (led)
 	{
 	case 1:
-		ExpanderSetbit(4, reverse_bit(val));
+		expanderSetbit(4, reverse_bit(val));
 		break;
 	case 2:
-		ExpanderSetbit(5, reverse_bit(val));
+		expanderSetbit(5, reverse_bit(val));
 		break;
 	case 3:
-		ExpanderSetbit(6, reverse_bit(val));
+		expanderSetbit(6, reverse_bit(val));
 		break;
 	}
 }
 
-char Expander_Joy_State(void)
+char expanderJoyState(void)
 {
 	int key = 0;
 	key = ~(getData() | 0xFFFFFFF0);
@@ -107,13 +107,13 @@ char Expander_Joy_State(void)
 	return 0;
 }
 
-void Debug_Joystic(void)
+void joystickTest(void)
 {
 	int state;
 
-	while(Expander_Joy_State()!=LEFT)
+	while(expanderJoyState()!=LEFT)
 	{
-		state = Expander_Joy_State();
+		state = expanderJoyState();
 
 		ssd1306ClearScreen();
 		ssd1306DrawCircle(60,10, 3);
@@ -139,14 +139,14 @@ void Debug_Joystic(void)
 
 		ssd1306Refresh();
 	}
-	antiBounceJoystic();
+	antiBounceJoystick();
 }
-void antiBounceJoystic(void)
+void antiBounceJoystick(void)
 {
 	unsigned long int time_base = HAL_GetTick();
 	do
 	{
-		if (Expander_Joy_State()!=0)
+		if (expanderJoyState()!=0)
 			time_base = HAL_GetTick();
 	}while (time_base!=(HAL_GetTick()-200));
 }

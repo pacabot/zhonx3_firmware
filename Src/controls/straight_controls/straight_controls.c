@@ -28,7 +28,6 @@
 CONTROL_DEF trajectory_control;
 arm_pid_instance_f32 gyro_pid_instance;
 
-extern TIM_HandleTypeDef htim8;
 GPIO_InitTypeDef GPIO_InitStruct;
 
 //extern ADC_HandleTypeDef hadc1;
@@ -39,24 +38,23 @@ extern volatile float gyro_Current_Angle;
 int consigne = 0;
 uint32_t Pulses[2] = {0,0};
 
-void Straight_Control_Start(TypeOfSensors Sensor_x)
+void straightControlStart(TypeOfSensors Sensor_x)
 {
 	consigne = 200;
-	Pwm_Init();
 	if(Sensor_x == GYRO)
 	{
 		gyro_pid_instance.Kp = 5;
 		gyro_pid_instance.Ki = 0;//0.1;
 		gyro_pid_instance.Kd = 0.4;
 		trajectory_control.pid_instance = &gyro_pid_instance;
-		Pid_Init(trajectory_control.pid_instance);
+		pidInit(trajectory_control.pid_instance);
 	}
 	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_11, SET); // start motors
 	HAL_Delay(4000);
 	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_11, RESET); // start motors
 }
 
-void Straight_Control_IT(void)
+void straightControl_IT(void)
 {
 //	trajectory_control.error_val = gyro_Current_Angle;
 //	trajectory_control.get_correction = Pid(trajectory_control.pid_instance, trajectory_control.error_val);
@@ -73,7 +71,7 @@ void Straight_Control_IT(void)
 //	HAL_TIM_PWM_Start(&htim8, TIM_CHANNEL_4);
 }
 
-void Debug_Straight_Control(void)
+void straightControlTest(void)
 {
 	while(1)
 	{

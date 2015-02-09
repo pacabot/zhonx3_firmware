@@ -34,10 +34,10 @@ typedef struct
 #define RIGHT_MOTOR_IN1 	TIM_CHANNEL_3
 #define RIGHT_MOTOR_IN2 	TIM_CHANNEL_4
 
-void Motors_Pwm_Init(void);
-void Motors_Enable_Driver(char isOn);
-void Motor_Set(motor *mot, int isForward, int duty, int isSlowDecay);
-void Motors_Brake(void);
-void Motors_Test(void);
+void motorsInit(void);
+void motorsSleepDriver(int isOn);
+void motorSet(motor *mot, int isForward, int duty, int isSlowDecay);
+void motorsBrake(void);
+void motorsTest(void);
 
 #endif

@@ -44,11 +44,11 @@ typedef struct
 
 volatile lineSensors_struct lineSensors;
 
-void LineSensors_Init(void);
-void LineSensors_Start(void);
-void LineSensors_Stop_DMA_ADC1(void);
-void LineSensors_Stop_DMA_ADC3(void);
-void LineSensors_Calibrate(void);
-void LineSensors_IT(void);
+void lineSensorsInit(void);
+void lineSensorsStart(void);
+void lineSensorsStop_DMA_ADC1(void);
+void lineSensorsStop_DMA_ADC3(void);
+void lineSensorsCalibrate(void);
+void lineSensors_IT(void);
 
 #endif

@@ -9,7 +9,7 @@
 #ifndef __BLUETOOTH_H__
 #define __BLUETOOTH_H__
 
-void Bluetooth_Init(void);
+void bluetoothInit(void);
 void printString(const char *text);
 void printInt(unsigned int val);
 

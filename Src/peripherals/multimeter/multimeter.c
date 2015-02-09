@@ -32,10 +32,9 @@ __IO uint16_t ADC1MultimeterConvertedValues[10] = {0};
     RANK 4		CHANNEL INTERNAL VBAT			INTERNAL VBAT
  */
 /**************************************************************************/
-void Init_Mulimeter(void)
+void mulimeterInit(void)
 {
 	ADC_ChannelConfTypeDef sConfig;
-	ADC_InjectionConfTypeDef sConfigInjected;
 
 	/**Configure the global features of the ADC (Clock, Resolution, Data Alignment and number of conversion)
 	 */
@@ -83,14 +82,14 @@ void Init_Mulimeter(void)
 	HAL_ADC_Start_DMA(&hadc1, (uint32_t*)ADC1MultimeterConvertedValues,4);
 }
 
-void Multimeter_IT(void)
+void multimeter_IT(void)
 {
 	multimeter.timer_cnt++;
 	multimeter.get_vbat_state = 1;
 	HAL_GPIO_WritePin(GPIOB, GET_ADC_BAT, SET);
 }
 
-void Multimeter_REGULAR_ADC_IT(void)
+void multimeter_REGULAR_ADC_IT(void)
 {
 	HAL_GPIO_WritePin(GPIOB, GET_ADC_BAT, RESET);
 	multimeter.get_vbat_state++;
@@ -100,9 +99,11 @@ void Multimeter_REGULAR_ADC_IT(void)
 	multimeter.vbat.value = (ADC1MultimeterConvertedValues[2])*VBAT_BRIDGE_COEFF;
 }
 
-void Debug_Mulimeter(void)
+void mulimeterTest(void)
 {
-	while(Expander_Joy_State()!=LEFT)
+	mulimeterInit();
+
+	while(expanderJoyState()!=LEFT)
 	{
 		ssd1306ClearScreen();
 		ssd1306PrintInt(10,  5,  "timer count =  ", (int32_t) multimeter.timer_cnt, &Font_5x8);
@@ -112,5 +113,5 @@ void Debug_Mulimeter(void)
 		ssd1306PrintInt(10,  55,  "ADC1 3 =  ", multimeter.vbat.value, &Font_5x8);
 		ssd1306Refresh();
 	}
-	antiBounceJoystic();
+	antiBounceJoystick();
 }

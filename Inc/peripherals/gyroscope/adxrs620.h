@@ -26,10 +26,10 @@ typedef struct
 
 volatile gyro_struct gyro;
 
-void ADXRS620_Init(void);
-void ADXRS620_Calibrate(int nb_ech);
-void ADXRS620_IT(void);
-void Gyroscope_INJECTED_ADC_IT(void);
-void Debug_ADXRS620(void);
+void adxrs620Init(void);
+void adxrs620Calibrate(int nb_ech);
+void adxrs620_IT(void);
+void adxrs620_INJECTED_ADC_IT(void);
+void adxrs620Test(void);
 
 #endif

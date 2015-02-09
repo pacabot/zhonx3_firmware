@@ -49,14 +49,14 @@ typedef struct
 
 volatile telemeters_struct telemeters;
 
-void Telemeters_Init(void);
-void Telemeters_Start(void);
-void Telemeters_Stop(void);
-void Telemeters_Calibrate(void);
-void Telemeters_IT(void);
-void Telemeters_DMA_IT(void);
-void Telemeters_REGULAR_ADC_IT(void);
-void Telemeters_INJECTED_ADC_IT(void);
-void Debug_Telemeter(void);
+void telemetersInit(void);
+void telemetersStart(void);
+void telemetersStop(void);
+void telemetersCalibrate(void);
+void telemeters_IT(void);
+void telemeters_DMA_IT(void);
+void telemeters_REGULAR_ADC_IT(void);
+void telemeters_INJECTED_ADC_IT(void);
+void telemetersTest(void);
 
 #endif

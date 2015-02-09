@@ -19,7 +19,6 @@
 
 #define FREQ_TELEMETERS_DIVIDER (1) //freq telemeters = 50KHz/DIVIDER
 
-extern ADC_HandleTypeDef hadc1;
 extern ADC_HandleTypeDef hadc3;
 
 __IO uint16_t ADC1ConvertedValues[2] = {0};
@@ -31,49 +30,16 @@ GPIO_InitTypeDef GPIO_InitStruct;
   * @param  htim : TIM handle
   * @retval None
   */
-void LineSensors_Init(void)
+void lineSensorsInit(void)
 {
 }
 
-void LineSensors_Start(void)
+void lineSensorsStart(void)
 {
-	  /*##-2- Start the TIM Base generation in interrupt mode ####################*/
-	  /* Start Channel1 */
-
-	  // -- Enables ADC DMA request
-//	  if (HAL_ADC_Start_DMA(&hadc1, (uint32_t*)ADC1ConvertedValues, 2) != HAL_OK)
-	  {
-
-	  }
-	  // -- Enables ADC DMA request
-	  if (HAL_ADC_Start_DMA(&hadc3, (uint32_t*)ADC3ConvertedValues, 3) != HAL_OK)
-	  {
-
-	  }
-
-//	  if(HAL_TIM_Base_Start_IT(&htim10) != HAL_OK)
-//	  {
-//	    /* Starting Error */
-//	    //Error_Handler();
-//	  }
 }
 
-//void LineSensors_Stop_DMA_ADC1(void)
-//{
-//	  HAL_ADC_Stop_DMA(&hadc1);
-//	  lineSensors.active_ADC1 = FALSE;
-//
-//	  if (lineSensors.active_ADC3 == FALSE)
-//	  {
-//	  	  HAL_GPIO_WritePin(GPIOA, TX_LINESENSORS, RESET);
-//		  lineSensors.active_state = FALSE;
-//	  }
-//
-//	  lineSensors.left.adc_value  		= ADC1ConvertedValues[0];
-//	  lineSensors.right.adc_value 		= ADC1ConvertedValues[1];
-//}
 
-void LineSensors_Stop_DMA_ADC3(void)
+void lineSensorsStop_DMA_ADC3(void)
 {
 	  HAL_ADC_Stop_DMA(&hadc3);
 	  lineSensors.active_ADC3 = FALSE;
@@ -89,11 +55,11 @@ void LineSensors_Stop_DMA_ADC3(void)
 	  lineSensors.right_ext.adc_value 	= ADC3ConvertedValues[2];
 }
 
-void LineSensors_Calibrate(void)
+void lineSensorsCalibrate(void)
 {
 }
 
-void LineSensors_IT(void)
+void lineSensors_IT(void)
 {
 	  static char selector;
 

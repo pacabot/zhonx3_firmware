@@ -107,25 +107,19 @@ int main(void)
 //  test_Beeper();
 
   ssd1306Init(0);
-  Expander_Led_State(1, 1);
-  TimesBase_Init();
-  Motors_Pwm_Init();
-  //Telemeters_Init();
-  ADXRS620_Init();
-  Encoders_Init();
-  Init_Mulimeter();
-  init_display();
-  Led_Power_Blink(990, 10, 0);
-  Expander_Led_State(1, 0);
+  timesBaseInit();
+  ledPowerBlink(990, 10, 0);
 
-  motors_test();
+  telemetersTest();
+
+//  motorsTest();
 
  // Eeprom_WP(OFF);
  // Debug_Eeprom();
 
   while (1)
 	  menu(mainMenu);
-  Debug_Joystic();
+  joystickTest();
 
 //  Debug_Encoder();
 //  test_LineSensors();
@@ -133,12 +127,11 @@ int main(void)
 //  Telemeters_Start();
 //  Debug_Telemeter();
 
-  Debug_Mulimeter();
-  Debug_ADXRS620();
+  mulimeterTest();
+  adxrs620Test();
 
-  Straight_Control_Start(GYRO);
+  straightControlStart(GYRO);
   test_Beeper();
-  Led_Power_Blink(990, 10, 0);
 
 //Debug_Straight_Control();
 while(1);

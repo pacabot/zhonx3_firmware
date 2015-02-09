@@ -27,7 +27,7 @@ extern I2C_HandleTypeDef hi2c1;
 /* Structure init                                                 		  */
 /**************************************************************************/
 
-void Eeprom_WP(char state)
+void eepromWP(char state)
 {
 	if (state == ON)
 		HAL_GPIO_WritePin(GPIOB, WRITE_PROTECT, SET);
@@ -35,7 +35,7 @@ void Eeprom_WP(char state)
 		HAL_GPIO_WritePin(GPIOB, WRITE_PROTECT, RESET);
 }
 
-void Eeeprom_Write_Byte(unsigned int eeaddress, unsigned char data )
+void eepromWriteByte(unsigned int eeaddress, unsigned char data )
 {
 	unsigned char aTxBuffer[3];
 
@@ -50,7 +50,7 @@ void Eeeprom_Write_Byte(unsigned int eeaddress, unsigned char data )
 }
 
 // WARNING: eeaddresspage is a page address, 6-bit end will wrap around
-void Eeprom_Write_Page(unsigned int eeaddresspage, unsigned char* data, unsigned char length)
+void eepromWritePage(unsigned int eeaddresspage, unsigned char* data, unsigned char length)
 {
 	unsigned char aTxBuffer[34] = {0};
 
@@ -66,7 +66,7 @@ void Eeprom_Write_Page(unsigned int eeaddresspage, unsigned char* data, unsigned
 	}
 }
 
-char Eeprom_Read_Byte(unsigned int eeaddress)
+char eepromReadByte(unsigned int eeaddress)
 {
 	unsigned char aTxBuffer[2];
 	unsigned char aRxBuffer;
@@ -86,7 +86,7 @@ char Eeprom_Read_Byte(unsigned int eeaddress)
 	return aRxBuffer;
 }
 
-void Eeprom_Read_Buffer(unsigned int eeaddress, unsigned char *buffer, int length)
+void eepromReadBuffer(unsigned int eeaddress, unsigned char *buffer, int length)
 {
 	unsigned char aTxBuffer[2];
 	unsigned char aRxBuffer[34];
@@ -106,7 +106,7 @@ void Eeprom_Read_Buffer(unsigned int eeaddress, unsigned char *buffer, int lengt
 	buffer = aRxBuffer;
 }
 
-void Debug_Eeprom(void)
+void eepromTest(void)
 {
 	int addr = 0; //first address multiple of 32
 	unsigned char b = 0;
@@ -148,7 +148,7 @@ void Debug_Eeprom(void)
 	HAL_Delay(10); //add a small delay
 
 //	Eeprom_Write_Page(addr, (unsigned char *)somedata, sizeof(somedata)); // write to EEPROM
-	Eeprom_Write_Page(addr, (unsigned char *)somedata, 32); // write to EEPROM
+	eepromWritePage(addr, (unsigned char *)somedata, 32); // write to EEPROM
 
 	HAL_Delay(10); //add a small delay
 
@@ -159,7 +159,7 @@ void Debug_Eeprom(void)
 //	for (int i = 0; i < sizeof(somedata); i++) //increase address
 	for (int i = 0; i < 32; i++) //increase address
 	{
-		b = Eeprom_Read_Byte(i+addr); //access an address from the memory
+		b = eepromReadByte(i+addr); //access an address from the memory
 
 		if (i < 8)
 			ssd1306PrintInt((i*15), 20, " ",(char) b, &Font_5x8);
@@ -175,7 +175,4 @@ void Debug_Eeprom(void)
 //	ssd1306DrawString(10, 50, "End Cycle", &Font_5x8);
 	ssd1306Refresh();
 	HAL_Delay(2000);
-	while(1);
-
 }
-

@@ -30,26 +30,26 @@
 
 GPIO_InitTypeDef GPIO_InitStruct;
 
-void Pid_Init(arm_pid_instance_f32 * instance);
-void Pid_Reset(arm_pid_instance_f32 * instance);
-float32_t Pid(arm_pid_instance_f32 * instance, float32_t error);
+void pidInit(arm_pid_instance_f32 * instance);
+void pidReset(arm_pid_instance_f32 * instance);
+float32_t pid(arm_pid_instance_f32 * instance, float32_t error);
 
-void Pid_Init(arm_pid_instance_f32 * instance)
+void pidInit(arm_pid_instance_f32 * instance)
 {
 	arm_pid_init_f32(instance, 1);
 }
 
-void Pid_Reset(arm_pid_instance_f32 * instance)
+void pidReset(arm_pid_instance_f32 * instance)
 {
 	arm_pid_reset_f32(instance);
 }
 
-float32_t Pid(arm_pid_instance_f32 * instance, float32_t error)
+float32_t pid(arm_pid_instance_f32 * instance, float32_t error)
 {
 	return (arm_pid_f32(instance, error));
 }
 
-void Pids_IT(void)
+void pids_IT(void)
 {
-	Straight_Control_IT();
+	straightControl_IT();
 }

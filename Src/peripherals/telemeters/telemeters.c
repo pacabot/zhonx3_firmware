@@ -32,7 +32,7 @@ GPIO_InitTypeDef GPIO_InitStruct;
 		PA5	ADC2_IN5	L_DIAG_RX		ADC_REGULAR_RANK_4
 	     ------------------------------------------------------------------------ */
 
-void Telemeters_Init(void)
+void telemetersInit(void)
 {
 	ADC_ChannelConfTypeDef sConfig;
 	ADC_InjectionConfTypeDef sConfigInjected;
@@ -91,21 +91,22 @@ void Telemeters_Init(void)
 
 	telemeters.it_cnt = 0;
 	telemeters.end_of_conversion = 0;
+
+	telemetersStart();
 }
 
-void Telemeters_Start(void)
+void telemetersStart(void)
 {
 	telemeters.emitter_state = TRUE;
 	telemeters.selector = 0;
 	HAL_ADCEx_InjectedStart_IT(&hadc2);
-	HAL_TIM_Base_Start_IT(&htim2);
+	telemeters.active_state = TRUE;
 //	Telemeters_Calibrate();
 }
 
-void Telemeters_Stop(void)
+void telemetersStop(void)
 {
 	HAL_ADCEx_InjectedStop(&hadc2);
-	HAL_TIM_Base_Stop_IT(&htim2);
 
 	HAL_GPIO_WritePin(GPIOB, TX_LEFT_FRONT, RESET);
 	HAL_GPIO_WritePin(GPIOB, TX_RIGHT_FRONT, RESET);
@@ -113,7 +114,7 @@ void Telemeters_Stop(void)
 	telemeters.active_state = FALSE;
 }
 
-void Telemeters_Calibrate(void)
+void telemetersCalibrate(void)
 {
 	uint32_t nb_conversion = 0;
 
@@ -132,18 +133,18 @@ void Telemeters_Calibrate(void)
 	telemeters.right_front.offset 	/= nb_conversion++;
 }
 
-void Telemeters_Get_Values(struct telemeters *telemeters)
-{
-//      Telemeters_Start();
-}
+//void telemetersGetValues(struct telemeters *telemeters)
+//{
+////      Telemeters_Start();
+//}
+//
+//void telemetersGetWall(struct telemeters *telemeters)
+//{
+////      Telemeters_Start();
+//}
 
-void Telemeters_Get_Wall(struct telemeters *telemeters)
-{
-//      Telemeters_Start();
-}
 
-
-void Telemeters_IT(void)
+void telemeters_IT(void)
 {
 	switch (telemeters.selector)
 	{
@@ -167,7 +168,7 @@ void Telemeters_IT(void)
 	HAL_ADCEx_InjectedStart_IT(&hadc2);
 }
 
-void Telemeters_INJECTED_ADC_IT(void)
+void telemeters_INJECTED_ADC_IT(void)
 {
 
 	if (telemeters.right_front.emitter_state == 1)
@@ -196,9 +197,11 @@ void Telemeters_INJECTED_ADC_IT(void)
 	telemeters.end_of_conversion++;
 }
 
-void Debug_Telemeter(void)
+void telemetersTest(void)
 {
-	while(Expander_Joy_State()!=LEFT)
+	telemetersInit();
+
+	while(expanderJoyState()!=LEFT)
 	{
 		ssd1306ClearScreen();
 		ssd1306PrintInt(10, 0,  "LFRONT  = ", (int32_t) telemeters.left_front.telemeter_value, &Font_5x8);
@@ -210,5 +213,6 @@ void Debug_Telemeter(void)
 		ssd1306PrintInt(10, 57, "end of conv.  =  ", (int32_t) telemeters.end_of_conversion/1000, &Font_5x8);
 		ssd1306Refresh();
 	}
-	antiBounceJoystic();
+	antiBounceJoystick();
+	telemetersStop();
 }

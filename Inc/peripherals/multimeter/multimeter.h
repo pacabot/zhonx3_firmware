@@ -36,9 +36,9 @@ typedef struct
 
 volatile multimeter_struct multimeter;
 
-void Init_Mulimeter(void);
-void Multimeter_IT(void);
-void Multimeter_REGULAR_ADC_IT(void);
-void Debug_Mulimeter(void);
+void mulimeterInit(void);
+void multimeter_IT(void);
+void multimeter_REGULAR_ADC_IT(void);
+void mulimeterTest(void);
 
 #endif

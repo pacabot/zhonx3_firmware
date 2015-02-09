@@ -35,11 +35,10 @@ volatile int32_t Blink[3] = {500, 10, 0};
   * @param  htim : TIM handle
   * @retval None
   */
-void TimesBase_Init(void)
+void timesBaseInit(void)
 {
 	  TIM_ClockConfigTypeDef sClockSourceConfig;
 	  TIM_MasterConfigTypeDef sMasterConfig;
-	  TIM_OC_InitTypeDef sConfigOC;
 	  uint32_t uwPrescalerValue = 0;
 
 	  /*##-1- Configure the TIM peripheral #######################################*/
@@ -120,7 +119,7 @@ void TimesBase_Init(void)
 
 	  /*## Configure the TIM peripheral for ADC23 regular trigger ####################*/
 	 	  /* -----------------------------------------------------------------------
-	 	    Use TIM2 for start Regular conversion on ADC2 (telemeters).
+	 	    Use TIM2 for start Regular conversion on ADC2 (telemeters, just use in timer base).
 	 	    Use TIM2 for start Regular conversion on ADC3 (not use).
 	 	     ----------------------------------------------------------------------- */
 
@@ -141,6 +140,8 @@ void TimesBase_Init(void)
 	  sMasterConfig.MasterOutputTrigger = TIM_TRGO_UPDATE;
 	  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
 	  HAL_TIMEx_MasterConfigSynchronization(&htim2, &sMasterConfig);
+
+	  HAL_TIM_Base_Start_IT(&htim2);
 
 	  /*## Configure the TIM peripheral for ADC1 regular trigger ####################*/
 	 	  /* -----------------------------------------------------------------------
@@ -175,14 +176,14 @@ void TimesBase_Init(void)
 //	  HAL_TIM_OC_Start_IT(&htim4, TIM_CHANNEL_4);
 }
 
-void Led_Power_Blink(unsigned int off_time, unsigned int on_time, unsigned int repeat)
+void ledPowerBlink(unsigned int off_time, unsigned int on_time, unsigned int repeat)
 {
       Blink[0] = (off_time / 10);
       Blink[1] = (on_time / 10);
       Blink[2] = (repeat / 10);
 }
 
-void Led_Blink_IT(void)
+void ledBlink_IT(void)
 {
 	  static unsigned int cnt_led = 0;
 
@@ -203,14 +204,14 @@ void Led_Blink_IT(void)
 		  cnt_led = 0;
 }
 
-void High_Freq_IT(void)
+void highFreq_IT(void)
 {
 //	Pids_IT();
 //	LineSensors_IT();
 }
 
-void Low_Freq_IT(void)
+void lowFreq_IT(void)
 {
-	Led_Blink_IT();
+	ledBlink_IT();
 }
 

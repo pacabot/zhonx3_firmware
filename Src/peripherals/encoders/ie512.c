@@ -25,7 +25,7 @@ extern TIM_HandleTypeDef htim3;
 ENCODER_DEF left_encoder         = {0, 0};   // left encoder structure
 ENCODER_DEF right_encoder        = {0, 0};   // right encoder structure
 
-void Encoders_Init(void)
+void encodersInit(void)
 {
 	TIM_Encoder_InitTypeDef sConfig;
 	TIM_MasterConfigTypeDef sMasterConfig;
@@ -77,7 +77,7 @@ void Encoders_Init(void)
 	HAL_TIM_Encoder_Start(&htim3, TIM_CHANNEL_1);
 }
 
-void Left_Encoder_IT(void)
+void encoderLeft_IT(void)
 {
 	switch (__HAL_TIM_DIRECTION_STATUS(&htim1))
 	{
@@ -90,7 +90,7 @@ void Left_Encoder_IT(void)
 	}
 }
 
-void Right_Encoder_IT(void)
+void encoderRight_IT(void)
 {
 	switch (__HAL_TIM_DIRECTION_STATUS(&htim3))
 	{
@@ -102,11 +102,13 @@ void Right_Encoder_IT(void)
 		break;
 	}
 }
-// test encoder
-void Debug_Encoder(void)
-{
 
-	while(Expander_Joy_State()!=LEFT)
+// test encoder
+void encoderTest(void)
+{
+	encodersInit();
+
+	while(expanderJoyState()!=LEFT)
 	{
 		ssd1306ClearScreen();
 		//		  ssd1306PrintInt(0, 6, "REV = ", toto, &Font_3x6);
@@ -121,7 +123,5 @@ void Debug_Encoder(void)
 		ssd1306Refresh();
 		HAL_Delay(10);
 	}
-	antiBounceJoystic();
+	antiBounceJoystick();
 }
-
-
