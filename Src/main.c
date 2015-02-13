@@ -61,7 +61,10 @@ void SystemClock_Config(void);
 /* USER CODE BEGIN 0 */
 #include "main.h"
 #include "peripherals/display/menu.h"
+#include "peripherals/tone/tone.h"
+
 extern menuItem mainMenu;
+void player_music(int *Note, int *Duree, int size, int tempo);
 
 /* USER CODE END 0 */
 
@@ -113,6 +116,10 @@ int main(void)
 
  // Eeprom_WP(OFF);
  // Debug_Eeprom();
+  // Au clair de la lune
+  int music[11]={C3,C3,C3,D3,E3,D3,C3,E3,D3,D3,C3};
+  int duree[11]={2,2,2,2,4,4,2,2,2,2,8};
+  player_music(music, duree, 11, 100);
 
   while (1)
 	  menu(mainMenu);
