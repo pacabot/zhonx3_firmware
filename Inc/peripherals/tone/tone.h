@@ -1,13 +1,13 @@
 /**************************************************************************/
 /*!
-    @file     notes.h
+    @file     tone.h
     @author  BM (PACABOT)
     @date
     @version  0.0
  */
 /**************************************************************************/
-#ifndef __NOTES_H__
-#define __NOTES_H__
+#ifndef __TONE_H__
+#define __TONE_H__
 
 #define C2 131
 #define C2d 139
