@@ -104,8 +104,6 @@ int main(void)
   /* USER CODE END 2 */
 
   /* USER CODE BEGIN 3 */
-//  test_Beeper();
-
   ssd1306Init(0);
   timesBaseInit();
   ledPowerBlink(990, 10, 0);
@@ -113,7 +111,9 @@ int main(void)
 
  // Eeprom_WP(OFF);
  // Debug_Eeprom();
-
+  int music[11]={C3,C3,C3,D3,E3,D3,C3,E3,D3,D3,C3};
+    int duree[11]={2,2,2,2,4,4,2,2,2,2,8};
+  player_music(music, duree, 11, 100);
   while (1)
 	  menu(mainMenu);
   joystickTest();

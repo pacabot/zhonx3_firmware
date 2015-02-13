@@ -35,6 +35,8 @@
 #define A3d 467
 #define B3 494
 
+void player_music(int *Note, int *Duree, int size, int tempo);
+
 #endif
 
 // double = 1 la ronde vaut 16

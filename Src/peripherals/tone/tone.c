@@ -26,14 +26,24 @@ void player_music(int *Note, int *Duree, int size, int tempo)
 	{
 		FREQ_NOTE = Note[ii];
 
-		htim11.Instance = TIM11;
+		TIM_OC_InitTypeDef sConfigOC;
 
 		uwPrescalerValue = (uint32_t) ((SystemCoreClock /2) / (FREQ_NOTE * 100)) - 1;
+		htim11.Instance = TIM11;
 		htim11.Init.Prescaler = uwPrescalerValue;
 		htim11.Init.CounterMode = TIM_COUNTERMODE_UP;
-		htim11.Init.Period = 50;
+		htim11.Init.Period = 100;
 		htim11.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+		HAL_TIM_Base_Init(&htim11);
+
 		HAL_TIM_PWM_Init(&htim11);
+
+		sConfigOC.OCMode = TIM_OCMODE_PWM1;
+		sConfigOC.Pulse = 50;
+		sConfigOC.OCPolarity = TIM_OCPOLARITY_LOW;
+		sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
+		HAL_TIM_PWM_ConfigChannel(&htim11, &sConfigOC, TIM_CHANNEL_1);
+
 		if(HAL_TIM_PWM_Start(&htim11, TIM_CHANNEL_1) != HAL_OK)
 		{
 			/* Starting Error */
