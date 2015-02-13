@@ -64,7 +64,6 @@ void SystemClock_Config(void);
 #include "peripherals/tone/tone.h"
 
 extern menuItem mainMenu;
-void player_music(int *Note, int *Duree, int size, int tempo);
 
 /* USER CODE END 0 */
 
