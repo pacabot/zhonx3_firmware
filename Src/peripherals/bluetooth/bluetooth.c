@@ -15,7 +15,7 @@
 
 extern UART_HandleTypeDef huart3;
 
-void Bluetooth_Init(void)
+void bluetoothInit(void)
 {
 
 

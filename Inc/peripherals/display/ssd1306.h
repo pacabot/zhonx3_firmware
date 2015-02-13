@@ -63,4 +63,5 @@ void ssd1306DrawRect(unsigned char x, unsigned char y, unsigned char w, unsigned
 void ssd1306InvertArea(unsigned char x, unsigned char y, unsigned char w, unsigned char h);
 void ssd1306DrawLine(unsigned char x0, unsigned char y0, unsigned char x1, unsigned char y1);
 void ssd1306ProgressBar(unsigned char x, unsigned char y, unsigned char state);
+void ssd1306Test(void);
 #endif

@@ -1,11 +1,11 @@
 /**
   ******************************************************************************
   * @file    stm32f4xx_it.c
-  * @date    30/11/2014 13:41:57
+  * @date    13/02/2015 01:21:06
   * @brief   Interrupt Service Routines.
   ******************************************************************************
   *
-  * COPYRIGHT(c) 2014 STMicroelectronics
+  * COPYRIGHT(c) 2015 STMicroelectronics
   *
   * Redistribution and use in source and binary forms, with or without modification,
   * are permitted provided that the following conditions are met:
@@ -35,9 +35,14 @@
 #include "stm32f4xx_hal.h"
 #include "stm32f4xx.h"
 #include "stm32f4xx_it.h"
-
+/* USER CODE BEGIN 0 */
+#include "peripherals/lineSensors/lineSensors.h"
+#include "peripherals/multimeter/multimeter.h"
+#include "peripherals/telemeters/telemeters.h"
+/* USER CODE END 0 */
 /* External variables --------------------------------------------------------*/
 
+extern DMA_HandleTypeDef hdma_adc1;
 extern DMA_HandleTypeDef hdma_adc2;
 extern DMA_HandleTypeDef hdma_adc3;
 extern ADC_HandleTypeDef hadc1;
@@ -46,7 +51,9 @@ extern ADC_HandleTypeDef hadc3;
 extern DMA_HandleTypeDef hdma_i2c1_tx;
 extern DMA_HandleTypeDef hdma_i2c1_rx;
 extern TIM_HandleTypeDef htim1;
+extern TIM_HandleTypeDef htim2;
 extern TIM_HandleTypeDef htim3;
+extern TIM_HandleTypeDef htim4;
 extern TIM_HandleTypeDef htim6;
 extern TIM_HandleTypeDef htim7;
 extern TIM_HandleTypeDef htim10;
@@ -60,8 +67,13 @@ extern TIM_HandleTypeDef htim10;
 */
 void DMA2_Stream2_IRQHandler(void)
 {
-  HAL_NVIC_ClearPendingIRQ(DMA2_Stream2_IRQn);
+  /* USER CODE BEGIN DMA2_Stream2_IRQn 0 */
+
+  /* USER CODE END DMA2_Stream2_IRQn 0 */
   HAL_DMA_IRQHandler(&hdma_adc2);
+  /* USER CODE BEGIN DMA2_Stream2_IRQn 1 */
+
+  /* USER CODE END DMA2_Stream2_IRQn 1 */
 }
 
 /**
@@ -69,8 +81,13 @@ void DMA2_Stream2_IRQHandler(void)
 */
 void DMA1_Stream6_IRQHandler(void)
 {
-  HAL_NVIC_ClearPendingIRQ(DMA1_Stream6_IRQn);
+  /* USER CODE BEGIN DMA1_Stream6_IRQn 0 */
+
+  /* USER CODE END DMA1_Stream6_IRQn 0 */
   HAL_DMA_IRQHandler(&hdma_i2c1_tx);
+  /* USER CODE BEGIN DMA1_Stream6_IRQn 1 */
+
+  /* USER CODE END DMA1_Stream6_IRQn 1 */
 }
 
 /**
@@ -78,8 +95,13 @@ void DMA1_Stream6_IRQHandler(void)
 */
 void TIM6_DAC_IRQHandler(void)
 {
-  HAL_NVIC_ClearPendingIRQ(TIM6_DAC_IRQn);
+  /* USER CODE BEGIN TIM6_DAC_IRQn 0 */
+
+  /* USER CODE END TIM6_DAC_IRQn 0 */
   HAL_TIM_IRQHandler(&htim6);
+  /* USER CODE BEGIN TIM6_DAC_IRQn 1 */
+
+  /* USER CODE END TIM6_DAC_IRQn 1 */
 }
 
 /**
@@ -87,8 +109,14 @@ void TIM6_DAC_IRQHandler(void)
 */
 void SysTick_Handler(void)
 {
+  /* USER CODE BEGIN SysTick_IRQn 0 */
+
+  /* USER CODE END SysTick_IRQn 0 */
   HAL_IncTick();
   HAL_SYSTICK_IRQHandler();
+  /* USER CODE BEGIN SysTick_IRQn 1 */
+
+  /* USER CODE END SysTick_IRQn 1 */
 }
 
 /**
@@ -96,8 +124,41 @@ void SysTick_Handler(void)
 */
 void TIM7_IRQHandler(void)
 {
-  HAL_NVIC_ClearPendingIRQ(TIM7_IRQn);
+  /* USER CODE BEGIN TIM7_IRQn 0 */
+
+  /* USER CODE END TIM7_IRQn 0 */
   HAL_TIM_IRQHandler(&htim7);
+  /* USER CODE BEGIN TIM7_IRQn 1 */
+
+  /* USER CODE END TIM7_IRQn 1 */
+}
+
+/**
+* @brief This function handles TIM2 global interrupt.
+*/
+void TIM2_IRQHandler(void)
+{
+  /* USER CODE BEGIN TIM2_IRQn 0 */
+
+  /* USER CODE END TIM2_IRQn 0 */
+  HAL_TIM_IRQHandler(&htim2);
+  /* USER CODE BEGIN TIM2_IRQn 1 */
+
+  /* USER CODE END TIM2_IRQn 1 */
+}
+
+/**
+* @brief This function handles DMA2 Stream0 global interrupt.
+*/
+void DMA2_Stream0_IRQHandler(void)
+{
+  /* USER CODE BEGIN DMA2_Stream0_IRQn 0 */
+
+  /* USER CODE END DMA2_Stream0_IRQn 0 */
+  HAL_DMA_IRQHandler(&hdma_adc1);
+  /* USER CODE BEGIN DMA2_Stream0_IRQn 1 */
+
+  /* USER CODE END DMA2_Stream0_IRQn 1 */
 }
 
 /**
@@ -105,10 +166,15 @@ void TIM7_IRQHandler(void)
 */
 void ADC_IRQHandler(void)
 {
-  HAL_NVIC_ClearPendingIRQ(ADC_IRQn);
+  /* USER CODE BEGIN ADC_IRQn 0 */
+
+  /* USER CODE END ADC_IRQn 0 */
   HAL_ADC_IRQHandler(&hadc1);
   HAL_ADC_IRQHandler(&hadc2);
   HAL_ADC_IRQHandler(&hadc3);
+  /* USER CODE BEGIN ADC_IRQn 1 */
+
+  /* USER CODE END ADC_IRQn 1 */
 }
 
 /**
@@ -116,8 +182,13 @@ void ADC_IRQHandler(void)
 */
 void DMA2_Stream1_IRQHandler(void)
 {
-  HAL_NVIC_ClearPendingIRQ(DMA2_Stream1_IRQn);
+  /* USER CODE BEGIN DMA2_Stream1_IRQn 0 */
+
+  /* USER CODE END DMA2_Stream1_IRQn 0 */
   HAL_DMA_IRQHandler(&hdma_adc3);
+  /* USER CODE BEGIN DMA2_Stream1_IRQn 1 */
+
+  /* USER CODE END DMA2_Stream1_IRQn 1 */
 }
 
 /**
@@ -125,8 +196,13 @@ void DMA2_Stream1_IRQHandler(void)
 */
 void DMA1_Stream5_IRQHandler(void)
 {
-  HAL_NVIC_ClearPendingIRQ(DMA1_Stream5_IRQn);
+  /* USER CODE BEGIN DMA1_Stream5_IRQn 0 */
+
+  /* USER CODE END DMA1_Stream5_IRQn 0 */
   HAL_DMA_IRQHandler(&hdma_i2c1_rx);
+  /* USER CODE BEGIN DMA1_Stream5_IRQn 1 */
+
+  /* USER CODE END DMA1_Stream5_IRQn 1 */
 }
 
 /**
@@ -134,9 +210,14 @@ void DMA1_Stream5_IRQHandler(void)
 */
 void TIM1_UP_TIM10_IRQHandler(void)
 {
-  HAL_NVIC_ClearPendingIRQ(TIM1_UP_TIM10_IRQn);
+  /* USER CODE BEGIN TIM1_UP_TIM10_IRQn 0 */
+
+  /* USER CODE END TIM1_UP_TIM10_IRQn 0 */
   HAL_TIM_IRQHandler(&htim1);
   HAL_TIM_IRQHandler(&htim10);
+  /* USER CODE BEGIN TIM1_UP_TIM10_IRQn 1 */
+
+  /* USER CODE END TIM1_UP_TIM10_IRQn 1 */
 }
 
 /**
@@ -144,8 +225,27 @@ void TIM1_UP_TIM10_IRQHandler(void)
 */
 void TIM3_IRQHandler(void)
 {
-  HAL_NVIC_ClearPendingIRQ(TIM3_IRQn);
+  /* USER CODE BEGIN TIM3_IRQn 0 */
+
+  /* USER CODE END TIM3_IRQn 0 */
   HAL_TIM_IRQHandler(&htim3);
+  /* USER CODE BEGIN TIM3_IRQn 1 */
+
+  /* USER CODE END TIM3_IRQn 1 */
+}
+
+/**
+* @brief This function handles TIM4 global interrupt.
+*/
+void TIM4_IRQHandler(void)
+{
+  /* USER CODE BEGIN TIM4_IRQn 0 */
+
+  /* USER CODE END TIM4_IRQn 0 */
+  HAL_TIM_IRQHandler(&htim4);
+  /* USER CODE BEGIN TIM4_IRQn 1 */
+
+  /* USER CODE END TIM4_IRQn 1 */
 }
 
 /**
@@ -153,10 +253,15 @@ void TIM3_IRQHandler(void)
 */
 void RCC_IRQHandler(void)
 {
-  HAL_NVIC_ClearPendingIRQ(RCC_IRQn);
-  /* USER CODE BEGIN 0 */
+  /* USER CODE BEGIN RCC_IRQn 0 */
 
-  /* USER CODE END 0 */
+  /* USER CODE END RCC_IRQn 0 */
+  /* USER CODE BEGIN RCC_IRQn 1 */
+
+  /* USER CODE END RCC_IRQn 1 */
 }
 
+/* USER CODE BEGIN 1 */
+
+/* USER CODE END 1 */
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

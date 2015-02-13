@@ -13,8 +13,20 @@
 
 #include "stdbool.h"
 
-void ExpanderSetbit(char pin, bool val);
-char ExpanderGetbit(char pin);
-void ExpanderReset(void);
+#define UP 		1
+#define DOWN 	2
+#define LEFT 	3
+#define RIGHT 	4
+#define SEVERAL 255
+
+void expanderLedState(char led, char val);
+char expanderJoyState(void);
+
+void expanderSetbit(char pin, char val);
+char expanderGetbit(char pin);
+void expanderReset(void);
+
+void joystickTest(void);
+void antiBounceJoystick(void);
 
 #endif

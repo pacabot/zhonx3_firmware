@@ -9,11 +9,11 @@
 #ifndef __TIMESBASE_H__
 #define __TIMESBASE_H__
 
-void TimesBase_Init(void);
-void Led_Power_Blink(unsigned int off_time, unsigned int on_time, unsigned int repeat);
-void Led_Blink_IT(void);
-void High_Freq_IT(void);
-void Low_Freq_IT(void);
+void timesBaseInit(void);
+void ledPowerBlink(unsigned int off_time, unsigned int on_time, unsigned int repeat);
+void ledBlink_IT(void);
+void highFreq_IT(void);
+void lowFreq_IT(void);
 
 
 #endif

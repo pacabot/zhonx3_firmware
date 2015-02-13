@@ -24,11 +24,13 @@
 /* Types definitions */
 typedef struct
 {
-    uint16_t adc_value;
-    uint16_t offset;
+    int16_t adc_value;
+    int16_t telemeter_value;
+    int64_t offset;
     uint16_t higher_interval;
     uint16_t lower_interval;
     char wall_presence;
+    char emitter_state;
 }telemeter_state;
 
 typedef struct
@@ -37,15 +39,23 @@ typedef struct
 	telemeter_state right_diag;
 	telemeter_state left_front;
 	telemeter_state left_diag;
+
+	uint32_t it_cnt;
+	uint32_t end_of_conversion;
 	char active_state;
+	char emitter_state;
+	char selector;
 } telemeters_struct;
 
 volatile telemeters_struct telemeters;
 
-void Telemeters_Init(void);
-void Telemeters_Start(void);
-void Telemeters_Stop(void);
-void Telemeters_Calibrate(void);
-void Telemeters_IT(void);
+void telemetersInit(void);
+void telemetersStart(void);
+void telemetersStop(void);
+void telemetersCalibrate(void);
+void telemeters_IT(void);
+void telemeters_DMA_IT(void);
+void telemeters_ADC_IT(void);
+void telemetersTest(void);
 
 #endif

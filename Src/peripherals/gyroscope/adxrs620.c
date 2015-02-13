@@ -12,12 +12,9 @@
 #include <stdio.h>
 #include <stdint.h>
 
+#include "config/config.h"
 #include "peripherals/display/ssd1306.h"
-
 #include "peripherals/gyroscope/adxrs620.h"
-
-volatile double Alfa = (GYRO_VOLTAGE/(4095*GYRO_SENSITIVITY*HI_TIME_FREQ));
-volatile double Beta = 0;
 
 extern ADC_HandleTypeDef hadc1;
 
@@ -31,46 +28,89 @@ GPIO_InitTypeDef GPIO_InitStruct;
   * @param  htim : TIM handle
   * @retval None
   */
-void ADXRS620_Init(void)
+void adxrs620Init(void)
 {
-	ADC_ChannelConfTypeDef sConfig;
+	ADC_InjectionConfTypeDef sConfigInjected;
 
-	HAL_ADC_Stop_DMA(&hadc1);
-	sConfig.Channel = ADC_CHANNEL_14;
-	sConfig.Rank = 1;
-	sConfig.SamplingTime = ADC_SAMPLETIME_3CYCLES;
-	HAL_ADC_ConfigChannel(&hadc1, &sConfig);
-	HAL_ADC_Start_DMA(&hadc1, (uint32_t*)&DMA_ADC_Gyro_Rate, 1);
-	HAL_ADC_Start(&hadc1);
+	/**Configure the global features of the ADC (Clock, Resolution, Data Alignment and number of conversion)
+	 */
+	hadc1.Instance = ADC1;
+	hadc1.Init.ClockPrescaler = ADC_CLOCKPRESCALER_PCLK_DIV2;
+	hadc1.Init.Resolution = ADC_RESOLUTION12b;
+	hadc1.Init.ScanConvMode = ENABLE;
+	hadc1.Init.ContinuousConvMode = DISABLE;
+	hadc1.Init.DiscontinuousConvMode = DISABLE;
+	hadc1.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_RISING;
+	hadc1.Init.ExternalTrigConv = ADC_EXTERNALTRIGCONV_T4_CC4;
+	hadc1.Init.DataAlign = ADC_DATAALIGN_RIGHT;
+	hadc1.Init.NbrOfConversion = 4;
+	hadc1.Init.DMAContinuousRequests = ENABLE;
+	hadc1.Init.EOCSelection = EOC_SINGLE_CONV;
+	HAL_ADC_Init(&hadc1);
 
-	HAL_Delay(300);
-	ADXRS620_Calibrate(50);
+	/**Configures for the selected ADC injected channel its corresponding rank in the sequencer and its sample time
+	 */
+	sConfigInjected.InjectedChannel = ADC_CHANNEL_14;
+	sConfigInjected.InjectedRank = 1;
+	sConfigInjected.InjectedNbrOfConversion = 1;
+	sConfigInjected.InjectedSamplingTime = ADC_SAMPLETIME_3CYCLES;
+	sConfigInjected.ExternalTrigInjecConvEdge = ADC_EXTERNALTRIGINJECCONVEDGE_RISING;
+	sConfigInjected.ExternalTrigInjecConv = ADC_EXTERNALTRIGINJECCONV_T5_TRGO;
+	sConfigInjected.AutoInjectedConv = DISABLE;
+	sConfigInjected.InjectedDiscontinuousConvMode = DISABLE;
+	sConfigInjected.InjectedOffset = 0;
+	HAL_ADCEx_InjectedConfigChannel(&hadc1, &sConfigInjected);
+
+	adxrs620Calibrate(50);
+	HAL_ADCEx_InjectedStart_IT(&hadc1);
 }
 
-void ADXRS620_Calibrate(int nb_ech)
+void adxrs620Calibrate(int nb_ech)
 {
-	for (int i = 0; i < nb_ech; i++)
+	gyro.calibration_current_cycle = 0;
+	gyro.calibration_nb_cycle = nb_ech;
+	gyro.beta = 0;
+	gyro.callback_cnt = 0;
+	gyro.calibration_state = 0;
+}
+
+/*## ADC Gyroscope callback for angle computing  #################################*/
+	  /* -----------------------------------------------------------------------
+	    Use TIM5 for start Injected conversion on ADC1 (gyro rate).
+	      ----------------------------------------------------------------------- */
+void adxrs620_INJECTED_ADC_IT(void)
+{
+	if (gyro.calibration_state == 0)
 	{
-		Beta += (Alfa*(int32_t) DMA_ADC_Gyro_Rate);
-		HAL_Delay(1);
+		if (gyro.calibration_current_cycle < gyro.calibration_nb_cycle)
+		{
+			gyro.calibration_current_cycle ++;
+			gyro.beta += (GYRO_COEFF*HAL_ADCEx_InjectedGetValue(&hadc1, ADC_INJECTED_RANK_1));
+		}
+		else
+		{
+			gyro.calibration_state = 1;
+			gyro.beta /= gyro.calibration_current_cycle;
+		}
 	}
-
-	Beta /= nb_ech;
+	else if (gyro.calibration_state == 1)
+	{
+		gyro.current_angle += (GYRO_COEFF*HAL_ADCEx_InjectedGetValue(&hadc1, ADC_INJECTED_RANK_1)) - gyro.beta;  //optimized gyro integration DMA
+		gyro.callback_cnt++;
+	}
 }
 
-void ADXRS620_IT(void)
+void adxrs620Test(void)
 {
-	gyro_Current_Angle += (Alfa*(int32_t) DMA_ADC_Gyro_Rate) - Beta;  //optimized gyro integration DMA
-}
-
-void Debug_ADXRS620(void)
-{
-	while(1)
+    adxrs620Init();
+	while(expanderJoyState()!=LEFT)
 	{
 		ssd1306ClearScreen();
-		ssd1306PrintInt(10,  5,  "Angle =  ", (int32_t) gyro_Current_Angle, &Font_5x8);
-		ssd1306PrintInt(10,  15,  "Alfa =  ", (Alfa * 10000), &Font_5x8);
-		ssd1306PrintInt(10,  25,  "Beta =  ", (int32_t) (Beta * 100), &Font_5x8);
+		ssd1306PrintInt(10,  5,  "Angle =  ", (int32_t) gyro.current_angle, &Font_5x8);
+		ssd1306PrintInt(10,  15,  "cnt =  ", (int32_t) gyro.callback_cnt/1000, &Font_5x8);
+
+		ssd1306PrintInt(10,  35,  "Beta =  ", (volatile double) (gyro.beta * 1000), &Font_5x8);
+		ssd1306DrawString(80,  35,  ".10^-3", &Font_5x8);
 		ssd1306Refresh();
 	}
 }

@@ -31,7 +31,7 @@ GPIO_InitTypeDef GPIO_InitStruct;
   * @param  htim : TIM handle
   * @retval None
   */
-void LineSensors_Init(void)
+void lineSensorsInit(void)
 {
 	  ADC_ChannelConfTypeDef sConfig;
 
@@ -109,7 +109,7 @@ void LineSensors_Init(void)
 	  }
 }
 
-void LineSensors_Start(void)
+void lineSensorsStart(void)
 {
 //	  /*##-2- Start the TIM Base generation in interrupt mode ####################*/
 //	  /* Start Channel1 */
@@ -120,7 +120,8 @@ void LineSensors_Start(void)
 //	  }
 }
 
-void LineSensors_Stop(void)
+
+void lineSensorsStop_DMA_ADC3(void)
 {
 //	  /*##-2- Stop the TIM Base generation in interrupt mode ####################*/
 //	  /* Start Channel1 */
@@ -133,22 +134,12 @@ void LineSensors_Stop(void)
 	  lineSensors.active_state = FALSE;
 }
 
-void LineSensors_Calibrate(void)
+void lineSensorsCalibrate(void)
 {
 //      Telemeters_Start();
 }
 
-//void LineSensors_Get_Values(struct telemeters *telemeters)
-//{
-////      Telemeters_Start();
-//}
-//
-//void LineSensors_Get_Wall(struct telemeters *telemeters)
-//{
-////      Telemeters_Start();
-//}
-
-void LineSensors_IT(void)
+void lineSensors_IT(void)
 {
 	  static char selector;
 

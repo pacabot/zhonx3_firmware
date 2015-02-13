@@ -1,0 +1,19 @@
+# Les ligne commençant par '#' sont des commentaires.
+.settings/
+.cproject
+.project
+Debug/
+Release/
+
+*.elf
+*.map
+
+# Ignorer tous les fichiers intermédiares de construction
+*.o
+*.a
+*.so
+
+*~
+*.swp
+*.swo
+*.orig

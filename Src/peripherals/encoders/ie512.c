@@ -12,6 +12,7 @@
 #include <stdio.h>
 #include <stdint.h>
 
+#include "peripherals/display/ssd1306.h"
 #include "peripherals/encoders/ie512.h"
 
 extern TIM_HandleTypeDef htim1;
@@ -24,7 +25,7 @@ extern TIM_HandleTypeDef htim3;
 ENCODER_DEF left_encoder         = {0, 0};   // left encoder structure
 ENCODER_DEF right_encoder        = {0, 0};   // right encoder structure
 
-void Encoders_Init(void)
+void encodersInit(void)
 {
 	TIM_Encoder_InitTypeDef sConfig;
 	TIM_MasterConfigTypeDef sMasterConfig;
@@ -76,7 +77,7 @@ void Encoders_Init(void)
 	HAL_TIM_Encoder_Start(&htim3, TIM_CHANNEL_1);
 }
 
-void Left_Encoder_IT(void)
+void encoderLeft_IT(void)
 {
 	switch (__HAL_TIM_DIRECTION_STATUS(&htim1))
 	{
@@ -89,7 +90,7 @@ void Left_Encoder_IT(void)
 	}
 }
 
-void Right_Encoder_IT(void)
+void encoderRight_IT(void)
 {
 	switch (__HAL_TIM_DIRECTION_STATUS(&htim3))
 	{
@@ -102,5 +103,25 @@ void Right_Encoder_IT(void)
 	}
 }
 
+// test encoder
+void encoderTest(void)
+{
+	encodersInit();
 
+	while(expanderJoyState()!=LEFT)
+	{
+		ssd1306ClearScreen();
+		//		  ssd1306PrintInt(0, 6, "REV = ", toto, &Font_3x6);
+		//		  ssd1306PrintInt(0, 13, "CNT = ",  (&htim1)->Instance->CNT, &Font_3x6);
+		ssd1306PrintInt(0, 7, "L_REV =  ", left_encoder.nb_revolutions, &Font_3x6);
+		ssd1306PrintInt(0, 14, "L_CNT =  ",  __HAL_TIM_GetCounter(&htim1), &Font_3x6);
+		ssd1306PrintInt(0, 21, "L_DIR =  ",  __HAL_TIM_DIRECTION_STATUS(&htim1), &Font_3x6);
 
+		ssd1306PrintInt(0, 35, "R_REV =  ", right_encoder.nb_revolutions, &Font_3x6);
+		ssd1306PrintInt(0, 42, "R_CNT =  ",  __HAL_TIM_GetCounter(&htim3), &Font_3x6);
+		ssd1306PrintInt(0, 49, "R_DIR =  ",  __HAL_TIM_DIRECTION_STATUS(&htim3), &Font_3x6);
+		ssd1306Refresh();
+		HAL_Delay(10);
+	}
+	antiBounceJoystick();
+}

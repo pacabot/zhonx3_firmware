@@ -35,7 +35,7 @@
 extern I2C_HandleTypeDef hi2c1;
 
 unsigned char buffer[SSD1306_LCDWIDTH * SSD1306_LCDHEIGHT / 8]= {
-/*0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+		/*0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x80,
@@ -123,14 +123,14 @@ unsigned char buffer[SSD1306_LCDWIDTH * SSD1306_LCDHEIGHT / 8]= {
 
 void blink(void)
 {
-    HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12, SET);
-      HAL_Delay(400);
-    HAL_GPIO_WritePin(GPIOD, GPIO_PIN_13, SET);
-      HAL_Delay(300);
-    HAL_GPIO_WritePin(GPIOD, GPIO_PIN_14, SET);
-      HAL_Delay(200);
-    HAL_GPIO_WritePin(GPIOD, GPIO_PIN_15, SET);
-      HAL_Delay(100);
+	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12, SET);
+	HAL_Delay(400);
+	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_13, SET);
+	HAL_Delay(300);
+	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_14, SET);
+	HAL_Delay(200);
+	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_15, SET);
+	HAL_Delay(100);
 }
 
 //Send CMD
@@ -143,21 +143,21 @@ static void CMD(uint8_t c)
 	aTxBuffer[0] = control;
 	aTxBuffer[1] = c;
 
-    HAL_I2C_Master_Transmit_DMA(&hi2c1, (uint16_t)120, (uint8_t*)aTxBuffer, 2);// 10000)!= HAL_OK)
-//	{
-//	  /* Error_Handler() function is called when Timout error occurs.
-//	     When Acknowledge failure ocucurs (Slave don't acknowledge it's address)
-//	     Master restarts communication */
-//	  if (HAL_I2C_GetError(&hi2c1) != HAL_I2C_ERROR_AF)
-//	  {
-//	      blink();
-//	  }
-//	}
+	HAL_I2C_Master_Transmit_DMA(&hi2c1, (uint16_t)120, (uint8_t*)aTxBuffer, 2);// 10000)!= HAL_OK)
+	//	{
+	//	  /* Error_Handler() function is called when Timout error occurs.
+	//	     When Acknowledge failure ocucurs (Slave don't acknowledge it's address)
+	//	     Master restarts communication */
+	//	  if (HAL_I2C_GetError(&hi2c1) != HAL_I2C_ERROR_AF)
+	//	  {
+	//	      blink();
+	//	  }
+	//	}
 }
 //Send DATA
 static void DATA(uint8_t c)
 {
-    // I2C
+	// I2C
 	uint8_t control = 0x40;   // Co = 0, D/C = 1
 
 	uint8_t aTxBuffer[2]; // = {control, c};
@@ -165,16 +165,16 @@ static void DATA(uint8_t c)
 	aTxBuffer[1] = c;
 
 	HAL_I2C_Master_Transmit_DMA(&hi2c1, (uint16_t)120, (uint8_t*)aTxBuffer, 2);
-//	while(HAL_I2C_Master_Transmit(&hi2c1, (uint16_t)120, (uint8_t*)aTxBuffer, 2, 10000)!= HAL_OK)
-//	{
-//	  /* Error_Handler() function is called when Timout error occurs.
-//	     When Acknowledge failure ocucurs (Slave don't acknowledge it's address)
-//	     Master restarts communication */
-//	  if (HAL_I2C_GetError(&hi2c1) != HAL_I2C_ERROR_AF)
-//	  {
-//	      blink();
-//	  }
-//	}
+	//	while(HAL_I2C_Master_Transmit(&hi2c1, (uint16_t)120, (uint8_t*)aTxBuffer, 2, 10000)!= HAL_OK)
+	//	{
+	//	  /* Error_Handler() function is called when Timout error occurs.
+	//	     When Acknowledge failure ocucurs (Slave don't acknowledge it's address)
+	//	     Master restarts communication */
+	//	  if (HAL_I2C_GetError(&hi2c1) != HAL_I2C_ERROR_AF)
+	//	  {
+	//	      blink();
+	//	  }
+	//	}
 }
 
 /**************************************************************************/
@@ -233,11 +233,11 @@ static void ssd1306DrawChar(unsigned int x, unsigned int y, unsigned char c, con
 void ssd1306Init(unsigned char vccstate)
 {
 	// Reset the LCD
-	ExpanderSetbit(7,1);
+	expanderSetbit(7,1);
 	HAL_Delay(50);
-	ExpanderSetbit(7,0);
+	expanderSetbit(7,0);
 	HAL_Delay(50);
-	ExpanderSetbit(7,1);
+	expanderSetbit(7,1);
 	HAL_Delay(50);
 
 	// Initialisation sequence
@@ -255,7 +255,7 @@ void ssd1306Init(unsigned char vccstate)
 		CMD(0xCF);								// contrast (0-255)
 	}
 	CMD(SSD1306_NORMALDISPLAY);                 // 0xA6 NORMAL MODE (A7 for inverse display)
-//	CMD(SSD1306_INVERTDISPLAY);                 // 0xA6 NORMAL MODE (A7 for inverse display)
+	//	CMD(SSD1306_INVERTDISPLAY);                 // 0xA6 NORMAL MODE (A7 for inverse display)
 	CMD(SSD1306_DISPLAYALLON_RESUME);           // 0xA4
 	CMD(SSD1306_SETMULTIPLEX);                  // 0xA8
 	CMD(0x3F);                                  // 0x3F 1/64 duty
@@ -279,8 +279,8 @@ void ssd1306Init(unsigned char vccstate)
 	CMD(SSD1306_MEMORYMODE);                    // 0x20
 	CMD(0x00);                                  // 0x0 act like ks0108
 
-//	CMD(SSD1306_SEGREMAP | 0x1);				//   For
-//	CMD(SSD1306_COMSCANDEC);					// Normal display
+	//	CMD(SSD1306_SEGREMAP | 0x1);				//   For
+	//	CMD(SSD1306_COMSCANDEC);					// Normal display
 	CMD(SSD1306_SEGREMAP);					    //   For rotate
 	CMD(SSD1306_COMSCANINC);					// 180 degrees display
 
@@ -346,11 +346,11 @@ void ssd1306ClearPixel(unsigned char x, unsigned char y)
 /**************************************************************************/
 void ssd1306InvertPixel(unsigned char x, unsigned char y)
 {
-    if ((x >= SSD1306_LCDWIDTH) || (y >= SSD1306_LCDHEIGHT))
-    {
-        return;
-    }
-    buffer[x + (y / 8) * SSD1306_LCDWIDTH] ^= (1 << (y % 8));
+	if ((x >= SSD1306_LCDWIDTH) || (y >= SSD1306_LCDHEIGHT))
+	{
+		return;
+	}
+	buffer[x + (y / 8) * SSD1306_LCDWIDTH] ^= (1 << (y % 8));
 }
 
 /**************************************************************************/
@@ -444,16 +444,16 @@ void ssd1306DrawString(unsigned int x, unsigned int y, const char *text, const F
 //Print a text and value.
 void ssd1306PrintInt(unsigned int x, unsigned int y, const char *text, int val, const FONT_DEF *font)
 {
-    char str[10];
+	char str[10];
 	unsigned char nb_char;
 
 	nb_char = strlen((const char *) text);
 
-//	itoa(val, str, 5, 10);  // 10 for decimal 2 for bin 16 for hex
+	//	itoa(val, str, 5, 10);  // 10 for decimal 2 for bin 16 for hex
 
-    sprintf(str, "%d      ", val);
-    ssd1306DrawString(x, y, text, font);
-    ssd1306DrawString(x + ((nb_char + 1) * font->u8Width), y,str ,font);
+	sprintf(str, "%d     ", val);
+	ssd1306DrawString(x, y, text, font);
+	ssd1306DrawString(x + ((nb_char + 1) * font->u8Width), y,str ,font);
 }
 /**************************************************************************/
 /*!
@@ -525,19 +525,19 @@ void ssd1306ShiftFrameBuffer( unsigned char height )
 /**************************************************************************/
 void ssd1306DrawBmp(const unsigned char *bitmap, unsigned char x, unsigned char y, unsigned char w, unsigned char h)
 {
-    unsigned char i;
-    unsigned char j;
+	unsigned char i;
+	unsigned char j;
 
-    for (j = 0; j < h; j++)
-    {
-        for (i = 0; i < w; i++)
-        {
-            if (bitmap[i + (j / 8) * w] & 1 << (j % 8))
-            {
-                ssd1306DrawPixel(x + i, y + j);
-            }
-        }
-    }
+	for (j = 0; j < h; j++)
+	{
+		for (i = 0; i < w; i++)
+		{
+			if (bitmap[i + (j / 8) * w] & 1 << (j % 8))
+			{
+				ssd1306DrawPixel(x + i, y + j);
+			}
+		}
+	}
 }
 /**************************************************************************/
 //draw a circle outline
@@ -670,15 +670,15 @@ void ssd1306FillRect(unsigned char x, unsigned char y, unsigned char w, unsigned
 // Inverts area
 void ssd1306InvertArea(unsigned char x, unsigned char y, unsigned char w, unsigned char h)
 {
-    int i, j;
-    // stupidest version - just pixels - but fast with internal buffer!
-    for (i = x; i < (x + w); i++)
-    {
-        for (j = y; j < (y + h); j++)
-        {
-            ssd1306InvertPixel(i, j);
-        }
-    }
+	int i, j;
+	// stupidest version - just pixels - but fast with internal buffer!
+	for (i = x; i < (x + w); i++)
+	{
+		for (j = y; j < (y + h); j++)
+		{
+			ssd1306InvertPixel(i, j);
+		}
+	}
 }
 
 /**************************************************************************/
@@ -760,6 +760,62 @@ void ssd1306ProgressBar(unsigned char x, unsigned char y, unsigned char state)
 	if (state > 0 || state <= 100)
 		ssd1306FillRect(x + 2, y + 2, state, 4);
 
+}
+
+void ssd1306Test(void)
+{
+	int i;
+	ssd1306ClearScreen();
+	ssd1306Refresh();
+
+	ssd1306DrawBmp(Pacabot_bmp, 1, 1, 128, 40);
+	ssd1306Refresh();
+
+	for (i = 0; i <= 100; i+=10)
+	{
+		ssd1306ProgressBar(10, 35, i);
+		//HAL_Delay(1);
+		ssd1306Refresh();
+	}
+
+	ssd1306Refresh();
+	HAL_Delay(3500);
+	ssd1306ClearScreen();
+	ssd1306Refresh();
+	// miniature bitmap display
+	ssd1306DrawCircle(40, 30, 20);
+	//  ssd1306DrawCircle(50, 20, 10);
+	ssd1306FillCircle(100, 40, 15);
+	ssd1306DrawRect(110, 3, 15, 6);
+	ssd1306FillRect(1, 60, 10, 20);
+	ssd1306DrawLine(5, 45, 70, 60);
+	ssd1306Refresh();
+	HAL_Delay(5500);
+	ssd1306ClearScreen();
+
+	for (i = 0; i <= 100; i+=2)
+	{
+		ssd1306ProgressBar(10, 20, i);
+		//      HAL_Delay(1);
+		ssd1306Refresh();
+	}
+
+	ssd1306ShiftFrameBuffer(8);
+	ssd1306DrawString(13, 1, "Oled 128x64", &Font_8x8); // 3x6 is UPPER CASE only
+	ssd1306Refresh();
+	HAL_Delay(1500);
+	ssd1306DrawString(1, 25, "Driver for STM32f4xx", &Font_5x8); // 3x6 is UPPER CASE only
+	ssd1306Refresh();
+	HAL_Delay(500);
+	ssd1306DrawString(1, 35, "I2C mode", &Font_5x8); // 3x6 is UPPER CASE only
+	ssd1306Refresh();
+	HAL_Delay(1500);
+	ssd1306DrawString(10, 55, "BY PLF, PACABOT TEAM", &Font_3x6); // 3x6 is UPPER CASE only
+	ssd1306Refresh();
+	HAL_Delay(5000);
+
+	ssd1306ClearScreen();
+	ssd1306Refresh();
 }
 
 
