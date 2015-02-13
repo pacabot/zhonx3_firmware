@@ -10,7 +10,7 @@
 
 #define MAX_LINE_SCREEN 	5
 
-#define HIGHLIGHT_HEIGHT 	9
+#define HIGHLIGHT_HEIGHT 	10
 #define HIGHLIGHT_LENGHT 	120
 #define ROW_HEIGHT			10
 #define MARGIN				10
