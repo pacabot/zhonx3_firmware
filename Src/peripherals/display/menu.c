@@ -25,6 +25,7 @@ extern void encoderTest ();
 extern void adxrs620Test ();
 extern void mulimeterTest ();
 extern void telemetersTest ();
+void testMarseillaise (void);
 extern void motorsTest ();
 /*
  * pour cree un nouveau menu il suffit de
@@ -66,6 +67,7 @@ menuItem tests_menu=
 				{"test joystick",'f', (void*)joystickTest},
 				{"test gyroscope",'f', (void*)adxrs620Test},
 				{"test telemeters",'f', (void*)telemetersTest},
+				{"test beeper",'f', (void*)testMarseillaise},
 				{"test motors",'f', (void*)motorsTest},
 				{0,0,0}
 		}
@@ -176,29 +178,29 @@ int menu(menuItem Menu)
 
 void menuHighlightedMove(unsigned char y, unsigned char max_y)
 {
-	//	unsigned char y=y_;
-	//	unsigned char max_y=max_y_;
-
 	if (max_y > y)
 	{
-		for ( ; y <= max_y; y++)
-		{
-			ssd1306InvertArea(0, y - 1, HIGHLIGHT_LENGHT, HIGHLIGHT_HEIGHT);
-			ssd1306InvertArea(0, y, HIGHLIGHT_LENGHT, HIGHLIGHT_HEIGHT);
-//			if (y % 2)
-				ssd1306Refresh();
-		}
+		ssd1306InvertArea(0, y-1, HIGHLIGHT_LENGHT, HIGHLIGHT_HEIGHT*2);
+		//		for ( ; y <= max_y; y++)
+//		{
+//			ssd1306InvertArea(0, y - 1, HIGHLIGHT_LENGHT, HIGHLIGHT_HEIGHT);
+//			ssd1306InvertArea(0, y, HIGHLIGHT_LENGHT, HIGHLIGHT_HEIGHT);
+////			if (y % 2)
+//				ssd1306Refresh();
+//		}
 	}
 	else
 	{
-		for ( ; y >= max_y; y--)
-		{
-			ssd1306InvertArea(0, y + 1, HIGHLIGHT_LENGHT, HIGHLIGHT_HEIGHT);
-			ssd1306InvertArea(0, y, HIGHLIGHT_LENGHT, HIGHLIGHT_HEIGHT);
-//			if (y % 2)
-				ssd1306Refresh();
-		}
+		ssd1306InvertArea(0, y-HIGHLIGHT_HEIGHT+1, HIGHLIGHT_LENGHT, HIGHLIGHT_HEIGHT*2);
+//		for ( ; y >= max_y; y--)
+//		{
+//			ssd1306InvertArea(0, y + 1, HIGHLIGHT_LENGHT, HIGHLIGHT_HEIGHT);
+//			ssd1306InvertArea(0, y, HIGHLIGHT_LENGHT, HIGHLIGHT_HEIGHT);
+////			if (y % 2)
+//				ssd1306Refresh();
+//		}
 	}
+	ssd1306Refresh();
 }
 
 void displayMenu(menuItem menu,int line)
@@ -209,26 +211,26 @@ void displayMenu(menuItem menu,int line)
 	for (int i=0;i<MAX_LINE_SCREEN;i++)
 	{
 		if(menu.line[i].name!=null)
-			ssd1306DrawString(0,10*i+MARGIN,menu.line[line+i].name,&Font_5x8);
+			ssd1306DrawString(0,MARGIN*i+MARGIN+1,menu.line[line+i].name,&Font_5x8);
 		switch (menu.line[line+i].type)
 		{
 		case 'b':
 			if(*((bool*)menu.line[i+line].param)==true)
-				ssd1306DrawString(90,10*i+MARGIN,"yes",&Font_5x8);
+				ssd1306DrawString(90,MARGIN*i+MARGIN+1,"yes",&Font_5x8);
 			else
-				ssd1306DrawString(90,10*i+MARGIN,"no",&Font_5x8);
+				ssd1306DrawString(90,MARGIN*i+MARGIN+1,"no",&Font_5x8);
 			break;
 		case 'i':
-			ssd1306PrintInt(90,10*i+MARGIN," ",*((unsigned int*)menu.line[i+line].param),&Font_3x6);
+			ssd1306PrintInt(90,MARGIN*i+MARGIN+1," ",*((unsigned int*)menu.line[i+line].param),&Font_3x6);
 			break;
 		case 'l':
-			ssd1306PrintInt(90,10*i+MARGIN," ",*((unsigned long*)menu.line[i+line].param),&Font_3x6);
+			ssd1306PrintInt(90,MARGIN*i+MARGIN+1," ",*((unsigned long*)menu.line[i+line].param),&Font_3x6);
 			break;
 		case 'f':
-			ssd1306DrawString(110,i*MARGIN+10,"->",&Font_3x6);
+			ssd1306DrawString(110,i*MARGIN+MARGIN+1,"->",&Font_3x6);
 			break;
 		case 'm':
-			ssd1306DrawString(115,i*MARGIN+10,">",&Font_3x6);
+			ssd1306DrawString(115,i*MARGIN+MARGIN+1,">",&Font_3x6);
 			break;
 		}
 	}

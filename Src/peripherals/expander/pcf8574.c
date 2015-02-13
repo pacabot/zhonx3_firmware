@@ -148,5 +148,5 @@ void antiBounceJoystick(void)
 	{
 		if (expanderJoyState()!=0)
 			time_base = HAL_GetTick();
-	}while (time_base!=(HAL_GetTick()-200));
+	}while (time_base!=(HAL_GetTick()-20));
 }
