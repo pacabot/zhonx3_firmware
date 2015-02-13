@@ -38,7 +38,7 @@ volatile multimeter_struct multimeter;
 
 void mulimeterInit(void);
 void multimeter_IT(void);
-void multimeter_REGULAR_ADC_IT(void);
+void multimeter_ADC_IT(void);
 void mulimeterTest(void);
 
 #endif

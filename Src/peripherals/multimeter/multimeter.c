@@ -49,7 +49,7 @@ void mulimeterInit(void)
 	hadc1.Init.DataAlign = ADC_DATAALIGN_RIGHT;
 	hadc1.Init.NbrOfConversion = 4;
 	hadc1.Init.DMAContinuousRequests = ENABLE;
-	hadc1.Init.EOCSelection = EOC_SINGLE_CONV;
+	hadc1.Init.EOCSelection = EOC_SEQ_CONV;
 	HAL_ADC_Init(&hadc1);
 
 	/**Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time.
@@ -89,7 +89,7 @@ void multimeter_IT(void)
 	HAL_GPIO_WritePin(GPIOB, GET_ADC_BAT, SET);
 }
 
-void multimeter_REGULAR_ADC_IT(void)
+void multimeter_ADC_IT(void)
 {
 	HAL_GPIO_WritePin(GPIOB, GET_ADC_BAT, RESET);
 	multimeter.get_vbat_state++;

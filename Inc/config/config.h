@@ -13,9 +13,9 @@
 /***************                 Times definitions                 ********************/
 /**************************************************************************************/
 #define LOW_TIME_FREQ			100
-#define HI_TIME_FREQ			10000
-#define TELEMETERS_TIME_FREQ	3000  	//each telemeter use 1/3 of TELEMETERS_TIME_FREQ
-#define GYRO_TIME_FREQ			5000
+#define HI_TIME_FREQ			5000
+#define TELEMETERS_TIME_FREQ	4000  	//each telemeter use 1/4 of TELEMETERS_TIME_FREQ
+#define GYRO_TIME_FREQ			1000
 #define MULTIMMETER_TIME_FREQ	0.1
 
 /**************************************************************************************/

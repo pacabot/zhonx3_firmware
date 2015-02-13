@@ -18,7 +18,6 @@
 #include "config/basetypes.h"
 #include "config/errors.h"
 #include "config/config.h"
-#include "peripherals/expander/pcf8574.h"
 
 /*external fonctions */
 extern void eepromTest ();
@@ -26,7 +25,11 @@ extern void encoderTest ();
 extern void adxrs620Test ();
 extern void mulimeterTest ();
 extern void telemetersTest ();
+<<<<<<< HEAD
 void testMarseillaise (void);
+=======
+extern void motorsTest ();
+>>>>>>> e70225ef24615473da907fb5bc77ccf7c49834bc
 /*
  * pour cree un nouveau menu il suffit de
  * créer une nouvelle variable de type "menuItem"
@@ -67,8 +70,12 @@ menuItem tests_menu=
 				{"test joystick",'f', (void*)joystickTest},
 				{"test gyroscope",'f', (void*)adxrs620Test},
 				{"test telemeters",'f', (void*)telemetersTest},
+<<<<<<< HEAD
 				{"test beeper",'f', (void*)testMarseillaise},
 
+=======
+				{"test motors",'f', (void*)motorsTest},
+>>>>>>> e70225ef24615473da907fb5bc77ccf7c49834bc
 				{0,0,0}
 		}
 };

@@ -107,7 +107,7 @@ void adxrs620Test(void)
 	{
 		ssd1306ClearScreen();
 		ssd1306PrintInt(10,  5,  "Angle =  ", (int32_t) gyro.current_angle, &Font_5x8);
-		ssd1306PrintInt(10,  15,  "cnt =  ", (int32_t) gyro.callback_cnt/10000, &Font_5x8);
+		ssd1306PrintInt(10,  15,  "cnt =  ", (int32_t) gyro.callback_cnt/1000, &Font_5x8);
 
 		ssd1306PrintInt(10,  35,  "Beta =  ", (volatile double) (gyro.beta * 1000), &Font_5x8);
 		ssd1306DrawString(80,  35,  ".10^-3", &Font_5x8);
