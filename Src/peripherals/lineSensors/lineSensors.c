@@ -69,7 +69,7 @@ void LineSensors_Init(void)
 	    */
 	  sConfig.Channel = RX_LEFT_EXT;  // Line sensor extreme left
 	  sConfig.Rank = 1;
-	  sConfig.SamplingTime = ADC_SAMPLETIME_3CYCLES;
+	  sConfig.SamplingTime = ADC_SAMPLETIME_56CYCLES;
 	  HAL_ADC_ConfigChannel(&hadc1, &sConfig);
 
 	    /**Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time.
@@ -82,7 +82,7 @@ void LineSensors_Init(void)
 	    */
 	  sConfig.Channel = RX_LEFT; // Line sensor left
 	  sConfig.Rank = 1;
-	  sConfig.SamplingTime = ADC_SAMPLETIME_3CYCLES;
+	  sConfig.SamplingTime = ADC_SAMPLETIME_56CYCLES;
 	  HAL_ADC_ConfigChannel(&hadc3, &sConfig);
 
 	    /**Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time.

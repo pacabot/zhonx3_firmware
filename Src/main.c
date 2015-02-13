@@ -59,8 +59,11 @@ UART_HandleTypeDef huart3;
 
 /* USER CODE BEGIN 0 */
 #include "main.h"
+#include "peripherals/tests/notes.h"
 
 /* USER CODE END 0 */
+
+void player_music(int *Note, int *Duree, int size, int tempo);
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
@@ -124,25 +127,32 @@ int main(void)
   /* USER CODE END 2 */
 
   /* USER CODE BEGIN 3 */
-  test_Beeper();
+  int music[18]={G2,G2,G2,C3,C3,D3,D3,G3,E3,C3,C3,E3,C3,A2,F3,D3,B2,C3};
+  int duree[18]={1,2,1,4,4,4,4,7,1,3,1,3,1,4,8,3,1,8};
+
+  player_music(music, duree, 18, 180);
+  //test_Beeper();
   test_Expander();
   ssd1306Init(0); //afficheur OLED
   TimesBase_Init();
   Led_Power_Blink(990, 10, 0);
-  test_Encoders();
+//  test_Gyro();
+//  test_Vbat();
+//  test_Encoders();
+  test_Motor_Move();
   test_LineSensors();
 
 //  test_Telemeters();
-  ADXRS620_Init();
-  TimesBase_Init();
-  Led_Power_Blink(990, 10, 0);
-  test_Encoders();
+//  ADXRS620_Init();
+//  TimesBase_Init();
+//  Led_Power_Blink(990, 10, 0);
+// test_Encoders();
 
-  Straight_Control_Start(GYRO);
-  test_Beeper();
-  Led_Power_Blink(990, 10, 0);
-  //test_Gyro();
-  Debug_ADXRS620();
+// Straight_Control_Start(GYRO);
+// test_Beeper();
+// Led_Power_Blink(990, 10, 0);
+// test_Gyro();
+// Debug_ADXRS620();
 
 //Debug_Straight_Control();
 while(1);
@@ -150,7 +160,7 @@ while(1);
 //  test_Encoders();
 //  test_Vbat();
 //  test_EasterEgg();
-//test_Gyro();
+//  test_Gyro();
 // test_Motor_Move();
 
 //    test_Motors();
@@ -440,9 +450,11 @@ void MX_TIM4_Init(void)
   TIM_MasterConfigTypeDef sMasterConfig;
 
   htim4.Instance = TIM4;
-  htim4.Init.Prescaler = 1800;
+  int FREQ_NOTE=884;
+  int uwPrescalerValue = (uint32_t) ((SystemCoreClock /2) / (FREQ_NOTE * 100)) - 1;
+  htim4.Init.Prescaler = uwPrescalerValue;//1800;
   htim4.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim4.Init.Period = 10;
+  htim4.Init.Period = 50;
   htim4.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   HAL_TIM_PWM_Init(&htim4);
 

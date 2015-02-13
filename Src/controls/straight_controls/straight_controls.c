@@ -102,7 +102,7 @@ void Pwm_Init(void)
 	sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
 	HAL_TIMEx_MasterConfigSynchronization(&htim8, &sMasterConfig);
 
-	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_11, RESET);
+	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_11, RESET); // disable drivers
 	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, SET);
 	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_8, SET);
 
@@ -117,9 +117,10 @@ void Straight_Control_IT(void)
 
 	Pulses[0] = consigne - trajectory_control.get_correction;
 	Pulses[1] = consigne + trajectory_control.get_correction;
-
+// moteur 1
 	sConfigOC.Pulse = (Pulses[0]);
 	HAL_TIM_PWM_ConfigChannel(&htim8, &sConfigOC, TIM_CHANNEL_1);
+// moteur 2
 	sConfigOC.Pulse = (Pulses[1]);
 	HAL_TIM_PWM_ConfigChannel(&htim8, &sConfigOC, TIM_CHANNEL_4);
 

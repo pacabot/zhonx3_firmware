@@ -129,8 +129,8 @@ void test_Gyro(void)
 {
 	ADXRS620_Init();
 	ssd1306Init(0);
-	int i=1;
-	while(i)
+	int i=32565;
+	while(i--)
 	{
 	  ssd1306ClearScreen();
 	  ssd1306PrintInt(10,  25, "Angle = ", (int) gyro_Current_Angle, &Font_5x8);
@@ -280,9 +280,10 @@ void test_Motor_Move() {
 	  PWM = consigne;
 //	  PWM_R = consigne;
 
-	  int i=1;
-	  while(i)
+	  int i=1000;
+	  while(i--)
 	  {
+
 		  	      PWMOld = PWM;
 		  		  errorOld = error;
 		  		  error = (int32_t) gyro_Current_Angle;
@@ -393,9 +394,45 @@ void test_Encoders(void)
 		  HAL_Delay(10);
 	  }
 }
+void player_music(int *Note, int *Duree, int size, int tempo)
+{
 
+	  int FREQ_NOTE=240;
+	  int uwPrescalerValue=1800;
+	for (int ii=0;ii<size;ii++)
+	{
+
+
+	  FREQ_NOTE = Note[ii];
+
+
+	  htim4.Instance = TIM4;
+
+	  uwPrescalerValue = (uint32_t) ((SystemCoreClock /2) / (FREQ_NOTE * 100)) - 1;
+	  htim4.Init.Prescaler = uwPrescalerValue;
+	  htim4.Init.CounterMode = TIM_COUNTERMODE_UP;
+	  htim4.Init.Period = 50;
+	  htim4.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+	  HAL_TIM_PWM_Init(&htim4);
+	  if(HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_4) != HAL_OK)
+	  {
+	    /* Starting Error */
+	//    Error_Handler();
+	  }
+//1000 = 60 pulse /mn
+	//  HAL_Delay(60000 / (tempo*Duree[ii]));
+	  HAL_Delay(60000*Duree[ii] / (tempo*4) - 60);
+	  if(HAL_TIM_PWM_Stop(&htim4, TIM_CHANNEL_4) != HAL_OK)
+	  {
+	    /* Starting Error */
+	//    Error_Handler();
+	  }
+	  HAL_Delay(60);
+	}
+}
 void test_Beeper(void)
 {
+
 	  if(HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_4) != HAL_OK)
 	  {
 	    /* Starting Error */
@@ -413,7 +450,8 @@ void test_Beeper(void)
 	    /* Starting Error */
 	//    Error_Handler();
 	  }
-	  HAL_Delay(200);
+
+	  HAL_Delay(1000);
 	  if(HAL_TIM_PWM_Stop(&htim4, TIM_CHANNEL_4) != HAL_OK)
 	  {
 	    /* Starting Error */
