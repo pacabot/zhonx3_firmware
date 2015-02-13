@@ -11,7 +11,6 @@
 
 #include "config/errors.h"
 #include "config/basetypes.h"
-#include "peripherals/tests/tests.h"
 #include "peripherals/gyroscope/adxrs620.h"
 #include "peripherals/display/ssd1306.h"
 #include "peripherals/expander/pcf8574.h"

@@ -60,9 +60,10 @@ void SystemClock_Config(void);
 
 /* USER CODE BEGIN 0 */
 #include "main.h"
-#include "peripherals/tests/tests.h"
 #include "peripherals/display/menu.h"
+
 extern menuItem mainMenu;
+extern void testMarseillaise(void);
 
 /* USER CODE END 0 */
 
@@ -109,9 +110,6 @@ int main(void)
   ssd1306Init(0);
   timesBaseInit();
   ledPowerBlink(990, 10, 0);
-
-  telemetersTest();
-
 //  motorsTest();
 
  // Eeprom_WP(OFF);
@@ -131,7 +129,7 @@ int main(void)
   adxrs620Test();
 
   straightControlStart(GYRO);
-  test_Beeper();
+//  test_Beeper();
 
 //Debug_Straight_Control();
 while(1);
