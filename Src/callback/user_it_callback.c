@@ -68,7 +68,7 @@ void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
 {
 	if (hadc == &hadc1)
 	{
-		adxrs620_INJECTED_ADC_IT();
+		adxrs620_ADC_IT();
 	}
 }
 
