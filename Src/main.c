@@ -1,7 +1,7 @@
 /**
   ******************************************************************************
   * File Name          : main.c
-  * Date               : 13/02/2015 01:21:08
+  * Date               : 13/02/2015 22:48:13
   * Description        : Main program body
   ******************************************************************************
   *
@@ -109,6 +109,7 @@ int main(void)
   timesBaseInit();
   ledPowerBlink(990, 10, 0);;
 
+  adxrs620Test();
 //  motorsTest();
 
  // Eeprom_WP(OFF);
@@ -125,7 +126,6 @@ int main(void)
 //  Debug_Telemeter();
 
   mulimeterTest();
-  adxrs620Test();
 
   straightControlStart(GYRO);
 

@@ -29,7 +29,7 @@ volatile gyro_struct gyro;
 void adxrs620Init(void);
 void adxrs620Calibrate(int nb_ech);
 void adxrs620_IT(void);
-void adxrs620_INJECTED_ADC_IT(void);
+void adxrs620_ADC_IT(void);
 void adxrs620Test(void);
 
 #endif

@@ -116,7 +116,7 @@ void timesBaseInit(void)
 	  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
 	  HAL_TIMEx_MasterConfigSynchronization(&htim5, &sMasterConfig);
 
-	  HAL_TIM_Base_Start_IT(&htim5);
+	  HAL_TIM_Base_Start(&htim5);
 
 	  /*## Configure the TIM peripheral for ADC23 regular trigger ####################*/
 	 	  /* -----------------------------------------------------------------------

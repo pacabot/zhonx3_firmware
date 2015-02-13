@@ -61,7 +61,7 @@ void adxrs620Init(void)
 	sConfigInjected.InjectedOffset = 0;
 	HAL_ADCEx_InjectedConfigChannel(&hadc1, &sConfigInjected);
 
-	adxrs620Calibrate(50);
+	adxrs620Calibrate(10);
 	HAL_ADCEx_InjectedStart_IT(&hadc1);
 }
 
@@ -78,7 +78,7 @@ void adxrs620Calibrate(int nb_ech)
 	  /* -----------------------------------------------------------------------
 	    Use TIM5 for start Injected conversion on ADC1 (gyro rate).
 	      ----------------------------------------------------------------------- */
-void adxrs620_INJECTED_ADC_IT(void)
+void adxrs620_ADC_IT(void)
 {
 	if (gyro.calibration_state == 0)
 	{
