@@ -55,8 +55,7 @@ void telemetersStop(void);
 void telemetersCalibrate(void);
 void telemeters_IT(void);
 void telemeters_DMA_IT(void);
-void telemeters_REGULAR_ADC_IT(void);
-void telemeters_INJECTED_ADC_IT(void);
+void telemeters_ADC_IT(void);
 void telemetersTest(void);
 
 #endif

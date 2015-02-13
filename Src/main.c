@@ -1,7 +1,7 @@
 /**
   ******************************************************************************
   * File Name          : main.c
-  * Date               : 07/02/2015 23:59:20
+  * Date               : 13/02/2015 01:21:08
   * Description        : Main program body
   ******************************************************************************
   *
@@ -60,7 +60,6 @@ void SystemClock_Config(void);
 
 /* USER CODE BEGIN 0 */
 #include "main.h"
-#include "peripherals/tests/tests.h"
 #include "peripherals/display/menu.h"
 extern menuItem mainMenu;
 
@@ -108,9 +107,7 @@ int main(void)
 
   ssd1306Init(0);
   timesBaseInit();
-  ledPowerBlink(990, 10, 0);
-
-  telemetersTest();
+  ledPowerBlink(990, 10, 0);;
 
 //  motorsTest();
 
@@ -131,7 +128,6 @@ int main(void)
   adxrs620Test();
 
   straightControlStart(GYRO);
-  test_Beeper();
 
 //Debug_Straight_Control();
 while(1);

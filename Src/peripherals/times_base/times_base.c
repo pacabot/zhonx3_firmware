@@ -39,6 +39,7 @@ void timesBaseInit(void)
 {
 	  TIM_ClockConfigTypeDef sClockSourceConfig;
 	  TIM_MasterConfigTypeDef sMasterConfig;
+	  TIM_OC_InitTypeDef sConfigOC;
 	  uint32_t uwPrescalerValue = 0;
 
 	  /*##-1- Configure the TIM peripheral #######################################*/
@@ -167,13 +168,13 @@ void timesBaseInit(void)
 	  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
 	  HAL_TIMEx_MasterConfigSynchronization(&htim4, &sMasterConfig);
 
-//	  sConfigOC.OCMode = TIM_OCMODE_TOGGLE;
-//	  sConfigOC.Pulse = 1;
-//	  sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
-//	  sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
-//	  HAL_TIM_OC_ConfigChannel(&htim4, &sConfigOC, TIM_CHANNEL_4);
-//
-//	  HAL_TIM_OC_Start_IT(&htim4, TIM_CHANNEL_4);
+	  sConfigOC.OCMode = TIM_OCMODE_TOGGLE;
+	  sConfigOC.Pulse = 1;
+	  sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
+	  sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
+	  HAL_TIM_OC_ConfigChannel(&htim4, &sConfigOC, TIM_CHANNEL_4);
+
+	  HAL_TIM_OC_Start_IT(&htim4, TIM_CHANNEL_4);
 }
 
 void ledPowerBlink(unsigned int off_time, unsigned int on_time, unsigned int repeat)

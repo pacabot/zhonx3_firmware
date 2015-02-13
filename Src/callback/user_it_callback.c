@@ -70,21 +70,20 @@ void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
 	{
 		adxrs620_INJECTED_ADC_IT();
 	}
-	if (hadc == &hadc2)
-	{
-		telemeters_INJECTED_ADC_IT();
-	}
 }
 
 void HAL_ADC_ConvHalfCpltCallback(ADC_HandleTypeDef* hadc)
 {
 	if (hadc == &hadc1)
 	{
-		multimeter_REGULAR_ADC_IT();
+		multimeter_ADC_IT();
 	}
 }
 
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
 {
-
+	if (hadc == &hadc2)
+	{
+		telemeters_ADC_IT();
+	}
 }
