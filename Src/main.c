@@ -63,7 +63,6 @@ void SystemClock_Config(void);
 #include "peripherals/display/menu.h"
 
 extern menuItem mainMenu;
-extern void testMarseillaise(void);
 
 /* USER CODE END 0 */
 

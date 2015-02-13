@@ -25,11 +25,8 @@ extern void encoderTest ();
 extern void adxrs620Test ();
 extern void mulimeterTest ();
 extern void telemetersTest ();
-<<<<<<< HEAD
 void testMarseillaise (void);
-=======
 extern void motorsTest ();
->>>>>>> e70225ef24615473da907fb5bc77ccf7c49834bc
 /*
  * pour cree un nouveau menu il suffit de
  * créer une nouvelle variable de type "menuItem"
@@ -70,12 +67,8 @@ menuItem tests_menu=
 				{"test joystick",'f', (void*)joystickTest},
 				{"test gyroscope",'f', (void*)adxrs620Test},
 				{"test telemeters",'f', (void*)telemetersTest},
-<<<<<<< HEAD
 				{"test beeper",'f', (void*)testMarseillaise},
-
-=======
 				{"test motors",'f', (void*)motorsTest},
->>>>>>> e70225ef24615473da907fb5bc77ccf7c49834bc
 				{0,0,0}
 		}
 };
@@ -185,29 +178,29 @@ int menu(menuItem Menu)
 
 void menuHighlightedMove(unsigned char y, unsigned char max_y)
 {
-	//	unsigned char y=y_;
-	//	unsigned char max_y=max_y_;
-
 	if (max_y > y)
 	{
-		for ( ; y <= max_y; y++)
-		{
-			ssd1306InvertArea(0, y - 1, HIGHLIGHT_LENGHT, HIGHLIGHT_HEIGHT);
-			ssd1306InvertArea(0, y, HIGHLIGHT_LENGHT, HIGHLIGHT_HEIGHT);
-//			if (y % 2)
-				ssd1306Refresh();
-		}
+		ssd1306InvertArea(0, y-1, HIGHLIGHT_LENGHT, HIGHLIGHT_HEIGHT*2);
+		//		for ( ; y <= max_y; y++)
+//		{
+//			ssd1306InvertArea(0, y - 1, HIGHLIGHT_LENGHT, HIGHLIGHT_HEIGHT);
+//			ssd1306InvertArea(0, y, HIGHLIGHT_LENGHT, HIGHLIGHT_HEIGHT);
+////			if (y % 2)
+//				ssd1306Refresh();
+//		}
 	}
 	else
 	{
-		for ( ; y >= max_y; y--)
-		{
-			ssd1306InvertArea(0, y + 1, HIGHLIGHT_LENGHT, HIGHLIGHT_HEIGHT);
-			ssd1306InvertArea(0, y, HIGHLIGHT_LENGHT, HIGHLIGHT_HEIGHT);
-//			if (y % 2)
-				ssd1306Refresh();
-		}
+		ssd1306InvertArea(0, y-HIGHLIGHT_HEIGHT+1, HIGHLIGHT_LENGHT, HIGHLIGHT_HEIGHT*2);
+//		for ( ; y >= max_y; y--)
+//		{
+//			ssd1306InvertArea(0, y + 1, HIGHLIGHT_LENGHT, HIGHLIGHT_HEIGHT);
+//			ssd1306InvertArea(0, y, HIGHLIGHT_LENGHT, HIGHLIGHT_HEIGHT);
+////			if (y % 2)
+//				ssd1306Refresh();
+//		}
 	}
+	ssd1306Refresh();
 }
 
 void displayMenu(menuItem menu,int line)
