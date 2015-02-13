@@ -15,7 +15,7 @@
 #include "util/itoa.h"
 #include "peripherals/tone/tone.h"
 
-extern TIM_HandleTypeDef htim4;
+extern TIM_HandleTypeDef htim11;
 
 void player_music(int *Note, int *Duree, int size, int tempo)
 {
@@ -26,15 +26,15 @@ void player_music(int *Note, int *Duree, int size, int tempo)
 	{
 		FREQ_NOTE = Note[ii];
 
-		htim4.Instance = TIM4;
+		htim11.Instance = TIM11;
 
 		uwPrescalerValue = (uint32_t) ((SystemCoreClock /2) / (FREQ_NOTE * 100)) - 1;
-		htim4.Init.Prescaler = uwPrescalerValue;
-		htim4.Init.CounterMode = TIM_COUNTERMODE_UP;
-		htim4.Init.Period = 50;
-		htim4.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-		HAL_TIM_PWM_Init(&htim4);
-		if(HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_4) != HAL_OK)
+		htim11.Init.Prescaler = uwPrescalerValue;
+		htim11.Init.CounterMode = TIM_COUNTERMODE_UP;
+		htim11.Init.Period = 50;
+		htim11.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+		HAL_TIM_PWM_Init(&htim11);
+		if(HAL_TIM_PWM_Start(&htim11, TIM_CHANNEL_1) != HAL_OK)
 		{
 			/* Starting Error */
 			//    Error_Handler();
@@ -42,7 +42,7 @@ void player_music(int *Note, int *Duree, int size, int tempo)
 		//1000 = 60 pulse /mn
 		//  HAL_Delay(60000 / (tempo*Duree[ii]));
 		HAL_Delay(60000*Duree[ii] / (tempo*4) - 60);
-		if(HAL_TIM_PWM_Stop(&htim4, TIM_CHANNEL_4) != HAL_OK)
+		if(HAL_TIM_PWM_Stop(&htim11, TIM_CHANNEL_1) != HAL_OK)
 		{
 			/* Starting Error */
 			//    Error_Handler();
