@@ -25,7 +25,7 @@ extern void encoderTest ();
 extern void adxrs620Test ();
 extern void mulimeterTest ();
 extern void telemetersTest ();
-//extern void testMarseillaise (void);
+extern void toneTest();
 extern void motorsTest ();
 /*
  * pour cree un nouveau menu il suffit de
@@ -67,7 +67,7 @@ menuItem tests_menu=
 				{"test joystick",'f', (void*)joystickTest},
 				{"test gyroscope",'f', (void*)adxrs620Test},
 				{"test telemeters",'f', (void*)telemetersTest},
-//				{"test beeper",'f', (void*)testMarseillaise},
+				{"test beeper",'f', (void*)toneTest},
 				{"test motors",'f', (void*)motorsTest},
 				{0,0,0}
 		}
@@ -227,7 +227,7 @@ void displayMenu(menuItem menu,int line)
 			ssd1306PrintInt(90,MARGIN*i+MARGIN+1," ",*((unsigned long*)menu.line[i+line].param),&Font_3x6);
 			break;
 		case 'f':
-			ssd1306DrawString(110,i*MARGIN+MARGIN+1,"->",&Font_3x6);
+			ssd1306DrawString(110,i*MARGIN+MARGIN+1,">",&Font_3x6);
 			break;
 		case 'm':
 			ssd1306DrawString(115,i*MARGIN+MARGIN+1,">",&Font_3x6);
