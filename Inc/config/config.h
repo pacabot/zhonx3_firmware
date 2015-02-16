@@ -64,5 +64,13 @@
 #define DEFAULT_HIGHTER_INTERVAL
 #define DEFAULT_LOWER_INTERVAL
 
+/**************************************************************************************/
+/***************                       Battery                     ********************/
+/**************************************************************************************/
+#define BATTERY_CELL_NUMBER					2	//2S
+#define BATTERY_LOWER_VOLTAGE_NO_LOAD		(3.6 * BATTERY_CELL_NUMBER)
+#define BATTERY_UPPER_VOLTAGE_NO_LOAD		(4.2 * BATTERY_CELL_NUMBER)
+#define BATTERY_LOWER_VOLTAGE_OFFSET		(-0.10 * BATTERY_CELL_NUMBER)	//-0.1V/A
+
 #endif // __CONFIG_H__
 

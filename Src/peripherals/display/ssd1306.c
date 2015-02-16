@@ -19,7 +19,7 @@
 #include "peripherals/display/ssd1306.h"
 #include "peripherals/expander/pcf8574.h"
 
-#include "util/itoa.h"
+#include "middleware/util/itoa.h"
 
 // Pin Definitions
 #define RST_PIN                  		GPIO_PIN_3

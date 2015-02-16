@@ -12,7 +12,7 @@
 #include <stdio.h>
 #include <stdint.h>
 
-#include "util/itoa.h"
+#include "middleware/util/itoa.h"
 #include "peripherals/tone/tone.h"
 
 void imperialMarch(void);

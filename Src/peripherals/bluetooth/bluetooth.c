@@ -11,7 +11,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdint.h>
-#include "util/itoa.h"
+#include "middleware/util/itoa.h"
 
 extern UART_HandleTypeDef huart3;
 

@@ -49,6 +49,7 @@ void lineSensorsStart(void);
 void lineSensorsStop_DMA_ADC1(void);
 void lineSensorsStop_DMA_ADC3(void);
 void lineSensorsCalibrate(void);
-void lineSensors_IT(void);
+void lineSensors_ADC_IT(void);
+void lineSensorsTest(void);
 
 #endif

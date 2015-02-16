@@ -15,9 +15,9 @@
 #include "peripherals/gyroscope/adxrs620.h"
 #include "peripherals/telemeters/telemeters.h"
 #include "peripherals/lineSensors/lineSensors.h"
-#include "controls/pid/pid.h"
+#include "middleware/controls/pid/pid.h"
 
-#include "times_base/times_base.h"
+#include "peripherals/times_base/times_base.h"
 #include "config/config.h"
 
 extern TIM_HandleTypeDef htim2;
