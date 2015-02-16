@@ -36,29 +36,13 @@ void lineSensorsInit(void)
 	ADC_ChannelConfTypeDef sConfig;
 	ADC_InjectionConfTypeDef sConfigInjected;
 
-	/**Configure the global features of the ADC (Clock, Resolution, Data Alignment and number of conversion)
-	 */
-	//	  hadc1.Instance = ADC1;
-	//	  hadc1.Init.ClockPrescaler = ADC_CLOCKPRESCALER_PCLK_DIV2;
-	//	  hadc1.Init.Resolution = ADC_RESOLUTION12b;
-	//	  hadc1.Init.ScanConvMode = ENABLE;
-	//	  hadc1.Init.ContinuousConvMode = DISABLE;
-	//	  hadc1.Init.DiscontinuousConvMode = ENABLE;
-	//	  hadc1.Init.NbrOfDiscConversion = 2;
-	//	  hadc1.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
-	//	  hadc1.Init.DataAlign = ADC_DATAALIGN_RIGHT;
-	//	  hadc1.Init.NbrOfConversion = 2;
-	//	  hadc1.Init.DMAContinuousRequests = DISABLE;
-	//	  hadc1.Init.EOCSelection = EOC_SEQ_CONV;
-	//	  HAL_ADC_Init(&hadc1);
-
 	/**Configures for the selected ADC injected channel its corresponding rank in the sequencer and its sample time
 	 */
-	sConfigInjected.InjectedChannel = ADC_CHANNEL_4;
+	sConfigInjected.InjectedChannel = RX_LEFT;
 	sConfigInjected.InjectedRank = 1;
 	sConfigInjected.InjectedNbrOfConversion = 2;
-	sConfigInjected.InjectedSamplingTime = ADC_SAMPLETIME_56CYCLES;
-	sConfigInjected.ExternalTrigInjecConvEdge = ADC_EXTERNALTRIGINJECCONVEDGE_RISING;
+	sConfigInjected.InjectedSamplingTime = ADC_SAMPLETIME_15CYCLES;
+	sConfigInjected.ExternalTrigInjecConvEdge = ADC_EXTERNALTRIGINJECCONVEDGE_NONE;
 	sConfigInjected.ExternalTrigInjecConv = ADC_EXTERNALTRIGINJECCONV_T5_TRGO;
 	sConfigInjected.AutoInjectedConv = DISABLE;
 	sConfigInjected.InjectedDiscontinuousConvMode = DISABLE;
@@ -67,9 +51,34 @@ void lineSensorsInit(void)
 
 	/**Configures for the selected ADC injected channel its corresponding rank in the sequencer and its sample time
 	 */
-	sConfigInjected.InjectedChannel = ADC_CHANNEL_13;
+	sConfigInjected.InjectedChannel = RX_RIGHT;
 	sConfigInjected.InjectedRank = 2;
 	HAL_ADCEx_InjectedConfigChannel(&hadc2, &sConfigInjected);
+
+	/**Configures for the selected ADC injected channel its corresponding rank in the sequencer and its sample time
+	 */
+	sConfigInjected.InjectedChannel = ADC_CHANNEL_3;
+	sConfigInjected.InjectedRank = 1;
+	sConfigInjected.InjectedNbrOfConversion = 3;
+	sConfigInjected.InjectedSamplingTime = ADC_SAMPLETIME_15CYCLES;
+	sConfigInjected.ExternalTrigInjecConvEdge = ADC_EXTERNALTRIGINJECCONVEDGE_NONE;
+	sConfigInjected.ExternalTrigInjecConv = ADC_EXTERNALTRIGINJECCONV_T5_TRGO;
+	sConfigInjected.AutoInjectedConv = DISABLE;
+	sConfigInjected.InjectedDiscontinuousConvMode = DISABLE;
+	sConfigInjected.InjectedOffset = 0;
+	HAL_ADCEx_InjectedConfigChannel(&hadc3, &sConfigInjected);
+
+	/**Configures for the selected ADC injected channel its corresponding rank in the sequencer and its sample time
+	 */
+	sConfigInjected.InjectedChannel = ADC_CHANNEL_1;
+	sConfigInjected.InjectedRank = 2;
+	HAL_ADCEx_InjectedConfigChannel(&hadc3, &sConfigInjected);
+
+	/**Configures for the selected ADC injected channel its corresponding rank in the sequencer and its sample time
+	 */
+	sConfigInjected.InjectedChannel = ADC_CHANNEL_12;
+	sConfigInjected.InjectedRank = 3;
+	HAL_ADCEx_InjectedConfigChannel(&hadc3, &sConfigInjected);
 
 	hadc3.Instance = ADC3;
 	hadc3.Init.ClockPrescaler = ADC_CLOCKPRESCALER_PCLK_DIV2;
@@ -84,75 +93,12 @@ void lineSensorsInit(void)
 	hadc3.Init.DMAContinuousRequests = DISABLE;
 	hadc3.Init.EOCSelection = EOC_SEQ_CONV;
 	HAL_ADC_Init(&hadc3);
-
-	//	    /**Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time.
-	//	    */
-	//	  sConfig.Channel = RX_LEFT_EXT;  // Line sensor extreme left
-	//	  sConfig.Rank = 1;
-	//	  sConfig.SamplingTime = ADC_SAMPLETIME_56CYCLES;
-	//	  HAL_ADC_ConfigChannel(&hadc1, &sConfig);
-	//
-	//	    /**Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time.
-	//	    */
-	//	  sConfig.Channel = RX_RIGHT_EXT; // Line sensor extreme right
-	//	  sConfig.Rank = 2;
-	//	  HAL_ADC_ConfigChannel(&hadc1, &sConfig);
-
-	/**Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time.
-	 */
-	sConfig.Channel = RX_LEFT; // Line sensor left
-	sConfig.Rank = 1;
-	sConfig.SamplingTime = ADC_SAMPLETIME_56CYCLES;
-	HAL_ADC_ConfigChannel(&hadc3, &sConfig);
-
-	/**Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time.
-	 */
-	sConfig.Channel = RX_FRONT; // Line sensor front
-	sConfig.Rank = 2;
-	HAL_ADC_ConfigChannel(&hadc3, &sConfig);
-
-	/**Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time.
-	 */
-	sConfig.Channel = RX_RIGHT; // Line sensor right
-	sConfig.Rank = 3;
-	HAL_ADC_ConfigChannel(&hadc3, &sConfig);
-
-	//	// -- Enables ADC DMA request
-	//	if (HAL_ADC_Start_DMA(&hadc1, (uint32_t*)ADC1ConvertedValues, 2) != HAL_OK)
-	//	{
-	//
-	//	}
-	// -- Enables ADC DMA request
-	if (HAL_ADC_Start_DMA(&hadc3, (uint32_t*)ADC3ConvertedValues, 3) != HAL_OK)
-	{
-
-	}
 }
 
 void lineSensorsStart(void)
 {
 	HAL_ADCEx_InjectedStart_IT(&hadc2);
-	//	  /*##-2- Start the TIM Base generation in interrupt mode ####################*/
-	//	  /* Start Channel1 */
-	//	  if(HAL_TIM_Base_Start_IT(&htim10) != HAL_OK)
-	//	  {
-	//	    /* Starting Error */
-	//	    //Error_Handler();
-	//	  }
-}
-
-
-void lineSensorsStop_DMA_ADC3(void)
-{
-	//	  /*##-2- Stop the TIM Base generation in interrupt mode ####################*/
-	//	  /* Start Channel1 */
-	//	  if(HAL_TIM_Base_Stop_IT(&htim10) != HAL_OK)
-	//	  {
-	//	    /* Starting Error */
-	//	    //Error_Handler();
-	//	  }
-	HAL_GPIO_WritePin(GPIOA, TX_LINESENSORS, RESET);
-	lineSensors.active_state = FALSE;
+	HAL_ADCEx_InjectedStart_IT(&hadc3);
 }
 
 void lineSensorsCalibrate(void)
@@ -160,42 +106,50 @@ void lineSensorsCalibrate(void)
 	//      Telemeters_Start();
 }
 
-void lineSensors_ADC_IT(void)
+void lineSensors_IT(void)
 {
 	static char selector;
 
 	switch (selector)
 	{
 	case 0:
-		lineSensors.active_state = TRUE;
-		//		HAL_ADC_Stop_DMA(&hadc1);
-		HAL_ADC_Stop_DMA(&hadc3);
 		HAL_GPIO_WritePin(GPIOA, TX_LINESENSORS, SET);
-		//		HAL_ADC_Start_DMA(&hadc1, (uint32_t*)ADC1ConvertedValues, 2);
-//		HAL_ADCEx_InjectedStart_IT(&hadc2);
-		HAL_ADC_Start_DMA(&hadc3, (uint32_t*)ADC3ConvertedValues, 3);
 		break;
 	case 1:
-		//		lineSensors.left_ext.adc_value  	= ADC1ConvertedValues[0];
-		//		lineSensors.right_ext.adc_value 	= ADC1ConvertedValues[1];
-
-		lineSensors.left_ext.adc_value  	= HAL_ADCEx_InjectedGetValue(&hadc2, ADC_INJECTED_RANK_1);
-		lineSensors.right_ext.adc_value 	= HAL_ADCEx_InjectedGetValue(&hadc2, ADC_INJECTED_RANK_2);
-
-		lineSensors.left.adc_value 			= ADC3ConvertedValues[0];
-		lineSensors.front.adc_value 		= ADC3ConvertedValues[1];
-		lineSensors.right.adc_value 		= ADC3ConvertedValues[2];
-
-		HAL_GPIO_WritePin(GPIOA, TX_LINESENSORS, RESET);
-
-		//		HAL_ADC_Stop_DMA(&hadc1);
-		HAL_ADC_Stop_DMA(&hadc3);
+		HAL_ADCEx_InjectedStart_IT(&hadc2);
+		HAL_ADCEx_InjectedStart_IT(&hadc3);
 		break;
 	}
 
 	selector++;
 	if (selector > ((2 * FREQ_TELEMETERS_DIVIDER)-1))    //freq telemeters = 10Khz/DIVIDER (20Khz/2 => 10Khz)
 		selector = 0;
+
+	lineSensors.active_ADC2		=TRUE;
+	lineSensors.active_ADC3		=TRUE;
+	lineSensors.emitter_state	=TRUE;
+}
+
+void lineSensors_ADC_IT(ADC_HandleTypeDef *hadc)
+{
+	if (hadc == &hadc2)
+	{
+		lineSensors.left.adc_value 			= HAL_ADCEx_InjectedGetValue(&hadc2, ADC_INJECTED_RANK_1);
+		lineSensors.right.adc_value 		= HAL_ADCEx_InjectedGetValue(&hadc2, ADC_INJECTED_RANK_2);
+		lineSensors.active_ADC2	= FALSE;
+	}
+	else
+	{
+		lineSensors.left_ext.adc_value  	= HAL_ADCEx_InjectedGetValue(&hadc3, ADC_INJECTED_RANK_1);
+		lineSensors.front.adc_value 		= HAL_ADCEx_InjectedGetValue(&hadc3, ADC_INJECTED_RANK_2);
+		lineSensors.right_ext.adc_value 	= HAL_ADCEx_InjectedGetValue(&hadc3, ADC_INJECTED_RANK_3);
+		lineSensors.active_ADC3	= FALSE;
+	}
+	if (lineSensors.active_ADC2 == FALSE && lineSensors.active_ADC3 == FALSE )
+	{
+		HAL_GPIO_WritePin(GPIOA, TX_LINESENSORS, RESET);
+		lineSensors.emitter_state	=FALSE;
+	}
 }
 
 void lineSensorsTest(void)

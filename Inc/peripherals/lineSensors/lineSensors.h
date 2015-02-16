@@ -15,9 +15,9 @@
 
 /* Definition for ADCx's Channel */
 #define RX_LEFT_EXT					ADC_CHANNEL_3	//ADC3
-#define RX_LEFT						ADC_CHANNEL_4  	//ADC1
+#define RX_LEFT						ADC_CHANNEL_4  	//ADC2
 #define RX_FRONT					ADC_CHANNEL_1	//ADC3
-#define RX_RIGHT					ADC_CHANNEL_13 	//ADC1
+#define RX_RIGHT					ADC_CHANNEL_13 	//ADC2
 #define RX_RIGHT_EXT				ADC_CHANNEL_12	//ADC3
 
 /* Types definitions */
@@ -37,9 +37,9 @@ typedef struct
 	lineSensors_state front;
 	lineSensors_state right;
 	lineSensors_state right_ext;
-	char active_ADC1;
+	char active_ADC2;
 	char active_ADC3;
-	char active_state;
+	char emitter_state;
 } lineSensors_struct;
 
 volatile lineSensors_struct lineSensors;
@@ -49,7 +49,8 @@ void lineSensorsStart(void);
 void lineSensorsStop_DMA_ADC1(void);
 void lineSensorsStop_DMA_ADC3(void);
 void lineSensorsCalibrate(void);
-void lineSensors_ADC_IT(void);
+void lineSensors_IT(void);
+void lineSensors_ADC_IT(ADC_HandleTypeDef *hadc);
 void lineSensorsTest(void);
 
 #endif
