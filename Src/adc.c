@@ -1,7 +1,7 @@
 /**
   ******************************************************************************
   * File Name          : ADC.c
-  * Date               : 16/02/2015 23:24:02
+  * Date               : 19/02/2015 00:48:17
   * Description        : This file provides code for the configuration
   *                      of the ADC instances.
   ******************************************************************************
@@ -47,8 +47,6 @@ ADC_HandleTypeDef hadc1;
 ADC_HandleTypeDef hadc2;
 ADC_HandleTypeDef hadc3;
 DMA_HandleTypeDef hdma_adc1;
-DMA_HandleTypeDef hdma_adc2;
-DMA_HandleTypeDef hdma_adc3;
 
 /* ADC1 init function */
 void MX_ADC1_Init(void)
@@ -89,10 +87,6 @@ void MX_ADC1_Init(void)
     */
   sConfig.Channel = ADC_CHANNEL_7;
   sConfig.Rank = 1;
-  HAL_ADC_ConfigChannel(&hadc1, &sConfig);
-
-    /**Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time. 
-    */
   HAL_ADC_ConfigChannel(&hadc1, &sConfig);
 
     /**Configures for the selected ADC injected channel its corresponding rank in the sequencer and its sample time 
@@ -219,10 +213,8 @@ void MX_ADC3_Init(void)
     */
   sConfigInjected.InjectedChannel = ADC_CHANNEL_3;
   sConfigInjected.InjectedRank = 1;
-  sConfigInjected.InjectedNbrOfConversion = 3;
+  sConfigInjected.InjectedNbrOfConversion = 0;
   sConfigInjected.InjectedSamplingTime = ADC_SAMPLETIME_56CYCLES;
-  sConfigInjected.ExternalTrigInjecConvEdge = ADC_EXTERNALTRIGINJECCONVEDGE_RISING;
-  sConfigInjected.ExternalTrigInjecConv = ADC_EXTERNALTRIGINJECCONV_T5_TRGO;
   sConfigInjected.AutoInjectedConv = DISABLE;
   sConfigInjected.InjectedDiscontinuousConvMode = DISABLE;
   sConfigInjected.InjectedOffset = 0;
@@ -230,14 +222,14 @@ void MX_ADC3_Init(void)
 
     /**Configures for the selected ADC injected channel its corresponding rank in the sequencer and its sample time 
     */
-  sConfigInjected.InjectedChannel = ADC_CHANNEL_1;
-  sConfigInjected.InjectedRank = 2;
+  sConfigInjected.InjectedChannel = ADC_CHANNEL_12;
+  sConfigInjected.InjectedRank = 3;
   HAL_ADCEx_InjectedConfigChannel(&hadc3, &sConfigInjected);
 
     /**Configures for the selected ADC injected channel its corresponding rank in the sequencer and its sample time 
     */
-  sConfigInjected.InjectedChannel = ADC_CHANNEL_12;
-  sConfigInjected.InjectedRank = 3;
+  sConfigInjected.InjectedChannel = ADC_CHANNEL_1;
+  sConfigInjected.InjectedRank = 2;
   HAL_ADCEx_InjectedConfigChannel(&hadc3, &sConfigInjected);
 
 }
@@ -279,17 +271,14 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef* hadc)
     hdma_adc1.Init.PeriphDataAlignment = DMA_PDATAALIGN_HALFWORD;
     hdma_adc1.Init.MemDataAlignment = DMA_MDATAALIGN_HALFWORD;
     hdma_adc1.Init.Mode = DMA_CIRCULAR;
-    hdma_adc1.Init.Priority = DMA_PRIORITY_MEDIUM;
+    hdma_adc1.Init.Priority = DMA_PRIORITY_LOW;
     hdma_adc1.Init.FIFOMode = DMA_FIFOMODE_DISABLE;
-    hdma_adc1.Init.FIFOThreshold = DMA_FIFO_THRESHOLD_HALFFULL;
-    hdma_adc1.Init.MemBurst = DMA_MBURST_SINGLE;
-    hdma_adc1.Init.PeriphBurst = DMA_PBURST_SINGLE;
     HAL_DMA_Init(&hdma_adc1);
 
     __HAL_LINKDMA(hadc,DMA_Handle,hdma_adc1);
 
     /* Peripheral interrupt init*/
-    HAL_NVIC_SetPriority(ADC_IRQn, 0, 0);
+    HAL_NVIC_SetPriority(ADC_IRQn, 1, 0);
     HAL_NVIC_EnableIRQ(ADC_IRQn);
   /* USER CODE BEGIN ADC1_MspInit 1 */
 
@@ -321,27 +310,8 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef* hadc)
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-    /* Peripheral DMA init*/
-  
-    hdma_adc2.Instance = DMA2_Stream2;
-    hdma_adc2.Init.Channel = DMA_CHANNEL_1;
-    hdma_adc2.Init.Direction = DMA_PERIPH_TO_MEMORY;
-    hdma_adc2.Init.PeriphInc = DMA_PINC_DISABLE;
-    hdma_adc2.Init.MemInc = DMA_MINC_ENABLE;
-    hdma_adc2.Init.PeriphDataAlignment = DMA_PDATAALIGN_HALFWORD;
-    hdma_adc2.Init.MemDataAlignment = DMA_MDATAALIGN_HALFWORD;
-    hdma_adc2.Init.Mode = DMA_CIRCULAR;
-    hdma_adc2.Init.Priority = DMA_PRIORITY_HIGH;
-    hdma_adc2.Init.FIFOMode = DMA_FIFOMODE_DISABLE;
-    hdma_adc2.Init.FIFOThreshold = DMA_FIFO_THRESHOLD_HALFFULL;
-    hdma_adc2.Init.MemBurst = DMA_MBURST_SINGLE;
-    hdma_adc2.Init.PeriphBurst = DMA_PBURST_SINGLE;
-    HAL_DMA_Init(&hdma_adc2);
-
-    __HAL_LINKDMA(hadc,DMA_Handle,hdma_adc2);
-
     /* Peripheral interrupt init*/
-    HAL_NVIC_SetPriority(ADC_IRQn, 0, 0);
+    HAL_NVIC_SetPriority(ADC_IRQn, 1, 0);
     HAL_NVIC_EnableIRQ(ADC_IRQn);
   /* USER CODE BEGIN ADC2_MspInit 1 */
 
@@ -370,27 +340,8 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef* hadc)
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-    /* Peripheral DMA init*/
-  
-    hdma_adc3.Instance = DMA2_Stream1;
-    hdma_adc3.Init.Channel = DMA_CHANNEL_2;
-    hdma_adc3.Init.Direction = DMA_PERIPH_TO_MEMORY;
-    hdma_adc3.Init.PeriphInc = DMA_PINC_DISABLE;
-    hdma_adc3.Init.MemInc = DMA_MINC_ENABLE;
-    hdma_adc3.Init.PeriphDataAlignment = DMA_PDATAALIGN_HALFWORD;
-    hdma_adc3.Init.MemDataAlignment = DMA_MDATAALIGN_HALFWORD;
-    hdma_adc3.Init.Mode = DMA_CIRCULAR;
-    hdma_adc3.Init.Priority = DMA_PRIORITY_MEDIUM;
-    hdma_adc3.Init.FIFOMode = DMA_FIFOMODE_DISABLE;
-    hdma_adc3.Init.FIFOThreshold = DMA_FIFO_THRESHOLD_HALFFULL;
-    hdma_adc3.Init.MemBurst = DMA_MBURST_SINGLE;
-    hdma_adc3.Init.PeriphBurst = DMA_PBURST_SINGLE;
-    HAL_DMA_Init(&hdma_adc3);
-
-    __HAL_LINKDMA(hadc,DMA_Handle,hdma_adc3);
-
     /* Peripheral interrupt init*/
-    HAL_NVIC_SetPriority(ADC_IRQn, 0, 0);
+    HAL_NVIC_SetPriority(ADC_IRQn, 1, 0);
     HAL_NVIC_EnableIRQ(ADC_IRQn);
   /* USER CODE BEGIN ADC3_MspInit 1 */
 
@@ -454,9 +405,6 @@ void HAL_ADC_MspDeInit(ADC_HandleTypeDef* hadc)
 
     HAL_GPIO_DeInit(GPIOA, GPIO_PIN_4|GPIO_PIN_5|GPIO_PIN_6);
 
-    /* Peripheral DMA DeInit*/
-    HAL_DMA_DeInit(hadc->DMA_Handle);
-
     /* Peripheral interrupt Deinit*/
   /* USER CODE BEGIN ADC2:ADC_IRQn disable */
     /**
@@ -486,9 +434,6 @@ void HAL_ADC_MspDeInit(ADC_HandleTypeDef* hadc)
     HAL_GPIO_DeInit(GPIOC, GPIO_PIN_2);
 
     HAL_GPIO_DeInit(GPIOA, GPIO_PIN_1|GPIO_PIN_3);
-
-    /* Peripheral DMA DeInit*/
-    HAL_DMA_DeInit(hadc->DMA_Handle);
 
     /* Peripheral interrupt Deinit*/
   /* USER CODE BEGIN ADC3:ADC_IRQn disable */

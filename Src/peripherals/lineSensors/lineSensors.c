@@ -31,17 +31,27 @@ GPIO_InitTypeDef GPIO_InitStruct;
  * @param  htim : TIM handle
  * @retval None
  */
+
+/**************************************************************************/
+/*!
+    RANK 1		ADC3  CHANNEL 3 				RX_LEFT_EXT
+    RANK 2		ADC4  CHANNEL 2 				RX_LEFT
+    RANK 2		ADC1  CHANNEL 3 				RX_FRONT
+    RANK 1		ADC13 CHANNEL 2 				RX_RIGHT
+    RANK 3		ADC12 CHANNEL 3 				RX_RIGHT_EXT
+ */
+/**************************************************************************/
 void lineSensorsInit(void)
 {
-	ADC_ChannelConfTypeDef sConfig;
+//	ADC_ChannelConfTypeDef sConfig;
 	ADC_InjectionConfTypeDef sConfigInjected;
 
 	/**Configures for the selected ADC injected channel its corresponding rank in the sequencer and its sample time
 	 */
 	sConfigInjected.InjectedChannel = RX_LEFT;
-	sConfigInjected.InjectedRank = 1;
+	sConfigInjected.InjectedRank = 2;
 	sConfigInjected.InjectedNbrOfConversion = 2;
-	sConfigInjected.InjectedSamplingTime = ADC_SAMPLETIME_15CYCLES;
+	sConfigInjected.InjectedSamplingTime = ADC_SAMPLETIME_3CYCLES;
 	sConfigInjected.ExternalTrigInjecConvEdge = ADC_EXTERNALTRIGINJECCONVEDGE_NONE;
 	sConfigInjected.ExternalTrigInjecConv = ADC_EXTERNALTRIGINJECCONV_T5_TRGO;
 	sConfigInjected.AutoInjectedConv = DISABLE;
@@ -52,12 +62,12 @@ void lineSensorsInit(void)
 	/**Configures for the selected ADC injected channel its corresponding rank in the sequencer and its sample time
 	 */
 	sConfigInjected.InjectedChannel = RX_RIGHT;
-	sConfigInjected.InjectedRank = 2;
+	sConfigInjected.InjectedRank = 1;
 	HAL_ADCEx_InjectedConfigChannel(&hadc2, &sConfigInjected);
 
 	/**Configures for the selected ADC injected channel its corresponding rank in the sequencer and its sample time
 	 */
-	sConfigInjected.InjectedChannel = ADC_CHANNEL_3;
+	sConfigInjected.InjectedChannel = RX_LEFT_EXT;
 	sConfigInjected.InjectedRank = 1;
 	sConfigInjected.InjectedNbrOfConversion = 3;
 	sConfigInjected.InjectedSamplingTime = ADC_SAMPLETIME_15CYCLES;
@@ -70,13 +80,13 @@ void lineSensorsInit(void)
 
 	/**Configures for the selected ADC injected channel its corresponding rank in the sequencer and its sample time
 	 */
-	sConfigInjected.InjectedChannel = ADC_CHANNEL_1;
+	sConfigInjected.InjectedChannel = RX_FRONT;
 	sConfigInjected.InjectedRank = 2;
 	HAL_ADCEx_InjectedConfigChannel(&hadc3, &sConfigInjected);
 
 	/**Configures for the selected ADC injected channel its corresponding rank in the sequencer and its sample time
 	 */
-	sConfigInjected.InjectedChannel = ADC_CHANNEL_12;
+	sConfigInjected.InjectedChannel = RX_RIGHT_EXT;
 	sConfigInjected.InjectedRank = 3;
 	HAL_ADCEx_InjectedConfigChannel(&hadc3, &sConfigInjected);
 

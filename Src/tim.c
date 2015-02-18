@@ -1,7 +1,7 @@
 /**
   ******************************************************************************
   * File Name          : TIM.c
-  * Date               : 16/02/2015 23:24:03
+  * Date               : 19/02/2015 00:48:18
   * Description        : This file provides code for the configuration
   *                      of the TIM instances.
   ******************************************************************************
@@ -319,9 +319,7 @@ void HAL_TIM_Encoder_MspInit(TIM_HandleTypeDef* htim_encoder)
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
     /* Peripheral interrupt init*/
-    HAL_NVIC_SetPriority(TIM1_TRG_COM_TIM11_IRQn, 0, 0);
-    HAL_NVIC_EnableIRQ(TIM1_TRG_COM_TIM11_IRQn);
-    HAL_NVIC_SetPriority(TIM1_UP_TIM10_IRQn, 0, 0);
+    HAL_NVIC_SetPriority(TIM1_UP_TIM10_IRQn, 0, 3);
     HAL_NVIC_EnableIRQ(TIM1_UP_TIM10_IRQn);
   /* USER CODE BEGIN TIM1_MspInit 1 */
 
@@ -347,7 +345,7 @@ void HAL_TIM_Encoder_MspInit(TIM_HandleTypeDef* htim_encoder)
     HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
     /* Peripheral interrupt init*/
-    HAL_NVIC_SetPriority(TIM3_IRQn, 0, 0);
+    HAL_NVIC_SetPriority(TIM3_IRQn, 0, 3);
     HAL_NVIC_EnableIRQ(TIM3_IRQn);
   /* USER CODE BEGIN TIM3_MspInit 1 */
 
@@ -368,7 +366,7 @@ void HAL_TIM_Base_MspInit(TIM_HandleTypeDef* htim_base)
     __TIM2_CLK_ENABLE();
 
     /* Peripheral interrupt init*/
-    HAL_NVIC_SetPriority(TIM2_IRQn, 0, 0);
+    HAL_NVIC_SetPriority(TIM2_IRQn, 0, 2);
     HAL_NVIC_EnableIRQ(TIM2_IRQn);
   /* USER CODE BEGIN TIM2_MspInit 1 */
 
@@ -381,10 +379,6 @@ void HAL_TIM_Base_MspInit(TIM_HandleTypeDef* htim_base)
   /* USER CODE END TIM4_MspInit 0 */
     /* Peripheral clock enable */
     __TIM4_CLK_ENABLE();
-
-    /* Peripheral interrupt init*/
-    HAL_NVIC_SetPriority(TIM4_IRQn, 0, 0);
-    HAL_NVIC_EnableIRQ(TIM4_IRQn);
   /* USER CODE BEGIN TIM4_MspInit 1 */
 
   /* USER CODE END TIM4_MspInit 1 */
@@ -398,7 +392,7 @@ void HAL_TIM_Base_MspInit(TIM_HandleTypeDef* htim_base)
     __TIM5_CLK_ENABLE();
 
     /* Peripheral interrupt init*/
-    HAL_NVIC_SetPriority(TIM5_IRQn, 0, 0);
+    HAL_NVIC_SetPriority(TIM5_IRQn, 0, 1);
     HAL_NVIC_EnableIRQ(TIM5_IRQn);
   /* USER CODE BEGIN TIM5_MspInit 1 */
 
@@ -413,7 +407,7 @@ void HAL_TIM_Base_MspInit(TIM_HandleTypeDef* htim_base)
     __TIM6_CLK_ENABLE();
 
     /* Peripheral interrupt init*/
-    HAL_NVIC_SetPriority(TIM6_DAC_IRQn, 1, 2);
+    HAL_NVIC_SetPriority(TIM6_DAC_IRQn, 1, 3);
     HAL_NVIC_EnableIRQ(TIM6_DAC_IRQn);
   /* USER CODE BEGIN TIM6_MspInit 1 */
 
@@ -428,7 +422,7 @@ void HAL_TIM_Base_MspInit(TIM_HandleTypeDef* htim_base)
     __TIM7_CLK_ENABLE();
 
     /* Peripheral interrupt init*/
-    HAL_NVIC_SetPriority(TIM7_IRQn, 0, 0);
+    HAL_NVIC_SetPriority(TIM7_IRQn, 0, 4);
     HAL_NVIC_EnableIRQ(TIM7_IRQn);
   /* USER CODE BEGIN TIM7_MspInit 1 */
 
@@ -475,7 +469,7 @@ void HAL_TIM_Base_MspInit(TIM_HandleTypeDef* htim_base)
     __TIM10_CLK_ENABLE();
 
     /* Peripheral interrupt init*/
-    HAL_NVIC_SetPriority(TIM1_UP_TIM10_IRQn, 0, 0);
+    HAL_NVIC_SetPriority(TIM1_UP_TIM10_IRQn, 0, 3);
     HAL_NVIC_EnableIRQ(TIM1_UP_TIM10_IRQn);
   /* USER CODE BEGIN TIM10_MspInit 1 */
 
@@ -499,9 +493,6 @@ void HAL_TIM_Base_MspInit(TIM_HandleTypeDef* htim_base)
     GPIO_InitStruct.Alternate = GPIO_AF3_TIM11;
     HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
-    /* Peripheral interrupt init*/
-    HAL_NVIC_SetPriority(TIM1_TRG_COM_TIM11_IRQn, 0, 0);
-    HAL_NVIC_EnableIRQ(TIM1_TRG_COM_TIM11_IRQn);
   /* USER CODE BEGIN TIM11_MspInit 1 */
 
   /* USER CODE END TIM11_MspInit 1 */
@@ -526,14 +517,6 @@ void HAL_TIM_Encoder_MspDeInit(TIM_HandleTypeDef* htim_encoder)
     HAL_GPIO_DeInit(GPIOA, GPIO_PIN_8|GPIO_PIN_9);
 
     /* Peripheral interrupt Deinit*/
-  /* USER CODE BEGIN TIM1:TIM1_TRG_COM_TIM11_IRQn disable */
-    /**
-    * Uncomment the line below to disable the "TIM1_TRG_COM_TIM11_IRQn" interrupt
-    * Be aware, disabling shared interrupt may affect other IPs
-    */
-    /* HAL_NVIC_DisableIRQ(TIM1_TRG_COM_TIM11_IRQn); */
-  /* USER CODE END TIM1:TIM1_TRG_COM_TIM11_IRQn disable */
-
   /* USER CODE BEGIN TIM1:TIM1_UP_TIM10_IRQn disable */
     /**
     * Uncomment the line below to disable the "TIM1_UP_TIM10_IRQn" interrupt
@@ -594,10 +577,6 @@ void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef* htim_base)
   /* USER CODE END TIM4_MspDeInit 0 */
     /* Peripheral clock disable */
     __TIM4_CLK_DISABLE();
-
-    /* Peripheral interrupt Deinit*/
-    HAL_NVIC_DisableIRQ(TIM4_IRQn);
-
   /* USER CODE BEGIN TIM4_MspDeInit 1 */
 
   /* USER CODE END TIM4_MspDeInit 1 */
@@ -700,15 +679,6 @@ void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef* htim_base)
     PB9     ------> TIM11_CH1 
     */
     HAL_GPIO_DeInit(GPIOB, GPIO_PIN_9);
-
-    /* Peripheral interrupt Deinit*/
-  /* USER CODE BEGIN TIM11:TIM1_TRG_COM_TIM11_IRQn disable */
-    /**
-    * Uncomment the line below to disable the "TIM1_TRG_COM_TIM11_IRQn" interrupt
-    * Be aware, disabling shared interrupt may affect other IPs
-    */
-    /* HAL_NVIC_DisableIRQ(TIM1_TRG_COM_TIM11_IRQn); */
-  /* USER CODE END TIM11:TIM1_TRG_COM_TIM11_IRQn disable */
 
   /* USER CODE BEGIN TIM11_MspDeInit 1 */
 

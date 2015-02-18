@@ -51,7 +51,7 @@ unsigned char ssd1306GetPixel(unsigned char x, unsigned char y);
 void ssd1306ClearScreen(void);
 void ssd1306Refresh(void);
 void ssd1306DrawString(unsigned int x, unsigned int y, const char *text, const FONT_DEF *font);
-void ssd1306PrintInt(unsigned int x,unsigned int y, const char *text, int val, const FONT_DEF *font);
+void ssd1306PrintInt(unsigned int x,unsigned int y, const char *text, unsigned int val, const FONT_DEF *font);
 void ssd1306ShiftFrameBuffer(unsigned char height);
 void ssd1306DrawBmp(const unsigned char *bitmap, unsigned char x, unsigned char y, unsigned char w, unsigned char h);
 void ssd1306DrawCircle(unsigned char x0, unsigned char y0, unsigned char r);

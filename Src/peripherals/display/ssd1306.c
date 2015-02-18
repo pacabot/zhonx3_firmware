@@ -442,18 +442,20 @@ void ssd1306DrawString(unsigned int x, unsigned int y, const char *text, const F
 }
 /**************************************************************************/
 //Print a text and value.
-void ssd1306PrintInt(unsigned int x, unsigned int y, const char *text, int val, const FONT_DEF *font)
+void ssd1306PrintInt(unsigned int x, unsigned int y, const char *text, unsigned int val, const FONT_DEF *font)
 {
+	int i = 0;
 	char str[10];
-	unsigned char nb_char;
+	unsigned int nb_char;
 
-	nb_char = strlen((const char *) text);
+	nb_char = strlen(text);
 
 	//	itoa(val, str, 5, 10);  // 10 for decimal 2 for bin 16 for hex
 
 	sprintf(str, "%d     ", val);
 	ssd1306DrawString(x, y, text, font);
-	ssd1306DrawString(x + ((nb_char + 1) * font->u8Width), y,str ,font);
+	i = (x + ((nb_char + 1) * font->u8Width));
+	ssd1306DrawString((x + ((nb_char + 1) * font->u8Width)), y, str ,font);
 }
 /**************************************************************************/
 /*!

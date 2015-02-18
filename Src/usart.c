@@ -1,7 +1,7 @@
 /**
   ******************************************************************************
   * File Name          : USART.c
-  * Date               : 16/02/2015 23:24:04
+  * Date               : 19/02/2015 00:48:18
   * Description        : This file provides code for the configuration
   *                      of the USART instances.
   ******************************************************************************
@@ -84,6 +84,9 @@ void HAL_UART_MspInit(UART_HandleTypeDef* huart)
     GPIO_InitStruct.Alternate = GPIO_AF7_USART3;
     HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
+    /* Peripheral interrupt init*/
+    HAL_NVIC_SetPriority(USART3_IRQn, 1, 6);
+    HAL_NVIC_EnableIRQ(USART3_IRQn);
   /* USER CODE BEGIN USART3_MspInit 1 */
 
   /* USER CODE END USART3_MspInit 1 */
@@ -106,6 +109,9 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* huart)
     PC11     ------> USART3_RX 
     */
     HAL_GPIO_DeInit(GPIOC, GPIO_PIN_10|GPIO_PIN_11);
+
+    /* Peripheral interrupt Deinit*/
+    HAL_NVIC_DisableIRQ(USART3_IRQn);
 
   /* USER CODE BEGIN USART3_MspDeInit 1 */
 

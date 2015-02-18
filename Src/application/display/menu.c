@@ -20,6 +20,7 @@
 #include "config/config.h"
 
 /*external fonctions */
+extern void bluetoothTest();
 extern void eepromTest ();
 extern void encoderTest ();
 extern void adxrs620Test ();
@@ -61,6 +62,7 @@ menuItem tests_menu=
 {
 		"TEST MENU",
 		{
+				{"test bluetooth",'f', (void*)bluetoothTest},
 				{"test multimeter",'f', (void*)mulimeterTest},
 				{"test display",'f', (void*)ssd1306Test},
 				{"test eeprom",'f', (void*)eepromTest},

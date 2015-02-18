@@ -113,7 +113,7 @@
   * @brief Internal Low Speed oscillator (LSI) value.
   */
 #if !defined  (LSI_VALUE) 
- #define LSI_VALUE  ((uint32_t)40000)    
+ #define LSI_VALUE  ((uint32_t)32000)    
 #endif /* LSI_VALUE */                      /*!< Value of the Internal Low Speed oscillator in Hz
                                              The real value may vary depending on the variations
                                              in voltage and temperature.  */
@@ -142,7 +142,7 @@
   */     
   
 #define  VDD_VALUE					  ((uint32_t)3300) /*!< Value of VDD in mv */           
-#define  TICK_INT_PRIORITY            ((uint32_t)0)    /*!< tick interrupt priority */            
+#define  TICK_INT_PRIORITY            ((uint32_t)0)   /*!< tick interrupt priority */            
 #define  USE_RTOS                     0     
 #define  PREFETCH_ENABLE              1
 #define  INSTRUCTION_CACHE_ENABLE     1
@@ -153,7 +153,7 @@
   * @brief Uncomment the line below to expanse the "assert_param" macro in the 
   *        HAL drivers code
   */
-/* #define USE_FULL_ASSERT    1 */
+ #define USE_FULL_ASSERT    1 
 
 /* ################## Ethernet peripheral configuration ##################### */
 
