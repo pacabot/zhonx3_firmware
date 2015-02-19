@@ -44,25 +44,18 @@ void mulimeterInit(void)
 	hadc1.Init.ScanConvMode = ENABLE;
 	hadc1.Init.ContinuousConvMode = DISABLE;
 	hadc1.Init.DiscontinuousConvMode = DISABLE;
-	hadc1.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_RISING;
-	hadc1.Init.ExternalTrigConv = ADC_EXTERNALTRIGCONV_T4_CC4;
+	hadc1.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
 	hadc1.Init.DataAlign = ADC_DATAALIGN_RIGHT;
-	hadc1.Init.NbrOfConversion = 4;
+	hadc1.Init.NbrOfConversion = 3;
 	hadc1.Init.DMAContinuousRequests = ENABLE;
 	hadc1.Init.EOCSelection = EOC_SEQ_CONV;
 	HAL_ADC_Init(&hadc1);
 
 	/**Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time.
 	 */
-	sConfig.Channel = ADC_CHANNEL_TEMPSENSOR;
-	sConfig.Rank = 4;
-	sConfig.SamplingTime = ADC_SAMPLETIME_28CYCLES;
-	HAL_ADC_ConfigChannel(&hadc1, &sConfig);
-
-	/**Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time.
-	 */
 	sConfig.Channel = ADC_CHANNEL_15;
 	sConfig.Rank = 3;
+	sConfig.SamplingTime = ADC_SAMPLETIME_28CYCLES;
 	HAL_ADC_ConfigChannel(&hadc1, &sConfig);
 
 	/**Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time.
@@ -76,6 +69,9 @@ void mulimeterInit(void)
 	sConfig.Channel = ADC_CHANNEL_7;
 	sConfig.Rank = 1;
 	HAL_ADC_ConfigChannel(&hadc1, &sConfig);
+
+	/**Configures for the selected ADC injected channel its corresponding rank in the sequencer and its sample time
+	 */
 
 	multimeter.timer_cnt = 0;
 	multimeter.get_vbat_state = 0;
