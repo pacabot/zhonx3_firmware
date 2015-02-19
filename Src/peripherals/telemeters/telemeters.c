@@ -27,10 +27,10 @@ ADC_ChannelConfTypeDef sConfig;
 
 /*## ADC Telemeters callback for distance computing  #############################*/
 /* ------------------------------------------------------------------------
-	    PA5	ADC2_IN11	R_DIAG_RX		ADC_REGULAR_RANK_1
-	    PA6	ADC2_IN6	L_FRONT_RX		ADC_REGULAR_RANK_2
-		PA6	ADC2_IN10	R_FRONT_RX		ADC_REGULAR_RANK_3
-		PA5	ADC2_IN5	L_DIAG_RX		ADC_REGULAR_RANK_4
+	    ADC2_IN11	R_DIAG_RX		ADC_REGULAR_RANK_1
+	    ADC2_IN6	L_FRONT_RX		ADC_REGULAR_RANK_2
+		ADC2_IN10	R_FRONT_RX		ADC_REGULAR_RANK_3
+		ADC2_IN5	L_DIAG_RX		ADC_REGULAR_RANK_4
 	     ------------------------------------------------------------------------ */
 
 void telemetersInit(void)
@@ -64,17 +64,11 @@ void telemetersInit(void)
 
 void telemetersStart(void)
 {
-	telemeters.emitter_state = TRUE;
-	telemeters.selector = 0;
-	//	HAL_ADCEx_InjectedStart_IT(&hadc2);
 	telemeters.active_state = TRUE;
-	//	Telemeters_Calibrate();
 }
 
 void telemetersStop(void)
 {
-	HAL_ADCEx_InjectedStop(&hadc2);
-
 	HAL_GPIO_WritePin(GPIOB, TX_LEFT_FRONT, RESET);
 	HAL_GPIO_WritePin(GPIOB, TX_RIGHT_FRONT, RESET);
 	HAL_GPIO_WritePin(GPIOB, TX_DUAL_DIAG, RESET);

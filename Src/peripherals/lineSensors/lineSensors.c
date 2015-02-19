@@ -51,7 +51,7 @@ void lineSensorsInit(void)
 	sConfigInjected.InjectedChannel = RX_LEFT;
 	sConfigInjected.InjectedRank = 2;
 	sConfigInjected.InjectedNbrOfConversion = 2;
-	sConfigInjected.InjectedSamplingTime = ADC_SAMPLETIME_3CYCLES;
+	sConfigInjected.InjectedSamplingTime = ADC_SAMPLETIME_15CYCLES;
 	sConfigInjected.ExternalTrigInjecConvEdge = ADC_EXTERNALTRIGINJECCONVEDGE_NONE;
 	sConfigInjected.ExternalTrigInjecConv = ADC_EXTERNALTRIGINJECCONV_T5_TRGO;
 	sConfigInjected.AutoInjectedConv = DISABLE;
@@ -144,8 +144,8 @@ void lineSensors_ADC_IT(ADC_HandleTypeDef *hadc)
 {
 	if (hadc == &hadc2)
 	{
-		lineSensors.left.adc_value 			= HAL_ADCEx_InjectedGetValue(&hadc2, ADC_INJECTED_RANK_1);
-		lineSensors.right.adc_value 		= HAL_ADCEx_InjectedGetValue(&hadc2, ADC_INJECTED_RANK_2);
+		lineSensors.right.adc_value 		= HAL_ADCEx_InjectedGetValue(&hadc2, ADC_INJECTED_RANK_1);
+		lineSensors.left.adc_value 			= HAL_ADCEx_InjectedGetValue(&hadc2, ADC_INJECTED_RANK_2);
 		lineSensors.active_ADC2	= FALSE;
 	}
 	else
