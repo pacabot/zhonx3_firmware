@@ -13,7 +13,7 @@
 /***************                 Times definitions                 ********************/
 /**************************************************************************************/
 #define LOW_TIME_FREQ			100
-#define HI_TIME_FREQ			5000
+#define HI_TIME_FREQ			1000
 #define TELEMETERS_TIME_FREQ	4000  	//each telemeter use 1/4 of TELEMETERS_TIME_FREQ
 #define GYRO_TIME_FREQ			1000
 #define LINESENSORS_TIME_FREQ	GYRO_TIME_FREQ //same timer

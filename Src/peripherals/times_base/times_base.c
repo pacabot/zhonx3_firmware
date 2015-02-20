@@ -66,11 +66,7 @@ void timesBaseInit(void)
 	  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
 	  HAL_TIMEx_MasterConfigSynchronization(&htim7, &sMasterConfig);
 
-//	  if(HAL_TIM_Base_Start_IT(&htim7) != HAL_OK)
-//	  {
-//	    /* Starting Error */
-////	    Error_Handler();
-//	  }
+	  HAL_TIM_Base_Start_IT(&htim7);
 
 	  uwPrescalerValue = (uint32_t) ((SystemCoreClock /2) / (LOW_TIME_FREQ * 100)) - 1;
 

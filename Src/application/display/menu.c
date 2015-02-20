@@ -29,6 +29,7 @@ extern void telemetersTest ();
 extern void toneTest ();
 extern void motorsTest ();
 extern void lineSensorsTest ();
+extern void straightControlTest ();
 /*
  * pour cree un nouveau menu il suffit de
  * créer une nouvelle variable de type "menuItem"
@@ -38,7 +39,7 @@ extern void lineSensorsTest ();
  * 		"nom du menu",
  * 		{
  * 			{"nom de la ligne 1",'type de l'argument', &(void*) poirteur_sur_l'argument},	// le type est soit 'i' pour un int, soit 'l' pour un long, soit 'm' pour un menu, soit 'f' pour une fonction
- * 			{"nom de la ligne 1",'type de l'argument', &(void*) poirteur_sur_l'argument},	// maximum 20 ligne. si cela ne suffi pas il faut en rajouter dans "menu.h" le typedef menuItem le nombre de case du tableau de "line"
+ * 			{"nom de la ligne 2",'type de l'argument', &(void*) poirteur_sur_l'argument},	// maximum 20 ligne. si cela ne suffi pas il faut en rajouter dans "menu.h" le typedef menuItem le nombre de case du tableau de "line"
  * 			{0,0,0} 					// la dernière ligne doit absolument être la précédente, cette ligne ne s'affichera pas mais est indispensable. /!\ cette ligne compte dans les 20 ligne du menu
  * 		}
  * }
@@ -76,6 +77,7 @@ menuItem tests_menu=
 				{0,0,0}
 		}
 };
+
 menuItem mainMenu =
 {
 		"ZHONX III        V0.1",
@@ -83,6 +85,7 @@ menuItem mainMenu =
 				{"Maze menu",'m',			(void*)&maze_menu },
 				{"Parameters",'m',			(void*)&parameters_menu},
 				{"Test menu",'m',			(void*)&tests_menu},
+				{"Straight Test",'f',		(void*)&straightControlTest},
 				{0,0,0}
 		}
 };

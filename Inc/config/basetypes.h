@@ -32,7 +32,7 @@
 #define FALSE	0
 #endif
 
-typedef unsigned char bool;
+//typedef unsigned char bool;
 
 /*
  * Utility macros

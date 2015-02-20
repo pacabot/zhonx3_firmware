@@ -17,8 +17,15 @@ enum TypeOfSensors
     GYRO, ENCODERS, TELEMETERS
 };
 
-void straightControlStart(TypeOfSensors Sensor_x);
+struct control
+{
+	char start_state;
+	char distance;
+};
+
+void straightControlInit(TypeOfSensors Sensor_x);
 void straightControl_IT(void);
+void straightControlTest(void);
 void straightControlTest(void);
 
 #endif
