@@ -29,49 +29,59 @@
 #define gSH 830
 #define aH  880
 
-#define C2 	131
-#define C2d 139
-#define D2 	147
-#define D2d 156
-#define E2 	165
-#define F2 	175
-#define F2d 185
-#define G2 	196
-#define G2d 208
-#define A2 	220
-#define A2d 233
-#define B2 	247
+#define C2 	131	// DO
+#define C2H 139	// DO#
+#define D2 	147	// RE
+#define D2H 156	// RE#
+#define E2 	165	// MI
+#define F2 	175	// FA
+#define F2H 185	// FA#
+#define G2 	196	// SOL
+#define G2H 208	// SOL#
+#define A2 	220	// LA
+#define A2H 233	// LA#
+#define B2 	247	// SI
 
-#define C3 	262
-#define C3d 278
-#define D3 	294
-#define D3d 312
-#define E3 	330
-#define F3 	350
-#define F3d 370
-#define G3 	393
-#define G3d 416
-#define A3 	441
-#define A3d 467
-#define B3 	494
+#define C3 	262	// DO
+#define C3H 278	// DO#
+#define D3 	294	// RE
+#define D3H 312	// RE#
+#define E3 	330	// MI
+#define F3 	350	// FA
+#define F3H 370	// FA#
+#define G3 	393	// SOL
+#define G3H 416	// SOL#
+#define A3 	440	// LA
+#define A3H 467	// LA#
+#define B3 	494	// SI
+#define C4  524 // DO
 
+// ------------------------------------------------------------------------------------------------------------------------
+// tonesplayer
+// note[size]     : tableau de fréquence (notation américaine A = LA, B= SI, C= DO,... A3 = LA 440Hz)
+// duration[size) : tableau de durée (nombre de double croche) 1=double croche, 2= croche, 4=noire, 8=blanche, 16=ronde...)
+// size           : nombre de note dans le morceau
+// tempo		  : 60= 60 noire à la minute
+// ------------------------------------------------------------------------------------------------------------------------
 void tonesplayer(int *note, int *duration, int size, int tempo);
+
+
 void tone(int note, int duration);
 void toneSetVolulme(int volume);
 void toneTest(void);
 
 #endif
 
-// double   1 la ronde vaut 16
+
 // Au clair de la lune
 //  int music[11]={C3,C3,C3,D3,E3,D3,C3,E3,D3,D3,C3};
-//  int duree[11]={2,2,2,2,4,4,2,2,2,2,8};
+//  int duree[11]={2 ,2, 2, 2, 4, 4, 2, 2, 2, 2, 8};
 
 
 // Marseillaise
 //  int music[18]={G2,G2,G2,C3,C3,D3,D3,G3,E3,C3,C3,E3,C3,A2,F3,D3,B2,D3};
-//  int duree[18]={1,2,1,4,4,4,4,7,1,3,1,3,1,4,8,3,1,8}
+//  int duree[18]={1, 2, 1, 4, 4, 4, 4, 7, 1, 3, 1, 3, 1, 4, 8, 3, 1, 8}
 
 // Joyeux anniversaire
 //  int music[25]={G2,G2,A2,G2,C3,B2,G2,G2,A2,G2,D3,C3,G2,G2,G3,E3,C3,B2,A2,F3,F3,E3,C3,D3,C3};
-//  int duree[25]={2,2,4,4,4,8,2,2,4,4,4,8,2,2,4,4,4,4,8,2,2,4,4,4,8};
+//  int duree[25]={2, 2, 4, 4, 4, 8, 2, 2, 4 ,4, 4, 8, 2, 2, 4, 4, 4, 4, 8, 2, 2, 4, 4, 4, 8};
