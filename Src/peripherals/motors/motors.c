@@ -17,6 +17,8 @@
 #include "peripherals/display/ssd1306.h"
 #include "peripherals/motors/motors.h"
 
+extern TIM_HandleTypeDef MOTORS_TIMER;
+
 motor left_motor =
 {
 	LEFT_MOTOR_IN1,
@@ -28,8 +30,6 @@ motor right_motor =
 	RIGHT_MOTOR_IN1,
 	RIGHT_MOTOR_IN2
 };
-
-extern TIM_HandleTypeDef MOTORS_TIMER;
 
 void motorsInit(void)
 {

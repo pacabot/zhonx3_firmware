@@ -17,13 +17,11 @@
 #include "peripherals/display/ssd1306.h"
 #include "peripherals/lineSensors/lineSensors.h"
 
-#define FREQ_TELEMETERS_DIVIDER (1) //freq telemeters = 50KHz/DIVIDER
-
 extern ADC_HandleTypeDef hadc2;
 extern ADC_HandleTypeDef hadc3;
 
 //__IO uint16_t ADC1ConvertedValues[2] = {0};
-__IO uint16_t ADC3ConvertedValues[3] = {0};
+//__IO uint16_t ADC3ConvertedValues[3] = {0};
 
 GPIO_InitTypeDef GPIO_InitStruct;
 /**
@@ -34,11 +32,11 @@ GPIO_InitTypeDef GPIO_InitStruct;
 
 /**************************************************************************/
 /*!
-    RANK 1		ADC3  CHANNEL 3 				RX_LEFT_EXT
-    RANK 2		ADC4  CHANNEL 2 				RX_LEFT
-    RANK 2		ADC1  CHANNEL 3 				RX_FRONT
-    RANK 1		ADC13 CHANNEL 2 				RX_RIGHT
-    RANK 3		ADC12 CHANNEL 3 				RX_RIGHT_EXT
+    RANK 1		ADC3  	ADC 3 				RX_LEFT_EXT
+    RANK 2		ADC4  	ADC 2 				RX_LEFT
+    RANK 2		ADC1  	ADC 3 				RX_FRONT
+    RANK 1		ADC13 	ADC 2 				RX_RIGHT
+    RANK 3		ADC12 	ADC 3 				RX_RIGHT_EXT
  */
 /**************************************************************************/
 void lineSensorsInit(void)
@@ -95,20 +93,40 @@ void lineSensorsInit(void)
 	hadc3.Init.Resolution = ADC_RESOLUTION12b;
 	hadc3.Init.ScanConvMode = ENABLE;
 	hadc3.Init.ContinuousConvMode = DISABLE;
-	hadc3.Init.DiscontinuousConvMode = ENABLE;
-	hadc3.Init.NbrOfDiscConversion = 3;
+	hadc3.Init.DiscontinuousConvMode = DISABLE;
+	hadc3.Init.NbrOfDiscConversion = 0;
 	hadc3.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
 	hadc3.Init.DataAlign = ADC_DATAALIGN_RIGHT;
 	hadc3.Init.NbrOfConversion = 3;
 	hadc3.Init.DMAContinuousRequests = DISABLE;
 	hadc3.Init.EOCSelection = EOC_SEQ_CONV;
 	HAL_ADC_Init(&hadc3);
+
+	hadc2.Instance = ADC2;
+	hadc2.Init.ClockPrescaler = ADC_CLOCKPRESCALER_PCLK_DIV2;
+	hadc2.Init.Resolution = ADC_RESOLUTION12b;
+	hadc2.Init.ScanConvMode = ENABLE;
+	hadc2.Init.ContinuousConvMode = DISABLE;
+	hadc2.Init.DiscontinuousConvMode = DISABLE;
+	hadc2.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
+	hadc2.Init.DataAlign = ADC_DATAALIGN_RIGHT;
+	hadc2.Init.NbrOfConversion = 1;
+	hadc2.Init.DMAContinuousRequests = DISABLE;
+	hadc2.Init.EOCSelection = EOC_SEQ_CONV;
+	HAL_ADC_Init(&hadc2);
 }
 
 void lineSensorsStart(void)
 {
+	lineSensors.active_state 	= TRUE;
 	HAL_ADCEx_InjectedStart_IT(&hadc2);
 	HAL_ADCEx_InjectedStart_IT(&hadc3);
+}
+
+void lineSensorsStop(void)
+{
+	lineSensors.active_state 	= FALSE;
+	HAL_GPIO_WritePin(GPIOA, TX_LINESENSORS, RESET);
 }
 
 void lineSensorsCalibrate(void)
@@ -132,20 +150,20 @@ void lineSensors_IT(void)
 	}
 
 	selector++;
-	if (selector > ((2 * FREQ_TELEMETERS_DIVIDER)-1))    //freq telemeters = 10Khz/DIVIDER (20Khz/2 => 10Khz)
+	if (selector > 10)// ((2 * FREQ_TELEMETERS_DIVIDER)-1))    //freq telemeters = 10Khz/DIVIDER (20Khz/2 => 10Khz)
 		selector = 0;
 
-	lineSensors.active_ADC2		=TRUE;
-	lineSensors.active_ADC3		=TRUE;
-	lineSensors.emitter_state	=TRUE;
+	lineSensors.active_ADC2		= TRUE;
+	lineSensors.active_ADC3		= TRUE;
+	lineSensors.emitter_state	= TRUE;
 }
 
 void lineSensors_ADC_IT(ADC_HandleTypeDef *hadc)
 {
 	if (hadc == &hadc2)
 	{
-		lineSensors.right.adc_value 		= HAL_ADCEx_InjectedGetValue(&hadc2, ADC_INJECTED_RANK_1);
-		lineSensors.left.adc_value 			= HAL_ADCEx_InjectedGetValue(&hadc2, ADC_INJECTED_RANK_2);
+		lineSensors.right.adc_value 		= HAL_ADCEx_InjectedGetValue(&hadc2, ADC_INJECTED_RANK_2);
+		lineSensors.left.adc_value 			= HAL_ADCEx_InjectedGetValue(&hadc2, ADC_INJECTED_RANK_1);
 		lineSensors.active_ADC2	= FALSE;
 	}
 	else
@@ -158,7 +176,7 @@ void lineSensors_ADC_IT(ADC_HandleTypeDef *hadc)
 	if (lineSensors.active_ADC2 == FALSE && lineSensors.active_ADC3 == FALSE )
 	{
 		HAL_GPIO_WritePin(GPIOA, TX_LINESENSORS, RESET);
-		lineSensors.emitter_state	=FALSE;
+		lineSensors.emitter_state = FALSE;
 	}
 }
 

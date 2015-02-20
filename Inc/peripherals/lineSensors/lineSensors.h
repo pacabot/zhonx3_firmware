@@ -40,12 +40,14 @@ typedef struct
 	char active_ADC2;
 	char active_ADC3;
 	char emitter_state;
+	char active_state;
 } lineSensors_struct;
 
 volatile lineSensors_struct lineSensors;
 
 void lineSensorsInit(void);
 void lineSensorsStart(void);
+void lineSensorsStop(void);
 void lineSensorsStop_DMA_ADC1(void);
 void lineSensorsStop_DMA_ADC3(void);
 void lineSensorsCalibrate(void);

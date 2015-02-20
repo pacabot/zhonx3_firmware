@@ -81,7 +81,7 @@ void toneSetVolulme(int volume)
 
 void toneTest(void)
 {
-	toneSetVolulme(2);
+	toneSetVolulme(100);
 	imperialMarch();
 }
 

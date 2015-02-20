@@ -54,9 +54,6 @@ typedef unsigned char bool;
 #define reset_bit(val, mask) ((val) &= (reverse_bits(mask)))
 #define get_bit(val, mask) ((val) & (mask))
 
-/* To avoid compilation warnings when a variable is not used */
-#define UNUSED(_x_) ((void)(_x_))
-
 /** Timeout constant indicating an infinite time */
 #define FOREVER     0xFFFFFFFFL
 

@@ -6,6 +6,7 @@
     @version  0.10
  */
 /**************************************************************************/
+#include <middleware/controls/pidController/pidController.h>
 #include "stm32f4xx_hal.h"
 
 #include <string.h>
@@ -15,8 +16,6 @@
 #include "peripherals/gyroscope/adxrs620.h"
 #include "peripherals/telemeters/telemeters.h"
 #include "peripherals/lineSensors/lineSensors.h"
-#include "middleware/controls/pid/pid.h"
-
 #include "peripherals/times_base/times_base.h"
 #include "config/config.h"
 
@@ -207,8 +206,7 @@ void ledBlink_IT(void)
 
 void highFreq_IT(void)
 {
-//	Pids_IT();
-//	LineSensors_IT();
+	pidController_IT();
 }
 
 void lowFreq_IT(void)

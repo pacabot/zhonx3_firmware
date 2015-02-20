@@ -18,9 +18,9 @@
 
 typedef struct
 {
-char *name;
-char type;
-int (*param)(void);
+	char *name;
+	char type;
+	int (*param)(void);
 }lineItem;
 
 typedef struct

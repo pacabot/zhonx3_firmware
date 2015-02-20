@@ -34,6 +34,10 @@ typedef struct
 #define RIGHT_MOTOR_IN1 	TIM_CHANNEL_3
 #define RIGHT_MOTOR_IN2 	TIM_CHANNEL_4
 
+extern motor left_motor;
+
+extern motor right_motor;
+
 void motorsInit(void);
 void motorsSleepDriver(int isOn);
 void motorSet(motor *mot, int isForward, int duty, int isSlowDecay);

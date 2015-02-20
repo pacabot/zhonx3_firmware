@@ -238,8 +238,8 @@ void displayMenu(menuItem menu,int line)
 			break;
 		}
 	}
-	char nmbr_item = 0;
-	while(menu.line[nmbr_item].name!=null)
+	uint8_t nmbr_item = 0;
+	while(menu.line[nmbr_item].name != null)
 	{
 		nmbr_item++;
 	}

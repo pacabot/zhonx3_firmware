@@ -19,9 +19,6 @@
 
 extern ADC_HandleTypeDef hadc1;
 
-//volatile double gyro  = (ADC_VOLTAGE/(4095*GYRO_TEMP_COEFF));
-volatile double betaMulti = 0;
-
 __IO uint16_t ADC1MultimeterConvertedValues[10] = {0};
 
 /**************************************************************************/
@@ -44,7 +41,8 @@ void mulimeterInit(void)
 	hadc1.Init.ScanConvMode = ENABLE;
 	hadc1.Init.ContinuousConvMode = DISABLE;
 	hadc1.Init.DiscontinuousConvMode = DISABLE;
-	hadc1.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
+	hadc1.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_RISING;
+	hadc1.Init.ExternalTrigConv = ADC_EXTERNALTRIGCONV_T4_CC4;
 	hadc1.Init.DataAlign = ADC_DATAALIGN_RIGHT;
 	hadc1.Init.NbrOfConversion = 3;
 	hadc1.Init.DMAContinuousRequests = ENABLE;
@@ -53,9 +51,15 @@ void mulimeterInit(void)
 
 	/**Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time.
 	 */
+	sConfig.Channel = ADC_CHANNEL_7;
+	sConfig.Rank = 1;
+	sConfig.SamplingTime = ADC_SAMPLETIME_28CYCLES;
+	HAL_ADC_ConfigChannel(&hadc1, &sConfig);
+
+	/**Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time.
+	 */
 	sConfig.Channel = ADC_CHANNEL_15;
 	sConfig.Rank = 3;
-	sConfig.SamplingTime = ADC_SAMPLETIME_28CYCLES;
 	HAL_ADC_ConfigChannel(&hadc1, &sConfig);
 
 	/**Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time.
@@ -64,18 +68,12 @@ void mulimeterInit(void)
 	sConfig.Rank = 2;
 	HAL_ADC_ConfigChannel(&hadc1, &sConfig);
 
-	/**Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time.
-	 */
-	sConfig.Channel = ADC_CHANNEL_7;
-	sConfig.Rank = 1;
-	HAL_ADC_ConfigChannel(&hadc1, &sConfig);
-
 	/**Configures for the selected ADC injected channel its corresponding rank in the sequencer and its sample time
 	 */
 
 	multimeter.timer_cnt = 0;
 	multimeter.get_vbat_state = 0;
-	HAL_ADC_Start_DMA(&hadc1, (uint32_t*)ADC1MultimeterConvertedValues,4);
+	HAL_ADC_Start_DMA(&hadc1, (uint32_t*)ADC1MultimeterConvertedValues,3);
 }
 
 void multimeter_IT(void)

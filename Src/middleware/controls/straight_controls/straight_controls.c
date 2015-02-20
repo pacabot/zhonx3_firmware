@@ -21,7 +21,10 @@
 #include "peripherals/expander/pcf8574.h"
 
 #include "middleware/controls/straight_controls/straight_controls.h"
-#include "middleware/controls/pid/pid.h"
+#include "middleware/controls/pidController/pidController.h"
+
+#include "peripherals/telemeters/telemeters.h"
+#include "peripherals/motors/motors.h"
 
 /* extern variables ---------------------------------------------------------*/
 /* global variables ---------------------------------------------------------*/
@@ -36,7 +39,7 @@ float i = 0;
 extern volatile float gyro_Current_Angle;
 
 int consigne = 0;
-uint32_t Pulses[2] = {0,0};
+int Pulses[2] = {0,0};
 
 void straightControlStart(TypeOfSensors Sensor_x)
 {
@@ -47,7 +50,7 @@ void straightControlStart(TypeOfSensors Sensor_x)
 		gyro_pid_instance.Ki = 0;//0.1;
 		gyro_pid_instance.Kd = 0.4;
 		trajectory_control.pid_instance = &gyro_pid_instance;
-		pidInit(trajectory_control.pid_instance);
+		pidControllerInit(trajectory_control.pid_instance);
 	}
 	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_11, SET); // start motors
 	HAL_Delay(4000);
@@ -56,19 +59,15 @@ void straightControlStart(TypeOfSensors Sensor_x)
 
 void straightControl_IT(void)
 {
-//	trajectory_control.error_val = gyro_Current_Angle;
-//	trajectory_control.get_correction = Pid(trajectory_control.pid_instance, trajectory_control.error_val);
-//
-//	Pulses[0] = consigne - trajectory_control.get_correction;
-//	Pulses[1] = consigne + trajectory_control.get_correction;
-//
-//	sConfigOC.Pulse = (Pulses[0]);
-//	HAL_TIM_PWM_ConfigChannel(&htim8, &sConfigOC, TIM_CHANNEL_1);
-//	sConfigOC.Pulse = (Pulses[1]);
-//	HAL_TIM_PWM_ConfigChannel(&htim8, &sConfigOC, TIM_CHANNEL_4);
-//
-//	HAL_TIM_PWM_Start(&htim8, TIM_CHANNEL_1);
-//	HAL_TIM_PWM_Start(&htim8, TIM_CHANNEL_4);
+	static int consigne = 100;
+	trajectory_control.error_val = telemeters.left_diag.telemeter_value - telemeters.right_diag.telemeter_value;
+	trajectory_control.get_correction = pidController(trajectory_control.pid_instance, trajectory_control.error_val);
+
+	Pulses[0] = consigne - trajectory_control.get_correction;
+	Pulses[1] = consigne + trajectory_control.get_correction;
+
+	motorSet(&left_motor, DIRECTION_FORWARD, Pulses[0], DECAY_FAST);
+	motorSet(&right_motor, DIRECTION_FORWARD, Pulses[1], DECAY_FAST);
 }
 
 void straightControlTest(void)

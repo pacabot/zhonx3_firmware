@@ -18,9 +18,7 @@
 #include "peripherals/telemeters/telemeters.h"
 
 extern ADC_HandleTypeDef hadc2;
-//extern TIM_HandleTypeDef htim2;
-
-__IO uint16_t ADC2ConvertedValues[4] = {0};
+extern TIM_HandleTypeDef htim2;
 
 GPIO_InitTypeDef GPIO_InitStruct;
 ADC_ChannelConfTypeDef sConfig;
@@ -42,21 +40,21 @@ void telemetersInit(void)
 	hadc2.Instance = ADC2;
 	hadc2.Init.ClockPrescaler = ADC_CLOCKPRESCALER_PCLK_DIV2;
 	hadc2.Init.Resolution = ADC_RESOLUTION12b;
-	hadc2.Init.ScanConvMode = DISABLE;
+	hadc2.Init.ScanConvMode = ENABLE;
 	hadc2.Init.ContinuousConvMode = DISABLE;
 	hadc2.Init.DiscontinuousConvMode = DISABLE;
 	hadc2.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
 	hadc2.Init.DataAlign = ADC_DATAALIGN_RIGHT;
 	hadc2.Init.NbrOfConversion = 1;
 	hadc2.Init.DMAContinuousRequests = DISABLE;
-	hadc2.Init.EOCSelection = DISABLE;
+	hadc2.Init.EOCSelection = EOC_SINGLE_CONV;
 	HAL_ADC_Init(&hadc2);
 
 	/**Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time.
 	 */
 	sConfig.Channel = RX_LEFT_FRONT;
 	sConfig.Rank = 1;
-	sConfig.SamplingTime = ADC_SAMPLETIME_144CYCLES;
+	sConfig.SamplingTime = ADC_SAMPLETIME_480CYCLES;
 	HAL_ADC_ConfigChannel(&hadc2, &sConfig);
 
 	telemetersStart();
@@ -65,6 +63,7 @@ void telemetersInit(void)
 void telemetersStart(void)
 {
 	telemeters.active_state = TRUE;
+	telemetersCalibrate();
 }
 
 void telemetersStop(void)
@@ -142,7 +141,6 @@ void telemeters_IT(void)
 	telemeters.selector++;
 	if (telemeters.selector > 3)
 		telemeters.selector = 0;
-	//	HAL_ADCEx_InjectedStart_IT(&hadc2);
 }
 
 void telemeters_ADC_IT(void)

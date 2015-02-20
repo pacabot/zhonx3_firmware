@@ -1,7 +1,7 @@
 /**
   ******************************************************************************
   * File Name          : ADC.c
-  * Date               : 19/02/2015 13:27:08
+  * Date               : 20/02/2015 18:34:41
   * Description        : This file provides code for the configuration
   *                      of the ADC instances.
   ******************************************************************************
@@ -61,8 +61,10 @@ void MX_ADC1_Init(void)
   hadc1.Init.Resolution = ADC_RESOLUTION12b;
   hadc1.Init.ScanConvMode = ENABLE;
   hadc1.Init.ContinuousConvMode = DISABLE;
-  hadc1.Init.DiscontinuousConvMode = DISABLE;
-  hadc1.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
+  hadc1.Init.DiscontinuousConvMode = ENABLE;
+  hadc1.Init.NbrOfDiscConversion = 3;
+  hadc1.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_RISING;
+  hadc1.Init.ExternalTrigConv = ADC_EXTERNALTRIGCONV_T4_CC4;
   hadc1.Init.DataAlign = ADC_DATAALIGN_RIGHT;
   hadc1.Init.NbrOfConversion = 3;
   hadc1.Init.DMAContinuousRequests = ENABLE;
@@ -71,21 +73,21 @@ void MX_ADC1_Init(void)
 
     /**Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time. 
     */
-  sConfig.Channel = ADC_CHANNEL_15;
-  sConfig.Rank = 2;
+  sConfig.Channel = ADC_CHANNEL_7;
+  sConfig.Rank = 1;
   sConfig.SamplingTime = ADC_SAMPLETIME_28CYCLES;
   HAL_ADC_ConfigChannel(&hadc1, &sConfig);
 
     /**Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time. 
     */
-  sConfig.Channel = ADC_CHANNEL_TEMPSENSOR;
+  sConfig.Channel = ADC_CHANNEL_15;
   sConfig.Rank = 3;
   HAL_ADC_ConfigChannel(&hadc1, &sConfig);
 
     /**Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time. 
     */
-  sConfig.Channel = ADC_CHANNEL_7;
-  sConfig.Rank = 1;
+  sConfig.Channel = ADC_CHANNEL_TEMPSENSOR;
+  sConfig.Rank = 2;
   HAL_ADC_ConfigChannel(&hadc1, &sConfig);
 
     /**Configures for the selected ADC injected channel its corresponding rank in the sequencer and its sample time 
@@ -105,8 +107,8 @@ void MX_ADC1_Init(void)
 /* ADC2 init function */
 void MX_ADC2_Init(void)
 {
-  ADC_ChannelConfTypeDef sConfig;
   ADC_InjectionConfTypeDef sConfigInjected;
+  ADC_ChannelConfTypeDef sConfig;
 
     /**Configure the global features of the ADC (Clock, Resolution, Data Alignment and number of conversion) 
     */
@@ -115,46 +117,20 @@ void MX_ADC2_Init(void)
   hadc2.Init.Resolution = ADC_RESOLUTION12b;
   hadc2.Init.ScanConvMode = ENABLE;
   hadc2.Init.ContinuousConvMode = DISABLE;
-  hadc2.Init.DiscontinuousConvMode = ENABLE;
-  hadc2.Init.NbrOfDiscConversion = 4;
+  hadc2.Init.DiscontinuousConvMode = DISABLE;
   hadc2.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
   hadc2.Init.DataAlign = ADC_DATAALIGN_RIGHT;
-  hadc2.Init.NbrOfConversion = 4;
+  hadc2.Init.NbrOfConversion = 1;
   hadc2.Init.DMAContinuousRequests = DISABLE;
-  hadc2.Init.EOCSelection = EOC_SEQ_CONV;
+  hadc2.Init.EOCSelection = EOC_SINGLE_CONV;
   HAL_ADC_Init(&hadc2);
-
-    /**Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time. 
-    */
-  sConfig.Channel = ADC_CHANNEL_5;
-  sConfig.Rank = 4;
-  sConfig.SamplingTime = ADC_SAMPLETIME_3CYCLES;
-  HAL_ADC_ConfigChannel(&hadc2, &sConfig);
-
-    /**Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time. 
-    */
-  sConfig.Channel = ADC_CHANNEL_11;
-  sConfig.Rank = 3;
-  HAL_ADC_ConfigChannel(&hadc2, &sConfig);
-
-    /**Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time. 
-    */
-  sConfig.Channel = ADC_CHANNEL_10;
-  sConfig.Rank = 2;
-  HAL_ADC_ConfigChannel(&hadc2, &sConfig);
-
-    /**Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time. 
-    */
-  sConfig.Channel = ADC_CHANNEL_6;
-  sConfig.Rank = 1;
-  HAL_ADC_ConfigChannel(&hadc2, &sConfig);
 
     /**Configures for the selected ADC injected channel its corresponding rank in the sequencer and its sample time 
     */
   sConfigInjected.InjectedChannel = ADC_CHANNEL_13;
   sConfigInjected.InjectedRank = 2;
   sConfigInjected.InjectedNbrOfConversion = 0;
-  sConfigInjected.InjectedSamplingTime = ADC_SAMPLETIME_3CYCLES;
+  sConfigInjected.InjectedSamplingTime = ADC_SAMPLETIME_15CYCLES;
   sConfigInjected.AutoInjectedConv = DISABLE;
   sConfigInjected.InjectedDiscontinuousConvMode = DISABLE;
   sConfigInjected.InjectedOffset = 0;
@@ -166,12 +142,19 @@ void MX_ADC2_Init(void)
   sConfigInjected.InjectedRank = 1;
   HAL_ADCEx_InjectedConfigChannel(&hadc2, &sConfigInjected);
 
+    /**Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time. 
+    */
+  sConfig.Channel = ADC_CHANNEL_6;
+  sConfig.Rank = 1;
+  sConfig.SamplingTime = ADC_SAMPLETIME_144CYCLES;
+  HAL_ADC_ConfigChannel(&hadc2, &sConfig);
+
 }
 /* ADC3 init function */
 void MX_ADC3_Init(void)
 {
-  ADC_ChannelConfTypeDef sConfig;
   ADC_InjectionConfTypeDef sConfigInjected;
+  ADC_ChannelConfTypeDef sConfig;
 
     /**Configure the global features of the ADC (Clock, Resolution, Data Alignment and number of conversion) 
     */
@@ -180,43 +163,29 @@ void MX_ADC3_Init(void)
   hadc3.Init.Resolution = ADC_RESOLUTION12b;
   hadc3.Init.ScanConvMode = ENABLE;
   hadc3.Init.ContinuousConvMode = DISABLE;
-  hadc3.Init.DiscontinuousConvMode = ENABLE;
-  hadc3.Init.NbrOfDiscConversion = 3;
+  hadc3.Init.DiscontinuousConvMode = DISABLE;
   hadc3.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
   hadc3.Init.DataAlign = ADC_DATAALIGN_RIGHT;
   hadc3.Init.NbrOfConversion = 3;
-  hadc3.Init.DMAContinuousRequests = ENABLE;
-  hadc3.Init.EOCSelection = EOC_SEQ_CONV;
+  hadc3.Init.DMAContinuousRequests = DISABLE;
+  hadc3.Init.EOCSelection = EOC_SINGLE_CONV;
   HAL_ADC_Init(&hadc3);
 
-    /**Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time. 
+    /**Configures for the selected ADC injected channel its corresponding rank in the sequencer and its sample time 
     */
-  sConfig.Channel = ADC_CHANNEL_3;
-  sConfig.Rank = 1;
-  sConfig.SamplingTime = ADC_SAMPLETIME_3CYCLES;
-  HAL_ADC_ConfigChannel(&hadc3, &sConfig);
-
-    /**Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time. 
-    */
-  sConfig.Channel = ADC_CHANNEL_1;
-  sConfig.Rank = 2;
-  HAL_ADC_ConfigChannel(&hadc3, &sConfig);
-
-    /**Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time. 
-    */
-  sConfig.Channel = ADC_CHANNEL_12;
-  sConfig.Rank = 3;
-  HAL_ADC_ConfigChannel(&hadc3, &sConfig);
+  sConfigInjected.InjectedChannel = ADC_CHANNEL_1;
+  sConfigInjected.InjectedRank = 2;
+  sConfigInjected.InjectedNbrOfConversion = 0;
+  sConfigInjected.InjectedSamplingTime = ADC_SAMPLETIME_15CYCLES;
+  sConfigInjected.AutoInjectedConv = DISABLE;
+  sConfigInjected.InjectedDiscontinuousConvMode = DISABLE;
+  sConfigInjected.InjectedOffset = 0;
+  HAL_ADCEx_InjectedConfigChannel(&hadc3, &sConfigInjected);
 
     /**Configures for the selected ADC injected channel its corresponding rank in the sequencer and its sample time 
     */
   sConfigInjected.InjectedChannel = ADC_CHANNEL_3;
   sConfigInjected.InjectedRank = 1;
-  sConfigInjected.InjectedNbrOfConversion = 0;
-  sConfigInjected.InjectedSamplingTime = ADC_SAMPLETIME_56CYCLES;
-  sConfigInjected.AutoInjectedConv = DISABLE;
-  sConfigInjected.InjectedDiscontinuousConvMode = DISABLE;
-  sConfigInjected.InjectedOffset = 0;
   HAL_ADCEx_InjectedConfigChannel(&hadc3, &sConfigInjected);
 
     /**Configures for the selected ADC injected channel its corresponding rank in the sequencer and its sample time 
@@ -225,11 +194,24 @@ void MX_ADC3_Init(void)
   sConfigInjected.InjectedRank = 3;
   HAL_ADCEx_InjectedConfigChannel(&hadc3, &sConfigInjected);
 
-    /**Configures for the selected ADC injected channel its corresponding rank in the sequencer and its sample time 
+    /**Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time. 
     */
-  sConfigInjected.InjectedChannel = ADC_CHANNEL_1;
-  sConfigInjected.InjectedRank = 2;
-  HAL_ADCEx_InjectedConfigChannel(&hadc3, &sConfigInjected);
+  sConfig.Channel = ADC_CHANNEL_3;
+  sConfig.Rank = 1;
+  sConfig.SamplingTime = ADC_SAMPLETIME_15CYCLES;
+  HAL_ADC_ConfigChannel(&hadc3, &sConfig);
+
+    /**Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time. 
+    */
+  sConfig.Channel = ADC_CHANNEL_12;
+  sConfig.Rank = 3;
+  HAL_ADC_ConfigChannel(&hadc3, &sConfig);
+
+    /**Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time. 
+    */
+  sConfig.Channel = ADC_CHANNEL_1;
+  sConfig.Rank = 2;
+  HAL_ADC_ConfigChannel(&hadc3, &sConfig);
 
 }
 
