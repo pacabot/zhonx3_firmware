@@ -454,7 +454,7 @@ void ssd1306PrintInt(unsigned int x, unsigned int y, const char *text, unsigned 
 
 	sprintf(str, "%d     ", val);
 	ssd1306DrawString(x, y, text, font);
-	i = (x + ((nb_char + 1) * font->u8Width));
+	//i = (x + ((nb_char + 1) * font->u8Width));
 	ssd1306DrawString((x + ((nb_char + 1) * font->u8Width)), y, str ,font);
 }
 /**************************************************************************/
