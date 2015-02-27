@@ -43,9 +43,9 @@ void adxrs620Init(void)
 	hadc1.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_RISING;
 	hadc1.Init.ExternalTrigConv = ADC_EXTERNALTRIGCONV_T4_CC4;
 	hadc1.Init.DataAlign = ADC_DATAALIGN_RIGHT;
-	hadc1.Init.NbrOfConversion = 4;
+	hadc1.Init.NbrOfConversion = 3;
 	hadc1.Init.DMAContinuousRequests = ENABLE;
-	hadc1.Init.EOCSelection = EOC_SINGLE_CONV;
+	hadc1.Init.EOCSelection = EOC_SEQ_CONV;
 	HAL_ADC_Init(&hadc1);
 
 	/**Configures for the selected ADC injected channel its corresponding rank in the sequencer and its sample time

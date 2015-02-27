@@ -59,9 +59,9 @@ void straightControlInit(TypeOfSensors Sensor_x)
 	}
 	if(Sensor_x == TELEMETERS)
 	{
-		gyro_pid_instance.Kp = 0.05;
-		gyro_pid_instance.Ki = 0.01;//0.1;
-		gyro_pid_instance.Kd = 0.3;
+		gyro_pid_instance.Kp = 0.02;
+		gyro_pid_instance.Ki = 0.000001;//0.1;
+		gyro_pid_instance.Kd = 0.4;
 		trajectory_control.pid_instance = &gyro_pid_instance;
 		pidControllerInit(trajectory_control.pid_instance);
 	}
@@ -75,7 +75,7 @@ void straightControl_IT(void)
 
 	front_telemeters = (telemeters.left_front.telemeter_value + telemeters.right_front.telemeter_value) / 2;
 
-	if (front_telemeters > 200)
+	if (front_telemeters > 150)
 	{
 		motorsBrake();
 		if (i < 5000)
@@ -84,8 +84,8 @@ void straightControl_IT(void)
 			return;
 		}
 
-		motorSet(&left_motor, DIRECTION_FORWARD, 25, DECAY_FAST);
-		motorSet(&right_motor, DIRECTION_BACKWARD, 25, DECAY_FAST);
+		motorSet(&left_motor, DIRECTION_FORWARD, 30, DECAY_FAST);
+		motorSet(&right_motor, DIRECTION_BACKWARD, 30, DECAY_FAST);
 	}
 	else
 	{

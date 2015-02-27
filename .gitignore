@@ -4,7 +4,18 @@
 .project
 Debug/*
 Release/*
-.settings/*
+.settings*
+
+Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f401xc.h
+Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f401xe.h
+Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f407xx.h
+Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f411xe.h
+Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f415xx.h
+Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f417xx.h
+Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f427xx.h
+Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f429xx.h
+Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f437xx.h
+Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f439xx.h
 
 *.elf
 *.map

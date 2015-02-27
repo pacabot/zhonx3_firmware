@@ -252,17 +252,17 @@ void ssd1306Init(unsigned char vccstate)
 	}
 	else
 	{
-		CMD(0xCF);								// contrast (0-255)
+		CMD(254);								// contrast (0-255)
 	}
 	CMD(SSD1306_NORMALDISPLAY);                 // 0xA6 NORMAL MODE (A7 for inverse display)
-	//	CMD(SSD1306_INVERTDISPLAY);                 // 0xA6 NORMAL MODE (A7 for inverse display)
+	//	CMD(SSD1306_INVERTDISPLAY);             // 0xA6 NORMAL MODE (A7 for inverse display)
 	CMD(SSD1306_DISPLAYALLON_RESUME);           // 0xA4
 	CMD(SSD1306_SETMULTIPLEX);                  // 0xA8
 	CMD(0x3F);                                  // 0x3F 1/64 duty
 	CMD(SSD1306_SETDISPLAYOFFSET);              // 0xD3
 	CMD(0x0);                                   // no offset
 	CMD(SSD1306_SETDISPLAYCLOCKDIV);            // 0xD5
-	CMD(0b10000000);                                  // the suggested ratio 0x80
+	CMD(0b10000000);                            // the suggested ratio 0x80
 	CMD(SSD1306_SETPRECHARGE);                  // 0xd9
 	if (vccstate == SSD1306_EXTERNALVCC)
 	{
@@ -279,8 +279,8 @@ void ssd1306Init(unsigned char vccstate)
 	CMD(SSD1306_MEMORYMODE);                    // 0x20
 	CMD(0x00);                                  // 0x0 act like ks0108
 
-	//	CMD(SSD1306_SEGREMAP | 0x1);				//   For
-	//	CMD(SSD1306_COMSCANDEC);					// Normal display
+	//	CMD(SSD1306_SEGREMAP | 0x1);			//   For
+	//	CMD(SSD1306_COMSCANDEC);				// Normal display
 	CMD(SSD1306_SEGREMAP);					    //   For rotate
 	CMD(SSD1306_COMSCANINC);					// 180 degrees display
 
