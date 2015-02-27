@@ -15,6 +15,7 @@
 #include "config/config.h"
 #include "peripherals/display/ssd1306.h"
 #include "peripherals/gyroscope/adxrs620.h"
+#include "peripherals/multimeter/multimeter.h"
 
 extern ADC_HandleTypeDef hadc1;
 
@@ -32,21 +33,7 @@ void adxrs620Init(void)
 {
 	ADC_InjectionConfTypeDef sConfigInjected;
 
-	/**Configure the global features of the ADC (Clock, Resolution, Data Alignment and number of conversion)
-	 */
-	hadc1.Instance = ADC1;
-	hadc1.Init.ClockPrescaler = ADC_CLOCKPRESCALER_PCLK_DIV2;
-	hadc1.Init.Resolution = ADC_RESOLUTION12b;
-	hadc1.Init.ScanConvMode = ENABLE;
-	hadc1.Init.ContinuousConvMode = DISABLE;
-	hadc1.Init.DiscontinuousConvMode = DISABLE;
-	hadc1.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_RISING;
-	hadc1.Init.ExternalTrigConv = ADC_EXTERNALTRIGCONV_T4_CC4;
-	hadc1.Init.DataAlign = ADC_DATAALIGN_RIGHT;
-	hadc1.Init.NbrOfConversion = 3;
-	hadc1.Init.DMAContinuousRequests = ENABLE;
-	hadc1.Init.EOCSelection = EOC_SEQ_CONV;
-	HAL_ADC_Init(&hadc1);
+	mulimeterInit();
 
 	/**Configures for the selected ADC injected channel its corresponding rank in the sequencer and its sample time
 	 */
