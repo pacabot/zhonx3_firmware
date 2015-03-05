@@ -15,6 +15,8 @@
 #define ROW_HEIGHT			10
 #define MARGIN				10
 
+#define MAX_LINE_IN_MENU	20
+
 
 typedef struct
 {
@@ -26,7 +28,7 @@ typedef struct
 typedef struct
 {
 		char *name;
-		lineItem line[20];
+		lineItem line[MAX_LINE_IN_MENU];
 }menuItem;
 
 int menu(menuItem);

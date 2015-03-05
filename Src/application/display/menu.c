@@ -31,16 +31,14 @@ extern void motorsTest ();
 extern void lineSensorsTest ();
 extern void straightControlTest ();
 /*
- * pour cree un nouveau menu il suffit de
- * créer une nouvelle variable de type "menuItem"
- * la replre de la façon suivente :
+ * to create a new menu you have to create a new variable of type "menuItem" like this :
  * menuItem name =
  * {
- * 		"nom du menu",
+ * 		"menu name",
  * 		{
- * 			{"nom de la ligne 1",'type de l'argument', &(void*) poirteur_sur_l'argument},	// le type est soit 'i' pour un int, soit 'l' pour un long, soit 'm' pour un menu, soit 'f' pour une fonction
- * 			{"nom de la ligne 2",'type de l'argument', &(void*) poirteur_sur_l'argument},	// maximum 20 ligne. si cela ne suffi pas il faut en rajouter dans "menu.h" le typedef menuItem le nombre de case du tableau de "line"
- * 			{0,0,0} 					// la dernière ligne doit absolument être la précédente, cette ligne ne s'affichera pas mais est indispensable. /!\ cette ligne compte dans les 20 ligne du menu
+ * 			{"line 1 name ",'type of argument', &(void*) pointeur_on_argument},		// 'type of argument' could be 'i' for int, or 'l' for long, or 'm' for  a menu, or 'f' for a function
+ * 			{"line 1 name ",'type of argument', &(void*) pointeur_on_argument},		// maximum 20 line. if it's not enough you must add in "menu.h". for that you have to modify "MAX_LINE_IN_MENU"
+ * 			{0,0,0} 					// the last ligne must be this one, this line will be not print but indispensable. /!\ cette ligne compte dans les 20 ligne du menu
  * 		}
  * }
  */
@@ -402,4 +400,18 @@ int modifyLongParam( char *param_name,long *param)
 	}
 
 	return SUCCESS;
+}
+
+void graphMotorSettings (unsigned long *acceleration, unsigned long *maxSpeed, unsigned long *deceleration)
+{
+
+}
+void printGraphMotor (unsigned long acceleration, unsigned long maxSpeed, unsigned long deceleration)
+{
+	char point1[2]={maxSpeed/acceleration,maxSpeed};
+	char point2[2]={64-maxSpeed/deceleration,maxSpeed};
+	ssd1306ClearScreen();
+	ssd1306DrawLine(0,64,point1[0],point1[1]);
+	ssd1306DrawLine(point1[0],point1[1],point2[0],point2[1]);
+	ssd1306DrawLine(point2[0],point2[1],128,64);
 }
