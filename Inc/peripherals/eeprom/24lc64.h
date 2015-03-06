@@ -11,7 +11,12 @@
 #ifndef __24LC64_H__
 #define __24LC64_H__
 
-#include "stdbool.h"
+/* Module Identifier */
+#define E24LC64_DRIVER_MODULE_ID  4
+
+/* Error codes */
+#define E24LC64_DRIVER_E_SUCCESS  0
+#define E24LC64_DRIVER_E_ERROR    MAKE_ERROR(E24LC64_DRIVER_MODULE_ID, 1)
 
 #define WRITE_PROTECT GPIO_PIN_3
 

@@ -10,24 +10,40 @@
 #include <stdio.h>
 #include <stdint.h>
 
+/* STM32 hal library declarations */
 #include "stm32f4xx_hal.h"
 
-#include "stdbool.h"
-#include <arm_math.h>
-
-#include "stm32f4xx_hal.h"
-
+/* General declarations */
 #include "config/basetypes.h"
+#include "config/config.h"
+#include "config/errors.h"
+#include "stdbool.h"
 
+#include <arm_math.h>
+#include <stdio.h>
+#include <math.h>
+
+/* Peripheral declarations */
 #include "peripherals/display/ssd1306.h"
+#include "peripherals/display/smallfonts.h"
 #include "peripherals/expander/pcf8574.h"
-
-#include "peripherals/expander/pcf8574.h"
-#include "middleware/controls/straight_controls/straight_controls.h"
-#include "middleware/controls/pidController/pidController.h"
-
 #include "peripherals/telemeters/telemeters.h"
 #include "peripherals/motors/motors.h"
+
+/* Middleware declarations */
+#include <middleware/controls/pidController/pidController.h>
+
+/* Declarations for this module */
+#include "middleware/controls/straight_controls/straight_controls.h"
+
+/* App definitions */
+
+/* Macros */
+
+/* Static functions */
+
+/* extern variables */
+/* global variables */
 
 /* extern variables ---------------------------------------------------------*/
 struct control control = {0};
@@ -41,7 +57,7 @@ GPIO_InitTypeDef GPIO_InitStruct;
 //extern ADC_HandleTypeDef hadc1;
 float i = 0;
 
-extern volatile float gyro_Current_Angle;
+//extern volatile float gyro_Current_Angle;
 
 int consigne = 0;
 unsigned int Pulses[2] = {0,0};
@@ -115,8 +131,8 @@ void straightControlTest(void)
 	while(expanderJoyState()!=LEFT)
 	{
 		ssd1306ClearScreen();
-		ssd1306PrintInt(10,  25, "Pulses[0] =  ", Pulses[0], &Font_5x8);
-		ssd1306PrintInt(10,  35, "Pulses[1] =  ", Pulses[1], &Font_5x8);
+		ssd1306PrintInt(10,  25, "Pulses[0] =  ",(uint16_t) Pulses[0], &Font_5x8);
+		ssd1306PrintInt(10,  35, "Pulses[1] =  ",(uint16_t) Pulses[1], &Font_5x8);
 		ssd1306Refresh();
 	}
 	antiBounceJoystick();

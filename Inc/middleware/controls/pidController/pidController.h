@@ -1,11 +1,9 @@
 /**************************************************************************/
 /*!
-    @file     expander.h
+    @file    pidController.h
     @author  PLF (PACABOT)
     @date
     @version  0.0
-
-    Driver for expander PCF8574
  */
 /**************************************************************************/
 #ifndef __PIDCONTROLLER_H__

@@ -11,15 +11,31 @@
     (Adafruit Industries) at: https://github.com/adafruit/SSD1306  
  */
 /**************************************************************************/
-#include <string.h>
-#include <stdio.h>
-
+/* STM32 hal library declarations */
 #include "stm32f4xx_hal.h"
 
-#include "peripherals/display/ssd1306.h"
+/* General declarations */
+#include "config/basetypes.h"
+#include "config/config.h"
+#include "config/errors.h"
+
+#include "stdbool.h"
+#include <arm_math.h>
+#include <math.h>
+#include <string.h>
+#include <stdio.h>
+#include <stdint.h>
+
+/* Peripheral declarations */
+#include "peripherals/display/pictures.h"
+#include "peripherals/display/smallfonts.h"
 #include "peripherals/expander/pcf8574.h"
 
+/* Middleware declarations */
 #include "middleware/util/itoa.h"
+
+/* Declarations for this module */
+#include "peripherals/display/ssd1306.h"
 
 // Pin Definitions
 #define RST_PIN                  		GPIO_PIN_3

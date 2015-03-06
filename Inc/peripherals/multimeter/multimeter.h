@@ -9,6 +9,12 @@
 #ifndef __MULTIMETER_H__
 #define __MULTIMETER_H__
 
+/* Module Identifier */
+#define MULTIMETER_DRIVER_MODULE_ID  10
+
+/* Error codes */
+#define MULTIMETER_DRIVER_E_SUCCESS  0
+#define MULTIMETER_DRIVER_E_ERROR    MAKE_ERROR(MULTIMETER_DRIVER_MODULE_ID, 1)
 
 /* Definition for ADCx Channel Pin */
 #define GET_ADC_BAT			GPIO_PIN_0

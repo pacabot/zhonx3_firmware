@@ -9,6 +9,13 @@
 #ifndef __TONE_H__
 #define __TONE_H__
 
+/* Module Identifier */
+#define TONE_DRIVER_MODULE_ID  14
+
+/* Error codes */
+#define TONE_DRIVER_E_SUCCESS  0
+#define TONE_DRIVER_E_ERROR    MAKE_ERROR(TONE_DRIVER_MODULE_ID, 1)
+
 #define c	261
 #define d   294
 #define e   329

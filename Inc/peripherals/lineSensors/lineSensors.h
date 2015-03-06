@@ -9,6 +9,12 @@
 #ifndef __LINESENSORS_H__
 #define __LINESENSORS_H__
 
+/* Module Identifier */
+#define LINESENSORS_DRIVER_MODULE_ID  8
+
+/* Error codes */
+#define LINESENSORS_DRIVER_E_SUCCESS  0
+#define LINESENSORS_DRIVER_E_ERROR    MAKE_ERROR(LINESENSORS_DRIVER_MODULE_ID, 1)
 
 /* Definition for ADCx GPIO Pin */
 #define TX_LINESENSORS				GPIO_PIN_2		//PA2
