@@ -10,8 +10,13 @@
 #define __SSD1306_H__
 
 #include "peripherals/display/smallfonts.h"
-#include "peripherals/display/pictures.h"
-#include "peripherals/expander/pcf8574.h"
+
+/* Module Identifier */
+#define SSD1306_DRIVER_MODULE_ID  3
+
+/* Error codes */
+#define SSD1306_DRIVER_E_SUCCESS  0
+#define SSD1306_DRIVER_E_ERROR    MAKE_ERROR(SSD1306_DRIVER_MODULE_ID, 1)
 
 #define SSD1306_LCDWIDTH                  (128)
 #define SSD1306_LCDHEIGHT                 (64)

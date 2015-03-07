@@ -23,13 +23,17 @@
 /***************                 Gyro definitions                  ********************/
 /**************************************************************************************/
 #define GYRO_VRATIO				3300.00	//Gyro is running at 3300mV
-#define GYRO_ROUT				90.00  	//90KHz Rout
+#define GYRO_ROUT				90.00  	//90Kohm Rout
 #define GYRO_SENSITIVITY		6.00   	//Our example gyro is 6mV/deg/sec @5V
 #define ROTATION_THRESHOLD		1.00   	//Minimum deg/sec to keep track of - helps with gyro drifting
 
 #define GYRO_ZERO_VOLTAGE		(GYRO_VRATIO/2.00) 	//Gyro is zeroed at Vrate/2 (mV)
+#ifdef GYRO_ROUT
 #define GYRO_OUTPUT_RATIO	    (GYRO_ROUT/(GYRO_ROUT+180.00)) 	//output resistor ratio (low-pass filter)
-#define GYRO_OUT_SENSITIVITY	(GYRO_OUTPUT_RATIO*(GYRO_VRATIO/5000.00)*GYRO_SENSITIVITY) 	//1,32mV/deg/sec (3.3v R 60K)
+#else
+#define GYRO_OUTPUT_RATIO	    1 	//output resistor ratio (low-pass filter)
+#endif
+#define GYRO_OUT_SENSITIVITY	(GYRO_OUTPUT_RATIO*(GYRO_VRATIO/5000.00)*GYRO_SENSITIVITY) 	//1,32mV/deg/sec (3.3v Req 60K)
 #define GYRO_COEFF		        (GYRO_VRATIO/(4095.00*GYRO_OUT_SENSITIVITY*GYRO_TIME_FREQ)) //integration multiplier coeff
 
 #define GYRO_T_SENSITIVITY 		9.00   //The temperature coefficient is ~9 mV/°C at 25°C
@@ -47,7 +51,7 @@
 #define STM32_T_COEFF_B			((-STM32_T_V25/STM32_T_SENSITIVITY)+25)
 
 /**************************************************************************************/
-/***************                 	VBAT                           ********************/
+/***************                    	VBAT                       ********************/
 /**************************************************************************************/
 #define VBAT_R1_BRIDGE			20.00	//High bridge resistor (Kohms)
 #define VBAT_R2_BRIDGE			10.00	//low bridge resistor(Kohms)
@@ -72,6 +76,34 @@
 #define BATTERY_LOWER_VOLTAGE_NO_LOAD		(3.6 * BATTERY_CELL_NUMBER)
 #define BATTERY_UPPER_VOLTAGE_NO_LOAD		(4.2 * BATTERY_CELL_NUMBER)
 #define BATTERY_LOWER_VOLTAGE_OFFSET		(-0.10 * BATTERY_CELL_NUMBER)	//-0.1V/A
+
+/**************************************************************************************/
+/***************                 Mechanical Constants              ********************/
+/**************************************************************************************/
+#define WHEEL_DIAMETER			24.75	//Wheel diameter in millimeters
+#define HUNTING_DISTANCE		83.50	//Distance between the 2 wheels
+#define	GEAR_RATIO				(50.00/15.00)	//wheel gear teeth per motor gear teeth
+#define ENCODER_RESOLUTION  	2047	//Number steps per revolution (IE512)
+
+#define STEPS_PER_WHEEL_REV		(ENCODER_RESOLUTION*GEAR_RATIO)	//Number steps per wheel revolution
+#define MM_PER_WHEEL_REV		((M_PI) * (WHEEL_DIAMETER))		//Number of millimeters per wheel revolution
+#define STEPS_PER_MM			((STEPS_PER_WHEEL_REV) / (MM_PER_WHEEL_REV))	//Number of steps per millimeter
+
+/**************************************************************************************/
+/***************                   Maze Properties                 ********************/
+/**************************************************************************************/
+#define CELL_LENGTH				178
+
+/**************************************************************************************/
+/***************                 Physical Constants                ********************/
+/**************************************************************************************/
+#define MAX_SEARCH_SPEED		1000	//mm/s
+#define MAX_RUN_SPEED			2000	//mm/s
+#define MAX_TURN_SPEED			500		//mm/s
+
+#define ACCELERATION			1000	//mm/s²
+#define DECELERATION			1000	//mm/s²
+#define MAX_ACCELERATION		13500	//mm/s²
 
 #endif // __CONFIG_H__
 

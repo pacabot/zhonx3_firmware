@@ -6,13 +6,30 @@
     @version  0.0
  */
 /**************************************************************************/
+/* STM32 hal library declarations */
 #include "stm32f4xx_hal.h"
 
+/* General declarations */
+#include "config/basetypes.h"
+#include "config/config.h"
+#include "config/errors.h"
+
+#include "stdbool.h"
+#include <arm_math.h>
+#include <math.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdint.h>
 
-#include "middleware/util/itoa.h"
+/* Peripheral declarations */
+#include "peripherals/display/ssd1306.h"
+#include "peripherals/display/smallfonts.h"
+#include "peripherals/expander/pcf8574.h"
+#include "peripherals/telemeters/telemeters.h"
+
+/* Middleware declarations */
+
+/* Declarations for this module */
 #include "peripherals/tone/tone.h"
 
 void imperialMarch(void);
@@ -82,12 +99,17 @@ void toneSetVolulme(int volume)
 void toneTest(void)
 {
 	toneSetVolulme(100);
+	telemetersInit();
 	imperialMarch();
+//	while(1)
+//	{
+//		tone(telemeters.left_diag.telemeter_value/10, 2);
+//		toneSetVolulme(telemeters.right_diag.telemeter_value/20);
+//	}
 }
 
 void imperialMarch()
 {
-
 	//Play first section
 	tone(a, 500);
 	tone(a, 500);

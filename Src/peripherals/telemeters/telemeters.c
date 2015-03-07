@@ -6,20 +6,35 @@
     @version  0.0
  */
 /**************************************************************************/
+/* STM32 hal library declarations */
 #include "stm32f4xx_hal.h"
 
+/* General declarations */
+#include "config/basetypes.h"
+#include "config/config.h"
+#include "config/errors.h"
+
+#include "stdbool.h"
+#include <arm_math.h>
+#include <math.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdint.h>
 
-#include "config/errors.h"
-#include "config/basetypes.h"
+/* Peripheral declarations */
 #include "peripherals/display/ssd1306.h"
+#include "peripherals/display/smallfonts.h"
+#include "peripherals/expander/pcf8574.h"
+
+/* Middleware declarations */
+
+/* Declarations for this module */
 #include "peripherals/telemeters/telemeters.h"
 
+/* extern variables */
 extern ADC_HandleTypeDef hadc2;
-extern TIM_HandleTypeDef htim2;
 
+/* global variables */
 GPIO_InitTypeDef GPIO_InitStruct;
 ADC_ChannelConfTypeDef sConfig;
 

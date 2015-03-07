@@ -6,18 +6,31 @@
     @version  0.10
  */
 /**************************************************************************/
-#include <middleware/controls/pidController/pidController.h>
+/* STM32 hal library declarations */
 #include "stm32f4xx_hal.h"
 
+/* General declarations */
+#include "config/basetypes.h"
+#include "config/config.h"
+#include "config/errors.h"
+
+#include "stdbool.h"
+#include <arm_math.h>
+#include <math.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdint.h>
 
-#include "peripherals/gyroscope/adxrs620.h"
-#include "peripherals/telemeters/telemeters.h"
-#include "peripherals/lineSensors/lineSensors.h"
+/* Peripheral declarations */
+#include "peripherals/display/ssd1306.h"
+#include "peripherals/display/smallfonts.h"
+#include "peripherals/expander/pcf8574.h"
+
+/* Middleware declarations */
+#include "middleware/controls/pidController/pidController.h"
+
+/* Declarations for this module */
 #include "peripherals/times_base/times_base.h"
-#include "config/config.h"
 
 extern TIM_HandleTypeDef htim2;
 extern TIM_HandleTypeDef htim4;

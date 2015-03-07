@@ -9,6 +9,13 @@
 #ifndef __MOTORS_H__
 #define __MOTORS_H__
 
+/* Module Identifier */
+#define MOTORS_DRIVER_MODULE_ID  9
+
+/* Error codes */
+#define MOTORS_DRIVER_E_SUCCESS  0
+#define MOTORS_DRIVER_E_ERROR    MAKE_ERROR(MOTORS_DRIVER_MODULE_ID, 1)
+
 typedef struct
 {
 	uint32_t IN1;
@@ -35,7 +42,6 @@ typedef struct
 #define RIGHT_MOTOR_IN2 	TIM_CHANNEL_4
 
 extern motor left_motor;
-
 extern motor right_motor;
 
 void motorsInit(void);

@@ -8,15 +8,29 @@
     Driver for expander PCF8574
  */
 /**************************************************************************/
-#include <string.h>
-#include <stdio.h>
-
+/* STM32 hal library declarations */
 #include "stm32f4xx_hal.h"
+
+/* General declarations */
 #include "config/basetypes.h"
-#include "peripherals/display/ssd1306.h"
-#include "peripherals/expander/pcf8574.h"
+#include "config/config.h"
+#include "config/errors.h"
 
 #include "stdbool.h"
+#include <arm_math.h>
+#include <math.h>
+#include <string.h>
+#include <stdio.h>
+#include <stdint.h>
+
+/* Peripheral declarations */
+#include "peripherals/display/ssd1306.h"
+#include "peripherals/display/smallfonts.h"
+
+/* Middleware declarations */
+
+/* Declarations for this module */
+#include "peripherals/expander/pcf8574.h"
 
 /* extern variables ---------------------------------------------------------*/
 extern I2C_HandleTypeDef hi2c1;
