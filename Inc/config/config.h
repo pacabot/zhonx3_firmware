@@ -101,7 +101,7 @@
 #define MAX_RUN_SPEED			2000	//mm/s
 #define MAX_TURN_SPEED			500		//mm/s
 
-#define ACCELERATION			1000	//mm/s²
+#define ACCELERATION			1.0		//mm/s²
 #define DECELERATION			1000	//mm/s²
 #define MAX_ACCELERATION		13500	//mm/s²
 
