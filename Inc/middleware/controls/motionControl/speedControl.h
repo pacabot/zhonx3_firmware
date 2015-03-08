@@ -19,16 +19,20 @@
 /* Types definitions */
 typedef struct
 {
-    uint8_t error_control;
-	int16_t old_speed2;
-    int16_t current_speed2;
+	float speed_consigne;
+    float error_control;
+	float old_speed2;
+	float old_speed;
+    float current_speed;
+    float current_speed2;
     int16_t maintain_speed;
-    uint32_t total_cnt;
-    uint32_t old_cnt;
-    uint32_t current_cnt;
+    float total_cnt;
+    float old_cnt;
+    float current_cnt;
     uint32_t maintain_cnt;
-    uint32_t step_distance;
+    float step_distance;
     float mm_distance;
+    CONTROL_DEF speed;
 }speed_control_struct;
 
 int speedControl_Init(void);

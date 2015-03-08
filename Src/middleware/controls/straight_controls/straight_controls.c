@@ -29,9 +29,12 @@
 #include "peripherals/expander/pcf8574.h"
 #include "peripherals/telemeters/telemeters.h"
 #include "peripherals/motors/motors.h"
+#include "peripherals/encoders/ie512.h"
+
 
 /* Middleware declarations */
 #include <middleware/controls/pidController/pidController.h>
+#include <middleware/controls/motionControl/speedControl.h>
 
 /* Declarations for this module */
 #include "middleware/controls/straight_controls/straight_controls.h"
@@ -123,11 +126,13 @@ void straightControl_IT(void)
 void straightControlTest(void)
 {
 	motorsInit();
-	telemetersInit();
-	straightControlInit(TELEMETERS);
-	control.start_state = TRUE;
+	encodersInit();
+	speedControl_Init();
+//	telemetersInit();
+//	straightControlInit(TELEMETERS);
+//	control.start_state = TRUE;
 	motorsSleepDriver(OFF);
-
+//
 	while(expanderJoyState()!=LEFT)
 	{
 		ssd1306ClearScreen();
