@@ -802,7 +802,7 @@ void ssd1306Test(void)
 	ssd1306DrawLine(5, 45, 70, 60);
 	ssd1306DrawLine(70, 45, 20, 6);
 	ssd1306Refresh();
-	HAL_Delay(15500);
+	HAL_Delay(5500);
 	ssd1306ClearScreen();
 
 	for (i = 0; i <= 100; i+=2)
