@@ -53,6 +53,7 @@ float32_t pidController(arm_pid_instance_f32 * instance, float32_t error)
 
 void pidController_IT(void)
 {
-	if (control.start_state == TRUE)
-		straightControl_IT();
+	mainControlLoop();
+//	if (control.start_state == TRUE)
+//		straightControl_IT();
 }

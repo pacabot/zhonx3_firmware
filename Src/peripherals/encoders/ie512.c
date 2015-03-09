@@ -6,13 +6,29 @@
     @version  0.0
  */
 /**************************************************************************/
+/* STM32 hal library declarations */
 #include "stm32f4xx_hal.h"
 
+/* General declarations */
+#include "config/basetypes.h"
+#include "config/config.h"
+#include "config/errors.h"
+
+#include "stdbool.h"
+#include <arm_math.h>
+#include <math.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdint.h>
 
+/* Peripheral declarations */
 #include "peripherals/display/ssd1306.h"
+#include "peripherals/display/smallfonts.h"
+#include "peripherals/expander/pcf8574.h"
+
+/* Middleware declarations */
+
+/* Declarations for this module */
 #include "peripherals/encoders/ie512.h"
 
 extern TIM_HandleTypeDef htim1;
@@ -22,8 +38,24 @@ extern TIM_HandleTypeDef htim3;
 /* Structure init                                                 */
 /**************************************************************************/
 // Global variable
-ENCODER_DEF left_encoder         = {0, 0};   // left encoder structure
-ENCODER_DEF right_encoder        = {0, 0};   // right encoder structure
+
+encoder left_encoder =
+{
+		0,
+		0,
+		0,
+		0,
+		&htim1
+};
+
+encoder right_encoder =
+{
+		0,
+		0,
+		0,
+		0,
+		&htim3
+};
 
 void encodersInit(void)
 {
@@ -75,6 +107,9 @@ void encodersInit(void)
 	HAL_TIM_Base_Start_IT(&htim3);
 
 	HAL_TIM_Encoder_Start(&htim3, TIM_CHANNEL_1);
+
+	left_encoder.mot_rev_cnt = 0;
+	right_encoder.mot_rev_cnt = 0;
 }
 
 void encoderLeft_IT(void)
@@ -82,10 +117,10 @@ void encoderLeft_IT(void)
 	switch (__HAL_TIM_DIRECTION_STATUS(&htim1))
 	{
 	case 1 :
-		--left_encoder.nb_revolutions;
+		--left_encoder.mot_rev_cnt;
 		break;
 	case 0 :
-		++left_encoder.nb_revolutions;
+		++left_encoder.mot_rev_cnt;
 		break;
 	}
 }
@@ -95,31 +130,64 @@ void encoderRight_IT(void)
 	switch (__HAL_TIM_DIRECTION_STATUS(&htim3))
 	{
 	case 1 :
-		--right_encoder.nb_revolutions;
+		--right_encoder.mot_rev_cnt;
 		break;
 	case 0 :
-		++right_encoder.nb_revolutions;
+		++right_encoder.mot_rev_cnt;
 		break;
 	}
+}
+
+/*  encoderResetDistance
+ *  set offset to current absolute distance
+ *  offset in millimeters
+*/
+int encoderResetDistance(encoder *enc)
+{
+	enc->offset_dist = 	((((float)enc->mot_rev_cnt * (float)ENCODER_RESOLUTION) +
+			((float)__HAL_TIM_GetCounter(enc->timer))) /
+			(float)STEPS_PER_MM);
+	return IE512_DRIVER_E_SUCCESS;
+}
+
+/*  encoderGetDistance
+ *  return current relative distance and set absolute distance
+ *  distance in millimeters
+*/
+float encoderGetDistance(encoder *enc)
+{
+	enc->rel_dist = (((((float)enc->mot_rev_cnt * (float)ENCODER_RESOLUTION) +
+			((float)__HAL_TIM_GetCounter(enc->timer))) /
+			(float)STEPS_PER_MM) -
+			(float)enc->offset_dist);
+	enc->abs_dist = ((((float)enc->mot_rev_cnt * (float)ENCODER_RESOLUTION) +
+			((float)__HAL_TIM_GetCounter(enc->timer))) /
+			(float)STEPS_PER_MM);
+	return enc->rel_dist;
 }
 
 // test encoder
 void encoderTest(void)
 {
 	encodersInit();
+	encoderResetDistance(&left_encoder);
+	encoderResetDistance(&right_encoder);
 
 	while(expanderJoyState()!=LEFT)
 	{
 		ssd1306ClearScreen();
-		//		  ssd1306PrintInt(0, 6, "REV = ", toto, &Font_3x6);
-		//		  ssd1306PrintInt(0, 13, "CNT = ",  (&htim1)->Instance->CNT, &Font_3x6);
-		ssd1306PrintInt(0, 7, "L_REV =  ", left_encoder.nb_revolutions, &Font_3x6);
-		ssd1306PrintInt(0, 14, "L_CNT =  ",  __HAL_TIM_GetCounter(&htim1), &Font_3x6);
-		ssd1306PrintInt(0, 21, "L_DIR =  ",  __HAL_TIM_DIRECTION_STATUS(&htim1), &Font_3x6);
 
-		ssd1306PrintInt(0, 35, "R_REV =  ", right_encoder.nb_revolutions, &Font_3x6);
-		ssd1306PrintInt(0, 42, "R_CNT =  ",  __HAL_TIM_GetCounter(&htim3), &Font_3x6);
-		ssd1306PrintInt(0, 49, "R_DIR =  ",  __HAL_TIM_DIRECTION_STATUS(&htim3), &Font_3x6);
+		ssd1306PrintInt(0, 5,  "L_DIST_REL =  ",(signed int) encoderGetDistance(&left_encoder), &Font_5x8);
+		ssd1306PrintInt(0, 15, "L_DIST_ABS =  ",(signed int) left_encoder.abs_dist, &Font_5x8);
+
+		ssd1306PrintInt(0, 25, "R_DIST_REL =  ",(signed int) encoderGetDistance(&right_encoder), &Font_5x8);
+		ssd1306PrintInt(0, 35, "R_DIST_ABS =  ",(signed int) right_encoder.abs_dist, &Font_5x8);
+	    ssd1306DrawString(1, 53, "PRESS 'RIGHT' TO RESET REL. DIST.", &Font_3x6);
+		if (expanderJoyState() == RIGHT)
+		{
+			encoderResetDistance(&left_encoder);
+			encoderResetDistance(&right_encoder);
+		}
 		ssd1306Refresh();
 		HAL_Delay(10);
 	}

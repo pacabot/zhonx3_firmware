@@ -9,12 +9,19 @@
 #ifndef __ADXRS620_H__
 #define __ADXRS620_H__
 
-#include "config/config.h"
+/* Module Identifier */
+#define ADXRS620_DRIVER_MODULE_ID  7
+
+/* Error codes */
+#define ADXRS620_DRIVER_E_SUCCESS  0
+#define ADXRS620_DRIVER_E_ERROR    MAKE_ERROR(ADXRS620_DRIVER_MODULE_ID, 1)
 
 /* Types definitions */
 typedef struct
 {
     uint16_t adc_value;
+    uint16_t max_adc_value;
+    uint16_t min_adc_value;
     uint16_t calibration_current_cycle;
     uint16_t calibration_nb_cycle;
     uint32_t callback_cnt;

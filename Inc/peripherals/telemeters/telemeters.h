@@ -9,6 +9,12 @@
 #ifndef __TELEMETERS_H__
 #define __TELEMETERS_H__
 
+/* Module Identifier */
+#define TELEMETERS_DRIVER_MODULE_ID  12
+
+/* Error codes */
+#define TELEMETERS_DRIVER_E_SUCCESS  0
+#define TELEMETERS_DRIVER_E_ERROR    MAKE_ERROR(TELEMETERS_DRIVER_MODULE_ID, 1)
 
 /* Definition for ADCx Channel Pin */
 #define TX_LEFT_FRONT				GPIO_PIN_1

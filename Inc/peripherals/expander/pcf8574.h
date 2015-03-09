@@ -11,7 +11,12 @@
 #ifndef __PCF8574_H__
 #define __PCF8574_H__
 
-#include "stdbool.h"
+/* Module Identifier */
+#define PCF8574_DRIVER_MODULE_ID  6
+
+/* Error codes */
+#define PCF8574_DRIVER_E_SUCCESS  0
+#define PCF8574_DRIVER_E_ERROR    MAKE_ERROR(PCF8574_DRIVER_MODULE_ID, 1)
 
 #define UP 		1
 #define DOWN 	2

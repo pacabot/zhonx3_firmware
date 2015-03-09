@@ -1,9 +1,9 @@
 /**************************************************************************/
 /*!
     @file     ssd1306.c
-    @author   K. Townsend (microBuilder.eu)
-    @date     22 March 2010
-    @version  0.10
+    @author   PLF
+    @date     08 March 2015
+    @version  1.00
 
     Driver for 128x64 OLED display based on the SSD1306 controller.
 
@@ -11,15 +11,32 @@
     (Adafruit Industries) at: https://github.com/adafruit/SSD1306  
  */
 /**************************************************************************/
-#include <string.h>
-#include <stdio.h>
-
+/* STM32 hal library declarations */
 #include "stm32f4xx_hal.h"
 
-#include "peripherals/display/ssd1306.h"
+/* General declarations */
+#include "config/basetypes.h"
+#include "config/config.h"
+#include "config/errors.h"
+
+#include "stdbool.h"
+#include <arm_math.h>
+#include <math.h>
+#include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdint.h>
+
+/* Peripheral declarations */
+#include "peripherals/display/pictures.h"
+#include "peripherals/display/smallfonts.h"
 #include "peripherals/expander/pcf8574.h"
 
+/* Middleware declarations */
 #include "middleware/util/itoa.h"
+
+/* Declarations for this module */
+#include "peripherals/display/ssd1306.h"
 
 // Pin Definitions
 #define RST_PIN                  		GPIO_PIN_3
@@ -454,7 +471,7 @@ void ssd1306PrintInt(unsigned int x, unsigned int y, const char *text, unsigned 
 
 	sprintf(str, "%d     ", val);
 	ssd1306DrawString(x, y, text, font);
-	i = (x + ((nb_char + 1) * font->u8Width));
+	//i = (x + ((nb_char + 1) * font->u8Width));
 	ssd1306DrawString((x + ((nb_char + 1) * font->u8Width)), y, str ,font);
 }
 /**************************************************************************/
@@ -708,52 +725,44 @@ void ssd1306DrawRect(unsigned char x, unsigned char y, unsigned char w, unsigned
 	}
 }
 /**************************************************************************/
+// bresenham's algorithm - thx wikpedia
 void ssd1306DrawLine(unsigned char x0, unsigned char y0, unsigned char x1, unsigned char y1)
 {
-	unsigned char steep = (y1 - y0) > (x1 - x0);
-	if (steep)
-	{
-		swap(x0, y0);
-		swap(x1, y1);
-	}
+  uint8_t steep = abs(y1 - y0) > abs(x1 - x0);
+  if (steep) {
+    swap(x0, y0);
+    swap(x1, y1);
+  }
 
-	if (x0 > x1)
-	{
-		swap(x0, x1);
-		swap(y0, y1);
-	}
+  if (x0 > x1) {
+    swap(x0, x1);
+    swap(y0, y1);
+  }
 
-	unsigned char dx, dy;
-	dx = x1 - x0;
-	dy = (y1 - y0);
+  uint8_t dx, dy;
+  dx = x1 - x0;
+  dy = abs(y1 - y0);
 
-	char err = dx / 2;
-	char ystep;
+  int8_t err = dx / 2;
+  int8_t ystep;
 
-	if (y0 < y1)
-	{
-		ystep = 1;
-	} else
-	{
-		ystep = -1;
-	}
+  if (y0 < y1) {
+    ystep = 1;
+  } else {
+    ystep = -1;}
 
-	for (; x0 < x1; x0++)
-	{
-		if (steep)
-		{
-			ssd1306DrawPixel(y0, x0);
-		} else
-		{
-			ssd1306DrawPixel(x0, y0);
-		}
-		err -= dy;
-		if (err < 0)
-		{
-			y0 += ystep;
-			err += dx;
-		}
-	}
+  for (; x0<x1; x0++) {
+    if (steep) {
+    	ssd1306DrawPixel(y0, x0);
+    } else {
+    	ssd1306DrawPixel(x0, y0);
+    }
+    err -= dy;
+    if (err < 0) {
+      y0 += ystep;
+      err += dx;
+    }
+  }
 }
 
 void ssd1306ProgressBar(unsigned char x, unsigned char y, unsigned char state)
@@ -791,6 +800,7 @@ void ssd1306Test(void)
 	ssd1306DrawRect(110, 3, 15, 6);
 	ssd1306FillRect(1, 60, 10, 20);
 	ssd1306DrawLine(5, 45, 70, 60);
+	ssd1306DrawLine(70, 45, 20, 6);
 	ssd1306Refresh();
 	HAL_Delay(5500);
 	ssd1306ClearScreen();

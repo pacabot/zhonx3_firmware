@@ -6,16 +6,31 @@
     @version  0.0
  */
 /**************************************************************************/
+/* STM32 hal library declarations */
 #include "stm32f4xx_hal.h"
 
+/* General declarations */
+#include "config/basetypes.h"
+#include "config/config.h"
+#include "config/errors.h"
+
+#include "stdbool.h"
+#include <arm_math.h>
+#include <math.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdint.h>
 
-#include "config/config.h"
+/* Peripheral declarations */
 #include "peripherals/display/ssd1306.h"
-#include "peripherals/gyroscope/adxrs620.h"
+#include "peripherals/display/smallfonts.h"
+#include "peripherals/expander/pcf8574.h"
 #include "peripherals/multimeter/multimeter.h"
+
+/* Middleware declarations */
+
+/* Declarations for this module */
+#include "peripherals/gyroscope/adxrs620.h"
 
 extern ADC_HandleTypeDef hadc1;
 
@@ -59,6 +74,8 @@ void adxrs620Calibrate(int nb_ech)
 	gyro.beta = 0;
 	gyro.callback_cnt = 0;
 	gyro.calibration_state = 0;
+	gyro.max_adc_value = 0;
+	gyro.min_adc_value = 0;
 }
 
 /*## ADC Gyroscope callback for angle computing  #################################*/
@@ -67,22 +84,30 @@ void adxrs620Calibrate(int nb_ech)
 	      ----------------------------------------------------------------------- */
 void adxrs620_ADC_IT(void)
 {
+	uint32_t gyro_adc = 0;
 	if (gyro.calibration_state == 0)
 	{
 		if (gyro.calibration_current_cycle < gyro.calibration_nb_cycle)
 		{
 			gyro.calibration_current_cycle ++;
-			gyro.beta += (GYRO_COEFF*HAL_ADCEx_InjectedGetValue(&hadc1, ADC_INJECTED_RANK_1));
+			gyro.beta += (GYRO_COEFF*(gyro_adc += HAL_ADCEx_InjectedGetValue(&hadc1, ADC_INJECTED_RANK_1)));
 		}
 		else
 		{
 			gyro.calibration_state = 1;
 			gyro.beta /= gyro.calibration_current_cycle;
+			gyro_adc /= gyro.calibration_current_cycle;
+			gyro.max_adc_value = gyro_adc;
+			gyro.min_adc_value = gyro_adc;
 		}
 	}
 	else if (gyro.calibration_state == 1)
 	{
-		gyro.current_angle += (GYRO_COEFF*HAL_ADCEx_InjectedGetValue(&hadc1, ADC_INJECTED_RANK_1)) - gyro.beta;  //optimized gyro integration DMA
+		gyro.current_angle += (GYRO_COEFF*(gyro_adc = HAL_ADCEx_InjectedGetValue(&hadc1, ADC_INJECTED_RANK_1))) - gyro.beta;  //optimized gyro integration DMA
+		if (gyro_adc > gyro.max_adc_value)
+			gyro.max_adc_value = gyro_adc;
+		if (gyro_adc < gyro.min_adc_value)
+			gyro.min_adc_value = gyro_adc;
 		gyro.callback_cnt++;
 	}
 }
@@ -96,8 +121,11 @@ void adxrs620Test(void)
 		ssd1306PrintInt(10,  5,  "Angle =  ", (int32_t) gyro.current_angle, &Font_5x8);
 		ssd1306PrintInt(10,  15,  "cnt =  ", (int32_t) gyro.callback_cnt/1000, &Font_5x8);
 
-		ssd1306PrintInt(10,  35,  "Beta =  ", (volatile double) (gyro.beta * 1000), &Font_5x8);
-		ssd1306DrawString(80,  35,  ".10^-3", &Font_5x8);
+		ssd1306PrintInt(10,  25,  "max ADC =  ", (int32_t) gyro.max_adc_value, &Font_5x8);
+		ssd1306PrintInt(10,  35,  "min ADC =  ", (int32_t) gyro.min_adc_value, &Font_5x8);
+
+		ssd1306PrintInt(10,  45,  "Beta =  ", (volatile double) (gyro.beta * 1000), &Font_5x8);
+		ssd1306DrawString(80,  55,  ".10^-3", &Font_5x8);
 		ssd1306Refresh();
 	}
 }
