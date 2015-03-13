@@ -67,7 +67,7 @@ void timesBaseInit(void)
 	      ----------------------------------------------------------------------- */
 
 	  /* Compute the prescaler value to have TIM7 counter clock equal to 10 KHz */
-	  uwPrescalerValue = (uint32_t) ((SystemCoreClock /2) / (HI_TIME_FREQ * 2)) - 1;
+	  uwPrescalerValue = (uint32_t) ((SystemCoreClock /2) / (HI_TIME_FREQ * 2));
 	  htim7.Instance = TIM7;
 	  htim7.Init.Prescaler =  uwPrescalerValue;
 	  htim7.Init.CounterMode = TIM_COUNTERMODE_UP;
@@ -81,7 +81,7 @@ void timesBaseInit(void)
 
 	  HAL_TIM_Base_Start_IT(&htim7);
 
-	  uwPrescalerValue = (uint32_t) ((SystemCoreClock /2) / (LOW_TIME_FREQ * 100)) - 1;
+	  uwPrescalerValue = (uint32_t) ((SystemCoreClock /2) / (LOW_TIME_FREQ * 100));
 
 	  htim6.Instance = TIM6;
 	  htim6.Init.Prescaler =  uwPrescalerValue;
@@ -107,7 +107,7 @@ void timesBaseInit(void)
 	 	     ----------------------------------------------------------------------- */
 
 	 	  /* Compute the prescaler value to have TIM5 counter clock equal to 10 KHz */
-	  uwPrescalerValue = (uint32_t) ((SystemCoreClock /2) / (GYRO_TIME_FREQ * 100)) - 1;
+	  uwPrescalerValue = (uint32_t) ((SystemCoreClock /2) / (GYRO_TIME_FREQ * 100));
 
 	  htim5.Instance = TIM5;
 	  htim5.Init.Prescaler =  uwPrescalerValue;
@@ -133,7 +133,7 @@ void timesBaseInit(void)
 	 	     ----------------------------------------------------------------------- */
 
  	  /* Compute the prescaler value to have TIM2 counter clock equal to 10 KHz */
-	  uwPrescalerValue = (uint32_t) ((SystemCoreClock /2) / (TELEMETERS_TIME_FREQ * 100)) - 1;
+	  uwPrescalerValue = (uint32_t) ((SystemCoreClock /2) / (TELEMETERS_TIME_FREQ * 100));
 
 	  htim2.Instance = TIM2;
 	  htim2.Init.Prescaler =  uwPrescalerValue;
@@ -158,7 +158,7 @@ void timesBaseInit(void)
 	 	     ----------------------------------------------------------------------- */
 
  	  /* Compute the prescaler value to have TIM4 counter clock equal to 1 Hz */
-	  uwPrescalerValue = (uint32_t) ((SystemCoreClock /2) / (MULTIMMETER_TIME_FREQ * 10000)) - 1;
+	  uwPrescalerValue = (uint32_t) ((SystemCoreClock /2) / (MULTIMMETER_TIME_FREQ * 10000));
 
 	  htim4.Instance = TIM4;
 	  htim4.Init.Prescaler = uwPrescalerValue;

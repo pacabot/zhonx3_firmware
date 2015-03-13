@@ -24,8 +24,6 @@ typedef struct
 
 #define MOTORS_TIMER		htim8
 
-#define DIRECTION_FORWARD	1
-#define DIRECTION_BACKWARD	0
 #define DECAY_SLOW			1
 #define DECAY_FAST			0
 
@@ -46,7 +44,7 @@ extern motor right_motor;
 
 void motorsInit(void);
 void motorsSleepDriver(int isOn);
-void motorSet(motor *mot, int isForward, int duty, int isSlowDecay);
+void motorSet(motor *mot, int duty, int isSlowDecay);
 void motorsBrake(void);
 void motorsTest(void);
 

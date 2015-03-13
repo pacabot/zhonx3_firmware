@@ -39,6 +39,6 @@ int speedControl_Init(void);
 int speedControl(void);
 int speedAcc(uint32_t initial_speed, uint32_t distance);
 int speedDcc(uint32_t final_speed, uint32_t distance);
-int speedMaintain(uint32_t distance);
+int speedMaintain(float speed);
 
 #endif
