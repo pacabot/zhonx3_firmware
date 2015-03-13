@@ -108,7 +108,6 @@ int main(void)
 	ssd1306Init(0);
 	timesBaseInit();
 	ledPowerBlink(990, 10, 0);
-
 	while (1)
 		menu(mainMenu);
 

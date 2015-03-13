@@ -88,7 +88,7 @@ void straightControlInit(TypeOfSensors Sensor_x)
 
 void straightControl_IT(void)
 {
-	static int consigne = 10;
+	static int consigne = 100;
 	static int front_telemeters = 0;
 	static int i = 0;
 
@@ -103,8 +103,8 @@ void straightControl_IT(void)
 			return;
 		}
 
-		motorSet(&left_motor, DIRECTION_FORWARD, 30, DECAY_FAST);
-		motorSet(&right_motor, DIRECTION_BACKWARD, 30, DECAY_FAST);
+		motorSet(&left_motor, 300, DECAY_FAST);
+		motorSet(&right_motor, 300, DECAY_FAST);
 	}
 	else
 	{
@@ -118,8 +118,8 @@ void straightControl_IT(void)
 		//	Pulses[0] = consigne;
 		//	Pulses[1] = consigne;
 
-		motorSet(&left_motor, DIRECTION_FORWARD, Pulses[0], DECAY_FAST);
-		motorSet(&right_motor, DIRECTION_FORWARD, Pulses[1], DECAY_FAST);
+		motorSet(&left_motor, Pulses[0], DECAY_FAST);
+		motorSet(&right_motor, Pulses[1], DECAY_FAST);
 	}
 }
 
@@ -130,7 +130,7 @@ void straightControlTest(void)
 	speedControl_Init();
 //	telemetersInit();
 //	straightControlInit(TELEMETERS);
-//	control.start_state = TRUE;
+	control.start_state = TRUE;
 	motorsSleepDriver(OFF);
 //
 	while(expanderJoyState()!=LEFT)

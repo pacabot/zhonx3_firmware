@@ -18,6 +18,7 @@
 #define GYRO_TIME_FREQ			1000
 #define LINESENSORS_TIME_FREQ	GYRO_TIME_FREQ //same timer
 #define MULTIMMETER_TIME_FREQ	0.1
+#define MOTORS_FREQ				20000	//motor pwm freq
 
 /**************************************************************************************/
 /***************                 Gyro definitions                  ********************/
@@ -101,7 +102,7 @@
 #define MAX_RUN_SPEED			2000	//mm/s
 #define MAX_TURN_SPEED			500		//mm/s
 
-#define ACCELERATION			1.0		//mm/s²
+#define ACCELERATION			0.01		//mm/s²
 #define DECELERATION			1000	//mm/s²
 #define MAX_ACCELERATION		13500	//mm/s²
 
