@@ -51,7 +51,7 @@ static int Pulses[2] = {0,0};
 int speedControl_Init(void)
 {
 	int rv;
-	encoder_pid_instance.Kp = 500.0;
+	encoder_pid_instance.Kp = 5.0;
 	encoder_pid_instance.Ki = 0;//0.000001;//0.1;
 	encoder_pid_instance.Kd = 0;//0.4;
 
