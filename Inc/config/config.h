@@ -24,7 +24,7 @@
 /***************                 Gyro definitions                  ********************/
 /**************************************************************************************/
 #define GYRO_VRATIO				3300.00	//Gyro is running at 3300mV
-#define GYRO_ROUT				90.00  	//90Kohm Rout
+#define GYRO_ROUT				90.90  	//90.9Kohm Rout
 #define GYRO_SENSITIVITY		6.00   	//Our example gyro is 6mV/deg/sec @5V
 #define ROTATION_THRESHOLD		1.00   	//Minimum deg/sec to keep track of - helps with gyro drifting
 
@@ -102,7 +102,7 @@
 #define MAX_RUN_SPEED			2000	//mm/s
 #define MAX_TURN_SPEED			500		//mm/s
 
-#define ACCELERATION			0.01		//mm/s²
+#define ACCELERATION			100.00	//mm/s²
 #define DECELERATION			1000	//mm/s²
 #define MAX_ACCELERATION		13500	//mm/s²
 
