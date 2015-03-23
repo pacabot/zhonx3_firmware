@@ -109,8 +109,6 @@ int main(void)
 	timesBaseInit();
 	ledPowerBlink(990, 10, 0);
 
-	speedControlTest();
-
 	while (1)
 		menu(mainMenu);
 

@@ -24,10 +24,9 @@
 
 #include <arm_math.h>
 #include <middleware/controls/pidController/pidController.h>
-#include "middleware/controls/mainControl/mainControl.h"
+#include "middleware/controls/motionControl/mainControl.h"
 
 /* extern variables ---------------------------------------------------------*/
-extern struct control control;
 /* global variables ---------------------------------------------------------*/
 
 GPIO_InitTypeDef GPIO_InitStruct;

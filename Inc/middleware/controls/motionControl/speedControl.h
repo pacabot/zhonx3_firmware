@@ -23,21 +23,15 @@ typedef struct
 	float gap_distance_per_loop;	//distance between two control loop call
 	float old_distance;				//effective distance at the previous call
     float current_speed;
-
 	float speed_consigne;
+	float distance_consigne;
 	float speed_error;
-    float correction;
-	float old_speed2;
-	float old_speed;
-    float current_speed2;
-    int16_t maintain_speed;
-    float total_cnt;
-    float old_cnt;
-    float current_cnt;
-    uint32_t maintain_cnt;
-    float step_distance;
+	float speed_command;
+
     CONTROL_DEF speed;
 }speed_control_struct;
+
+extern speed_control_struct speed_control;
 
 int speedControl_Init(void);
 int speedControl(void);
