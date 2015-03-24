@@ -16,4 +16,7 @@
 #define POSITION_CONTROL_E_SUCCESS  0
 #define POSITION_CONTROL_E_ERROR    MAKE_ERROR(POSITION_CONTROL_MODULE_ID, 1)
 
+/* Exported functions */
+int positionControl(void);
+
 #endif

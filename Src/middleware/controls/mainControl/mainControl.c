@@ -14,7 +14,7 @@
 #include "config/config.h"
 #include "config/errors.h"
 
-#include "stdbool.h"
+//#include "stdbool.h"
 #include <arm_math.h>
 #include <math.h>
 #include <string.h>
@@ -28,6 +28,8 @@
 
 /* Middleware declarations */
 #include "middleware/controls/pidController/pidController.h"
+#include "middleware/controls/motionControl/speedControl.h"
+#include "middleware/controls/motionControl/positionControl.h"
 
 /* Declarations for this module */
 #include "middleware/controls/mainControl/mainControl.h"
@@ -35,6 +37,8 @@
 int mainControlLoop(void)
 {
 	int rv;
+
+	UNUSED(rv);
 
 	speedControl();
 	positionControl();

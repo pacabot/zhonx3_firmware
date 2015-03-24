@@ -125,8 +125,9 @@ void straightControl_IT(void)
 
 void straightControlTest(void)
 {
-	motorsInit();
 	encodersInit();
+	motorsInit();
+//	encodersInit();
 	speedControl_Init();
 //	telemetersInit();
 //	straightControlInit(TELEMETERS);

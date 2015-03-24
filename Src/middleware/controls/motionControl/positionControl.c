@@ -44,5 +44,8 @@
 int positionControl(void)
 {
 	int rv;
+
+	UNUSED(rv);
+
 	return POSITION_CONTROL_E_SUCCESS;
 }

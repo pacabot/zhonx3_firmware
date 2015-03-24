@@ -43,7 +43,7 @@ extern void straightControlTest ();
 /*
  * pour cree un nouveau menu il suffit de
  * créer une nouvelle variable de type "menuItem"
- * la replre de la façon suivente :
+ * la replre de la façon suivante :
  * menuItem name =
  * {
  * 		"nom du menu",

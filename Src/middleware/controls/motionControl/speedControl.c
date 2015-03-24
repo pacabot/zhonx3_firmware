@@ -26,13 +26,14 @@
 #include "peripherals/display/smallfonts.h"
 #include "peripherals/expander/pcf8574.h"
 #include "peripherals/encoders/ie512.h"
-#include "peripherals/motors/motors.h"
 
 /* Middleware declarations */
 #include "middleware/controls/pidController/pidController.h"
 
 /* Declarations for this module */
 #include "middleware/controls/motionControl/speedControl.h"
+
+#include "peripherals/motors/motors.h"
 
 /* App definitions */
 
@@ -55,8 +56,8 @@ int speedControl_Init(void)
 	encoder_pid_instance.Ki = 0;//0.000001;//0.1;
 	encoder_pid_instance.Kd = 0;//0.4;
 
-	speed_control.old_cnt = 0;
-	speed_control.current_cnt = 0;
+	UNUSED(rv);
+
 	speed_control.maintain_cnt = 0;
 	speed_control.old_speed2 = 0;
 	speed_control.current_speed2 = 0;
@@ -67,7 +68,6 @@ int speedControl_Init(void)
 	speed_control.speed.pid_instance = &encoder_pid_instance;
 
 	pidControllerInit(speed_control.speed.pid_instance);
-
 
 	encoderResetDistance(&left_encoder);
 	encoderResetDistance(&right_encoder);
@@ -83,6 +83,8 @@ int speedControl(void)
 	int get_correction;
 	//	int consigne = 20;
 
+	UNUSED(rv);
+
 	//current_cnt = speed_control.old_cnt - (encoderGetDistance(&left_encoder) + encoderGetDistance(&right_encoder) / 2);
 	current_cnt = (encoderGetDistance(&left_encoder) + encoderGetDistance(&right_encoder) / 2);
 
@@ -95,10 +97,8 @@ int speedControl(void)
 
 	get_correction = pidController(speed_control.speed.pid_instance, speed_error);
 
-
 	Pulses[1] = -1 * get_correction;
 	Pulses[0] = -1 * get_correction;
-
 
 	motorSet(&left_motor, Pulses[0], DECAY_FAST);
 	motorSet(&right_motor, Pulses[1], DECAY_FAST);
@@ -109,21 +109,26 @@ int speedControl(void)
 int speedAcc(uint32_t initial_speed, uint32_t distance)
 {
 	int rv;
+
+	UNUSED(rv);
 	return SPEED_CONTROL_E_SUCCESS;
 }
 
 int speedDcc(uint32_t final_speed, uint32_t distance)
 {
 	int rv;
+	UNUSED(rv);
 	return SPEED_CONTROL_E_SUCCESS;
 }
 
 int speedMaintain(float speed)
 {
 	int rv;
-	float current_cnt;
-	float speed_error;
-	int get_correction;
+	float32_t current_cnt;
+	float32_t speed_error;
+	float32_t get_correction;
+
+	UNUSED(rv);
 
 	if (speed == 0)
 	{
@@ -131,11 +136,10 @@ int speedMaintain(float speed)
 
 		speed_error = current_cnt;
 
-		get_correction = pidController(speed_control.speed.pid_instance, speed_error);
+		get_correction = -pidController(speed_control.speed.pid_instance, speed_error);
 
-		Pulses[1] = -1 * get_correction;
-		Pulses[0] = -1 * get_correction;
-
+		Pulses[1] = get_correction;
+		Pulses[0] = get_correction;
 
 		motorSet(&left_motor, Pulses[0], DECAY_FAST);
 		motorSet(&right_motor, Pulses[1], DECAY_FAST);
