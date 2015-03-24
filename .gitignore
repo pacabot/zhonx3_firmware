@@ -30,3 +30,4 @@ Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f439xx.h
 *.swo
 *.orig
 /Debug/
+/Release/

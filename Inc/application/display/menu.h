@@ -36,5 +36,7 @@ void menuHighlightedMove(unsigned char y, unsigned char max_y);
 void displayMenu(menuItem menu,int first_line);
 int modifyBoolParam( char *param_name, unsigned char *param);
 int modifyLongParam( char *param_name,long *param);
+void graphMotorSettings (float *acceleration, float *maxSpeed, float *deceleration);
+void printGraphMotor (float acceleration, float maxSpeed, float deceleration);
 
 #endif /* MENU_H_ */
