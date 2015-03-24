@@ -34,6 +34,6 @@ typedef struct
 extern position_control_struct position_control;
 
 int positionControl_Init(void);
-int positionControl(void);
+int positionControlLoop(void);
 
 #endif

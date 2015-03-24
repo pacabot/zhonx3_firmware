@@ -78,7 +78,7 @@ int speedControl_Init(void)
 	return SPEED_CONTROL_E_SUCCESS;
 }
 
-int speedControl(void)
+int speedControlLoop(void)
 {
 	//	int consigne = 20;
 

@@ -41,8 +41,9 @@
 
 int mainControlLoop(void)
 {
-	speedControl();
-	positionControl();
+	speedControlLoop();
+	positionControlLoop();
+	transfertFunctionLoop();
 
 	return MAIN_CONTROL_E_SUCCESS;
 }

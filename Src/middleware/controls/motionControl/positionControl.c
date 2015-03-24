@@ -76,7 +76,7 @@ int positionControl_Init(void)
 }
 
 
-int positionControl(void)
+int positionControlLoop(void)
 {
 	return POSITION_CONTROL_E_SUCCESS;
 }
