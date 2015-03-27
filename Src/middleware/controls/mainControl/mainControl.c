@@ -1,6 +1,6 @@
 /**************************************************************************/
 /*!
-    @file    positionControl.c
+    @file    mainControl.c
     @author  PLF (PACABOT)
     @date
     @version  0.0
@@ -14,7 +14,7 @@
 #include "config/config.h"
 #include "config/errors.h"
 
-#include "stdbool.h"
+//#include "stdbool.h"
 #include <arm_math.h>
 #include <math.h>
 #include <string.h>
@@ -28,24 +28,26 @@
 
 /* Middleware declarations */
 #include "middleware/controls/pidController/pidController.h"
-
-/* Declarations for this module */
+#include "middleware/controls/motionControl/speedControl.h"
 #include "middleware/controls/motionControl/positionControl.h"
 
-/* App definitions */
+/* Declarations for this module */
+#include "middleware/controls/mainControl/mainControl.h"
 
-/* Macros */
-
-/* Static functions */
-
-/* extern variables */
-/* global variables */
-
-int positionControl(void)
+int mainControlLoop(void)
 {
 	int rv;
 
 	UNUSED(rv);
 
-	return POSITION_CONTROL_E_SUCCESS;
+	speedControl();
+	positionControl();
+
+	return MAIN_CONTROL_E_SUCCESS;
 }
+
+void mainControlTest(void)
+{
+
+}
+
