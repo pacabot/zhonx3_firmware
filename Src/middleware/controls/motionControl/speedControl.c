@@ -89,7 +89,7 @@ int speedControl(void)
 	current_cnt = (encoderGetDistance(&left_encoder) + encoderGetDistance(&right_encoder) / 2);
 
 	speed_control.old_cnt = current_cnt;
-	speed_control.current_speed = (current_cnt * HI_TIME_FREQ);
+	speed_control.current_speed = (current_cnt * (float)HI_TIME_FREQ);
 	speed_control.speed_consigne += (ACCELERATION / (float)HI_TIME_FREQ);
 
 	//speed_error = speed_control.speed_consigne - (float)speed_control.current_speed;
