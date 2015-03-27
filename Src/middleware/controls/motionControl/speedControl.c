@@ -52,7 +52,7 @@ arm_pid_instance_f32 encoder_pid_instance;
 
 int speedControlInit(void)
 {
-	encoder_pid_instance.Kp = 700.0;
+	encoder_pid_instance.Kp = 900.0;
 	encoder_pid_instance.Ki = 0;
 	encoder_pid_instance.Kd = 800;
 
@@ -111,12 +111,14 @@ int speedAcc(void)
 
 int speedDcc(void)
 {
-	if (speed_control.current_distance >= (speed_params.accel_dist + speed_params.maintain_dist))
+	if (speed_control.current_distance > (speed_params.accel_dist + speed_params.maintain_dist))
 	{
 		speed_control.speedType = DCC;
 		speed_control.speed_consign -= (speed_params.decel / (float)HI_TIME_FREQ);								//speed consigne (mm/s)
-		if (speed_control.speed_consign <= 0.0)
+		if (speed_control.speed_consign < 0.0)
+		{
 			speed_control.speed_consign = 0;
+		}
 	}
 
 	return SPEED_CONTROL_E_SUCCESS;
