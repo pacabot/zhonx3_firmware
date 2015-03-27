@@ -85,7 +85,7 @@ void straightMove(float distance, enum speedRate speed_rate)
 	float acceleration_distance;
 	float deceleration_distance;
 
-	speed_params.max_speed 	= (MAX_SPEED  * speed_rate)/10.0;
+	speed_params.max_speed 	= (MAX_SPEED  * speed_rate)/10.0; //
 	speed_params.accel 		= (MAX_ACCEL * speed_rate)/10.0;
 	speed_params.decel 		= (MAX_DECEL * speed_rate)/10.0;
 
