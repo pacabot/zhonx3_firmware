@@ -24,7 +24,7 @@
 /***************                 Gyro definitions                  ********************/
 /**************************************************************************************/
 #define GYRO_VRATIO				3300.00	//Gyro is running at 3300mV
-#define GYRO_ROUT				90.00  	//90Kohm Rout
+#define GYRO_ROUT				90.90  	//90.9Kohm Rout
 #define GYRO_SENSITIVITY		6.00   	//Our example gyro is 6mV/deg/sec @5V
 #define ROTATION_THRESHOLD		1.00   	//Minimum deg/sec to keep track of - helps with gyro drifting
 
@@ -98,13 +98,20 @@
 /**************************************************************************************/
 /***************                 Physical Constants                ********************/
 /**************************************************************************************/
-#define MAX_SEARCH_SPEED		1000	//mm/s
-#define MAX_RUN_SPEED			2000	//mm/s
-#define MAX_TURN_SPEED			500		//mm/s
+#define MAX_SPEED				2000.0	//mm/s
+#define MAX_ACCEL				5000.0	//mm/s²
+#define MAX_DECEL				2000.0	//mm/s²
 
-#define ACCELERATION			0.01		//mm/s²
-#define DECELERATION			1000	//mm/s²
-#define MAX_ACCELERATION		13500	//mm/s²
+#define MAX_TURN_SPEED			500.0		//mm/s
+
+/**************************************************************************************/
+/***************                 Motors Constants                  ********************/
+/**************************************************************************************/
+
+#define PWM_RATIO_COEFF_A		(-0.50/6000.00)	//compute pwm ratio for limit motor voltage
+#define PWM_RATIO_COEFF_B		1.5				//PWM_RATIO_COEFF_A * battery voltage + PWM_RATIO_COEFF_B = TRUE MOTOR PWM
+
+#define MOTORS_PERIOD			1000
 
 #endif // __CONFIG_H__
 

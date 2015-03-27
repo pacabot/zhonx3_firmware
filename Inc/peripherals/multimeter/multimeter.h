@@ -40,7 +40,7 @@ typedef struct
 	char get_vbat_state;
 } multimeter_struct;
 
-volatile multimeter_struct multimeter;
+extern volatile multimeter_struct multimeter;
 
 void mulimeterInit(void);
 void multimeter_IT(void);

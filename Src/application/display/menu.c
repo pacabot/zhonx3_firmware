@@ -39,7 +39,7 @@ extern void telemetersTest ();
 extern void toneTest ();
 extern void motorsTest ();
 extern void lineSensorsTest ();
-extern void straightControlTest ();
+extern void mainControlTest ();
 /*
  * pour cree un nouveau menu il suffit de
  * créer une nouvelle variable de type "menuItem"
@@ -95,7 +95,7 @@ menuItem mainMenu =
 				{"Maze menu",'m',			(void*)&maze_menu },
 				{"Parameters",'m',			(void*)&parameters_menu},
 				{"Test menu",'m',			(void*)&tests_menu},
-				{"Straight Test",'f',		(void*)&straightControlTest},
+				{"mainControl Test",'f',		(void*)&mainControlTest},
 				{0,0,0}
 		}
 };

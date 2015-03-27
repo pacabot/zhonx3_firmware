@@ -23,8 +23,6 @@
 #include "peripherals/tone/tone.h"
 #include "peripherals/times_base/times_base.h"
 
-#include "middleware/controls/straight_controls/straight_controls.h"
-
 #include "application/display/menu.h"
 
 #include <stdlib.h>
