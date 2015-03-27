@@ -26,14 +26,17 @@
 #include "peripherals/display/smallfonts.h"
 #include "peripherals/expander/pcf8574.h"
 #include "peripherals/encoders/ie512.h"
+#include "peripherals/motors/motors.h"
 
 /* Middleware declarations */
 #include "middleware/controls/pidController/pidController.h"
+#include "middleware/controls/motionControl/positionControl.h"
+#include "middleware/controls/motionControl/speedControl.h"
+#include "middleware/controls/motionControl/mainControl.h"
+#include "middleware/controls/motionControl/transfertFunction.h"
 
 /* Declarations for this module */
 #include "middleware/controls/motionControl/speedControl.h"
-
-#include "peripherals/motors/motors.h"
 
 /* App definitions */
 
@@ -44,30 +47,29 @@
 /* extern variables */
 /* global variables */
 speed_control_struct speed_control;
-CONTROL_DEF speed_control_pid;
+pid_control_struct speed_control_pid;
 arm_pid_instance_f32 encoder_pid_instance;
 
-static int Pulses[2] = {0,0};
-
-int speedControl_Init(void)
+int speedControlInit(void)
 {
-	int rv;
-	encoder_pid_instance.Kp = 5.0;
-	encoder_pid_instance.Ki = 0;//0.000001;//0.1;
-	encoder_pid_instance.Kd = 0;//0.4;
+	encoder_pid_instance.Kp = 700.0;
+	encoder_pid_instance.Ki = 0;
+	encoder_pid_instance.Kd = 800;
 
-	UNUSED(rv);
+	speed_control.current_distance = 0;
+	speed_control.gap_distance_per_loop = 0;
+	speed_control.current_distance_consign = 0;
+	speed_control.old_distance = 0;
+	speed_control.current_speed = 0;
 
-	speed_control.maintain_cnt = 0;
-	speed_control.old_speed2 = 0;
-	speed_control.current_speed2 = 0;
-	speed_control.maintain_speed = 0;
-	speed_control.step_distance = 0;
-	speed_control.mm_distance = 0;
-	speed_control.speed_consigne = 0;
-	speed_control.speed.pid_instance = &encoder_pid_instance;
+	speed_control.speed_error = 0;
+	speed_control.speed_command = 0;
+	speed_control.speed_consign = 0;
 
-	pidControllerInit(speed_control.speed.pid_instance);
+	speed_control.speed_pid.instance = &encoder_pid_instance;
+
+	pidControllerInit(speed_control.speed_pid.instance);
+
 
 	encoderResetDistance(&left_encoder);
 	encoderResetDistance(&right_encoder);
@@ -75,75 +77,55 @@ int speedControl_Init(void)
 	return SPEED_CONTROL_E_SUCCESS;
 }
 
-int speedControl(void)
+int speedControlLoop(void)
 {
-	int rv;
-	float current_cnt;
-	float speed_error;
-	int get_correction;
-	//	int consigne = 20;
+	speed_control.current_distance = (encoderGetDistance(&left_encoder) + encoderGetDistance(&right_encoder)) / 2;
+	speedCompute();
 
-	UNUSED(rv);
+	speedAcc();
+	speedDcc();
 
-	//current_cnt = speed_control.old_cnt - (encoderGetDistance(&left_encoder) + encoderGetDistance(&right_encoder) / 2);
-	current_cnt = (encoderGetDistance(&left_encoder) + encoderGetDistance(&right_encoder) / 2);
+	speed_control.current_distance_consign += (speed_control.speed_consign / (float)HI_TIME_FREQ);
 
-	speed_control.old_cnt = current_cnt;
-	speed_control.current_speed = (current_cnt * (float)HI_TIME_FREQ);
-	speed_control.speed_consigne += (ACCELERATION / (float)HI_TIME_FREQ);
+	speed_control.speed_error = speed_control.current_distance_consign - speed_control.current_distance;		//for distance control
+	speed_control.speed_command = pidController(speed_control.speed_pid.instance, speed_control.speed_error);
 
-	//speed_error = speed_control.speed_consigne - (float)speed_control.current_speed;
-	speed_error = current_cnt;
+	if (speed_control.speed_consign < 0.0)
+		speed_control.speed_consign = 0;
 
-	get_correction = pidController(speed_control.speed.pid_instance, speed_error);
-
-	Pulses[1] = -1 * get_correction;
-	Pulses[0] = -1 * get_correction;
-
-	motorSet(&left_motor, Pulses[0], DECAY_FAST);
-	motorSet(&right_motor, Pulses[1], DECAY_FAST);
+	speed_control.old_distance = speed_control.current_distance;
 
 	return SPEED_CONTROL_E_SUCCESS;
 }
 
-int speedAcc(uint32_t initial_speed, uint32_t distance)
+int speedAcc(void)
 {
-	int rv;
-
-	UNUSED(rv);
-	return SPEED_CONTROL_E_SUCCESS;
-}
-
-int speedDcc(uint32_t final_speed, uint32_t distance)
-{
-	int rv;
-	UNUSED(rv);
-	return SPEED_CONTROL_E_SUCCESS;
-}
-
-int speedMaintain(float speed)
-{
-	int rv;
-	float32_t current_cnt;
-	float32_t speed_error;
-	float32_t get_correction;
-
-	UNUSED(rv);
-
-	if (speed == 0)
+	if (speed_control.current_distance <= speed_params.accel_dist)
 	{
-		current_cnt = (encoderGetDistance(&left_encoder) + encoderGetDistance(&right_encoder) / 2);
-
-		speed_error = current_cnt;
-
-		get_correction = -pidController(speed_control.speed.pid_instance, speed_error);
-
-		Pulses[1] = get_correction;
-		Pulses[0] = get_correction;
-
-		motorSet(&left_motor, Pulses[0], DECAY_FAST);
-		motorSet(&right_motor, Pulses[1], DECAY_FAST);
+		speed_control.speedType = ACC;
+		speed_control.speed_consign += (speed_params.accel / (float)HI_TIME_FREQ);								//speed consigne (mm/s)
 	}
+
+	return SPEED_CONTROL_E_SUCCESS;
+}
+
+int speedDcc(void)
+{
+	if (speed_control.current_distance >= (speed_params.accel_dist + speed_params.maintain_dist))
+	{
+		speed_control.speedType = DCC;
+		speed_control.speed_consign -= (speed_params.decel / (float)HI_TIME_FREQ);								//speed consigne (mm/s)
+		if (speed_control.speed_consign <= 0.0)
+			speed_control.speed_consign = 0;
+	}
+
+	return SPEED_CONTROL_E_SUCCESS;
+}
+
+int speedCompute(void)
+{
+	speed_control.gap_distance_per_loop = speed_control.current_distance - speed_control.old_distance;	//delta distance per loop
+	speed_control.current_speed = (speed_control.gap_distance_per_loop * (float)HI_TIME_FREQ);			//actual speed (mm/s)
 
 	return SPEED_CONTROL_E_SUCCESS;
 }
