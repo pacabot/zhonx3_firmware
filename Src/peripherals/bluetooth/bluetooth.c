@@ -31,18 +31,33 @@
 /* Declarations for this module */
 #include "peripherals/bluetooth/bluetooth.h"
 
+#define BLUETOOTH_BUFFER_SIZE 1024
+
 extern UART_HandleTypeDef huart3;
 
-void bluetoothPrintf(const char *format, ...)
+
+int bluetoothPrintf(const char *format, ...)
 {
-	char buffer[1024];
+	char buffer[BLUETOOTH_BUFFER_SIZE];
 	va_list va_args;
 
 	va_start(va_args, format);
-    vsnprintf(buffer, 1024, format, va_args);
+    vsnprintf(buffer, BLUETOOTH_BUFFER_SIZE, format, va_args);
     va_end(va_args);
 
-    HAL_UART_Transmit(&huart3, (unsigned char *)buffer, strlen(buffer), 1000);
+    return HAL_UART_Transmit(&huart3, (unsigned char *)buffer, strlen(buffer), 1000);
+}
+
+int bluetoothSend(unsigned char *data, int length)
+{
+	return HAL_UART_Transmit(&huart3, data, length, 1000);
+}
+
+int bluetoothReceive(unsigned char *data)
+{
+	// TODO: Implement this function if necessary
+
+	return BLUETOOTH_DRIVER_E_SUCCESS;
 }
 
 void bluetoothPrintString(const char *text)
