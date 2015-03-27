@@ -27,13 +27,13 @@ typedef struct
 	float rotation_error;
 	float position_command;
 
-    CONTROL_DEF position;
+    pid_control_struct position_pid;
 }position_control_struct;
 
 
 extern position_control_struct position_control;
 
-int positionControl_Init(void);
+int positionControlInit(void);
 int positionControlLoop(void);
 
 #endif

@@ -47,7 +47,7 @@
 /* global variables */
 position_control_struct position_control;
 
-int positionControl_Init(void)
+int positionControlInit(void)
 {
 //	encoder_pid_instance.Kp = 700.0;
 //	encoder_pid_instance.Ki = 0;//0.000001;//0.1;

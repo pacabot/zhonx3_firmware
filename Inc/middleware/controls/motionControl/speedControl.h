@@ -17,27 +17,30 @@
 #define SPEED_CONTROL_E_ERROR    MAKE_ERROR(SPEED_CONTROL_MODULE_ID, 1)
 
 /* Types definitions */
+
+enum speedType { ACC, DCC, STOP, MAINTAIN };
+
 typedef struct
 {
 	float current_distance;			//distance (mm) since the control start
 	float gap_distance_per_loop;	//distance between two control loop call
+	float current_distance_consign;		//distance consign for current loop
 	float old_distance;				//effective distance at the previous call
     float current_speed;
-	float speed_consigne;
-	float distance_consigne;
+	float speed_consign;
 	float speed_error;
 	float speed_command;
+	enum speedType speedType;
 
-    CONTROL_DEF speed;
+    pid_control_struct speed_pid;
 }speed_control_struct;
 
 extern speed_control_struct speed_control;
 
-int speedControl_Init(void);
+int speedControlInit(void);
 int speedControlLoop(void);
-int speedAcc(uint32_t initial_speed, uint32_t distance);
-int speedDcc(uint32_t final_speed, uint32_t distance);
-int speedMaintain(float speed);
-void speedControlTest(void);
+int speedAcc(void);
+int speedDcc(void);
+int speedCompute(void);
 
 #endif

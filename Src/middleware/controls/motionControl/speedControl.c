@@ -47,29 +47,28 @@
 /* extern variables */
 /* global variables */
 speed_control_struct speed_control;
-CONTROL_DEF speed_control_pid;
+pid_control_struct speed_control_pid;
 arm_pid_instance_f32 encoder_pid_instance;
 
-int speedControl_Init(void)
+int speedControlInit(void)
 {
 	encoder_pid_instance.Kp = 700.0;
-	encoder_pid_instance.Ki = 0;//0.000001;//0.1;
-	encoder_pid_instance.Kd = 800;//0.4;
+	encoder_pid_instance.Ki = 0;
+	encoder_pid_instance.Kd = 800;
 
 	speed_control.current_distance = 0;
 	speed_control.gap_distance_per_loop = 0;
+	speed_control.current_distance_consign = 0;
 	speed_control.old_distance = 0;
 	speed_control.current_speed = 0;
 
 	speed_control.speed_error = 0;
 	speed_control.speed_command = 0;
-	speed_control.speed_consigne = 0;
+	speed_control.speed_consign = 0;
 
-	speed_control.distance_consigne = 0;
+	speed_control.speed_pid.instance = &encoder_pid_instance;
 
-	speed_control.speed.pid_instance = &encoder_pid_instance;
-
-	pidControllerInit(speed_control.speed.pid_instance);
+	pidControllerInit(speed_control.speed_pid.instance);
 
 
 	encoderResetDistance(&left_encoder);
@@ -80,42 +79,53 @@ int speedControl_Init(void)
 
 int speedControlLoop(void)
 {
-	//	int consigne = 20;
-
 	speed_control.current_distance = (encoderGetDistance(&left_encoder) + encoderGetDistance(&right_encoder)) / 2;
+	speedCompute();
 
-	speed_control.gap_distance_per_loop = speed_control.current_distance - speed_control.old_distance;	//delta distance per loop
-	speed_control.current_speed = (speed_control.gap_distance_per_loop * (float)HI_TIME_FREQ);			//actual speed (mm/s)
-	//	speed_control.speed_error = speed_control.speed_consigne - speed_control.current_speed;				//for speed control
+	speedAcc();
+	speedDcc();
 
-	speed_control.speed_consigne += (ACCELERATION / (float)HI_TIME_FREQ);								//speed consigne (mm/s)
-	speed_control.distance_consigne += (speed_control.speed_consigne / (float)HI_TIME_FREQ);
+	speed_control.current_distance_consign += (speed_control.speed_consign / (float)HI_TIME_FREQ);
 
-	speed_control.speed_error = speed_control.distance_consigne - speed_control.current_distance;		//for distance control
+	speed_control.speed_error = speed_control.current_distance_consign - speed_control.current_distance;		//for distance control
+	speed_control.speed_command = pidController(speed_control.speed_pid.instance, speed_control.speed_error);
 
-	speed_control.speed_command = pidController(speed_control.speed.pid_instance, speed_control.speed_error);
+	if (speed_control.speed_consign < 0.0)
+		speed_control.speed_consign = 0;
 
 	speed_control.old_distance = speed_control.current_distance;
 
 	return SPEED_CONTROL_E_SUCCESS;
 }
 
-int speedAcc(uint32_t initial_speed, uint32_t distance)
+int speedAcc(void)
 {
+	if (speed_control.current_distance <= speed_params.accel_dist)
+	{
+		speed_control.speedType = ACC;
+		speed_control.speed_consign += (speed_params.accel / (float)HI_TIME_FREQ);								//speed consigne (mm/s)
+	}
+
 	return SPEED_CONTROL_E_SUCCESS;
 }
 
-int speedDcc(uint32_t final_speed, uint32_t distance)
+int speedDcc(void)
 {
+	if (speed_control.current_distance >= (speed_params.accel_dist + speed_params.maintain_dist))
+	{
+		speed_control.speedType = DCC;
+		speed_control.speed_consign -= (speed_params.decel / (float)HI_TIME_FREQ);								//speed consigne (mm/s)
+		if (speed_control.speed_consign <= 0.0)
+			speed_control.speed_consign = 0;
+	}
+
 	return SPEED_CONTROL_E_SUCCESS;
 }
 
-int speedMaintain(float speed)
+int speedCompute(void)
 {
+	speed_control.gap_distance_per_loop = speed_control.current_distance - speed_control.old_distance;	//delta distance per loop
+	speed_control.current_speed = (speed_control.gap_distance_per_loop * (float)HI_TIME_FREQ);			//actual speed (mm/s)
+
 	return SPEED_CONTROL_E_SUCCESS;
-}
-
-void speedControlTest(void)
-{
-
 }
