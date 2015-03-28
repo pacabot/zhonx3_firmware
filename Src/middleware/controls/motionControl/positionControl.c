@@ -25,6 +25,7 @@
 #include "peripherals/display/ssd1306.h"
 #include "peripherals/display/smallfonts.h"
 #include "peripherals/expander/pcf8574.h"
+#include "peripherals/telemeters/telemeters.h"
 
 /* Middleware declarations */
 #include "middleware/controls/pidController/pidController.h"
@@ -46,37 +47,37 @@
 
 /* global variables */
 position_control_struct position_control;
+arm_pid_instance_f32 telemeters_pid_instance;
 
 int positionControlInit(void)
 {
-//	encoder_pid_instance.Kp = 700.0;
-//	encoder_pid_instance.Ki = 0;//0.000001;//0.1;
-//	encoder_pid_instance.Kd = 800;//0.4;
-//
-//	speed_control.current_distance = 0;
-//	speed_control.gap_distance_per_loop = 0;
-//	speed_control.old_distance = 0;
-//	speed_control.current_speed = 0;
-//
-//	speed_control.speed_error = 0;
-//	speed_control.correction = 0;
-//	speed_control.speed_consigne = 0;
-//
-//	speed_control.distance_consigne = 0;
-//
-//	speed_control.speed.pid_instance = &encoder_pid_instance;
-//
-//	pidControllerInit(speed_control.speed.pid_instance);
-//
-//
-//	encoderResetDistance(&left_encoder);
-//	encoderResetDistance(&right_encoder);
-//
+	telemeters_pid_instance.Kp = 1;
+	telemeters_pid_instance.Ki = 0;
+	telemeters_pid_instance.Kd = 50;
+
+	position_control.current_angle = 0;
+	position_control.gap_orientation_per_loop = 0;
+	position_control.old_orientation = 0;
+	position_control.current_angular_speed = 0;
+	position_control.rotation_consigne = 0;
+	position_control.rotation_error = 0;
+	position_control.position_command = 0;
+	position_control.position_pid.instance = &telemeters_pid_instance;
+
+	pidControllerInit(position_control.position_pid.instance);
+
 	return POSITION_CONTROL_E_SUCCESS;
 }
 
-
 int positionControlLoop(void)
 {
+	int rv;
+
+	position_control.rotation_error = (telemeters.left_diag.telemeter_value - telemeters.right_diag.telemeter_value);
+//	if ((telemeters.left_diag.telemeter_value - telemeters.right_diag.telemeter_value) > 100);
+		position_control.position_command = pidController(position_control.position_pid.instance, position_control.rotation_error);
+//		if (position_control.position_command > 200)
+//		position_control.position_command = 200;
+
 	return POSITION_CONTROL_E_SUCCESS;
 }
