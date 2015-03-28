@@ -94,7 +94,7 @@ menuItem mainMenu =
 		"ZHONX III        V0.2",
 		{
 				{"Test menu",'m',			(void*)&tests_menu},
-				{"mainControl Test",'f',		(void*)&straightControlTest},
+				{"mainControl Test",'f',		(void*)&mainControlTest},
 				{"test graph",'m',			(void*)&testGraphicMenu},
 				{0,0,0}
 		}
@@ -219,7 +219,7 @@ void menuHighlightedMove(unsigned char y, unsigned char max_y)
 
 void displayMenu(menuItem menu,int line)
 {
-	char str[5];
+	//char str[5];
 	ssd1306ClearScreen();
 	ssd1306DrawString(0,0,menu.name,&Font_5x8);
 	ssd1306DrawLine(0,8,128,8);
