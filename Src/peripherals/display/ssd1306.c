@@ -753,7 +753,7 @@ void ssd1306DrawLine(unsigned char x0, unsigned char y0, unsigned char x1, unsig
 
   for (; x0<x1; x0++) {
     if (steep) {
-    	ssd1306DrawPixel(x0, y0);
+    	ssd1306DrawPixel(y0, x0);
     } else {
     	ssd1306DrawPixel(x0, y0);
     }
