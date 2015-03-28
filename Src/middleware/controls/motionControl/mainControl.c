@@ -29,6 +29,7 @@
 #include "peripherals/motors/motors.h"
 #include "peripherals/encoders/ie512.h"
 #include "peripherals/multimeter/multimeter.h"
+#include "peripherals/telemeters/telemeters.h"
 
 /* Middleware declarations */
 #include "middleware/controls/pidController/pidController.h"
@@ -46,7 +47,7 @@ int mainControlInit(void)
 	motorsInit();
 	encodersInit();
 	mulimeterInit();
-//	telemetersInit();
+	telemetersInit();
 	speedControlInit();
 	positionControlInit();
 	transfertFunctionInit();
@@ -85,18 +86,18 @@ void straightMove(float distance, enum speedRate speed_rate)
 	float acceleration_distance;
 	float deceleration_distance;
 
-	speed_params.max_speed 	= (MAX_SPEED  * speed_rate)/10.0;
+	speed_params.max_speed 	= (MAX_SPEED  * speed_rate)/10.0; //
 	speed_params.accel 		= (MAX_ACCEL * speed_rate)/10.0;
 	speed_params.decel 		= (MAX_DECEL * speed_rate)/10.0;
 
-	acceleration_distance = pow(speed_params.max_speed, 2)/speed_params.accel;
-	deceleration_distance = pow(speed_params.max_speed, 2)/speed_params.decel;
+	acceleration_distance = (speed_params.max_speed * speed_params.max_speed) / speed_params.accel;
+	deceleration_distance = (speed_params.max_speed * speed_params.max_speed) / speed_params.decel;
 
-	if ((acceleration_distance + acceleration_distance) <= distance)
+	if ((acceleration_distance + deceleration_distance) <= distance)
 	{
 		speed_params.accel_dist = acceleration_distance;
 		speed_params.decel_dist = deceleration_distance;
-		speed_params.maintain_dist = (distance - (acceleration_distance + acceleration_distance));
+		speed_params.maintain_dist = (distance - (acceleration_distance + deceleration_distance));
 	}
 	else
 	{
@@ -122,7 +123,7 @@ void mainControlTest(void)
 {
 	mainControlInit();
 	HAL_Delay(1000);
-	straightMove(300, LOWSPEED);
+	straightMove(1440, MEDIUMSPEED);
 
 	while(expanderJoyState()!=LEFT)
 	{
@@ -138,6 +139,7 @@ void mainControlTest(void)
 	}
 	antiBounceJoystick();
 	pid_loop.start_state = FALSE;
+	telemetersStop();
 	motorsSleepDriver(ON);
 }
 
