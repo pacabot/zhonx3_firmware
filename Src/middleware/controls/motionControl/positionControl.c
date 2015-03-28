@@ -71,7 +71,7 @@ int positionControlInit(void)
 
 int positionControlLoop(void)
 {
-	int rv;
+//	int rv;
 
 	position_control.rotation_error = (telemeters.left_diag.telemeter_value - telemeters.right_diag.telemeter_value);
 //	if ((telemeters.left_diag.telemeter_value - telemeters.right_diag.telemeter_value) > 100);
