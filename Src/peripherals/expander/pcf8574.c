@@ -31,14 +31,16 @@
 
 /* Declarations for this module */
 #include "peripherals/expander/pcf8574.h"
-
+#define NORMAL_DELAY_REAPEAT 400
+#define FAST_DELAY_REAPEAT 70
+#define DONE 0
 /* extern variables ---------------------------------------------------------*/
 extern I2C_HandleTypeDef hi2c1;
 
 //Send DATA
 static void sendData(uint8_t aTxBuffer)
 {
-    // I2C
+	// I2C
 	HAL_I2C_Master_Transmit_DMA(&hi2c1, (uint16_t)64, (uint8_t*)&aTxBuffer, 1);
 }
 
@@ -81,15 +83,15 @@ void expanderLedState(char led, char val)
 {
 	switch (led)
 	{
-	case 1:
-		expanderSetbit(4, reverse_bit(val));
-		break;
-	case 2:
-		expanderSetbit(5, reverse_bit(val));
-		break;
-	case 3:
-		expanderSetbit(6, reverse_bit(val));
-		break;
+		case 1:
+			expanderSetbit(4, reverse_bit(val));
+			break;
+		case 2:
+			expanderSetbit(5, reverse_bit(val));
+			break;
+		case 3:
+			expanderSetbit(6, reverse_bit(val));
+			break;
 	}
 }
 
@@ -100,27 +102,33 @@ char expanderJoyState(void)
 
 	switch (key)
 	{
-	case 4:
-		return UP;
-		break;
-	case 1:
-		return DOWN;
-		break;
-	case 8:
-		return LEFT;
-		break;
-	case 2:
-		return RIGHT;
-		break;
-	case 0:
-		return 0;
-		break;
-	default :
-		return SEVERAL;
+		case 4:
+			return UP;
+			break;
+		case 1:
+			return DOWN;
+			break;
+		case 8:
+			return LEFT;
+			break;
+		case 2:
+			return RIGHT;
+			break;
+		case 0:
+			return 0;
+			break;
+		default :
+			return SEVERAL;
 	}
 	return 0;
 }
-
+char expanderJoyFiltered(void)
+{
+	char joystck=expanderJoyState();
+	if (antiBounceJoystick2(joystck)==DONE)
+		return joystck;
+	return 0;
+}
 void joystickTest(void)
 {
 	int state;
@@ -137,18 +145,18 @@ void joystickTest(void)
 
 		switch (state)
 		{
-		case UP:
-			ssd1306FillCircle(60,10, 3);
-			break;
-		case DOWN:
-			ssd1306FillCircle(60,30, 3);
-			break;
-		case LEFT:
-			ssd1306FillCircle(50,20, 3);
-			break;
-		case RIGHT:
-			ssd1306FillCircle(70,20, 3);
-			break;
+			case UP:
+				ssd1306FillCircle(60,10, 3);
+				break;
+			case DOWN:
+				ssd1306FillCircle(60,30, 3);
+				break;
+			case LEFT:
+				ssd1306FillCircle(50,20, 3);
+				break;
+			case RIGHT:
+				ssd1306FillCircle(70,20, 3);
+				break;
 		}
 
 		ssd1306Refresh();
@@ -166,4 +174,30 @@ void antiBounceJoystick(void)
 		if (expanderJoyState()!=0)
 			time_base = HAL_GetTick();
 	}while (time_base!=(HAL_GetTick()-20));
+}
+char antiBounceJoystick2(char arrow_type)
+{
+	static long time_base = 0;
+	static char old_arrow_type = 0;
+	static char fast_clic = false;
+	long time=HAL_GetTick();
+	if(old_arrow_type != arrow_type)
+	{
+		old_arrow_type = arrow_type;
+		time_base = time;
+		fast_clic = false;
+		return DONE;
+	}
+	else if((fast_clic == true) && ((time_base + FAST_DELAY_REAPEAT) < time))
+	{
+		time_base = time;
+		return DONE;
+	}
+	else if (((time_base + NORMAL_DELAY_REAPEAT) < time) && (fast_clic == false))
+	{
+		time_base = time;
+		fast_clic = true;
+		return DONE;
+	}
+	return -1;
 }

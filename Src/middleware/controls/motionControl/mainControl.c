@@ -29,6 +29,7 @@
 #include "peripherals/motors/motors.h"
 #include "peripherals/encoders/ie512.h"
 #include "peripherals/multimeter/multimeter.h"
+#include "peripherals/telemeters/telemeters.h"
 
 /* Middleware declarations */
 #include "middleware/controls/pidController/pidController.h"
@@ -46,7 +47,7 @@ int mainControlInit(void)
 	motorsInit();
 	encodersInit();
 	mulimeterInit();
-//	telemetersInit();
+	telemetersInit();
 	speedControlInit();
 	positionControlInit();
 	transfertFunctionInit();
@@ -122,7 +123,7 @@ void mainControlTest(void)
 {
 	mainControlInit();
 	HAL_Delay(1000);
-	straightMove(300, LOWSPEED);
+	straightMove(1440, MEDIUMSPEED);
 
 	while(expanderJoyState()!=LEFT)
 	{
@@ -138,6 +139,7 @@ void mainControlTest(void)
 	}
 	antiBounceJoystick();
 	pid_loop.start_state = FALSE;
+	telemetersStop();
 	motorsSleepDriver(ON);
 }
 

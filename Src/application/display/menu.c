@@ -41,33 +41,34 @@ extern void motorsTest ();
 extern void lineSensorsTest ();
 extern void mainControlTest ();
 /*
- * pour cree un nouveau menu il suffit de
- * créer une nouvelle variable de type "menuItem"
- * la replre de la façon suivente :
+ * to create a new menu you have to create a new variable of type "menuItem" like this :
  * menuItem name =
  * {
- * 		"nom du menu",
+ * 		"menu name",
  * 		{
- * 			{"nom de la ligne 1",'type de l'argument', &(void*) poirteur_sur_l'argument},	// le type est soit 'i' pour un int, soit 'l' pour un long, soit 'm' pour un menu, soit 'f' pour une fonction
- * 			{"nom de la ligne 2",'type de l'argument', &(void*) poirteur_sur_l'argument},	// maximum 20 ligne. si cela ne suffi pas il faut en rajouter dans "menu.h" le typedef menuItem le nombre de case du tableau de "line"
- * 			{0,0,0} 					// la dernière ligne doit absolument être la précédente, cette ligne ne s'affichera pas mais est indispensable. /!\ cette ligne compte dans les 20 ligne du menu
+ * 			{"line 1 name ",'type of argument', &(void*) pointeur_on_argument},		// 'type of argument' could be 'i' for int, or 'l' for long, or 'm' for  a menu, or 'f' for a function
+ * 			{"line 1 name ",'type of argument', &(void*) pointeur_on_argument},		// maximum 20 line. if it's not enough you must add in "menu.h". for that you have to modify "MAX_LINE_IN_MENU"
+ * 			{0,0,0} 					// the last ligne must be this one, this line will be not print but indispensable. /!\ cette ligne compte dans les 20 ligne du menu
  * 		}
  * }
  */
 // les variables si dessous existe juste pour montrer comment modifier des variables
-int toto=0;
-long tata=0;
-bool titi=false;
-menuItem maze_menu={0,{{0,0,0}}};
-menuItem parameters_menu=
+
+float toto=4.0;
+float titi=4.0;
+float tata=4.0;
+
+
+menuItem testGraphicMenu =
 {
-		"menu parameters",
-		{
-				{"toto",'i', (void*)&toto},
-				{"tata",'l', (void*)&tata},
-				{"titi",'b', (void*)&titi},
-				{0,0,0}
-		}
+	"test graphic menu",
+	{
+		{"Default accel :",'a',			(void*)&toto},
+		{"Max speed dist:",'a',			(void*)&titi},
+		{"Default accel :",'a',			(void*)&tata},
+		{"graphique",'g',null},
+		{(char*)NULL,	0,				NULL}
+	}
 };
 menuItem tests_menu=
 {
@@ -90,12 +91,11 @@ menuItem tests_menu=
 
 menuItem mainMenu =
 {
-		"ZHONX III        V0.1",
+		"ZHONX III        V0.2",
 		{
-				{"Maze menu",'m',			(void*)&maze_menu },
-				{"Parameters",'m',			(void*)&parameters_menu},
 				{"Test menu",'m',			(void*)&tests_menu},
 				{"mainControl Test",'f',		(void*)&mainControlTest},
+				{"test graph",'m',			(void*)&testGraphicMenu},
 				{0,0,0}
 		}
 };
@@ -109,18 +109,16 @@ int menu(menuItem Menu)
 	ssd1306Refresh();
 	while (true)
 	{
-		int joystick = expanderJoyState();
+		int joystick = expanderJoyFiltered();
 		// Exit Button JOYSTICK_LEFT
 		switch (joystick)
 		{
 		case LEFT:
-			antiBounceJoystick();
 			return SUCCESS;
 			break;
 			// Joystick down
 		case DOWN:
 			//beeper
-			antiBounceJoystick();
 			if(Menu.line[line_menu+1].name!=null)
 			{
 				line_menu++;
@@ -139,7 +137,6 @@ int menu(menuItem Menu)
 			}
 			break;
 		case UP :
-			antiBounceJoystick();
 			//beeper
 			if(line_screen==1)
 			{
@@ -160,7 +157,6 @@ int menu(menuItem Menu)
 			break;
 		case RIGHT :// Validate button joystick right
 			//hal_beeper_beep(app_context.beeper, 4000, 10);
-			antiBounceJoystick();
 			switch(Menu.line[line_menu].type)
 			{
 			case 'b':
@@ -178,6 +174,9 @@ int menu(menuItem Menu)
 			case 'f':
 				if (Menu.line[line_menu].param!=null)
 					Menu.line[line_menu].param();
+				break;
+			case 'g':
+				graphMotorSettings((float*)Menu.line[line_menu-3].param,(float*)Menu.line[line_menu-2].param,(float*)Menu.line[line_menu-1].param);
 				break;
 			default:
 				break;
@@ -197,31 +196,30 @@ void menuHighlightedMove(unsigned char y, unsigned char max_y)
 {
 	if (max_y > y)
 	{
-		ssd1306InvertArea(0, y-1, HIGHLIGHT_LENGHT, HIGHLIGHT_HEIGHT*2);
-		//		for ( ; y <= max_y; y++)
-//		{
-//			ssd1306InvertArea(0, y - 1, HIGHLIGHT_LENGHT, HIGHLIGHT_HEIGHT);
-//			ssd1306InvertArea(0, y, HIGHLIGHT_LENGHT, HIGHLIGHT_HEIGHT);
-////			if (y % 2)
+//		ssd1306InvertArea(0, y-1, HIGHLIGHT_LENGHT, HIGHLIGHT_HEIGHT*2);
+		for ( ; y <= max_y; y++)
+		{
+			ssd1306InvertArea(0, y - 1, HIGHLIGHT_LENGHT, HIGHLIGHT_HEIGHT);
+			ssd1306InvertArea(0, y, HIGHLIGHT_LENGHT, HIGHLIGHT_HEIGHT);
 //				ssd1306Refresh();
-//		}
+		}
 	}
 	else
 	{
-		ssd1306InvertArea(0, y-HIGHLIGHT_HEIGHT+1, HIGHLIGHT_LENGHT, HIGHLIGHT_HEIGHT*2);
-//		for ( ; y >= max_y; y--)
-//		{
-//			ssd1306InvertArea(0, y + 1, HIGHLIGHT_LENGHT, HIGHLIGHT_HEIGHT);
-//			ssd1306InvertArea(0, y, HIGHLIGHT_LENGHT, HIGHLIGHT_HEIGHT);
-////			if (y % 2)
+//		ssd1306InvertArea(0, y-HIGHLIGHT_HEIGHT+1, HIGHLIGHT_LENGHT, HIGHLIGHT_HEIGHT*2);
+		for ( ; y >= max_y; y--)
+		{
+			ssd1306InvertArea(0, y + 1, HIGHLIGHT_LENGHT, HIGHLIGHT_HEIGHT);
+			ssd1306InvertArea(0, y, HIGHLIGHT_LENGHT, HIGHLIGHT_HEIGHT);
 //				ssd1306Refresh();
-//		}
+		}
 	}
 	ssd1306Refresh();
 }
 
 void displayMenu(menuItem menu,int line)
 {
+	//char str[5];
 	ssd1306ClearScreen();
 	ssd1306DrawString(0,0,menu.name,&Font_5x8);
 	ssd1306DrawLine(0,8,128,8);
@@ -244,11 +242,14 @@ void displayMenu(menuItem menu,int line)
 			ssd1306PrintInt(90,MARGIN*i+MARGIN+1," ",*((unsigned long*)menu.line[i+line].param),&Font_3x6);
 			break;
 		case 'f':
-			ssd1306DrawString(110,i*MARGIN+MARGIN+1,">",&Font_3x6);
+			ssd1306DrawString(110,i*MARGIN+MARGIN+1,"->",&Font_3x6);
 			break;
 		case 'm':
 			ssd1306DrawString(115,i*MARGIN+MARGIN+1,">",&Font_3x6);
 			break;
+//		case 'a':
+//			sprintf(str,"%f.2",*(float*)menu.line[i+line].param);
+//			ssd1306DrawString(110,i*MARGIN+MARGIN+1,str,&Font_3x6);
 		}
 	}
 	uint8_t nmbr_item = 0;
@@ -289,18 +290,15 @@ int modifyBoolParam( char *param_name, unsigned char *param)
 
 	while (1)
 	{
-		int joystick=expanderJoyState();
+		int joystick=expanderJoyFiltered();
 		switch (joystick)
 		{
 		case LEFT :
-			// Wait until button is released
-			antiBounceJoystick();
 			return SUCCESS;
 			break;
 
 		case DOWN:
 		case UP :
-			antiBounceJoystick();
 			if (param_copy == true)
 			{
 				param_copy = false;
@@ -317,7 +315,6 @@ int modifyBoolParam( char *param_name, unsigned char *param)
 			break;
 
 		case RIGHT:
-			antiBounceJoystick();
 
 			*param = param_copy;
 			ssd1306ClearScreen();
@@ -353,11 +350,10 @@ int modifyLongParam( char *param_name,long *param)
 	while (1)
 	{
 		// Exit Button
-		int joystick=expanderJoyState();
+		int joystick=expanderJoyFiltered();
 		switch (joystick)
 		{
 		case LEFT :
-			antiBounceJoystick();
 			if (collone==10)
 				return SUCCESS;
 			else
@@ -371,7 +367,7 @@ int modifyLongParam( char *param_name,long *param)
 			}
 			break;
 		case UP:
-			antiBounceJoystick();
+
 			//param_copy +=1;
 			param_copy += (step*pow(10,collone));
 			ssd1306ClearRect(0, 28, 164, 8);
@@ -380,7 +376,7 @@ int modifyLongParam( char *param_name,long *param)
 			ssd1306Refresh();
 			break;
 		case DOWN :
-			antiBounceJoystick();
+
 			param_copy -= (step*pow(10,collone));
 			//param_copy -= 1;
 			ssd1306ClearRect(0, 28, 164, 8);
@@ -389,7 +385,6 @@ int modifyLongParam( char *param_name,long *param)
 			ssd1306Refresh();
 			break;
 		case RIGHT :
-			antiBounceJoystick();
 			if(collone==0)
 			{
 				*param = param_copy;
@@ -412,4 +407,65 @@ int modifyLongParam( char *param_name,long *param)
 	}
 
 	return SUCCESS;
+}
+
+void graphMotorSettings (float *acceleration, float *maxSpeed, float *deceleration)
+{
+	int number_value=0;
+	float* values[3]={acceleration,maxSpeed,deceleration};
+	while(true)
+	{
+		printGraphMotor ( *acceleration, *maxSpeed, *deceleration);
+		switch (expanderJoyFiltered())
+		{
+			case LEFT:
+				if (number_value <= 0)
+				{
+					return;
+				}
+				else
+				{
+					number_value--;
+				}
+				break;
+			case DOWN:
+				*(values[number_value])-=0.5;
+				break;
+			case UP:
+				*(values[number_value])+=0.5;
+				break;
+			case RIGHT:
+				if (number_value >= 2)
+				{
+					return;
+				}
+				else
+				{
+					number_value++;
+				}
+				break;
+			default:
+				break;
+		}
+	}
+}
+void printGraphMotor (float acceleration, float maxSpeed, float deceleration)
+{
+	char str[10];
+	ssd1306ClearScreen();
+	char point1[2]={(char)((0-maxSpeed)/(0-acceleration)),64-(char)maxSpeed};
+	char point2[2]={(char)(128-(0-maxSpeed)/(0-deceleration)),64-(char)(maxSpeed)};
+	ssd1306DrawLine(0,64,point1[0],point1[1]);
+	ssd1306DrawLine(point1[0],point1[1],point2[0],point2[1]);
+	ssd1306DrawLine(point2[0],point1[1],128,64);
+
+	sprintf(str,"%.2fM.S^2",acceleration);
+	ssd1306DrawString((0+point1[0])/2+2,(64+point1[1])/2+2,str,&Font_3x6);
+
+	sprintf(str,"%.2fM.S",maxSpeed);
+	ssd1306DrawString((point1[0]+point2[0])/2,(point1[1]+point2[1])/2,str,&Font_3x6);
+
+	sprintf(str,"%.2fM.S^2",deceleration);
+	ssd1306DrawString((point2[0]+128)/2-27,(point2[1]+64)/2,str,&Font_3x6);
+	ssd1306Refresh();
 }
