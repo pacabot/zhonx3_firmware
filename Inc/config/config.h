@@ -109,7 +109,7 @@
 /**************************************************************************************/
 
 #define PWM_RATIO_COEFF_A		(-0.50/6000.00)	//compute pwm ratio for limit motor voltage
-#define PWM_RATIO_COEFF_B		1.5				//PWM_RATIO_COEFF_A * battery voltage + PWM_RATIO_COEFF_B = TRUE MOTOR PWM
+#define PWM_RATIO_COEFF_B		1.50				//PWM_RATIO_COEFF_A * battery voltage + PWM_RATIO_COEFF_B = TRUE MOTOR PWM
 
 #define MOTORS_PERIOD			1000
 

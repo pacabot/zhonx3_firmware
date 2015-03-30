@@ -10,6 +10,7 @@
 #define __MAINCONTROL_H__
 
 #include "config/config.h"
+#include "middleware/controls/motionControl/speedControl.h"
 
 /* Module Identifier */
 #define MAIN_CONTROL_MODULE_ID  101
