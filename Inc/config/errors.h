@@ -3,7 +3,7 @@
 #define __ERRORS_H__
 
 #ifndef MAKE_ERROR
-# define MAKE_ERROR(_id_, _errno_) (((_id_) << 8) | (_errno_))
+# define MAKE_ERROR(_id_, _errno_) ((((_id_) << 8) | (_errno_)) * (-1))
 #endif
 
 //#define SUCCESS                         0

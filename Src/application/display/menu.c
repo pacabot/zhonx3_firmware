@@ -39,7 +39,7 @@ extern void telemetersTest ();
 extern void toneTest ();
 extern void motorsTest ();
 extern void lineSensorsTest ();
-extern void straightControlTest ();
+extern void mainControlTest ();
 /*
  * to create a new menu you have to create a new variable of type "menuItem" like this :
  * menuItem name =
@@ -91,10 +91,10 @@ menuItem tests_menu=
 
 menuItem mainMenu =
 {
-		"ZHONX III        V0.1",
+		"ZHONX III        V0.2",
 		{
 				{"Test menu",'m',			(void*)&tests_menu},
-				{"Straight Test",'f',		(void*)&straightControlTest},
+				{"mainControl Test",'f',		(void*)&mainControlTest},
 				{"test graph",'m',			(void*)&testGraphicMenu},
 				{0,0,0}
 		}
@@ -219,7 +219,7 @@ void menuHighlightedMove(unsigned char y, unsigned char max_y)
 
 void displayMenu(menuItem menu,int line)
 {
-	char str[5];
+	//char str[5];
 	ssd1306ClearScreen();
 	ssd1306DrawString(0,0,menu.name,&Font_5x8);
 	ssd1306DrawLine(0,8,128,8);
