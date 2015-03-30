@@ -64,7 +64,39 @@ int mainControlLoop(void)
 
 void straightMove(float distance, enum speedRate speed_rate)
 {
+<<<<<<< HEAD
 	speedProfileCompute(distance, speed_rate);
+=======
+	float acceleration_distance;
+	float deceleration_distance;
+
+	speed_params.max_speed 	= (MAX_SPEED  * speed_rate)/10.0;
+	speed_params.accel 		= (MAX_ACCEL * speed_rate)/10.0;
+	speed_params.decel 		= (MAX_DECEL * speed_rate)/10.0;
+
+	acceleration_distance = pow(speed_params.max_speed, 2)/speed_params.accel;
+	deceleration_distance = pow(speed_params.max_speed, 2)/speed_params.decel;
+
+	if ((acceleration_distance + acceleration_distance) <= distance)
+	{
+		speed_params.accel_dist = acceleration_distance;
+		speed_params.decel_dist = deceleration_distance;
+		speed_params.maintain_dist = (distance - (acceleration_distance + acceleration_distance));
+	}
+	else
+	{
+		float clipping_ratio;
+
+		clipping_ratio =  (distance / (acceleration_distance + deceleration_distance));
+
+		speed_params.accel_dist = (acceleration_distance * clipping_ratio);
+		speed_params.decel_dist = (deceleration_distance * clipping_ratio);
+		speed_params.maintain_dist = 0;
+
+	}
+
+	speed_params.distance_consign = distance;
+>>>>>>> 3b3c0354acda66fea9a2063bd8ccd461e2594617
 
 	encoderResetDistance(&left_encoder);
 	encoderResetDistance(&right_encoder);

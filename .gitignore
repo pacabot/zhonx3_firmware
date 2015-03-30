@@ -6,10 +6,13 @@ cproject
 Debug/*
 Release/*
 .settings*
+<<<<<<< HEAD
 .settings/*
 settings*
 settings/*
 .xml
+=======
+>>>>>>> 3b3c0354acda66fea9a2063bd8ccd461e2594617
 
 Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f401xc.h
 Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f401xe.h
@@ -34,5 +37,3 @@ Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f439xx.h
 *.swp
 *.swo
 *.orig
-/Debug/
-/Release/
