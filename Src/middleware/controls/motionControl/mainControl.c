@@ -40,8 +40,6 @@
 /* Declarations for this module */
 #include "middleware/controls/motionControl/mainControl.h"
 
- speed_params_struct speed_params;
-
 int mainControlInit(void)
 {
 	motorsInit();
@@ -58,79 +56,34 @@ int mainControlInit(void)
 int mainControlLoop(void)
 {
 	speedControlLoop();
-	positionControlLoop();
+//	positionControlLoop();
 	transfertFunctionLoop();
 
 	return MAIN_CONTROL_E_SUCCESS;
 }
 
-/**************************************************************************/
-/*!
-    ***BASICS FORMULAS***
-    	   _____
-    	  /  d
-    t =  /  ---
-        V	Acc
-
-		 V²
-	d = ---
-	    Acc
-
-	d = V * t
-
-	V = Acc * t
- */
-/**************************************************************************/
 void straightMove(float distance, enum speedRate speed_rate)
 {
-	float acceleration_distance;
-	float deceleration_distance;
-
-	speed_params.max_speed 	= (MAX_SPEED  * speed_rate)/10.0; //
-	speed_params.accel 		= (MAX_ACCEL * speed_rate)/10.0;
-	speed_params.decel 		= (MAX_DECEL * speed_rate)/10.0;
-
-	acceleration_distance = (speed_params.max_speed * speed_params.max_speed) / speed_params.accel;
-	deceleration_distance = (speed_params.max_speed * speed_params.max_speed) / speed_params.decel;
-
-	if ((acceleration_distance + deceleration_distance) <= distance)
-	{
-		speed_params.accel_dist = acceleration_distance;
-		speed_params.decel_dist = deceleration_distance;
-		speed_params.maintain_dist = (distance - (acceleration_distance + deceleration_distance));
-	}
-	else
-	{
-		float clipping_ratio;
-
-		clipping_ratio =  (distance / (acceleration_distance + deceleration_distance));
-
-		speed_params.accel_dist = (acceleration_distance * clipping_ratio);
-		speed_params.decel_dist = (deceleration_distance * clipping_ratio);
-		speed_params.maintain_dist = 0;
-
-	}
-
-	speed_params.distance_consign = distance;
+	speedProfileCompute(distance, speed_rate);
 
 	encoderResetDistance(&left_encoder);
 	encoderResetDistance(&right_encoder);
-	motorsSleepDriver(OFF);
 	pid_loop.start_state = TRUE;
+	motorsSleepDriver(OFF);
 }
 
 void mainControlTest(void)
 {
 	mainControlInit();
-	HAL_Delay(1000);
-	straightMove(1440, MEDIUMSPEED);
+	//HAL_Delay(500);
+	straightMove(500, MEDIUMSPEED);
 
 	while(expanderJoyState()!=LEFT)
 	{
 		ssd1306ClearScreen();
-		ssd1306PrintInt(10,  5,  "dist_c =  ",(int) (speed_control.current_distance), &Font_5x8);
-		ssd1306PrintInt(10,  15, "acc =  ",(int16_t) speed_params.accel_dist, &Font_5x8);
-		ssd1306PrintInt(10,  25, "dcc =  ",(int16_t) speed_params.decel_dist, &Font_5x8);
+		ssd1306PrintInt(10,  5,  "dist_c =  ",(int) (speed_control.current_distance * 100), &Font_5x8);
+		ssd1306PrintInt(10,  15, "acc dist =  ",(int16_t) speed_control.speed_consign, &Font_5x8);
+		ssd1306PrintInt(10,  25, "max speed =  ",(int16_t) speed_params.max_speed, &Font_5x8);
 		ssd1306PrintInt(10,  35, "error =  ",(int16_t) speed_control.speed_error, &Font_5x8);
 		ssd1306PrintInt(10,  45, "left PWM =  ",(int16_t) transfert_function.left_motor_pwm, &Font_5x8);
 		ssd1306PrintInt(10,  55, "right PWM =  ",(int16_t) transfert_function.right_motor_pwm, &Font_5x8);

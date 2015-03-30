@@ -19,6 +19,25 @@
 /* Types definitions */
 
 enum speedType { ACC, DCC, STOP, MAINTAIN };
+enum speedRate { LOWSPEED = 3, MEDIUMSPEED = 5, FASTSPEED = 8, HIGHSPEED = 1 };
+
+typedef struct
+{
+	float distance_consign;			//total distance
+	float max_speed;
+	float accel;
+	float decel;
+	float accel_dist;
+	float decel_dist;
+	float accel_dist_per_loop;
+	float decel_dist_per_loop;
+	float nb_loop_accel;
+	float nb_loop_decel;
+	float nb_loop_maint;
+	float maintain_dist;
+}speed_params_struct;
+
+extern speed_params_struct speed_params;
 
 typedef struct
 {
@@ -42,5 +61,6 @@ int speedControlLoop(void);
 int speedAcc(void);
 int speedDcc(void);
 int speedCompute(void);
+int speedProfileCompute(float distance, enum speedRate speed_rate);
 
 #endif

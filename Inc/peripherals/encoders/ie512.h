@@ -19,9 +19,9 @@
 // Machine Definitions
 typedef struct
 {
-    volatile float abs_dist;
-    volatile float offset_dist;
-    volatile float rel_dist;
+    volatile double abs_dist;
+    volatile double offset_dist;
+    volatile double rel_dist;
     signed int mot_rev_cnt;
 	TIM_HandleTypeDef *timer;
 } encoder;
@@ -34,6 +34,6 @@ void encoderLeft_IT(void);
 void encoderRight_IT(void);
 void encoderTest(void);
 int encoderResetDistance(encoder *enc);
-float encoderGetDistance(encoder *enc);
+double encoderGetDistance(encoder *enc);
 
 #endif
