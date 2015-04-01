@@ -33,7 +33,6 @@
 #include "peripherals/expander/pcf8574.h"
 
 /* Middleware declarations */
-#include "middleware/util/itoa.h"
 
 /* Declarations for this module */
 #include "peripherals/display/ssd1306.h"
