@@ -10,6 +10,7 @@
 #define __MAINCONTROL_H__
 
 #include "config/config.h"
+#include "middleware/controls/motionControl/speedControl.h"
 
 /* Module Identifier */
 #define MAIN_CONTROL_MODULE_ID  101
@@ -19,21 +20,6 @@
 #define MAIN_CONTROL_E_ERROR    MAKE_ERROR(MAIN_CONTROL_MODULE_ID, 1)
 
 /* Types definitions */
-
-typedef struct
-{
-	float distance_consign;			//total distance
-	float max_speed;
-	float accel;
-	float decel;
-	float accel_dist;
-	float decel_dist;
-	float maintain_dist;
-}speed_params_struct;
-
-extern speed_params_struct speed_params;
-
-enum speedRate { LOWSPEED = 3, MEDIUMSPEED = 5, FASTSPEED = 8, HIGHSPEED = 1 };
 
 int mainControlInit(void);
 int mainControlLoop(void);

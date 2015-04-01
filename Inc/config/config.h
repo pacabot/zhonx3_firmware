@@ -13,7 +13,7 @@
 /***************                 Times definitions                 ********************/
 /**************************************************************************************/
 #define LOW_TIME_FREQ			100
-#define HI_TIME_FREQ			1000
+#define HI_TIME_FREQ			1000.00 //use for pids inner loop
 #define TELEMETERS_TIME_FREQ	4000  	//each telemeter use 1/4 of TELEMETERS_TIME_FREQ
 #define GYRO_TIME_FREQ			1000
 #define LINESENSORS_TIME_FREQ	GYRO_TIME_FREQ //same timer
@@ -81,10 +81,10 @@
 /**************************************************************************************/
 /***************                 Mechanical Constants              ********************/
 /**************************************************************************************/
-#define WHEEL_DIAMETER			24.75	//Wheel diameter in millimeters
+#define WHEEL_DIAMETER			24.46	//Wheel diameter in millimeters
 #define HUNTING_DISTANCE		83.50	//Distance between the 2 wheels
 #define	GEAR_RATIO				(50.00/15.00)	//wheel gear teeth per motor gear teeth
-#define ENCODER_RESOLUTION  	2047	//Number steps per revolution (IE512)
+#define ENCODER_RESOLUTION  	2047.00	//Number steps per revolution (IE512)
 
 #define STEPS_PER_WHEEL_REV		(ENCODER_RESOLUTION*GEAR_RATIO)	//Number steps per wheel revolution
 #define MM_PER_WHEEL_REV		((M_PI) * (WHEEL_DIAMETER))		//Number of millimeters per wheel revolution
@@ -98,9 +98,9 @@
 /**************************************************************************************/
 /***************                 Physical Constants                ********************/
 /**************************************************************************************/
-#define MAX_SPEED				2000.0	//mm/s
-#define MAX_ACCEL				5000.0	//mm/s²
-#define MAX_DECEL				2000.0	//mm/s²
+#define MAX_SPEED				4000.0	//mm/s
+#define MAX_ACCEL				2000.0	//mm/s²
+#define MAX_DECEL				3000.0	//mm/s²
 
 #define MAX_TURN_SPEED			500.0		//mm/s
 
@@ -109,7 +109,7 @@
 /**************************************************************************************/
 
 #define PWM_RATIO_COEFF_A		(-0.50/6000.00)	//compute pwm ratio for limit motor voltage
-#define PWM_RATIO_COEFF_B		1.5				//PWM_RATIO_COEFF_A * battery voltage + PWM_RATIO_COEFF_B = TRUE MOTOR PWM
+#define PWM_RATIO_COEFF_B		1.50				//PWM_RATIO_COEFF_A * battery voltage + PWM_RATIO_COEFF_B = TRUE MOTOR PWM
 
 #define MOTORS_PERIOD			1000
 
