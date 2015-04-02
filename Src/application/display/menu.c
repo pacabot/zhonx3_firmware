@@ -259,10 +259,10 @@ void displayMenu(menuItem menu,int line)
 	}
 	if (nmbr_item>MAX_LINE_SCREEN)
 	{
-		int heightOneItem=54/nmbr_item;
-		ssd1306DrawRect(123,heightOneItem*line+MARGIN,3,MAX_LINE_SCREEN*heightOneItem);
-		ssd1306Refresh();
+		//int heightOneItem=54/nmbr_item;
+		ssd1306DrawRect(123,(54*line)/nmbr_item+MARGIN,3,(54*MAX_LINE_SCREEN)/nmbr_item);
 	}
+	ssd1306Refresh();
 }
 int modifyBoolParam( char *param_name, unsigned char *param)
 {
