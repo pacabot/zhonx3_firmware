@@ -3,6 +3,8 @@
 #ifndef __CONFIG_H__
 #define __CONFIG_H__
 
+#include <math.h>
+
 /**************************************************************************************/
 /***************                 STM32 definitions                 ********************/
 /**************************************************************************************/
@@ -82,7 +84,8 @@
 /***************                 Mechanical Constants              ********************/
 /**************************************************************************************/
 #define WHEEL_DIAMETER			24.46	//Wheel diameter in millimeters
-#define HUNTING_DISTANCE		83.50	//Distance between the 2 wheels
+#define WHEELS_DISTANCE			63.20	//Distance between right and left wheels
+#define WHEELS_SPACING			25.96	//Distance between front and rear wheels
 #define	GEAR_RATIO				(50.00/15.00)	//wheel gear teeth per motor gear teeth
 #define ENCODER_RESOLUTION  	2047.00	//Number steps per revolution (IE512)
 
@@ -98,11 +101,9 @@
 /**************************************************************************************/
 /***************                 Physical Constants                ********************/
 /**************************************************************************************/
-#define MAX_SPEED				4000.0	//mm/s
-#define MAX_ACCEL				2000.0	//mm/s²
-#define MAX_DECEL				3000.0	//mm/s²
-
-#define MAX_TURN_SPEED			500.0		//mm/s
+#define MAX_SPEED				400.0	//mm/s
+#define MAX_ACCEL				140.0	//mm/s²
+#define MAX_DECEL				140.0	//mm/s²
 
 /**************************************************************************************/
 /***************                 Motors Constants                  ********************/
