@@ -10,7 +10,7 @@
 #define __SPEEDCONTROL_H__
 
 /* Module Identifier */
-#include "config/module_id.h"
+#define SPEED_CONTROL_MODULE_ID  100
 
 /* Error codes */
 #define SPEED_CONTROL_E_SUCCESS  0
@@ -19,12 +19,15 @@
 /* Types definitions */
 
 enum speedType { ACC, DCC, STOP, MAINTAIN };
-enum speedRate { LOWSPEED = 3, MEDIUMSPEED = 5, FASTSPEED = 8, HIGHSPEED = 10 };
+enum speedRate { LOWSPEED = 5, MEDIUMSPEED = 30, FASTSPEED = 60, HIGHSPEED = 100 };
 
 typedef struct
 {
 	float distance_consign;			//total distance
 	float max_speed;
+	float end_speed_ratio;
+	float initial_speed;
+	float final_speed;
 	float accel;
 	float decel;
 	float accel_dist;
@@ -35,6 +38,7 @@ typedef struct
 	float nb_loop_decel;
 	float nb_loop_maint;
 	float maintain_dist;
+	float invert_rotation;
 }speed_params_struct;
 
 extern speed_params_struct speed_params;
@@ -49,6 +53,7 @@ typedef struct
 	float speed_consign;
 	float speed_error;
 	float speed_command;
+	char end_control;
 	enum speedType speedType;
 
     pid_control_struct speed_pid;
@@ -61,6 +66,6 @@ int speedControlLoop(void);
 int speedAcc(void);
 int speedDcc(void);
 int speedCompute(void);
-int speedProfileCompute(float distance, enum speedRate speed_rate);
+float speedProfileCompute(float distance);
 
 #endif

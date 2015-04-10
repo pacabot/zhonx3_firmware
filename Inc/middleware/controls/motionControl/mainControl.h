@@ -23,7 +23,20 @@
 
 int mainControlInit(void);
 int mainControlLoop(void);
-void straightMove(float distance, enum speedRate speed_rate);
+/**
+ * @brief compute and start a new movement
+ *
+ * This function outputs all params for pids controller (speedControl and positionControl).
+ *
+ * @param
+ *
+ * angle => angle of rotation in degres (0° for strait move)
+ * radius_or_distance => radius in mm of rotate if angle > 0 or distance in mm if angle = 0°
+ * speed_rate => speed ratio in percent of max value
+ *
+ * @retval HAL status
+ */
+int move(float angle, float radius_or_distance, enum speedRate speed_rate, float end_speed);
 void mainControlTest(void);
 
 #endif // __MAINCONTROL_H
