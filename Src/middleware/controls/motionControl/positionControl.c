@@ -123,7 +123,7 @@ int positionControlLoop(void)
 		 	 2
 
 			   2.d
-		Acc = ----- ??
+		Acc = -----
 		 	    t²
 
 		d = V x t

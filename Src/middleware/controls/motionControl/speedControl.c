@@ -142,9 +142,9 @@ int speedCompute(void)
 		d = --- Acc x t²
 		 	 2
 
-				2
+			   2.d
 		Acc = -----
-		 	   d.t²
+		 	    t²
 
 		d = V x t
 
@@ -154,6 +154,14 @@ int speedCompute(void)
     	  	  / Vi² + 2.Acc.d - Vi
     	t =  V____________________
         			  Acc
+
+        	   -2(t.Vi-d)
+        Acc = ------------
+                   t²
+
+                2(t.Vi-d)
+        Dcc = ------------
+                   t²
  */
 /**************************************************************************/
 float speedProfileCompute(float distance)
