@@ -146,14 +146,23 @@ int positionControlLoop(void)
 /**************************************************************************/
 float positionProfileCompute(float distance, float time)
 {
-	time /= 2.0;
+	if (time == 0.0f)
+	{
+		time = 1;
+//		speed_params.accel_dist = pow(position_params.max_speed, 2) / (2 * position_params.decel);
+//		speed_params.decel_dist = pow(position_params.max_speed, 2) / (2 * position_params.decel);
+	}
+//	else
+//	{
+		time /= 2.0f;
 
-	position_params.accel_dist = 0.5 * distance;
-	position_params.decel_dist = 0.5 * distance;
+		position_params.accel_dist = 0.5f * distance;
+		position_params.decel_dist = 0.5f * distance;
 
-	position_params.accel = 2.0 * (distance / 2.0) / (pow(time, 2));
+		position_params.accel = 2.0f * (distance / 2.0f) / (pow(time, 2));
 
-	position_params.decel = position_params.accel;
+		position_params.decel = position_params.accel;
+//	}
 
 	position_params.accel_dist_per_loop = position_params.accel / pow(HI_TIME_FREQ, 2);
 	position_params.decel_dist_per_loop = position_params.decel / pow(HI_TIME_FREQ, 2);

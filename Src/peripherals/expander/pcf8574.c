@@ -124,7 +124,7 @@ char expanderJoyState(void)
 }
 char expanderJoyFiltered(void)
 {
-	char joystck=expanderJoyFiltered();
+	char joystck=expanderJoyState();
 	if (antiBounceJoystick2(joystck)==DONE)
 		return joystck;
 	return 0;

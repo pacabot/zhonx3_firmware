@@ -67,7 +67,7 @@ int mainControlLoop(void)
 int move(float angle, float radius_or_distance, enum speedRate speed_rate, float end_speed_ratio)
 {
 	pid_loop.start_state = FALSE;
-//	speedControlInit();
+	speedControlInit();
 	positionControlInit();
 	transfertFunctionInit();
 
@@ -131,16 +131,16 @@ void mainControlTest(void)
 {
 	mainControlInit();
 	HAL_Delay(500);
-	move(0, 10, LOWSPEED, 100);
+	move(90, 0, LOWSPEED, 100);
+	while(speed_control.end_control != 1);
+//	move(0, 10, LOWSPEED, 100);
 	while(speed_control.end_control != 1);
 //	move(0, 10, LOWSPEED, 100);
 //	while(speed_control.end_control != 1);
-//	move(0, 10, LOWSPEED, 100);
+//	move(90, 40, LOWSPEED, 100);
 //	while(speed_control.end_control != 1);
-	move(90, 40, LOWSPEED, 100);
-	while(speed_control.end_control != 1);
-	move(90, 40, LOWSPEED, 0);
-	while(speed_control.end_control != 1);
+//	move(90, 40, LOWSPEED, 0);
+//	while(speed_control.end_control != 1);
 //	while(position_control.end_control != 1);
 //	motorsSleepDriver(ON);
 //	move(0, 100, LOWSPEED, 100);

@@ -166,8 +166,11 @@ int speedCompute(void)
 /**************************************************************************/
 float speedProfileCompute(float distance)
 {
-	speed_params.accel_dist = 0.5 * (speed_params.max_speed + speed_params.initial_speed) * ((speed_params.max_speed - speed_params.initial_speed)/speed_params.accel);
-	speed_params.decel_dist = pow((speed_params.max_speed * ((100 - speed_params.end_speed_ratio) / 100.0)), 2) / (2 * speed_params.decel);
+	if (distance == 0)
+		return 0.0;
+
+	speed_params.accel_dist = 0.5f * (speed_params.max_speed + speed_params.initial_speed) * ((speed_params.max_speed - speed_params.initial_speed)/speed_params.accel);
+	speed_params.decel_dist = pow((speed_params.max_speed * ((100 - speed_params.end_speed_ratio) / 100.0f)), 2) / (2 * speed_params.decel);
 
 	speed_params.accel_dist_per_loop = speed_params.accel / pow(HI_TIME_FREQ, 2);
 	speed_params.decel_dist_per_loop = speed_params.decel / pow(HI_TIME_FREQ, 2);
@@ -186,14 +189,14 @@ float speedProfileCompute(float distance)
 	}
 
 	speed_params.nb_loop_accel = ((sqrt((speed_params.initial_speed * speed_params.initial_speed) +
-			2.0 * speed_params.accel * speed_params.accel_dist) -
+			2.0f * speed_params.accel * speed_params.accel_dist) -
 			speed_params.initial_speed) / ( speed_params.accel)) * HI_TIME_FREQ;
 
 	speed_params.max_speed = speed_params.initial_speed + (speed_params.accel * (speed_params.nb_loop_accel/HI_TIME_FREQ));
 
 	speed_params.nb_loop_decel = ((sqrt((speed_params.max_speed * speed_params.max_speed) -
-			2.0 * speed_params.decel * speed_params.decel_dist) -
-			speed_params.max_speed) / ( -1.0 * speed_params.decel)) * HI_TIME_FREQ;
+			2.0f * speed_params.decel * speed_params.decel_dist) -
+			speed_params.max_speed) / ( -1.0f * speed_params.decel)) * HI_TIME_FREQ;
 
 	if ((speed_params.accel_dist + speed_params.decel_dist) > distance)
 	{
