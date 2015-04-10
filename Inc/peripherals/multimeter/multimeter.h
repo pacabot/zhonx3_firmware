@@ -10,7 +10,7 @@
 #define __MULTIMETER_H__
 
 /* Module Identifier */
-#define MULTIMETER_DRIVER_MODULE_ID  10
+#include "config/module_id.h"
 
 /* Error codes */
 #define MULTIMETER_DRIVER_E_SUCCESS  0

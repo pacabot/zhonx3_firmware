@@ -85,7 +85,7 @@ void bluetoothNewLine(void)
 void bluetoothTest(void)
 {
 	int i = 0;
-	while(expanderJoyState()!=LEFT)
+	while(expanderJoyFiltered()!=JOY_LEFT)
 	{
 		bluetoothPrintf("hello ZHONX_III, nb send = %d\r\n", i);
 		ssd1306ClearScreen();

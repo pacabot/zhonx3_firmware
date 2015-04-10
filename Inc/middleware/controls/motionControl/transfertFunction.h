@@ -10,7 +10,7 @@
 #define __TRANSFERTFUNCTION_H__
 
 /* Module Identifier */
-#define TRANSFERT_FUNCTION_MODULE_ID  105
+#include "config/module_id.h"
 
 /* Error codes */
 #define TRANSFERT_FUNCTION_E_SUCCESS  0

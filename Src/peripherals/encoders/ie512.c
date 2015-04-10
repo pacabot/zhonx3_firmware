@@ -173,7 +173,7 @@ void encoderTest(void)
 	encoderResetDistance(&left_encoder);
 	encoderResetDistance(&right_encoder);
 
-	while(expanderJoyState()!=LEFT)
+	while(expanderJoyFiltered()!=JOY_LEFT)
 	{
 		ssd1306ClearScreen();
 
@@ -183,7 +183,7 @@ void encoderTest(void)
 		ssd1306PrintInt(0, 25, "R_DIST_REL =  ",(signed int) encoderGetDistance(&right_encoder), &Font_5x8);
 		ssd1306PrintInt(0, 35, "R_DIST_ABS =  ",(signed int) right_encoder.abs_dist, &Font_5x8);
 	    ssd1306DrawString(1, 53, "PRESS 'RIGHT' TO RESET REL. DIST.", &Font_3x6);
-		if (expanderJoyState() == RIGHT)
+		if (expanderJoyFiltered() == JOY_RIGHT)
 		{
 			encoderResetDistance(&left_encoder);
 			encoderResetDistance(&right_encoder);

@@ -13,7 +13,7 @@
 #include "middleware/controls/motionControl/speedControl.h"
 
 /* Module Identifier */
-#define MAIN_CONTROL_MODULE_ID  101
+#include "config/module_id.h"
 
 /* Error codes */
 #define MAIN_CONTROL_E_SUCCESS  0

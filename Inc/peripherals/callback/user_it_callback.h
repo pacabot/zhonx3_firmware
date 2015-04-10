@@ -10,7 +10,7 @@
 #define __CALLBACK_H__
 
 /* Module Identifier */
-#define CALLBACK_MODULE_ID  2
+#include "config/module_id.h"
 
 /* Error codes */
 #define CALLBACK_E_SUCCESS  0

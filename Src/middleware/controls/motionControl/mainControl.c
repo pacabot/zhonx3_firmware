@@ -77,7 +77,7 @@ void mainControlTest(void)
 	//HAL_Delay(500);
 	straightMove(500, MEDIUMSPEED);
 
-	while(expanderJoyState()!=LEFT)
+	while(expanderJoyFiltered()!=JOY_LEFT)
 	{
 		ssd1306ClearScreen();
 		ssd1306PrintInt(10,  5,  "dist_c =  ",(int) (speed_control.current_distance * 100), &Font_5x8);

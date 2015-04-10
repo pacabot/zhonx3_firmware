@@ -10,7 +10,7 @@
 #define __LINESENSORS_H__
 
 /* Module Identifier */
-#define LINESENSORS_DRIVER_MODULE_ID  8
+#include "config/module_id.h"
 
 /* Error codes */
 #define LINESENSORS_DRIVER_E_SUCCESS  0

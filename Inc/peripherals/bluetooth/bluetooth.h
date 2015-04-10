@@ -10,7 +10,7 @@
 #define __BLUETOOTH_H__
 
 /* Module Identifier */
-#define BLUETOOTH_DRIVER_MODULE_ID  1
+#include "config/module_id.h"
 
 /* Error codes */
 #define BLUETOOTH_DRIVER_E_SUCCESS  0

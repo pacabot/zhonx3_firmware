@@ -195,7 +195,7 @@ void telemetersTest(void)
 {
 	telemetersInit();
 
-	while(expanderJoyState()!=LEFT)
+	while(expanderJoyFiltered()!=JOY_LEFT)
 	{
 		ssd1306ClearScreen();
 		ssd1306PrintInt(10, 0,  "LFRONT  = ", (int32_t) telemeters.left_front.telemeter_value, &Font_5x8);

@@ -10,7 +10,7 @@
 #define __IE512_H__
 
 /* Module Identifier */
-#define IE512_DRIVER_MODULE_ID  5
+#include "config/module_id.h"
 
 /* Error codes */
 #define IE512_DRIVER_E_SUCCESS  0

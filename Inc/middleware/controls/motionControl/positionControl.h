@@ -10,7 +10,7 @@
 #define __POSITIONCONTROL_H__
 
 /* Module Identifier */
-#define POSITION_CONTROL_MODULE_ID  102
+#include "config/module_id.h"
 
 /* Error codes */
 #define POSITION_CONTROL_E_SUCCESS  0

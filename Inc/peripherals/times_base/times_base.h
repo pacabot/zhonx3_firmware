@@ -10,7 +10,7 @@
 #define __TIMESBASE_H__
 
 /* Module Identifier */
-#define TIMESBASE_DRIVER_MODULE_ID  13
+#include "config/module_id.h"
 
 /* Error codes */
 #define TIMESBASE_DRIVER_E_SUCCESS  0

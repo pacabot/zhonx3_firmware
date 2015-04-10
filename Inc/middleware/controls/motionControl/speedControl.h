@@ -10,7 +10,7 @@
 #define __SPEEDCONTROL_H__
 
 /* Module Identifier */
-#define SPEED_CONTROL_MODULE_ID  100
+#include "config/module_id.h"
 
 /* Error codes */
 #define SPEED_CONTROL_E_SUCCESS  0
@@ -19,7 +19,7 @@
 /* Types definitions */
 
 enum speedType { ACC, DCC, STOP, MAINTAIN };
-enum speedRate { LOWSPEED = 3, MEDIUMSPEED = 5, FASTSPEED = 8, HIGHSPEED = 1 };
+enum speedRate { LOWSPEED = 3, MEDIUMSPEED = 5, FASTSPEED = 8, HIGHSPEED = 10 };
 
 typedef struct
 {
