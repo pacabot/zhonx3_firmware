@@ -39,7 +39,8 @@ extern void telemetersTest ();
 extern void toneTest ();
 extern void motorsTest ();
 extern void lineSensorsTest ();
-extern void straightControlTest ();
+extern void mainControlTest ();
+extern void telemeter_calibration();
 /*
  * to create a new menu you have to create a new variable of type "menuItem" like this :
  * menuItem name =
@@ -74,6 +75,7 @@ menuItem tests_menu=
 {
 		"TEST MENU",
 		{
+				{"test calibration",'f',(void*)telemeter_calibration},
 				{"test bluetooth",'f', (void*)bluetoothTest},
 				{"test multimeter",'f', (void*)mulimeterTest},
 				{"test display",'f', (void*)ssd1306Test},
@@ -91,10 +93,10 @@ menuItem tests_menu=
 
 menuItem mainMenu =
 {
-		"ZHONX III        V0.1",
+		"ZHONX III        V0.2",
 		{
 				{"Test menu",'m',			(void*)&tests_menu},
-				{"Straight Test",'f',		(void*)&straightControlTest},
+				{"mainControl Test",'f',		(void*)&mainControlTest},
 				{"test graph",'m',			(void*)&testGraphicMenu},
 				{0,0,0}
 		}
@@ -113,11 +115,11 @@ int menu(menuItem Menu)
 		// Exit Button JOYSTICK_LEFT
 		switch (joystick)
 		{
-		case LEFT:
+		case JOY_LEFT:
 			return SUCCESS;
 			break;
 			// Joystick down
-		case DOWN:
+		case JOY_DOWN:
 			//beeper
 			if(Menu.line[line_menu+1].name!=null)
 			{
@@ -136,7 +138,7 @@ int menu(menuItem Menu)
 				}
 			}
 			break;
-		case UP :
+		case JOY_UP :
 			//beeper
 			if(line_screen==1)
 			{
@@ -155,7 +157,7 @@ int menu(menuItem Menu)
 				menuHighlightedMove((line_screen+1)*ROW_HEIGHT-1, (line_screen)*ROW_HEIGHT);
 			}
 			break;
-		case RIGHT :// Validate button joystick right
+		case JOY_RIGHT :// Validate button joystick right
 			//hal_beeper_beep(app_context.beeper, 4000, 10);
 			switch(Menu.line[line_menu].type)
 			{
@@ -219,7 +221,7 @@ void menuHighlightedMove(unsigned char y, unsigned char max_y)
 
 void displayMenu(menuItem menu,int line)
 {
-	char str[5];
+	//char str[5];
 	ssd1306ClearScreen();
 	ssd1306DrawString(0,0,menu.name,&Font_5x8);
 	ssd1306DrawLine(0,8,128,8);
@@ -259,10 +261,10 @@ void displayMenu(menuItem menu,int line)
 	}
 	if (nmbr_item>MAX_LINE_SCREEN)
 	{
-		int heightOneItem=54/nmbr_item;
-		ssd1306DrawRect(123,heightOneItem*line+MARGIN,3,MAX_LINE_SCREEN*heightOneItem);
-		ssd1306Refresh();
+		//int heightOneItem=54/nmbr_item;
+		ssd1306DrawRect(123,(54*line)/nmbr_item+MARGIN,3,(54*MAX_LINE_SCREEN)/nmbr_item);
 	}
+	ssd1306Refresh();
 }
 int modifyBoolParam( char *param_name, unsigned char *param)
 {
@@ -293,12 +295,12 @@ int modifyBoolParam( char *param_name, unsigned char *param)
 		int joystick=expanderJoyFiltered();
 		switch (joystick)
 		{
-		case LEFT :
+		case JOY_LEFT :
 			return SUCCESS;
 			break;
 
-		case DOWN:
-		case UP :
+		case JOY_DOWN:
+		case JOY_UP :
 			if (param_copy == true)
 			{
 				param_copy = false;
@@ -314,7 +316,7 @@ int modifyBoolParam( char *param_name, unsigned char *param)
 			ssd1306Refresh();
 			break;
 
-		case RIGHT:
+		case JOY_RIGHT:
 
 			*param = param_copy;
 			ssd1306ClearScreen();
@@ -353,7 +355,7 @@ int modifyLongParam( char *param_name,long *param)
 		int joystick=expanderJoyFiltered();
 		switch (joystick)
 		{
-		case LEFT :
+		case JOY_LEFT :
 			if (collone==10)
 				return SUCCESS;
 			else
@@ -366,7 +368,7 @@ int modifyLongParam( char *param_name,long *param)
 				ssd1306Refresh();
 			}
 			break;
-		case UP:
+		case JOY_UP:
 
 			//param_copy +=1;
 			param_copy += (step*pow(10,collone));
@@ -375,7 +377,7 @@ int modifyLongParam( char *param_name,long *param)
 			ssd1306DrawString(0, 28, str, &Font_8x8);
 			ssd1306Refresh();
 			break;
-		case DOWN :
+		case JOY_DOWN :
 
 			param_copy -= (step*pow(10,collone));
 			//param_copy -= 1;
@@ -384,7 +386,7 @@ int modifyLongParam( char *param_name,long *param)
 			ssd1306DrawString(0, 28, str, &Font_8x8);
 			ssd1306Refresh();
 			break;
-		case RIGHT :
+		case JOY_RIGHT :
 			if(collone==0)
 			{
 				*param = param_copy;
@@ -418,7 +420,7 @@ void graphMotorSettings (float *acceleration, float *maxSpeed, float *decelerati
 		printGraphMotor ( *acceleration, *maxSpeed, *deceleration);
 		switch (expanderJoyFiltered())
 		{
-			case LEFT:
+			case JOY_LEFT:
 				if (number_value <= 0)
 				{
 					return;
@@ -428,13 +430,13 @@ void graphMotorSettings (float *acceleration, float *maxSpeed, float *decelerati
 					number_value--;
 				}
 				break;
-			case DOWN:
-				*(values[number_value])-=0.5;
+			case JOY_DOWN:
+				*(values[number_value])-=0.1;
 				break;
-			case UP:
-				*(values[number_value])+=0.5;
+			case JOY_UP:
+				*(values[number_value])+=0.1;
 				break;
-			case RIGHT:
+			case JOY_RIGHT:
 				if (number_value >= 2)
 				{
 					return;

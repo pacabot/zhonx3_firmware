@@ -9,6 +9,9 @@
 #ifndef __SPEEDCONTROL_H__
 #define __SPEEDCONTROL_H__
 
+/* dependencies*/
+#include "middleware/controls/pidController/pidController.h"
+
 /* Module Identifier */
 #define SPEED_CONTROL_MODULE_ID  100
 
