@@ -12,7 +12,7 @@
 #define __24LC64_H__
 
 /* Module Identifier */
-#define E24LC64_DRIVER_MODULE_ID  4
+#include "config/module_id.h"
 
 /* Error codes */
 #define E24LC64_DRIVER_E_SUCCESS  0

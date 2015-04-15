@@ -3,6 +3,8 @@
 #ifndef __CONFIG_H__
 #define __CONFIG_H__
 
+#include <math.h>
+
 /**************************************************************************************/
 /***************                 STM32 definitions                 ********************/
 /**************************************************************************************/
@@ -13,7 +15,7 @@
 /***************                 Times definitions                 ********************/
 /**************************************************************************************/
 #define LOW_TIME_FREQ			100
-#define HI_TIME_FREQ			1000
+#define HI_TIME_FREQ			1000.00 //use for pids inner loop
 #define TELEMETERS_TIME_FREQ	4000  	//each telemeter use 1/4 of TELEMETERS_TIME_FREQ
 #define GYRO_TIME_FREQ			1000
 #define LINESENSORS_TIME_FREQ	GYRO_TIME_FREQ //same timer
@@ -24,7 +26,7 @@
 /***************                 Gyro definitions                  ********************/
 /**************************************************************************************/
 #define GYRO_VRATIO				3300.00	//Gyro is running at 3300mV
-#define GYRO_ROUT				90.00  	//90Kohm Rout
+#define GYRO_ROUT				90.90  	//90.9Kohm Rout
 #define GYRO_SENSITIVITY		6.00   	//Our example gyro is 6mV/deg/sec @5V
 #define ROTATION_THRESHOLD		1.00   	//Minimum deg/sec to keep track of - helps with gyro drifting
 
@@ -81,10 +83,11 @@
 /**************************************************************************************/
 /***************                 Mechanical Constants              ********************/
 /**************************************************************************************/
-#define WHEEL_DIAMETER			24.75	//Wheel diameter in millimeters
-#define HUNTING_DISTANCE		83.50	//Distance between the 2 wheels
+#define WHEEL_DIAMETER			24.46	//Wheel diameter in millimeters
+#define WHEELS_DISTANCE			63.20	//Distance between right and left wheels
+#define WHEELS_SPACING			25.96	//Distance between front and rear wheels
 #define	GEAR_RATIO				(50.00/15.00)	//wheel gear teeth per motor gear teeth
-#define ENCODER_RESOLUTION  	2047	//Number steps per revolution (IE512)
+#define ENCODER_RESOLUTION  	2047.00	//Number steps per revolution (IE512)
 
 #define STEPS_PER_WHEEL_REV		(ENCODER_RESOLUTION*GEAR_RATIO)	//Number steps per wheel revolution
 #define MM_PER_WHEEL_REV		((M_PI) * (WHEEL_DIAMETER))		//Number of millimeters per wheel revolution
@@ -98,13 +101,18 @@
 /**************************************************************************************/
 /***************                 Physical Constants                ********************/
 /**************************************************************************************/
-#define MAX_SEARCH_SPEED		1000	//mm/s
-#define MAX_RUN_SPEED			2000	//mm/s
-#define MAX_TURN_SPEED			500		//mm/s
+#define MAX_SPEED				400.0	//mm/s
+#define MAX_ACCEL				140.0	//mm/s²
+#define MAX_DECEL				140.0	//mm/s²
 
-#define ACCELERATION			0.01		//mm/s²
-#define DECELERATION			1000	//mm/s²
-#define MAX_ACCELERATION		13500	//mm/s²
+/**************************************************************************************/
+/***************                 Motors Constants                  ********************/
+/**************************************************************************************/
+
+#define PWM_RATIO_COEFF_A		(-0.50/6000.00)	//compute pwm ratio for limit motor voltage
+#define PWM_RATIO_COEFF_B		1.50				//PWM_RATIO_COEFF_A * battery voltage + PWM_RATIO_COEFF_B = TRUE MOTOR PWM
+
+#define MOTORS_PERIOD			1000
 
 #endif // __CONFIG_H__
 

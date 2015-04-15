@@ -55,12 +55,12 @@ void motorsInit(void)
 	uint32_t uwPrescalerValue = 0;
 
 	/* Compute the prescaler value to have TIM7 counter clock equal to 10 KHz */
-	uwPrescalerValue = (uint32_t) ((SystemCoreClock /2) / (MOTORS_FREQ* 1000));
+	uwPrescalerValue = (uint32_t) ((SystemCoreClock /2) / (MOTORS_FREQ* MOTORS_PERIOD));
 
 	htim8.Instance = TIM8;
 	htim8.Init.Prescaler = uwPrescalerValue;
 	htim8.Init.CounterMode = TIM_COUNTERMODE_UP;
-	htim8.Init.Period = 1000;
+	htim8.Init.Period = MOTORS_PERIOD;
 	htim8.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
 	htim8.Init.RepetitionCounter = 0;
 	HAL_TIM_Base_Init(&htim8);
@@ -128,13 +128,13 @@ void motorSet(motor *mot, int duty, int isSlowDECAY)
 	}
 
 	// Limit duty cycle to its maximum value
-	if (duty > 1000)
+	if (duty > MOTORS_PERIOD)
 	{
-		duty = 1000;
+		duty = MOTORS_PERIOD;
 	}
-	if (duty < -1000)
+	if (duty < -MOTORS_PERIOD)
 	{
-		duty = -1000;
+		duty = -MOTORS_PERIOD;
 	}
 
 	// Reverse left motor
@@ -153,7 +153,7 @@ void motorSet(motor *mot, int duty, int isSlowDECAY)
 		duty = abs(duty);
 		if (isSlowDECAY == 1)
 		{
-			sConfigOC.Pulse = 1000 - duty;
+			sConfigOC.Pulse = MOTORS_PERIOD - duty;
 		}
 		else
 		{
@@ -173,7 +173,7 @@ void motorSet(motor *mot, int duty, int isSlowDECAY)
 		duty = abs(duty);
 		if (isSlowDECAY == 1)
 		{
-			sConfigOC.Pulse = 1000 - duty;
+			sConfigOC.Pulse = MOTORS_PERIOD - duty;
 		}
 		else
 		{
@@ -199,7 +199,7 @@ void motorSet(motor *mot, int duty, int isSlowDECAY)
 		duty = abs(duty);
 		if (isSlowDECAY == 1)
 		{
-			sConfigOC.Pulse = 1000 - duty;
+			sConfigOC.Pulse = MOTORS_PERIOD - duty;
 		}
 		else
 		{
@@ -210,7 +210,7 @@ void motorSet(motor *mot, int duty, int isSlowDECAY)
 		HAL_TIM_PWM_Start(&MOTORS_TIMER, mot->IN2);
 
 		// Set IN1 to 1
-		sConfigOC.Pulse = 1000;
+		sConfigOC.Pulse = MOTORS_PERIOD;
 		HAL_TIM_PWM_ConfigChannel(&MOTORS_TIMER, &sConfigOC, mot->IN1);
 		HAL_TIM_PWM_Start(&MOTORS_TIMER, mot->IN1);
 	}
@@ -219,7 +219,7 @@ void motorSet(motor *mot, int duty, int isSlowDECAY)
 		duty = abs(duty);
 		if (isSlowDECAY == 1)
 		{
-			sConfigOC.Pulse = 1000 - duty;
+			sConfigOC.Pulse = MOTORS_PERIOD - duty;
 		}
 		else
 		{
@@ -230,7 +230,7 @@ void motorSet(motor *mot, int duty, int isSlowDECAY)
 		HAL_TIM_PWM_Start(&MOTORS_TIMER, mot->IN1);
 
 		// Set IN2 to 1
-		sConfigOC.Pulse = 1000;
+		sConfigOC.Pulse = MOTORS_PERIOD;
 		HAL_TIM_PWM_ConfigChannel(&MOTORS_TIMER, &sConfigOC, mot->IN2);
 		HAL_TIM_PWM_Start(&MOTORS_TIMER, mot->IN2);
 	}
@@ -246,7 +246,7 @@ void motorsBrake(void)
 	sConfigOC.OCIdleState = TIM_OCIDLESTATE_RESET;
 	sConfigOC.OCNIdleState = TIM_OCNIDLESTATE_RESET;
 	sConfigOC.OCNPolarity = TIM_OCNIDLESTATE_RESET;
-	sConfigOC.Pulse = 1000;
+	sConfigOC.Pulse = MOTORS_PERIOD;
 	HAL_TIM_PWM_ConfigChannel(&MOTORS_TIMER, &sConfigOC, left_motor.IN1);
 	HAL_TIM_PWM_ConfigChannel(&MOTORS_TIMER, &sConfigOC, left_motor.IN2);
 	HAL_TIM_PWM_ConfigChannel(&MOTORS_TIMER, &sConfigOC, right_motor.IN1);

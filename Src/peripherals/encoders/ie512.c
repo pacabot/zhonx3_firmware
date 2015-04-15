@@ -144,9 +144,9 @@ void encoderRight_IT(void)
 */
 int encoderResetDistance(encoder *enc)
 {
-	enc->offset_dist = 	((((float)enc->mot_rev_cnt * (float)ENCODER_RESOLUTION) +
-			((float)__HAL_TIM_GetCounter(enc->timer))) /
-			(float)STEPS_PER_MM);
+	enc->offset_dist = 	((((double)enc->mot_rev_cnt * ENCODER_RESOLUTION) +
+			((double)__HAL_TIM_GetCounter(enc->timer))) /
+			STEPS_PER_MM);
 	return IE512_DRIVER_E_SUCCESS;
 }
 
@@ -154,15 +154,15 @@ int encoderResetDistance(encoder *enc)
  *  return current relative distance and set absolute distance
  *  distance in millimeters
 */
-float encoderGetDistance(encoder *enc)
+double encoderGetDistance(encoder *enc)
 {
-	enc->rel_dist = (((((float)enc->mot_rev_cnt * (float)ENCODER_RESOLUTION) +
-			((float)__HAL_TIM_GetCounter(enc->timer))) /
-			(float)STEPS_PER_MM) -
-			(float)enc->offset_dist);
-	enc->abs_dist = ((((float)enc->mot_rev_cnt * (float)ENCODER_RESOLUTION) +
-			((float)__HAL_TIM_GetCounter(enc->timer))) /
-			(float)STEPS_PER_MM);
+	enc->rel_dist = (((((double)enc->mot_rev_cnt * ENCODER_RESOLUTION) +
+			((double)__HAL_TIM_GetCounter(enc->timer))) /
+			STEPS_PER_MM) -
+			(double)enc->offset_dist);
+	enc->abs_dist = ((((double)enc->mot_rev_cnt * ENCODER_RESOLUTION) +
+			((double)__HAL_TIM_GetCounter(enc->timer))) /
+			STEPS_PER_MM);
 	return enc->rel_dist;
 }
 
@@ -173,7 +173,7 @@ void encoderTest(void)
 	encoderResetDistance(&left_encoder);
 	encoderResetDistance(&right_encoder);
 
-	while(expanderJoyState()!=LEFT)
+	while(expanderJoyFiltered()!=JOY_LEFT)
 	{
 		ssd1306ClearScreen();
 
@@ -183,7 +183,7 @@ void encoderTest(void)
 		ssd1306PrintInt(0, 25, "R_DIST_REL =  ",(signed int) encoderGetDistance(&right_encoder), &Font_5x8);
 		ssd1306PrintInt(0, 35, "R_DIST_ABS =  ",(signed int) right_encoder.abs_dist, &Font_5x8);
 	    ssd1306DrawString(1, 53, "PRESS 'RIGHT' TO RESET REL. DIST.", &Font_3x6);
-		if (expanderJoyState() == RIGHT)
+		if (expanderJoyFiltered() == JOY_RIGHT)
 		{
 			encoderResetDistance(&left_encoder);
 			encoderResetDistance(&right_encoder);

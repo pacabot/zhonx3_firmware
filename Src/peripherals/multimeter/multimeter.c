@@ -31,6 +31,8 @@
 /* Declarations for this module */
 #include "peripherals/multimeter/multimeter.h"
 
+volatile multimeter_struct multimeter;
+
 extern ADC_HandleTypeDef hadc1;
 
 __IO uint16_t ADC1MultimeterConvertedValues[10] = {0};
@@ -111,14 +113,14 @@ void mulimeterTest(void)
 {
 	mulimeterInit();
 
-	while(expanderJoyState()!=LEFT)
+	while(expanderJoyFiltered()!=JOY_LEFT)
 	{
 		ssd1306ClearScreen();
 		ssd1306PrintInt(10,  5,  "timer count =  ", (int32_t) multimeter.timer_cnt, &Font_5x8);
 		ssd1306PrintInt(10,  15,  "get vbat =  ", (int32_t) multimeter.get_vbat_state, &Font_5x8);
 		ssd1306PrintInt(10,  35,  "Temp. Gyro =  ", multimeter.gyro_temp.value, &Font_5x8);
 		ssd1306PrintInt(10,  45,  "Temp. STM32 =  ", multimeter.stm32_temp.value, &Font_5x8);
-		ssd1306PrintInt(10,  55,  "ADC1 3 =  ", multimeter.vbat.value, &Font_5x8);
+		ssd1306PrintInt(10,  55,  "vbat (mV) =  ", multimeter.vbat.value, &Font_5x8);
 		ssd1306Refresh();
 	}
 	antiBounceJoystick();

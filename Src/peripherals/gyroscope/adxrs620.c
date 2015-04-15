@@ -115,7 +115,7 @@ void adxrs620_ADC_IT(void)
 void adxrs620Test(void)
 {
     adxrs620Init();
-	while(expanderJoyState()!=LEFT)
+	while(expanderJoyFiltered()!=JOY_LEFT)
 	{
 		ssd1306ClearScreen();
 		ssd1306PrintInt(10,  5,  "Angle =  ", (int32_t) gyro.current_angle, &Font_5x8);

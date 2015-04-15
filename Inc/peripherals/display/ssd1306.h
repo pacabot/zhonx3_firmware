@@ -12,7 +12,7 @@
 #include "peripherals/display/smallfonts.h"
 
 /* Module Identifier */
-#define SSD1306_DRIVER_MODULE_ID  3
+#include "config/module_id.h"
 
 /* Error codes */
 #define SSD1306_DRIVER_E_SUCCESS  0

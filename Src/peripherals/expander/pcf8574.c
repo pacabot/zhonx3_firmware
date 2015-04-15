@@ -103,22 +103,22 @@ char expanderJoyState(void)
 	switch (key)
 	{
 		case 4:
-			return UP;
+			return JOY_UP;
 			break;
 		case 1:
-			return DOWN;
+			return JOY_DOWN;
 			break;
 		case 8:
-			return LEFT;
+			return JOY_LEFT;
 			break;
 		case 2:
-			return RIGHT;
+			return JOY_RIGHT;
 			break;
 		case 0:
 			return 0;
 			break;
 		default :
-			return SEVERAL;
+			return JOY_SEVERAL;
 	}
 	return 0;
 }
@@ -133,7 +133,7 @@ void joystickTest(void)
 {
 	int state;
 
-	while(expanderJoyState()!=LEFT)
+	while(expanderJoyState()!=JOY_LEFT)
 	{
 		state = expanderJoyState();
 
@@ -145,16 +145,16 @@ void joystickTest(void)
 
 		switch (state)
 		{
-			case UP:
+			case JOY_UP:
 				ssd1306FillCircle(60,10, 3);
 				break;
-			case DOWN:
+			case JOY_DOWN:
 				ssd1306FillCircle(60,30, 3);
 				break;
-			case LEFT:
+			case JOY_LEFT:
 				ssd1306FillCircle(50,20, 3);
 				break;
-			case RIGHT:
+			case JOY_RIGHT:
 				ssd1306FillCircle(70,20, 3);
 				break;
 		}

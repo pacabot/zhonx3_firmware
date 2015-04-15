@@ -10,7 +10,7 @@
 #define __MOTORS_H__
 
 /* Module Identifier */
-#define MOTORS_DRIVER_MODULE_ID  9
+#include "config/module_id.h"
 
 /* Error codes */
 #define MOTORS_DRIVER_E_SUCCESS  0

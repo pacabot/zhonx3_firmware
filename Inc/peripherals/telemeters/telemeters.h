@@ -10,7 +10,7 @@
 #define __TELEMETERS_H__
 
 /* Module Identifier */
-#define TELEMETERS_DRIVER_MODULE_ID  12
+#include "config/module_id.h"
 
 /* Error codes */
 #define TELEMETERS_DRIVER_E_SUCCESS  0

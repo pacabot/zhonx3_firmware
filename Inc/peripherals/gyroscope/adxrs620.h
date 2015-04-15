@@ -10,7 +10,7 @@
 #define __ADXRS620_H__
 
 /* Module Identifier */
-#define ADXRS620_DRIVER_MODULE_ID  7
+#include "config/module_id.h"
 
 /* Error codes */
 #define ADXRS620_DRIVER_E_SUCCESS  0

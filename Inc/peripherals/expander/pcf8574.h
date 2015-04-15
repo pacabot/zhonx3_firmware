@@ -12,17 +12,17 @@
 #define __PCF8574_H__
 
 /* Module Identifier */
-#define PCF8574_DRIVER_MODULE_ID  6
+#include "config/module_id.h"
 
 /* Error codes */
 #define PCF8574_DRIVER_E_SUCCESS  0
 #define PCF8574_DRIVER_E_ERROR    MAKE_ERROR(PCF8574_DRIVER_MODULE_ID, 1)
 
-#define UP 		1
-#define DOWN 	2
-#define LEFT 	3
-#define RIGHT 	4
-#define SEVERAL 255
+#define JOY_UP 		1
+#define JOY_DOWN 	2
+#define JOY_LEFT 	3
+#define JOY_RIGHT 	4
+#define JOY_SEVERAL 255
 
 void expanderLedState(char led, char val);
 char expanderJoyState(void);
