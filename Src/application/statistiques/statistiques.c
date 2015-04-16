@@ -40,25 +40,25 @@ int cAverage (int statistical_series[], int statistical_serial_length)
 	return (int)(average/=statistical_serial_length);
 }
 
-void eliminateExtremeValues (int *statistical_series[], int *statistical_serial_length)
+void eliminateExtremeValues (int *statistical_series, int *statistical_serial_length)
 {
-	int average = cAverage (*statistical_series, *statistical_serial_length);
-	int StandardError = cStandardError (*statistical_series, *statistical_serial_length);
+	int average = cAverage (statistical_series, *statistical_serial_length);
+	int StandardError = cStandardError (statistical_series, *statistical_serial_length);
 	for (int i=0;i<*statistical_serial_length;i++)
 	{
-		if(*statistical_series[i] > average+StandardError || *statistical_series[i] < (average - StandardError))
+		if(statistical_series[i] > average+StandardError || statistical_series[i] < (average - StandardError))
 		{
-			*statistical_series[i]=-1;
+			statistical_series[i]=-1;
 		}
 	}
 	int i=0;
 	for (int i2=0; i2<*statistical_serial_length;i2++)
 	{
-		if((i2+1)<*statistical_serial_length && *statistical_series[i2]==-1)
+		if((i2+1)<*statistical_serial_length && statistical_series[i2]==-1)
 		{
 			i2++;
 		}
-		*statistical_series[i]=*statistical_series[i2];
+		statistical_series[i]=statistical_series[i2];
 		i++;
 	}
 	*statistical_serial_length=i;

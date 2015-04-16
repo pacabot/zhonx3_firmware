@@ -23,5 +23,5 @@ int cStandardError (int statistical_series[], int statistical_serial_length);
 int cVariance (int statistical_series[], int statistical_serial_length);
 int cAverage (int statistical_series[], int statistical_serial_length);
 int cStandardDeviation (int statistical_series[], int statistical_serial_length);
-void eliminateExtremeValues (int *statistical_series[], int *statistical_serial_length);
+void eliminateExtremeValues (int *statistical_series, int *statistical_serial_length);
 #endif /* STATISTIQUES_H_ */

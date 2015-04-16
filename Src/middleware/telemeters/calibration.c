@@ -55,11 +55,11 @@ void telemeter_calibration (void)
 		}
 
 		length=NUMBER_OF_MEASURE_BY_STEP;
-		eliminateExtremeValues(&(values_for_statistique_left),&length);
+		eliminateExtremeValues(values_for_statistique_left,&length);
 		values[0][i]= cAverage(values_for_statistique_left,length);
 
 		length=NUMBER_OF_MEASURE_BY_STEP;
-		eliminateExtremeValues(&(values_for_statistique_right),&length);
+		eliminateExtremeValues(values_for_statistique_right,&length);
 		values[1][i]= cAverage(values_for_statistique_right,length);
 
 		move(0,NUMBER_OF_MILLIMETER_PER_LOOP,LOWSPEED,0);
