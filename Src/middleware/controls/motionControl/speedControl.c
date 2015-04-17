@@ -222,6 +222,8 @@ float speedProfileCompute(float distance)
 		speed_params.nb_loop_maint = ((speed_params.maintain_dist / speed_params.max_speed) * HI_TIME_FREQ);
 	}
 
+//	speed_params.initial_speed = speed_params.initial_speed + speed_params.nb_loop_accel * (speed_params.nb_loop_accel / HI_TIME_FREQ);
+
 	speed_params.initial_speed = speed_params.initial_speed + (((speed_params.nb_loop_accel / HI_TIME_FREQ) * speed_params.accel) -
 					((speed_params.nb_loop_decel / HI_TIME_FREQ) * speed_params.decel));
 

@@ -90,8 +90,8 @@ int move(float angle, float radius_or_distance, float max_speed, float end_speed
 
 	speed_params.end_speed  = end_speed;
 	speed_params.max_speed 	= max_speed;
-	speed_params.accel 		= max_speed;//(MAX_ACCEL)
-	speed_params.decel 		= max_speed;//
+	speed_params.accel 		= max_speed * 2;//(MAX_ACCEL)
+	speed_params.decel 		= max_speed * 2;//
 
 	if (angle == 0)
 	{
@@ -118,11 +118,11 @@ void mainControlTest(void)
 	mainControlInit();
 	HAL_Delay(500);
 
-	move(0, 50, 500, 500);
+	move(-180, 0, 500, 0);
 	while(speed_control.end_control != 1);
-	move(0, 50, 500, 100);
-	while(speed_control.end_control != 1);
-	move(-180, 90, 500, 100);
+//	move(0, 50, 500, 285);
+//	while(speed_control.end_control != 1);
+//	move(-180, 90, 286, 0);
 
 
 	while(expanderJoyFiltered()!=JOY_LEFT)

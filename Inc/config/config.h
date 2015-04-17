@@ -105,7 +105,7 @@
 #define MAX_ACCEL				4000.0	//mm/s²
 #define MAX_DECEL				4000.0	//mm/s²
 
-#define MAX_TURN_SPEED			1000.0	//mm/s
+#define MAX_TURN_SPEED			500.0	//mm/s
 #define MAX_TURN_ACCEL			8000.0	//mm/s²
 
 /**************************************************************************************/

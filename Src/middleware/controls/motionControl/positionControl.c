@@ -175,51 +175,47 @@ float positionProfileCompute(float distance, float time)
 	}
 	if (time == 0.0f)
 	{
-		time = 1;
-		//		speed_params.accel_dist = pow(position_params.max_speed, 2) / (2 * position_params.decel);
-		//		speed_params.decel_dist = pow(position_params.max_speed, 2) / (2 * position_params.decel);
+		time = distance / speed_params.max_speed;
 	}
-	else
+
+	position_params.accel = MAX_TURN_ACCEL;
+	position_params.decel = MAX_TURN_ACCEL;
+
+	position_params.max_speed = (0.5 * time * position_params.accel - 0.5 *
+			sqrt((time * time) * (position_params.accel * position_params.accel) - 4.0 * distance * position_params.accel));
+
+
+	position_params.accel_dist = pow(position_params.max_speed, 2)/(2.0 * position_params.accel);
+	position_params.decel_dist = pow(position_params.max_speed, 2)/(2.0 * position_params.decel);
+
+	if ((position_params.accel_dist + position_params.decel_dist ) > distance)
 	{
-		position_params.accel = MAX_TURN_ACCEL;
-		position_params.decel = MAX_TURN_ACCEL;
+		double clipping_ratio;
+		clipping_ratio =  (distance / (position_params.accel_dist + position_params.decel_dist));
+		position_params.accel_dist *= clipping_ratio;
+		position_params.decel_dist *= clipping_ratio;
 
-		position_params.max_speed = (0.5 * time * position_params.accel - 0.5 *
-				sqrt((time * time) * (position_params.accel * position_params.accel) - 4.0 * distance * position_params.accel));
+		position_params.accel *= (1.0+clipping_ratio);
+		position_params.decel *= (1.0+clipping_ratio);
 
-
-		position_params.accel_dist = pow(position_params.max_speed, 2)/(2.0 * position_params.accel);
-		position_params.decel_dist = pow(position_params.max_speed, 2)/(2.0 * position_params.decel);
-
-		if ((position_params.accel_dist + position_params.decel_dist ) > distance)
-		{
-			double clipping_ratio;
-			clipping_ratio =  (distance / (position_params.accel_dist + position_params.decel_dist));
-			position_params.accel_dist *= clipping_ratio;
-			position_params.decel_dist *= clipping_ratio;
-
-			position_params.accel *= (1.0+clipping_ratio);
-			position_params.decel *= (1.0+clipping_ratio);
-
-//			position_params.max_speed = (sqrt(2.0) * sqrt(0.5 * distance * position_params.accel_dist));
-//
-//			position_params.accel_dist = pow(position_params.max_speed, 2)/(2.0 * position_params.accel);
-//			position_params.decel_dist = pow(position_params.max_speed, 2)/(2.0 * position_params.decel);
-		}
-
-		position_params.maintain_dist = distance - (position_params.accel_dist + position_params.decel_dist);
-
-		position_params.accel_time = ((sqrt(2.0) * sqrt(position_params.accel * position_params.accel_dist)) / position_params.accel);
-		position_params.decel_time = ((sqrt(2.0) * sqrt(position_params.decel * position_params.decel_dist)) / position_params.decel);
-
-
-
-		position_params.accel_speed_avrg = position_params.accel_dist / position_params.accel_time;
-		position_params.decel_speed_avrg = position_params.decel_dist / position_params.decel_time;
-
-		position_params.speed_average = (position_params.accel_dist + position_params.decel_dist + position_params.maintain_dist) /
-				(position_params.accel_time + position_params.decel_time + (position_params.maintain_dist /position_params.max_speed));
+		//			position_params.max_speed = (sqrt(2.0) * sqrt(0.5 * distance * position_params.accel_dist));
+		//
+		//			position_params.accel_dist = pow(position_params.max_speed, 2)/(2.0 * position_params.accel);
+		//			position_params.decel_dist = pow(position_params.max_speed, 2)/(2.0 * position_params.decel);
 	}
+
+	position_params.maintain_dist = distance - (position_params.accel_dist + position_params.decel_dist);
+
+	position_params.accel_time = ((sqrt(2.0) * sqrt(position_params.accel * position_params.accel_dist)) / position_params.accel);
+	position_params.decel_time = ((sqrt(2.0) * sqrt(position_params.decel * position_params.decel_dist)) / position_params.decel);
+
+
+
+	position_params.accel_speed_avrg = position_params.accel_dist / position_params.accel_time;
+	position_params.decel_speed_avrg = position_params.decel_dist / position_params.decel_time;
+
+	position_params.speed_average = (position_params.accel_dist + position_params.decel_dist + position_params.maintain_dist) /
+			(position_params.accel_time + position_params.decel_time + (position_params.maintain_dist /position_params.max_speed));
 
 	position_params.accel_dist_per_loop = position_params.accel / pow(HI_TIME_FREQ, 2);
 	position_params.decel_dist_per_loop = position_params.decel / pow(HI_TIME_FREQ, 2);
