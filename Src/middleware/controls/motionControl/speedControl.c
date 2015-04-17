@@ -142,6 +142,10 @@ int speedCompute(void)
 		t = ______v___________________	//with initial speed
 				      Acc
 
+			 1	  -Vi²+Vf²
+		d = ---	x --------
+			 2      Acc
+
 		  	  V²
 		d = -----
 	    	2.Acc
@@ -188,10 +192,8 @@ float speedProfileCompute(float distance)
 
 	motorsSleepDriver(ON);
 
-	speed_params.accel_dist = pow((speed_params.max_speed + speed_params.initial_speed), 2) / (2.0f * speed_params.accel);
-	speed_params.decel_dist = pow((speed_params.max_speed - speed_params.end_speed), 2) / (2.0f * speed_params.decel);
-
-//	speed_control.end_speed = (speed_params.max_speed * (speed_params.end_speed_ratio) / 100.0f);
+	speed_params.accel_dist = 0.5 * (( (-1.0 * pow(speed_params.initial_speed, 2)) + pow(speed_params.max_speed, 2)) / speed_params.accel);
+	speed_params.decel_dist = -0.5 * ((speed_params.end_speed - speed_params.max_speed) * (speed_params.end_speed + speed_params.max_speed)) / speed_params.decel;
 
 	speed_params.accel_dist_per_loop = speed_params.accel / pow(HI_TIME_FREQ, 2);
 	speed_params.decel_dist_per_loop = speed_params.decel / pow(HI_TIME_FREQ, 2);
@@ -206,10 +208,13 @@ float speedProfileCompute(float distance)
 		clipping_ratio =  (distance / (speed_params.accel_dist + speed_params.decel_dist));
 		speed_params.accel_dist *= clipping_ratio;
 		speed_params.decel_dist *= clipping_ratio;
+		speed_params.max_speed  = sqrt( pow(speed_params.initial_speed, 2) + 2.0 * speed_params.accel * speed_params.accel_dist);
 	}
 
-	speed_params.nb_loop_accel = (((-1.0 * speed_params.initial_speed) + sqrt(pow(speed_params.initial_speed, 2) + 2.0 * speed_params.accel * speed_params.accel_dist )) / speed_params.accel) * HI_TIME_FREQ;
-	speed_params.nb_loop_decel = ((sqrt(2.0) * sqrt(speed_params.decel * speed_params.decel_dist)) / speed_params.decel) * HI_TIME_FREQ;
+	speed_params.nb_loop_accel = (((-1.0 * speed_params.initial_speed) + sqrt(pow(speed_params.initial_speed, 2) +
+			2.0 * speed_params.accel * speed_params.accel_dist )) / speed_params.accel) * HI_TIME_FREQ;
+	speed_params.nb_loop_decel = (((speed_params.max_speed) - sqrt(pow(speed_params.max_speed, 2) -
+			2.0 * speed_params.decel * speed_params.decel_dist )) / speed_params.decel) * HI_TIME_FREQ;
 
 	if ((speed_params.accel_dist + speed_params.decel_dist) > distance)
 	{
@@ -221,8 +226,6 @@ float speedProfileCompute(float distance)
 		speed_params.maintain_dist = distance - (speed_params.accel_dist + speed_params.decel_dist);
 		speed_params.nb_loop_maint = ((speed_params.maintain_dist / speed_params.max_speed) * HI_TIME_FREQ);
 	}
-
-//	speed_params.initial_speed = speed_params.initial_speed + speed_params.nb_loop_accel * (speed_params.nb_loop_accel / HI_TIME_FREQ);
 
 	speed_params.initial_speed = speed_params.initial_speed + (((speed_params.nb_loop_accel / HI_TIME_FREQ) * speed_params.accel) -
 					((speed_params.nb_loop_decel / HI_TIME_FREQ) * speed_params.decel));

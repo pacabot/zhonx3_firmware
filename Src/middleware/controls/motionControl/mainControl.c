@@ -118,12 +118,18 @@ void mainControlTest(void)
 	mainControlInit();
 	HAL_Delay(500);
 
-	move(-180, 0, 500, 0);
+	move(0, 90, 200, 200);
 	while(speed_control.end_control != 1);
-//	move(0, 50, 500, 285);
-//	while(speed_control.end_control != 1);
-//	move(-180, 90, 286, 0);
-
+	move(90, 90, 200, 200);
+	while(speed_control.end_control != 1);
+	move(-90, 90, 200, 200);
+	while(speed_control.end_control != 1);
+	move(0, 360, 1000, 200);
+	while(speed_control.end_control != 1);
+	move(90, 90, 200, 200);
+	while(speed_control.end_control != 1);
+	move(0, 90, 200, 0);
+	while(speed_control.end_control != 1);
 
 	while(expanderJoyFiltered()!=JOY_LEFT)
 	{

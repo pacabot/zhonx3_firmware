@@ -197,11 +197,6 @@ float positionProfileCompute(float distance, float time)
 
 		position_params.accel *= (1.0+clipping_ratio);
 		position_params.decel *= (1.0+clipping_ratio);
-
-		//			position_params.max_speed = (sqrt(2.0) * sqrt(0.5 * distance * position_params.accel_dist));
-		//
-		//			position_params.accel_dist = pow(position_params.max_speed, 2)/(2.0 * position_params.accel);
-		//			position_params.decel_dist = pow(position_params.max_speed, 2)/(2.0 * position_params.decel);
 	}
 
 	position_params.maintain_dist = distance - (position_params.accel_dist + position_params.decel_dist);
