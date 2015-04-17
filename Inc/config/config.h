@@ -15,11 +15,11 @@
 /***************                 Times definitions                 ********************/
 /**************************************************************************************/
 #define LOW_TIME_FREQ			100
-#define HI_TIME_FREQ			1000.00 //use for pids inner loop
+#define HI_TIME_FREQ			1000.0 //use for pids inner loop
 #define TELEMETERS_TIME_FREQ	4000  	//each telemeter use 1/4 of TELEMETERS_TIME_FREQ
 #define GYRO_TIME_FREQ			1000
 #define LINESENSORS_TIME_FREQ	GYRO_TIME_FREQ //same timer
-#define MULTIMMETER_TIME_FREQ	0.1
+#define MULTIMMETER_TIME_FREQ	0.1f
 #define MOTORS_FREQ				20000	//motor pwm freq
 
 /**************************************************************************************/
@@ -76,9 +76,9 @@
 /***************                       Battery                     ********************/
 /**************************************************************************************/
 #define BATTERY_CELL_NUMBER					2	//2S
-#define BATTERY_LOWER_VOLTAGE_NO_LOAD		(3.6 * BATTERY_CELL_NUMBER)
-#define BATTERY_UPPER_VOLTAGE_NO_LOAD		(4.2 * BATTERY_CELL_NUMBER)
-#define BATTERY_LOWER_VOLTAGE_OFFSET		(-0.10 * BATTERY_CELL_NUMBER)	//-0.1V/A
+#define BATTERY_LOWER_VOLTAGE_NO_LOAD		(3.6f * BATTERY_CELL_NUMBER)
+#define BATTERY_UPPER_VOLTAGE_NO_LOAD		(4.2f * BATTERY_CELL_NUMBER)
+#define BATTERY_LOWER_VOLTAGE_OFFSET		(-0.1f * BATTERY_CELL_NUMBER)	//-0.1V/A
 
 /**************************************************************************************/
 /***************                 Mechanical Constants              ********************/
@@ -101,9 +101,12 @@
 /**************************************************************************************/
 /***************                 Physical Constants                ********************/
 /**************************************************************************************/
-#define MAX_SPEED				400.0	//mm/s
-#define MAX_ACCEL				140.0	//mm/s²
-#define MAX_DECEL				140.0	//mm/s²
+#define MAX_SPEED				4000.0	//mm/s
+#define MAX_ACCEL				4000.0	//mm/s²
+#define MAX_DECEL				4000.0	//mm/s²
+
+#define MAX_TURN_SPEED			1000.0	//mm/s
+#define MAX_TURN_ACCEL			8000.0	//mm/s²
 
 /**************************************************************************************/
 /***************                 Motors Constants                  ********************/
