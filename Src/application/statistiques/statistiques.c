@@ -43,10 +43,10 @@ int cAverage (int statistical_series[], int statistical_serial_length)
 void eliminateExtremeValues (int *statistical_series, int *statistical_serial_length)
 {
 	int average = cAverage (statistical_series, *statistical_serial_length);
-	int StandardError = cStandardError (statistical_series, *statistical_serial_length);
+	int Standard_deviation = cStandardDeviation(statistical_series, *statistical_serial_length);
 	for (int i=0;i<*statistical_serial_length;i++)
 	{
-		if(statistical_series[i] > average+StandardError || statistical_series[i] < (average - StandardError))
+		if(statistical_series[i] > average+Standard_deviation || statistical_series[i] < (average - Standard_deviation))
 		{
 			statistical_series[i]=-1;
 		}

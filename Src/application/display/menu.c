@@ -40,7 +40,7 @@ extern void toneTest ();
 extern void motorsTest ();
 extern void lineSensorsTest ();
 extern void mainControlTest ();
-extern void telemeter_calibration();
+extern int telemeterCalibration (void);
 /*
  * to create a new menu you have to create a new variable of type "menuItem" like this :
  * menuItem name =
@@ -75,7 +75,7 @@ menuItem tests_menu=
 {
 		"TEST MENU",
 		{
-				{"test calibration",'f',(void*)telemeter_calibration},
+				{"test calibration",'f',(void*)telemeterCalibration},
 				{"test bluetooth",'f', (void*)bluetoothTest},
 				{"test multimeter",'f', (void*)mulimeterTest},
 				{"test display",'f', (void*)ssd1306Test},
