@@ -50,7 +50,7 @@ int mainControlInit(void)
 	positionControlInit();
 	transfertFunctionInit();
 
-	speed_params.end_speed_ratio = 0;
+	speed_params.initial_speed = 0;
 
 	return MAIN_CONTROL_E_SUCCESS;
 }
@@ -64,7 +64,7 @@ int mainControlLoop(void)
 	return MAIN_CONTROL_E_SUCCESS;
 }
 
-int move(float angle, float radius_or_distance, enum speedRate speed_rate, float end_speed_ratio)
+int move(float angle, float radius_or_distance, float max_speed, float end_speed)//enum speedRate speed_rate, float end_speed_ratio)
 {
 	pid_loop.start_state = FALSE;
 	speedControlInit();
@@ -79,35 +79,23 @@ int move(float angle, float radius_or_distance, enum speedRate speed_rate, float
 	float distance_per_wheel;
 	const float ROTATION_DIAMETER = sqrt(pow(WHEELS_DISTANCE, 2) + pow(WHEELS_SPACING, 2));
 
+	speed_params.sign = SIGN(radius_or_distance);
+	radius_or_distance = fabsf(radius_or_distance);
+
+	position_params.sign = SIGN(angle);
+	angle = fabsf(angle);
+
 	/* Apply the correction factor, delete function with the future gyro compensation */
-	switch (speed_rate) {
+	slip_compensation = 1.09;
 
-	case LOWSPEED:
-		slip_compensation = 1.09;
-		break;
-
-	case MEDIUMSPEED :
-		slip_compensation = 1.01;
-		break;
-
-	case FASTSPEED:
-		slip_compensation = 1.02;
-		break;
-
-	case HIGHSPEED:
-		slip_compensation = 1.035;
-		break;
-	}
-
-	speed_params.max_speed 	= (MAX_SPEED * speed_rate)/100.0;
-	speed_params.accel 		= (MAX_ACCEL * speed_rate)/100.0;
-	speed_params.decel 		= (MAX_DECEL * speed_rate)/100.0;
+	speed_params.end_speed  = end_speed;
+	speed_params.max_speed 	= max_speed;
+	speed_params.accel 		= max_speed * 2;//(MAX_ACCEL)
+	speed_params.decel 		= max_speed * 2;//
 
 	if (angle == 0)
 	{
 		distance = radius_or_distance;
-
-		speed_params.end_speed_ratio = end_speed_ratio;
 
 		speedProfileCompute(distance);
 		positionProfileCompute(0,0);
@@ -115,9 +103,7 @@ int move(float angle, float radius_or_distance, enum speedRate speed_rate, float
 	else
 	{
 		distance_per_wheel = (2.0 * PI * ROTATION_DIAMETER * (angle / 360.0)) * slip_compensation;
-		distance = (PI * (2 * radius_or_distance) * (angle / 360.0));
-
-		speed_params.end_speed_ratio = end_speed_ratio;
+		distance = fabsf((PI * (2 * radius_or_distance) * (angle / 360.0)));
 
 		positionProfileCompute(distance_per_wheel, speedProfileCompute(distance));
 	}
@@ -131,29 +117,26 @@ void mainControlTest(void)
 {
 	mainControlInit();
 	HAL_Delay(500);
-	move(90, 0, LOWSPEED, 100);
+
+	move(0, 90, 200, 200);
 	while(speed_control.end_control != 1);
-//	move(0, 10, LOWSPEED, 100);
+	move(90, 90, 200, 200);
 	while(speed_control.end_control != 1);
-//	move(0, 10, LOWSPEED, 100);
-//	while(speed_control.end_control != 1);
-//	move(90, 40, LOWSPEED, 100);
-//	while(speed_control.end_control != 1);
-//	move(90, 40, LOWSPEED, 0);
-//	while(speed_control.end_control != 1);
-//	while(position_control.end_control != 1);
-//	motorsSleepDriver(ON);
-//	move(0, 100, LOWSPEED, 100);
-//	while(speed_control.end_control != 1);
-//	move(180, 90, LOWSPEED, 100);
-//	while(position_control.end_control != 1);
+	move(-90, 90, 200, 200);
+	while(speed_control.end_control != 1);
+	move(0, 360, 1000, 200);
+	while(speed_control.end_control != 1);
+	move(90, 90, 200, 200);
+	while(speed_control.end_control != 1);
+	move(0, 90, 200, 0);
+	while(speed_control.end_control != 1);
 
 	while(expanderJoyFiltered()!=JOY_LEFT)
 	{
 		ssd1306ClearScreen();
 		ssd1306PrintInt(10,  5,  "speed dist =  ",(int) (speed_control.current_distance * 100), &Font_5x8);
 		ssd1306PrintInt(10,  15, "posit.dist =  ",(int) (position_control.end_control * 100), &Font_5x8);
-		ssd1306PrintInt(10,  25, "right_dist =  ",(int16_t) encoderGetDistance(&right_encoder), &Font_5x8);
+		ssd1306PrintInt(10,  25, "right_dist =  ",(int) (position_control.end_control * 100), &Font_5x8);
 		ssd1306PrintInt(10,  35, "error =  ",(int16_t) speed_control.speed_error, &Font_5x8);
 		ssd1306PrintInt(10,  45, "left PWM =  ",(int16_t) transfert_function.left_motor_pwm, &Font_5x8);
 		ssd1306PrintInt(10,  55, "right PWM =  ",(int16_t) transfert_function.right_motor_pwm, &Font_5x8);

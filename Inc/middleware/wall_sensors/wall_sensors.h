@@ -11,15 +11,16 @@
 #define WALL_SENSORS_E_SUCCESS  0
 #define WALL_SENSORS_E_ERROR    MAKE_ERROR(WALL_SENSORS_MODULE_ID, 1)
 
-#define NUMBER_OF_CASE 		100
+#define NUMBER_OF_CASE 		10
 #define DISTANCE_MEASURED	300
 #define NUMBER_OF_MILLIMETER_PER_LOOP DISTANCE_MEASURED/NUMBER_OF_CASE
-#define NUMBER_OF_MEASURE_BY_STEP 50
+#define NUMBER_OF_MEASURE_BY_STEP 500
 
 // select debug level or comment debug
-//#define DEBUG_WALL_SENSOR 	2
+#define DEBUG_WALL_SENSOR 	2
 
 
 void telemeter_calibration();
 int getTelemeterValueWithoutAmbientLight (int *value_front_left, int *value_front_right, int *value_diag_left, int *value_diag_right, int number_of_measure);
+int getTelemetersDistance (float *distance_front_left, float *distance_front_right, float *distance_diag_left, float *distance_diag_right, int *precision);
 #endif /* WALL_SENSORS_H_ */

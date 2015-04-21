@@ -108,6 +108,7 @@ void adxrs620_ADC_IT(void)
 			gyro.max_adc_value = gyro_adc;
 		if (gyro_adc < gyro.min_adc_value)
 			gyro.min_adc_value = gyro_adc;
+		gyro.adc_value = gyro_adc;
 		gyro.callback_cnt++;
 	}
 }
@@ -123,8 +124,9 @@ void adxrs620Test(void)
 
 		ssd1306PrintInt(10,  25,  "max ADC =  ", (int32_t) gyro.max_adc_value, &Font_5x8);
 		ssd1306PrintInt(10,  35,  "min ADC =  ", (int32_t) gyro.min_adc_value, &Font_5x8);
+		ssd1306PrintInt(10,  45,  "ADC val =  ", (int32_t) gyro.adc_value, &Font_5x8);
 
-		ssd1306PrintInt(10,  45,  "Beta =  ", (volatile double) (gyro.beta * 1000), &Font_5x8);
+		ssd1306PrintInt(10,  55,  "Beta =  ", (volatile double) (gyro.beta * 1000), &Font_5x8);
 		ssd1306DrawString(80,  55,  ".10^-3", &Font_5x8);
 		ssd1306Refresh();
 	}

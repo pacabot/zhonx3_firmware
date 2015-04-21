@@ -36,7 +36,7 @@ int mainControlLoop(void);
  *
  * @retval HAL status
  */
-int move(float angle, float radius_or_distance, enum speedRate speed_rate, float end_speed);
+int move(float angle, float radius_or_distance, float max_speed, float end_speed);
 void mainControlTest(void);
 
 #endif // __MAINCONTROL_H

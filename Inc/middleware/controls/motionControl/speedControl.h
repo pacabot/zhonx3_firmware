@@ -26,36 +26,35 @@ enum speedRate { LOWSPEED = 5, MEDIUMSPEED = 30, FASTSPEED = 60, HIGHSPEED = 100
 
 typedef struct
 {
-	float distance_consign;			//total distance
-	float max_speed;
-	float end_speed_ratio;
-	float initial_speed;
-	float final_speed;
-	float accel;
-	float decel;
-	float accel_dist;
-	float decel_dist;
-	float accel_dist_per_loop;
-	float decel_dist_per_loop;
-	float nb_loop_accel;
-	float nb_loop_decel;
-	float nb_loop_maint;
-	float maintain_dist;
-	float invert_rotation;
+	double distance_consign;			//total distance
+	double max_speed;
+	double initial_speed;
+    double end_speed;
+	double accel;
+	double decel;
+	double accel_dist;
+	double decel_dist;
+	double accel_dist_per_loop;
+	double decel_dist_per_loop;
+	double nb_loop_accel;
+	double nb_loop_decel;
+	double nb_loop_maint;
+	double maintain_dist;
+	double sign;
 }speed_params_struct;
 
 extern speed_params_struct speed_params;
 
 typedef struct
 {
-	float current_distance;			//distance (mm) since the control start
-	float gap_distance_per_loop;	//distance between two control loop call
-	float current_distance_consign;		//distance consign for current loop
-	float old_distance;				//effective distance at the previous call
-    float current_speed;
-	float speed_consign;
-	float speed_error;
-	float speed_command;
+	double current_distance;			//distance (mm) since the control start
+	double gap_distance_per_loop;	//distance between two control loop call
+	double current_distance_consign;		//distance consign for current loop
+	double old_distance;				//effective distance at the previous call
+    double current_speed;
+	double speed_consign;
+	double speed_error;
+	double speed_command;
 	char end_control;
 	enum speedType speedType;
 
