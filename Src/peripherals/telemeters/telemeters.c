@@ -127,34 +127,42 @@ void telemeters_IT(void)
 		HAL_GPIO_WritePin(GPIOB, TX_RIGHT_FRONT, SET);
 		telemeters.right_front.emitter_state = 1;
 		sConfig.Channel = RX_RIGHT_FRONT;
-		HAL_ADC_ConfigChannel(&hadc2, &sConfig);
-		HAL_ADC_Start_IT(&hadc2);
 		break;
 	case 1:
 		HAL_GPIO_WritePin(GPIOB, TX_LEFT_FRONT, SET);
 		telemeters.left_front.emitter_state = 1;
 		sConfig.Channel = RX_LEFT_FRONT;
-		HAL_ADC_ConfigChannel(&hadc2, &sConfig);
-		HAL_ADC_Start_IT(&hadc2);
 		break;
 	case 2:
 		HAL_GPIO_WritePin(GPIOB, TX_DUAL_DIAG, SET);
 		telemeters.left_diag.emitter_state = 1;
 		sConfig.Channel = RX_LEFT_DIAG;
-		HAL_ADC_ConfigChannel(&hadc2, &sConfig);
-		HAL_ADC_Start_IT(&hadc2);
 		break;
 	case 3:
 		HAL_GPIO_WritePin(GPIOB, TX_DUAL_DIAG, SET);
 		telemeters.right_diag.emitter_state = 1;
 		sConfig.Channel = RX_RIGHT_DIAG;
-		HAL_ADC_ConfigChannel(&hadc2, &sConfig);
-		HAL_ADC_Start_IT(&hadc2);
 		break;
+	case 4:
+		telemeters.ref.emitter_state = 1;
+		sConfig.Channel = RX_REF;
+		break;
+	default :
+		telemeters.selector=0;
+		HAL_GPIO_WritePin(GPIOB, TX_RIGHT_FRONT, RESET);
+		HAL_GPIO_WritePin(GPIOB, TX_LEFT_FRONT, RESET);
+		HAL_GPIO_WritePin(GPIOB, TX_DUAL_DIAG, RESET);
+		HAL_GPIO_WritePin(GPIOB, TX_DUAL_DIAG, RESET);
+		telemeters.right_front.emitter_state = 0;
+		telemeters.left_front.emitter_state = 0;
+		telemeters.left_diag.emitter_state = 0;
+		telemeters.right_diag.emitter_state = 0;
 	}
+	HAL_ADC_ConfigChannel(&hadc2, &sConfig);
+	HAL_ADC_Start_IT(&hadc2);
 	telemeters.it_cnt++;
 	telemeters.selector++;
-	if (telemeters.selector > 3)
+	if (telemeters.selector > 4)
 		telemeters.selector = 0;
 }
 
@@ -187,6 +195,12 @@ void telemeters_ADC_IT(void)
 		telemeters.right_diag.telemeter_value = telemeters.right_diag.adc_value - telemeters.right_diag.offset;
 		HAL_GPIO_WritePin(GPIOB, TX_DUAL_DIAG, RESET);
 		telemeters.right_diag.emitter_state = 0;
+	}
+	if (telemeters.ref.emitter_state == 1)
+	{
+		telemeters.ref.adc_value = HAL_ADC_GetValue(&hadc2);
+		telemeters.ref.telemeter_value = telemeters.ref.adc_value - telemeters.ref.offset;
+		telemeters.ref.emitter_state = 0;
 	}
 	telemeters.end_of_conversion++;
 }
