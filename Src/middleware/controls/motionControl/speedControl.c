@@ -208,7 +208,7 @@ float speedProfileCompute(float distance)
 		clipping_ratio =  (distance / (speed_params.accel_dist + speed_params.decel_dist));
 		speed_params.accel_dist *= clipping_ratio;
 		speed_params.decel_dist *= clipping_ratio;
-		speed_params.max_speed  = sqrt( pow(speed_params.initial_speed, 2) + 2.0 * speed_params.accel * speed_params.accel_dist);
+		speed_params.max_speed  = sqrt(pow(speed_params.initial_speed, 2) + 2.0 * speed_params.accel * speed_params.accel_dist);
 	}
 
 	speed_params.nb_loop_accel = (((-1.0 * speed_params.initial_speed) + sqrt(pow(speed_params.initial_speed, 2) +
