@@ -32,15 +32,20 @@ void telemeter_calibration (void)
 	int values_for_statistique_left[NUMBER_OF_MEASURE_BY_STEP]={0};
 	int old_mesure, length;
 
-
-	ssd1306DrawString(0,0,"Place the robot in",&Font_5x8);
-	ssd1306DrawString(10,0,"30 cms of front wall",&Font_5x8);
-	ssd1306DrawString(20,0,"and press 'RIGHT'",&Font_5x8);
+	ssd1306ClearScreen();
+	ssd1306DrawString(5,5,"Place the robot in",&Font_5x8);
+	ssd1306DrawString(5,15,"30 cms of front wall",&Font_5x8);
+	ssd1306DrawString(5,25,"and press 'RIGHT'",&Font_5x8);
+	ssd1306Refresh();
 	while(expanderJoyFiltered()!=JOY_RIGHT);
-
 
 	telemetersInit();
 	bluetoothPrintf("step|front left|front right");
+
+	ssd1306ClearScreen();
+	ssd1306DrawString(5,15,"Please wait",&Font_5x8);
+	ssd1306Refresh();
+
 	old_mesure=telemeters.end_of_conversion;
 
 	for(int i=0;i<NUMBER_OF_CASE;i++)
@@ -64,11 +69,12 @@ void telemeter_calibration (void)
 
 		move(0,NUMBER_OF_MILLIMETER_PER_LOOP,LOWSPEED,0);
 	}
-	bluetoothPrintf("\n\n\nfilterd measures :\n");
+	bluetoothPrintf("\n\n\nfiltered measures :\n");
 	for (int i = 0; i < NUMBER_OF_CASE; ++i)
 	{
 		bluetoothPrintf("%2d|%10d|%d\n",i,values[0][i],values[1][i]);
 	}
 	telemetersStop();
 	printCurve(values[0],NUMBER_OF_CASE);
+	while(expanderJoyFiltered() != JOY_LEFT);
 }
