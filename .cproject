@@ -41,7 +41,7 @@
 							<option id="ilg.gnuarmeclipse.managedbuild.cross.option.arm.target.fpu.abi.1848464875" name="Float ABI" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.arm.target.fpu.abi" value="ilg.gnuarmeclipse.managedbuild.cross.option.arm.target.fpu.abi.hard" valueType="enumerated"/>
 							<option id="ilg.gnuarmeclipse.managedbuild.cross.option.arm.target.fpu.unit.1597635137" name="FPU Type" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.arm.target.fpu.unit" value="ilg.gnuarmeclipse.managedbuild.cross.option.arm.target.fpu.unit.fpv4spd16" valueType="enumerated"/>
 							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="ilg.gnuarmeclipse.managedbuild.cross.targetPlatform.504936572" isAbstract="false" osList="all" superClass="ilg.gnuarmeclipse.managedbuild.cross.targetPlatform"/>
-							<builder autoBuildTarget="all" buildPath="${workspace_loc:/ZHONX_III}/Debug" cleanBuildTarget="clean" id="org.eclipse.cdt.build.core.internal.builder.129349694" incrementalBuildTarget="all" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="CDT Internal Builder" parallelBuildOn="true" parallelizationNumber="optimal" stopOnErr="false" superClass="org.eclipse.cdt.build.core.internal.builder"/>
+							<builder autoBuildTarget="all" buildPath="${workspace_loc:/ZHONX_III}/Debug" cleanBuildTarget="clean" id="org.eclipse.cdt.build.core.internal.builder.129349694" incrementalBuildTarget="all" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="CDT Internal Builder" parallelBuildOn="true" parallelizationNumber="4" stopOnErr="false" superClass="org.eclipse.cdt.build.core.internal.builder"/>
 							<tool id="ilg.gnuarmeclipse.managedbuild.cross.tool.assembler.2069070588" name="Cross ARM GNU Assembler" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.assembler">
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.assembler.usepreprocessor.2028708394" name="Use preprocessor" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.assembler.usepreprocessor" value="true" valueType="boolean"/>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.assembler.defs.1993396599" name="Defined symbols (-D)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.assembler.defs" valueType="definedSymbols">
@@ -113,20 +113,20 @@
 					<fileInfo id="ilg.gnuarmeclipse.managedbuild.cross.config.elf.debug.572021291.489728446.1662449982.915333139" name="beeper.h" rcbsApplicability="disable" resourcePath="Inc/peripherals/beeper/beeper.h" toolsToInvoke=""/>
 					<fileInfo id="ilg.gnuarmeclipse.managedbuild.cross.config.elf.debug.572021291.489728446.1662449982.967337781" name="solverMaze.h" rcbsApplicability="disable" resourcePath="Inc/application/solverMaze/solverMaze.h" toolsToInvoke=""/>
 					<fileInfo id="ilg.gnuarmeclipse.managedbuild.cross.config.elf.debug.572021291.489728446.1662449982.1306869575" name="stm32f411xe.h" rcbsApplicability="disable" resourcePath="Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f411xe.h" toolsToInvoke=""/>
-					<fileInfo id="ilg.gnuarmeclipse.managedbuild.cross.config.elf.debug.572021291.489728446.1662449982.1439730077" name="stm32f401xc.h" rcbsApplicability="disable" resourcePath="Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f401xc.h" toolsToInvoke="">
-						<tool customBuildStep="true" id="org.eclipse.cdt.managedbuilder.ui.rcbs.1240170520" name="Resource Custom Build Step">
-							<inputType id="org.eclipse.cdt.managedbuilder.ui.rcbs.inputtype.293863804" name="Resource Custom Build Step Input Type">
-								<additionalInput kind="additionalinputdependency" paths=""/>
-							</inputType>
-							<outputType id="org.eclipse.cdt.managedbuilder.ui.rcbs.outputtype.1054947538" name="Resource Custom Build Step Output Type"/>
-						</tool>
-					</fileInfo>
 					<fileInfo id="ilg.gnuarmeclipse.managedbuild.cross.config.elf.debug.572021291.489728446.1662449982.1156178988" name="stm32f437xx.h" rcbsApplicability="disable" resourcePath="Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f437xx.h" toolsToInvoke="">
 						<tool customBuildStep="true" id="org.eclipse.cdt.managedbuilder.ui.rcbs.279152433" name="Resource Custom Build Step">
 							<inputType id="org.eclipse.cdt.managedbuilder.ui.rcbs.inputtype.820345731" name="Resource Custom Build Step Input Type">
 								<additionalInput kind="additionalinputdependency" paths=""/>
 							</inputType>
 							<outputType id="org.eclipse.cdt.managedbuilder.ui.rcbs.outputtype.370161034" name="Resource Custom Build Step Output Type"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="ilg.gnuarmeclipse.managedbuild.cross.config.elf.debug.572021291.489728446.1662449982.1439730077" name="stm32f401xc.h" rcbsApplicability="disable" resourcePath="Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f401xc.h" toolsToInvoke="">
+						<tool customBuildStep="true" id="org.eclipse.cdt.managedbuilder.ui.rcbs.1240170520" name="Resource Custom Build Step">
+							<inputType id="org.eclipse.cdt.managedbuilder.ui.rcbs.inputtype.293863804" name="Resource Custom Build Step Input Type">
+								<additionalInput kind="additionalinputdependency" paths=""/>
+							</inputType>
+							<outputType id="org.eclipse.cdt.managedbuilder.ui.rcbs.outputtype.1054947538" name="Resource Custom Build Step Output Type"/>
 						</tool>
 					</fileInfo>
 					<fileInfo id="ilg.gnuarmeclipse.managedbuild.cross.config.elf.debug.572021291.489728446.1662449982.1133557223" name="stm32f429xx.h" rcbsApplicability="disable" resourcePath="Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f429xx.h" toolsToInvoke="">
@@ -179,7 +179,7 @@
 						</tool>
 					</fileInfo>
 					<sourceEntries>
-						<entry excluding="Inc/application/solverMaze/solverMaze.h|Src/application/solverMaze/solverMaze.c|ZHONX_III/Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f401xc.h|ZHONX_III/Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f429xx.h|ZHONX_III/Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f427xx.h|ZHONX_III/Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f411xe.h|Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f417xx.h|Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f401xc.h|Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f437xx.h|Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f411xe.h|Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f415xx.h|ZHONX_III/Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f417xx.h|Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f427xx.h|Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f407xx.h|ZHONX_III/Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f437xx.h|Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f439xx.h|ZHONX_III/Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f401xe.h|ZHONX_III/Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f407xx.h|Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f401xe.h|ZHONX_III/Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f439xx.h|ZHONX_III/Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f415xx.h|Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f429xx.h" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="ZHONX_III/Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f401xc.h|ZHONX_III/Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f429xx.h|ZHONX_III/Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f427xx.h|ZHONX_III/Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f411xe.h|Inc/application/solverMaze/solverMaze.h|Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f417xx.h|Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f401xc.h|Src/application/solverMaze/solverMaze.c|Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f437xx.h|Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f411xe.h|Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f415xx.h|ZHONX_III/Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f417xx.h|Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f427xx.h|Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f407xx.h|ZHONX_III/Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f437xx.h|Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f439xx.h|ZHONX_III/Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f401xe.h|ZHONX_III/Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f407xx.h|Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f401xe.h|ZHONX_III/Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f439xx.h|ZHONX_III/Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f415xx.h|Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f429xx.h" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -296,7 +296,7 @@
 					</folderInfo>
 					<fileInfo id="ilg.gnuarmeclipse.managedbuild.cross.config.elf.debug.572021291.489728446.1662449982.1051290487.Inc/peripherals/beeper/beeper.h" name="beeper.h" rcbsApplicability="disable" resourcePath="Inc/peripherals/beeper/beeper.h" toolsToInvoke=""/>
 					<sourceEntries>
-						<entry excluding="Src/application/solverMaze/solverMaze.c|ZHONX_III/Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f437xx.h|ZHONX_III/Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f401xc.h|ZHONX_III/Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f429xx.h|ZHONX_III/Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f427xx.h|ZHONX_III/Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f411xe.h|ZHONX_III/Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f401xe.h|ZHONX_III/Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f407xx.h|ZHONX_III/Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f417xx.h|ZHONX_III/Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f439xx.h|ZHONX_III/Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f415xx.h" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="ZHONX_III/Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f437xx.h|ZHONX_III/Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f401xc.h|ZHONX_III/Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f429xx.h|ZHONX_III/Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f427xx.h|ZHONX_III/Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f411xe.h|ZHONX_III/Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f401xe.h|Src/application/solverMaze/solverMaze.c|ZHONX_III/Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f407xx.h|ZHONX_III/Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f417xx.h|ZHONX_III/Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f439xx.h|ZHONX_III/Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f415xx.h" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>

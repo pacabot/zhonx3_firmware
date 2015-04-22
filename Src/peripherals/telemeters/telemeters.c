@@ -78,7 +78,7 @@ void telemetersInit(void)
 void telemetersStart(void)
 {
 	telemeters.active_state = TRUE;
-	telemetersCalibrate();
+	//telemetersCalibrate();
 }
 
 void telemetersStop(void)

@@ -143,7 +143,6 @@ void mainControlTest(void)
 
 		ssd1306Refresh();
 	}
-	antiBounceJoystick();
 	pid_loop.start_state = FALSE;
 	telemetersStop();
 	motorsSleepDriver(ON);

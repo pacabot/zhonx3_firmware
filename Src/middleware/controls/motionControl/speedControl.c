@@ -202,6 +202,7 @@ float speedProfileCompute(float distance)
 	speed_control.current_distance_consign = 0;
 	speed_control.end_control = 0;
 
+
 	if ((speed_params.accel_dist + speed_params.decel_dist) > distance)
 	{
 		double clipping_ratio;
