@@ -21,8 +21,8 @@
 
 /* Types definitions */
 
-enum speedType { ACC, DCC, STOP, MAINTAIN };
-enum speedRate { LOWSPEED = 5, MEDIUMSPEED = 30, FASTSPEED = 60, HIGHSPEED = 100 };
+//enum speedType { ACC, DCC, STOP, MAINTAIN };
+enum speedRate { LOWSPEED = 400, MEDIUMSPEED = 800, FASTSPEED = 1000, HIGHSPEED = 2000 };
 
 typedef struct
 {
@@ -56,7 +56,6 @@ typedef struct
 	double speed_error;
 	double speed_command;
 	char end_control;
-	enum speedType speedType;
 
     pid_control_struct speed_pid;
 }speed_control_struct;
