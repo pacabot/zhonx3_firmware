@@ -26,6 +26,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <stdarg.h>
 
 /* Peripheral declarations */
 #include "peripherals/display/pictures.h"
@@ -473,6 +474,18 @@ void ssd1306PrintInt(unsigned int x, unsigned int y, const char *text, unsigned 
 	//i = (x + ((nb_char + 1) * font->u8Width));
 	ssd1306DrawString((x + ((nb_char + 1) * font->u8Width)), y, str ,font);
 }
+void ssd1306Printf(int x, int y, const FONT_DEF *font, const char *format, ...)
+{
+	char buffer[43];
+	va_list va_args;
+
+	va_start(va_args, format);
+    vsnprintf(buffer, 43, format, va_args);
+    va_end(va_args);
+
+    ssd1306DrawString(x,y,(char *)buffer, font);
+}
+
 /**************************************************************************/
 /*!
     @brief  Shifts the contents of the frame buffer up the specified
