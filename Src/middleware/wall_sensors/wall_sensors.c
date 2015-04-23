@@ -15,10 +15,10 @@
 #include "stm32f4xx_hal.h"
 #include "peripherals/motors/motors.h"
 
-int telemeter_right_front_voltage[DISTANCE_MEASURED]={3128,2774,1389,719,403,266,137,99,45,34};
-int telemeter_left_front_voltage[DISTANCE_MEASURED]={2883,2856,1917,1092,679,439,264,213,131,101};
-int telemeter_right_diag_voltage[DISTANCE_MEASURED];
-int telemeter_left_diag_voltage[DISTANCE_MEASURED];
+int telemeter_right_front_voltage[NUMBER_OF_CASE]={3128,2774,1389,719,403,266,137,99,45,34};
+int telemeter_left_front_voltage[NUMBER_OF_CASE]={2883,2856,1917,1092,679,439,264,213,131,101};
+int telemeter_right_diag_voltage[NUMBER_OF_CASE];
+int telemeter_left_diag_voltage[NUMBER_OF_CASE];
 
 int telemeterCalibration (void)
 {
@@ -245,7 +245,7 @@ int getTelemetersDistance (float *distance_front_left, float *distance_front_rig
 				break;
 			}
 		}
-	*distance_front_left=old_case_front_left;
+	*distance_front_left=(float)old_case_front_left;
 	old_voltage_front_left = value_front_left;
 	return WALL_SENSORS_E_SUCCESS;
 }
