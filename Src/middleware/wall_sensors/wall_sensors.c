@@ -15,16 +15,16 @@
 #include "stm32f4xx_hal.h"
 #include "peripherals/motors/motors.h"
 
-int telemeter_right_front_voltage[NUMBER_OF_CASE]={3128,2774,1389,719,403,266,137,99,45,34};
-int telemeter_left_front_voltage[NUMBER_OF_CASE]={2883,2856,1917,1092,679,439,264,213,131,101};
-int telemeter_right_diag_voltage[NUMBER_OF_CASE];
-int telemeter_left_diag_voltage[NUMBER_OF_CASE];
+int telemeter_right_front_voltage[NUMBER_OF_CELL]={3128,2774,1389,719,403,266,137,99,45,34};
+int telemeter_left_front_voltage[NUMBER_OF_CELL]={2883,2856,1917,1092,679,439,264,213,131,101};
+int telemeter_right_diag_voltage[NUMBER_OF_CELL];
+int telemeter_left_diag_voltage[NUMBER_OF_CELL];
 
 int telemeterCalibration (void)
 {
-	int value_to_retest_front_right [NUMBER_OF_CASE+1];
+	int value_to_retest_front_right [NUMBER_OF_CELL+1];
 	int length_front_right;
-	int value_to_retest_front_left [NUMBER_OF_CASE+1];
+	int value_to_retest_front_left [NUMBER_OF_CELL+1];
 	int length_front_left;
 //	int value_to_retest_diag_right [NUMBER_OF_CASE+1];
 //	int length_diag_right;
@@ -43,7 +43,7 @@ int telemeterCalibration (void)
 	telemetersInit();
 	mainControlInit();
 	HAL_Delay(500);
-	for(int i = 0; i < NUMBER_OF_CASE; i++)
+	for(int i = 0; i < NUMBER_OF_CELL; i++)
 	{
 		getTelemeterValueWithoutAmbientLight(&telemeter_left_front_voltage[i], &telemeter_right_front_voltage[i], &telemeter_left_diag_voltage[i], &telemeter_right_diag_voltage[i],NUMBER_OF_MEASURE_BY_STEP);
 
@@ -51,7 +51,7 @@ int telemeterCalibration (void)
 		while(speed_control.end_control != 1);
 	}
 	motorsSleepDriver(ON);
-	int position_zhonx=NUMBER_OF_CASE;
+	int position_zhonx=NUMBER_OF_CELL;
 	length_front_left=0;
 	length_front_right=0;
 	do
@@ -91,18 +91,18 @@ int telemeterCalibration (void)
 		}
 		#if DEBUG_WALL_SENSOR>1
 			bluetoothPrintf("\n\n\nfilterd measures :\n");
-			for (int i = 0; i < NUMBER_OF_CASE; ++i)
+			for (int i = 0; i < NUMBER_OF_CELL; ++i)
 			{
 				bluetoothPrintf("%2d|%10d|%d\n",i,telemeter_left_front_voltage[i],telemeter_right_front_voltage[i]);
 			}
 		#endif
 		length_front_left=0;
 		length_front_right=0;
-		for(int i = 1; i<(NUMBER_OF_CASE-1); i++)
+		for(int i = 1; i<(NUMBER_OF_CELL-1); i++)
 		{
 			if (telemeter_left_front_voltage[i] <= telemeter_left_front_voltage[i+1])
 			{
-				if( i==(NUMBER_OF_CASE-2) )
+				if( i==(NUMBER_OF_CELL-2) )
 				{
 					value_to_retest_front_left[length_front_left] = i+1;
 					length_front_left ++;
@@ -113,7 +113,7 @@ int telemeterCalibration (void)
 			if (telemeter_right_front_voltage[i] <= telemeter_right_front_voltage[i+1])
 			{
 
-				if( i==(NUMBER_OF_CASE-2) )
+				if( i==(NUMBER_OF_CELL-2) )
 				{
 					value_to_retest_front_right[length_front_right] = i+1;
 					length_front_right ++;
@@ -148,7 +148,7 @@ int telemeterCalibration (void)
 	}while (length_front_right>0 || length_front_left>0);
 #if DEBUG_WALL_SENSOR>1
 	bluetoothPrintf("\n\n\nfilterd measures :\n");
-	for (int i = 0; i < NUMBER_OF_CASE; ++i)
+	for (int i = 0; i < NUMBER_OF_CELL; ++i)
 	{
 		bluetoothPrintf("%2d|%10d|%d\n",i,telemeter_left_front_voltage[i],telemeter_right_front_voltage[i]);
 	}
@@ -199,10 +199,10 @@ int getTelemetersDistance (float *distance_front_left, float *distance_front_rig
 	static int old_voltage_front_right	= 0;
 	static int old_voltage_front_left	= 0;
 
-	static int old_case_diag_right		= NUMBER_OF_CASE;
-	static int old_case_diag_left		= NUMBER_OF_CASE;
-	static int old_case_front_right		= NUMBER_OF_CASE;
-	static int old_case_front_left		= NUMBER_OF_CASE;
+	static int old_case_diag_right		= NUMBER_OF_CELL - 1;
+	static int old_case_diag_left		= NUMBER_OF_CELL;
+	static int old_case_front_right		= NUMBER_OF_CELL;
+	static int old_case_front_left		= NUMBER_OF_CELL;
 
 	char sens_diag_right	= 1;
 	char sens_diag_left		= 1;
@@ -236,7 +236,7 @@ int getTelemetersDistance (float *distance_front_left, float *distance_front_rig
 //	{
 //		sens_diag_right=-1;
 //	}
-	while ((value_front_left<telemeter_left_front_voltage[old_case_front_left]) || (value_front_left>telemeter_left_front_voltage[old_case_front_left]))
+	while ((value_front_left < telemeter_left_front_voltage[old_case_front_left + 1]) || (value_front_left > telemeter_left_front_voltage[old_case_front_left]))
 		{
 			old_case_front_left += sens_front_left;
 			if (old_case_front_left < 0)
@@ -244,9 +244,9 @@ int getTelemetersDistance (float *distance_front_left, float *distance_front_rig
 				old_case_front_left=0;
 				break;
 			}
-			else if (old_case_front_left > NUMBER_OF_CASE)
+			else if (old_case_front_left > NUMBER_OF_CELL)
 			{
-				old_case_front_left=NUMBER_OF_CASE;
+				old_case_front_left = NUMBER_OF_CELL;
 				break;
 			}
 		}

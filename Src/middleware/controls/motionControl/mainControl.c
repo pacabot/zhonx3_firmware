@@ -36,6 +36,7 @@
 #include "middleware/controls/motionControl/positionControl.h"
 #include "middleware/controls/motionControl/speedControl.h"
 #include "middleware/controls/motionControl/transfertFunction.h"
+#include "middleware/controls/motionControl/followControl.h"
 
 /* Declarations for this module */
 #include "middleware/controls/motionControl/mainControl.h"
@@ -45,9 +46,10 @@ int mainControlInit(void)
 	motorsInit();
 	encodersInit();
 	mulimeterInit();
-	//	telemetersInit();
+	telemetersInit();
 	speedControlInit();
 	positionControlInit();
+	followControlInit();
 	transfertFunctionInit();
 
 	speed_params.initial_speed = 0;
@@ -59,6 +61,7 @@ int mainControlLoop(void)
 {
 	speedControlLoop();
 	positionControlLoop();
+	followControlLoop();
 	transfertFunctionLoop();
 
 	return MAIN_CONTROL_E_SUCCESS;

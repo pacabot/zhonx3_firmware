@@ -48,58 +48,36 @@
 /* extern variables */
 
 /* global variables */
-position_control_struct position_control;
-position_params_struct position_params;
+follow_control_struct follow_control;
+follow_params_struct follow_params;
 arm_pid_instance_f32 telemeters_pid_instance;
 
 int followControlInit(void)
 {
-	telemeters_pid_instance.Kp = 300;
+	telemeters_pid_instance.Kp = 3;
 	telemeters_pid_instance.Ki = 0;
-	telemeters_pid_instance.Kd = 800;
+	telemeters_pid_instance.Kd = 20;
 
 	follow_control.follow_pid.instance = &telemeters_pid_instance;
 
-	pidControllerInit(position_control.position_pid.instance);
+	pidControllerInit(follow_control.follow_pid.instance);
 
 	return POSITION_CONTROL_E_SUCCESS;
 }
 
 int followControlLoop(void)
 {
-//	if (position_params.sign > 0)
-//		position_control.current_diff_dist = encoderGetDistance(&left_encoder) - encoderGetDistance(&right_encoder);
-//	else
-//		position_control.current_diff_dist = encoderGetDistance(&right_encoder) - encoderGetDistance(&left_encoder);
-//
-//	if (position_params.nb_loop_accel > 0)
-//	{
-//		position_params.nb_loop_accel--;
-//		position_control.position_consign += position_params.accel_dist_per_loop;
-//		position_control.current_diff_dist_consign += position_control.position_consign;
-//	}
-//	else if (position_control.current_diff_dist < (position_params.accel_dist + position_params.maintain_dist))
-//	{
-//		position_params.nb_loop_maint--;
-//		position_control.current_diff_dist_consign += position_control.position_consign;
-//	}
-//	else if (position_params.nb_loop_decel > 0)
-//	{
-//		position_params.nb_loop_decel--;
-//		position_control.position_consign -= position_params.decel_dist_per_loop;
-//		position_control.current_diff_dist_consign += position_control.position_consign;
-//	}
-//	else if (position_params.nb_loop_decel <= 0)
-//	{
-//		position_control.current_diff_dist_consign = position_params.distance_consign;
-//		position_control.end_control = 1;
-//	}
-//
-//	position_control.position_error = position_control.current_diff_dist_consign - position_control.current_diff_dist;		//for distance control
-//	position_control.position_command = (pidController(position_control.position_pid.instance, position_control.position_error)) * (float)position_params.sign;
-//
-//	position_control.old_distance = position_control.current_diff_dist;
+	if ((telemeters.left_diag.telemeter_value > 1000) || (telemeters.right_diag.telemeter_value > 1000))
+	{
+		follow_control.follow_error = (telemeters.left_diag.telemeter_value - telemeters.right_diag.telemeter_value);
 
-	return SPEED_CONTROL_E_SUCCESS;
+		follow_params.sign = SIGN(follow_control.follow_error);
+		follow_control.follow_error = fabsf(follow_control.follow_error);
+
+		follow_control.follow_command = (pidController(follow_control.follow_pid.instance, follow_control.follow_error)) * (float)follow_params.sign;
+	}
+		//	follow_control.old_distance = follow_control.current_diff_dist;
+
+		return SPEED_CONTROL_E_SUCCESS;
 }
 
