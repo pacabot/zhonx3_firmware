@@ -214,24 +214,29 @@ int getTelemetersDistance (float *distance_front_left, float *distance_front_rig
 	int value_front_right;
 	int value_front_left;
 
-	int case_diag_right;
-	int case_diag_left;
-	int case_front_right;
-	int case_front_left;
 	int rv;
+
 	rv=getTelemeterValueWithoutAmbientLight(&value_front_left, &value_front_right, &value_diag_left, &value_diag_right, 10);
 	if (rv != WALL_SENSORS_E_SUCCESS)
 		return rv;
 
-	if(value_front_left>old_voltage_front_left)
+	if(value_front_left > old_voltage_front_left) // <-- todo : il ne tiend pas compte du if
+	{
 		sens_front_left=-1;
-	if(value_front_right>old_voltage_front_right)
-		sens_front_right=-1;
-	if(value_diag_left>old_voltage_diag_left)
-		sens_diag_left=-1;
-	if(value_diag_right>old_voltage_diag_right)
-		sens_diag_right=-1;
-	while ((value_front_left<=telemeter_left_front_voltage[old_case_front_left+1]) || (value_front_left>telemeter_left_front_voltage[old_case_front_left]))
+	}
+//	if(value_front_right > old_voltage_front_right)
+//	{
+//		sens_front_right=-1;
+//	}
+//	if(value_diag_left > old_voltage_diag_left)
+//	{
+//		sens_diag_left=-1;
+//	}
+//	if(value_diag_right > old_voltage_diag_right)
+//	{
+//		sens_diag_right=-1;
+//	}
+	while ((value_front_left<telemeter_left_front_voltage[old_case_front_left]) || (value_front_left>telemeter_left_front_voltage[old_case_front_left]))
 		{
 			old_case_front_left += sens_front_left;
 			if (old_case_front_left < 0)
@@ -259,7 +264,7 @@ void testTelemeterDistance()
 	{
 		ssd1306ClearScreen();
 		getTelemetersDistance(&distance,&unused,&unused,&unused,&unusedi);
-		ssd1306Printf(0,0,&Font_5x8,"distancd = %d",distance);
+		ssd1306Printf(0,0,&Font_5x8,"distancd = %f",distance);
 		ssd1306Refresh();
 	}
 	telemetersStop();
