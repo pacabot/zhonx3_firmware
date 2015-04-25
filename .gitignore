@@ -1,30 +1,10 @@
 # Les ligne commençant par '#' sont des commentaires.
-.settings/
 .cproject
 cproject
 .project
-Debug/*
-Release/*
-.settings*
-<<<<<<< HEAD
-.settings/*
-settings*
-settings/*
-.xml
-=======
->>>>>>> 3b3c0354acda66fea9a2063bd8ccd461e2594617
-
-Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f401xc.h
-Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f401xe.h
-Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f407xx.h
-Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f411xe.h
-Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f415xx.h
-Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f417xx.h
-Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f427xx.h
-Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f429xx.h
-Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f437xx.h
-Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f439xx.h
-
+/.settings
+/.settings/*
+*.xml
 *.elf
 *.map
 

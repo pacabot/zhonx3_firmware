@@ -31,6 +31,7 @@
 #define TRANSFERT_FUNCTION_MODULE_ID	105
 #define WALL_SENSORS_MODULE_ID			106
 #define SETTING_MODULE_ID  				110
+#define RING_BUFFER_MODULE_ID           111
 
 /* application 2xx*/
 #define MAZE_SOLVER_MODULE_ID			201

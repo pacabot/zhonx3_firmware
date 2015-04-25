@@ -31,7 +31,7 @@
 /* Declarations for this module */
 #include "peripherals/bluetooth/bluetooth.h"
 
-#define BLUETOOTH_BUFFER_SIZE 1024
+#define BLUETOOTH_BUFFER_SIZE 512
 
 extern UART_HandleTypeDef huart3;
 
