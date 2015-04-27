@@ -47,11 +47,11 @@ int telemeterCalibration (void)
 	{
 		getTelemeterValueWithoutAmbientLight(&telemeter_left_front_voltage[i], &telemeter_right_front_voltage[i], &telemeter_left_diag_voltage[i], &telemeter_right_diag_voltage[i],NUMBER_OF_MEASURE_BY_STEP);
 
-		move(0,-NUMBER_OF_MILLIMETER_PER_LOOP,50,0);
+		move(0,-NUMBER_OF_MILLIMETER_BY_LOOP,50,0);
 		while(speed_control.end_control != 1);
 	}
-	motorsSleepDriver(ON);
 	int position_zhonx=NUMBER_OF_CELL;
+	int distance;
 	length_front_left=0;
 	length_front_right=0;
 	do
@@ -62,12 +62,14 @@ int telemeterCalibration (void)
 					((position_zhonx-value_to_retest_front_left[length_front_left]) < (position_zhonx-value_to_retest_front_right[length_front_right])\
 					|| length_front_right<=0))
 			{
-				bluetoothPrintf("position Zhonx=%d,\tvaleur gauche a re tester=%d\t diff=%d\n", position_zhonx, value_to_retest_front_left[length_front_left], (position_zhonx-value_to_retest_front_left[length_front_left])*NUMBER_OF_MILLIMETER_PER_LOOP);
-				motorsSleepDriver(OFF);
-				move(0,(position_zhonx-value_to_retest_front_left[length_front_left])*NUMBER_OF_MILLIMETER_PER_LOOP,10,0);
-				while(speed_control.end_control != 1);
-				motorsSleepDriver(ON);
-				position_zhonx=value_to_retest_front_left[length_front_left];
+				distance=(position_zhonx-value_to_retest_front_left[length_front_left])*NUMBER_OF_MILLIMETER_BY_LOOP;
+				bluetoothPrintf("position Zhonx=%d,\tvaleur gauche a re tester=%d\t diff=%d\n", position_zhonx, value_to_retest_front_left[length_front_left], distance);
+				if (distance!=0)
+				{
+					move(0,(float)distance,10,0);
+					while(speed_control.end_control != 1);
+					position_zhonx=value_to_retest_front_left[length_front_left];
+				}
 
 				int value_unuse;
 				getTelemeterValueWithoutAmbientLight(&telemeter_left_front_voltage[value_to_retest_front_left[length_front_left]],&value_unuse,&value_unuse,&value_unuse,NUMBER_OF_MEASURE_BY_STEP);
@@ -76,13 +78,14 @@ int telemeterCalibration (void)
 			}
 			else if (length_front_right>=0)
 			{
-				bluetoothPrintf("position Zhonx=%d,\tvaleur droite a retester=%d\t diff=%d\n", position_zhonx, value_to_retest_front_right[length_front_right], (position_zhonx-value_to_retest_front_right[length_front_right])*NUMBER_OF_MILLIMETER_PER_LOOP);
-				motorsSleepDriver(OFF);
-				move(0,(position_zhonx-value_to_retest_front_right[length_front_right])*NUMBER_OF_MILLIMETER_PER_LOOP,10,0);
-				while(speed_control.end_control != 1);
-				motorsSleepDriver(ON);
-				position_zhonx=value_to_retest_front_right[length_front_right];
-
+				distance=(position_zhonx-value_to_retest_front_right[length_front_right])*NUMBER_OF_MILLIMETER_BY_LOOP;
+				bluetoothPrintf("position Zhonx=%d,\tvaleur droite a retester=%d\t diff=%d\n", position_zhonx, value_to_retest_front_right[length_front_right],distance);
+				if(distance!=0)
+				{
+					move(0,distance,10,0);
+					while(speed_control.end_control != 1);
+					position_zhonx=value_to_retest_front_right[length_front_right];
+				}
 				int value_unuse;
 				getTelemeterValueWithoutAmbientLight(&value_unuse,&telemeter_right_front_voltage[value_to_retest_front_right[length_front_right]],&value_unuse,&value_unuse,NUMBER_OF_MEASURE_BY_STEP);
 
@@ -144,7 +147,7 @@ int telemeterCalibration (void)
 		}
 		length_front_left --;
 		length_front_right --;
-		bluetoothPrintf("nombre de valeur a re tester : a gauche : %d, a droite %d\n",length_front_left,length_front_right);
+		bluetoothPrintf("nombre de valeur a retester : a gauche : %d, a droite %d\n",length_front_left,length_front_right);
 	}while (length_front_right>0 || length_front_left>0);
 #if DEBUG_WALL_SENSOR>1
 	bluetoothPrintf("\n\n\nfilterd measures :\n");
@@ -192,6 +195,20 @@ int getTelemeterValueWithoutAmbientLight (int *value_front_left, int *value_fron
 	*value_diag_right = cAverage(values_for_statistique_diag_right,length);
 	return WALL_SENSORS_E_SUCCESS;
 }
+/*
+ * formule
+ * y=ax+b
+ *
+ * 	  yb-ya
+ * a=_______
+ *    xb-xa
+ *
+ * b=y-ax
+ *
+ * 		  yb-ya
+ * b=ya- ________
+ * 		  xb-xa
+ */
 int getTelemetersDistance (float *distance_front_left, float *distance_front_right, float *distance_diag_left, float *distance_diag_right, int *precision)
 {
 	static int old_voltage_diag_right	= 0;
@@ -199,10 +216,10 @@ int getTelemetersDistance (float *distance_front_left, float *distance_front_rig
 	static int old_voltage_front_right	= 0;
 	static int old_voltage_front_left	= 0;
 
-	static int old_case_diag_right		= NUMBER_OF_CELL - 1;
-	static int old_case_diag_left		= NUMBER_OF_CELL;
-	static int old_case_front_right		= NUMBER_OF_CELL;
-	static int old_case_front_left		= NUMBER_OF_CELL;
+	static int cell_diag_right		= NUMBER_OF_CELL - 1;
+	static int cell_diag_left		= NUMBER_OF_CELL - 1;
+	static int cell_front_right		= NUMBER_OF_CELL - 1;
+	static int cell_front_left		= NUMBER_OF_CELL - 1;
 
 	char sens_diag_right	= 1;
 	char sens_diag_left		= 1;
@@ -216,18 +233,18 @@ int getTelemetersDistance (float *distance_front_left, float *distance_front_rig
 
 	int rv;
 
-	rv=getTelemeterValueWithoutAmbientLight(&value_front_left, &value_front_right, &value_diag_left, &value_diag_right, 10);
+	rv=getTelemeterValueWithoutAmbientLight(&value_front_left, &value_front_right, &value_diag_left, &value_diag_right, 100);
 	if (rv != WALL_SENSORS_E_SUCCESS)
 		return rv;
 
-	if(value_front_left > old_voltage_front_left) // <-- todo : il ne tiend pas compte du if
+	if(value_front_left > old_voltage_front_left)
 	{
 		sens_front_left=-1;
 	}
-//	if(value_front_right > old_voltage_front_right)
-//	{
-//		sens_front_right=-1;
-//	}
+	if(value_front_right > old_voltage_front_right)
+	{
+		sens_front_right=-1;
+	}
 //	if(value_diag_left > old_voltage_diag_left)
 //	{
 //		sens_diag_left=-1;
@@ -236,36 +253,80 @@ int getTelemetersDistance (float *distance_front_left, float *distance_front_rig
 //	{
 //		sens_diag_right=-1;
 //	}
-	while ((value_front_left < telemeter_left_front_voltage[old_case_front_left + 1]) || (value_front_left > telemeter_left_front_voltage[old_case_front_left]))
+	while ((value_front_left>telemeter_left_front_voltage[cell_front_left]) || (value_front_left<telemeter_left_front_voltage[cell_front_left + 1]) )
+	{
+		cell_front_left += sens_front_left;
+		if (cell_front_left < 0)
 		{
-			old_case_front_left += sens_front_left;
-			if (old_case_front_left < 0)
-			{
-				old_case_front_left=0;
-				break;
-			}
-			else if (old_case_front_left > NUMBER_OF_CELL)
-			{
-				old_case_front_left = NUMBER_OF_CELL;
-				break;
-			}
+			cell_front_left=0;
+			break;
 		}
-	*distance_front_left=(float)old_case_front_left;
+		else if (cell_front_left >= NUMBER_OF_CELL)
+		{
+			cell_front_left=NUMBER_OF_CELL;
+			break;
+		}
+	}
+
+	while ((value_front_right>telemeter_right_front_voltage[cell_front_right]) || (value_front_right<telemeter_right_front_voltage[cell_front_right + 1]) )
+	{
+		cell_front_right += sens_front_right;
+		if (cell_front_right < 0)
+		{
+			cell_front_right=0;
+			break;
+		}
+		else if (cell_front_right >= NUMBER_OF_CELL)
+		{
+			cell_front_right=NUMBER_OF_CELL;
+			break;
+		}
+	}
+
+/*
+ * 		(ya xb - xa yb - yc xb + yc xa)
+ * xc= _________________________________
+ * 				  (-yb + ya)
+ * xc <- distance in millimeters
+ * yc <- voltage measured
+ *
+ * xa <- distance in millimeters measured in the calibrate function
+ * ya <- voltage measure in the calibrate function, the voltage correspond to the distance of xa
+ *
+ * xb <- distance in millimeters measured in the calibrate function, it's the distance xa+DISTANCE_BY_LOOP
+ * yb <- voltage measure in the calibrate function, the voltage correspond to the distance of xb
+ *
+ * XXX is the capteur reference : front_left , front_right , diag_right , diag_left
+ *
+ *
+ * 		telemeter_XXX_voltage[cell_XXX] (cell_XXX+1)*NUMBER_OF_MILLIMETER_BY_LOOP - cell_XXX*NUMBER_OF_MILLIMETER_BY_LOOP telemeter_XXX_voltage[cell_XXX + 1] - value_XXX (cell_XXX+1)*NUMBER_OF_MILLIMETER_BY_LOOP + value_XXX cell_XXX*NUMBER_OF_MILLIMETER_BY_LOOP
+ * xc= ________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
+ * 																		-telemeter_XXX_voltage[cell_XXX + 1] + telemeter_XXX_voltage[cell_XXX]
+ *
+ */
+
+	*distance_front_left = (telemeter_left_front_voltage[cell_front_left] * (cell_front_left+1)*NUMBER_OF_MILLIMETER_BY_LOOP - cell_front_left*NUMBER_OF_MILLIMETER_BY_LOOP * telemeter_left_front_voltage[cell_front_left + 1] - value_front_left * (cell_front_left+1)*NUMBER_OF_MILLIMETER_BY_LOOP + value_front_left * cell_front_left*NUMBER_OF_MILLIMETER_BY_LOOP)/(-telemeter_left_front_voltage[cell_front_left + 1] + telemeter_left_front_voltage[cell_front_left]);
 	old_voltage_front_left = value_front_left;
+
+	*distance_front_right = (telemeter_right_front_voltage[cell_front_right] * (cell_front_right+1)*NUMBER_OF_MILLIMETER_BY_LOOP - cell_front_right*NUMBER_OF_MILLIMETER_BY_LOOP * telemeter_right_front_voltage[cell_front_right + 1] - value_front_right * (cell_front_right+1)*NUMBER_OF_MILLIMETER_BY_LOOP + value_front_right * cell_front_right*NUMBER_OF_MILLIMETER_BY_LOOP)/(-telemeter_right_front_voltage[cell_front_right + 1] + telemeter_right_front_voltage[cell_front_right]);
+	old_voltage_front_right = value_front_right;
 	return WALL_SENSORS_E_SUCCESS;
 }
 void testTelemeterDistance()
 {
 	telemetersInit();
-	float unused;
+	float unusedf;
 	int unusedi;
-	float distance;
+	float distance_left;
+	float distance_right;
 	while(expanderJoyFiltered()!=JOY_LEFT)
 	{
 		ssd1306ClearScreen();
-		getTelemetersDistance(&distance,&unused,&unused,&unused,&unusedi);
-		ssd1306Printf(0,0,&Font_5x8,"distancd = %f",distance);
+		getTelemetersDistance(&distance_left,&distance_right,&unusedf,&unusedf,&unusedi);
+		ssd1306Printf(0,0,&Font_5x8,"distancd left = %d",(int)distance_left);
+		ssd1306Printf(0,10,&Font_5x8,"distancd right = %d",(int)distance_right);
 		ssd1306Refresh();
+		bluetoothPrintf("distance \tleft :%d\tright : %d\n",(int)distance_left,(int)distance_left);
 	}
 	telemetersStop();
 }

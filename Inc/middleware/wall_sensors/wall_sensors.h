@@ -13,8 +13,15 @@
 
 #define NUMBER_OF_CELL 		10
 #define DISTANCE_MEASURED	300
-#define NUMBER_OF_MILLIMETER_PER_LOOP DISTANCE_MEASURED/NUMBER_OF_CELL
-#define NUMBER_OF_MEASURE_BY_STEP 500
+#if DISTANCE_MEASURED%NUMBER_OF_CELL!=0
+#error you must put a multiple of NUMBER_OF_CELL in DISTANCE_MEASURED
+#endif
+
+#if DISTANCE_MEASURED/NUMBER_OF_CELL < 3
+#warning you should have step more important for calibrate the robot
+#endif
+#define NUMBER_OF_MILLIMETER_BY_LOOP DISTANCE_MEASURED/NUMBER_OF_CELL
+#define NUMBER_OF_MEASURE_BY_STEP 5000
 
 // select debug level or comment debug
 #define DEBUG_WALL_SENSOR 	2
