@@ -16,15 +16,15 @@
 typedef struct
 {
     // Pointer to an external buffer which will be allocated by the caller
-    unsigned char *head;
+    char *head;
     // Address of the end of the buffer
-    unsigned char *tail;
+    char *tail;
     // Maximum length of the ring buffer
-    unsigned int  max_len;
+    int  max_len;
     // Pointer to the beginning of the available data
-    unsigned char *data;
+    char *data;
     // Length of available data
-    unsigned int  data_len;
+    int  data_len;
 } ring_buffer_s;
 
 // Minimum input buffer size
@@ -54,18 +54,17 @@ typedef struct
  * @return  RING_BUFFER_E_SUCCESS on success,
  *          a negative value otherwise
  */
-int RingBuffer_init(unsigned char *input_buffer, unsigned int input_buffer_len);
+int RingBuffer_init(char *input_buffer, int input_buffer_len);
 
 /*
- * @brief   Writes data into Ring Buffer
+ * @brief   Reads one byte from Ring Buffer
  *
- * @param   buffer    Valid pointer toward the buffer to write from
- * @param   length    Length of the buffer to write from
+ * @param   read_byte  Valid pointer toward the byte to write to
  *
- * @return  Upon successful return, the number of bytes written,
+ * @return  RING_BUFFER_E_SUCCESS if operation is successful,
  *          a negative value otherwise
  */
-int RingBuffer_write(unsigned char *buffer, unsigned int length);
+int RingBuffer_read_byte(char *read_byte);
 
 /*
  * @brief   Reads data from Ring Buffer
@@ -76,7 +75,28 @@ int RingBuffer_write(unsigned char *buffer, unsigned int length);
  * @return  Upon successful return, the number of bytes read,
  *          a negative value otherwise
  */
-int RingBuffer_get_data(unsigned char *out_buffer, unsigned int length);
+int RingBuffer_read(char *out_buffer, int length);
+
+/*
+ * @brief   Writes a byte into Ring Buffer
+ *
+ * @param   byte    a byte to write to the Ring Buffer
+ *
+ * @return  RING_BUFFER_E_SUCCESS if operation is successful,
+ *          a negative value otherwise
+ */
+int RingBuffer_write_byte(char byte);
+
+/*
+ * @brief   Writes data into Ring Buffer
+ *
+ * @param   buffer    Valid pointer toward the buffer to write from
+ * @param   length    Length of the buffer to write from
+ *
+ * @return  Upon successful return, the number of bytes written,
+ *          a negative value otherwise
+ */
+int RingBuffer_write(const char *buffer, int length);
 
 /*
  * @brief   Returns the available amount of data (in bytes)
@@ -85,6 +105,12 @@ int RingBuffer_get_data(unsigned char *out_buffer, unsigned int length);
  *
  * @return  Number of available bytes into the Ring Buffer
  */
-unsigned int RingBuffer_get_data_len(void);
+int RingBuffer_get_data_len(void);
+
+
+/*****************************************************************************
+ * TEST FUNCTIONS
+ *****************************************************************************/
+void RingBuffer_test(void);
 
 #endif // __RING_BUFFER_H__
