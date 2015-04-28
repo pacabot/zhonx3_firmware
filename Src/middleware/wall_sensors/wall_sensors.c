@@ -15,20 +15,20 @@
 #include "stm32f4xx_hal.h"
 #include "peripherals/motors/motors.h"
 
-int telemeter_right_front_voltage[NUMBER_OF_CELL]={3128,2774,1389,719,403,266,137,99,45,34};
-int telemeter_left_front_voltage[NUMBER_OF_CELL]={2883,2856,1917,1092,679,439,264,213,131,101};
+int telemeter_right_front_voltage[NUMBER_OF_CELL]={3795,3786,3775,3773,3770,3769,3752,3736,3720,3710,3702,3682,3671,3643,3624,3605,3583,3551,3535,3512,3465,3459,3422,3400,3369,3321,3312,3253,3232,3183,3174,3090,3028,2945,2844,2769,2666,2586,2478,2398,2312,2234,2169,2095,2031,1959,1897,1836,1785,1733,1676,1640,1595,1550,1511,1469,1444,1407,1368,1345,1307,1286,1251,1230,1205,1178,1156,1137,1114,1091,1074,1039,1025,994,967,961,930,916,903,883,863,848,823,809,789,771,747,733,709,698,689,675,658,641,633,620,607,600,500,488};
+int telemeter_left_front_voltage[NUMBER_OF_CELL]={3780,3772,3763,3751,3751,3750,3734,3718,3716,3708,3690,3676,3657,3640,3616,3589,3572,3550,3536,3504,3475,3436,3408,3376,3347,3311,3255,3170,3062,2953,2843,2745,2645,2564,2472,2374,2299,2213,2134,2069,1980,1915,1844,1784,1723,1670,1614,1565,1521,1466,1417,1379,1345,1289,1255,1214,1174,1147,1116,1096,1067,1034,1022,999,975,959,942,915,900,882,865,838,825,807,787,770,758,726,720,700,693,666,657,640,618,614,591,587,563,559,536,524,515,509,493,486,482,473,461,451};
 int telemeter_right_diag_voltage[NUMBER_OF_CELL];
 int telemeter_left_diag_voltage[NUMBER_OF_CELL];
 
-int telemeterCalibration (void)
+int wallSensorsCalibration (void)
 {
 	int value_to_retest_front_right [NUMBER_OF_CELL+1];
 	int length_front_right;
 	int value_to_retest_front_left [NUMBER_OF_CELL+1];
 	int length_front_left;
-//	int value_to_retest_diag_right [NUMBER_OF_CASE+1];
+//	int value_to_retest_diag_right [NUMBER_OF_CELL+1];
 //	int length_diag_right;
-//	int value_to_retest_diag_left [NUMBER_OF_CASE+1];
+//	int value_to_retest_diag_left [NUMBER_OF_CELL+1];
 //	int length_diag_left;
 
 	ssd1306ClearScreen();
@@ -47,7 +47,7 @@ int telemeterCalibration (void)
 	{
 		getTelemeterValueWithoutAmbientLight(&telemeter_left_front_voltage[i], &telemeter_right_front_voltage[i], &telemeter_left_diag_voltage[i], &telemeter_right_diag_voltage[i],NUMBER_OF_MEASURE_BY_STEP);
 
-		move(0,-NUMBER_OF_MILLIMETER_BY_LOOP,50,0);
+		mainControlInit();move(0,-NUMBER_OF_MILLIMETER_BY_LOOP,50,0);
 		while(speed_control.end_control != 1);
 	}
 	int position_zhonx=NUMBER_OF_CELL;
@@ -66,7 +66,7 @@ int telemeterCalibration (void)
 				bluetoothPrintf("position Zhonx=%d,\tvaleur gauche a re tester=%d\t diff=%d\n", position_zhonx, value_to_retest_front_left[length_front_left], distance);
 				if (distance!=0)
 				{
-					move(0,(float)distance,10,0);
+					mainControlInit();move(0,(float)distance,10,0);
 					while(speed_control.end_control != 1);
 					position_zhonx=value_to_retest_front_left[length_front_left];
 				}
@@ -105,24 +105,23 @@ int telemeterCalibration (void)
 		{
 			if (telemeter_left_front_voltage[i] <= telemeter_left_front_voltage[i+1])
 			{
+				value_to_retest_front_left[length_front_left] = i;
+				length_front_left ++;
 				if( i==(NUMBER_OF_CELL-2) )
 				{
 					value_to_retest_front_left[length_front_left] = i+1;
 					length_front_left ++;
 				}
-				value_to_retest_front_left[length_front_left] = i;
-				length_front_left ++;
 			}
 			if (telemeter_right_front_voltage[i] <= telemeter_right_front_voltage[i+1])
 			{
-
+				value_to_retest_front_right[length_front_right] = i;
+				length_front_right ++;
 				if( i==(NUMBER_OF_CELL-2) )
 				{
 					value_to_retest_front_right[length_front_right] = i+1;
 					length_front_right ++;
 				}
-				value_to_retest_front_right[length_front_right] = i;
-				length_front_right ++;
 			}
 			if (telemeter_left_front_voltage[i-1] <= telemeter_left_front_voltage[i])
 			{
@@ -171,13 +170,12 @@ int getTelemeterValueWithoutAmbientLight (int *value_front_left, int *value_fron
 	for (int y = 0; y < number_of_measure; ++y)
 	{
 		while(old_mesure==telemeters.end_of_conversion);
-		values_for_statistique_front_left[y]=telemeters.left_front.telemeter_value-telemeters.ref.telemeter_value;
-		values_for_statistique_front_right[y]=telemeters.right_front.telemeter_value-telemeters.ref.telemeter_value;
-		values_for_statistique_diag_left[y]=telemeters.left_diag.telemeter_value-telemeters.ref.telemeter_value;
-		values_for_statistique_diag_right[y]=telemeters.right_diag.telemeter_value-telemeters.ref.telemeter_value;
+		values_for_statistique_front_left[y]=telemeters.left_front.telemeter_value-telemeters.ref_left_front.telemeter_value;
+		values_for_statistique_front_right[y]=telemeters.right_front.telemeter_value-telemeters.ref_right_front.telemeter_value;
+		values_for_statistique_diag_left[y]=telemeters.left_diag.telemeter_value-telemeters.ref_left_diag.telemeter_value;
+		values_for_statistique_diag_right[y]=telemeters.right_diag.telemeter_value-telemeters.ref_right_diag.telemeter_value;
 		old_mesure=telemeters.end_of_conversion;
 	}
-
 	length=number_of_measure;
 	eliminateExtremeValues(values_for_statistique_front_left,&length);
 	*value_front_left = cAverage(values_for_statistique_front_left,length);
@@ -193,6 +191,7 @@ int getTelemeterValueWithoutAmbientLight (int *value_front_left, int *value_fron
 	length=number_of_measure;
 	eliminateExtremeValues(values_for_statistique_diag_right,&length);
 	*value_diag_right = cAverage(values_for_statistique_diag_right,length);
+	bluetoothPrintf("\n");
 	return WALL_SENSORS_E_SUCCESS;
 }
 /*

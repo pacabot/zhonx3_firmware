@@ -129,23 +129,35 @@ void telemeters_IT(void)
 		sConfig.Channel = RX_RIGHT_FRONT;
 		break;
 	case 1:
+		telemeters.ref_right_front.emitter_state = 1;
+		sConfig.Channel = RX_REF_RIGHT_FRONT;
+		break;
+	case 2:
 		HAL_GPIO_WritePin(GPIOB, TX_LEFT_FRONT, SET);
 		telemeters.left_front.emitter_state = 1;
 		sConfig.Channel = RX_LEFT_FRONT;
 		break;
-	case 2:
+	case 3:
+		telemeters.ref_left_front.emitter_state = 1;
+		sConfig.Channel = RX_REF_LEFT_FRONT;
+		break;
+	case 4:
 		HAL_GPIO_WritePin(GPIOB, TX_DUAL_DIAG, SET);
 		telemeters.left_diag.emitter_state = 1;
 		sConfig.Channel = RX_LEFT_DIAG;
 		break;
-	case 3:
+	case 5:
+		telemeters.ref_left_diag.emitter_state = 1;
+		sConfig.Channel = RX_REF_LEFT_DIAG;
+		break;
+	case 6:
 		HAL_GPIO_WritePin(GPIOB, TX_DUAL_DIAG, SET);
 		telemeters.right_diag.emitter_state = 1;
 		sConfig.Channel = RX_RIGHT_DIAG;
 		break;
-	case 4:
-		telemeters.ref.emitter_state = 1;
-		sConfig.Channel = RX_REF;
+	case 7:
+		telemeters.ref_right_diag.emitter_state = 1;
+		sConfig.Channel = RX_REF_RIGHT_DIAG;
 		break;
 	default :
 		telemeters.selector=0;
@@ -162,7 +174,7 @@ void telemeters_IT(void)
 	HAL_ADC_Start_IT(&hadc2);
 	telemeters.it_cnt++;
 	telemeters.selector++;
-	if (telemeters.selector > 4)
+	if (telemeters.selector > 7)
 		telemeters.selector = 0;
 }
 
@@ -196,11 +208,29 @@ void telemeters_ADC_IT(void)
 		HAL_GPIO_WritePin(GPIOB, TX_DUAL_DIAG, RESET);
 		telemeters.right_diag.emitter_state = 0;
 	}
-	if (telemeters.ref.emitter_state == 1)
+	if (telemeters.ref_left_diag.emitter_state == 1)
 	{
-		telemeters.ref.adc_value = HAL_ADC_GetValue(&hadc2);
-		telemeters.ref.telemeter_value = telemeters.ref.adc_value - telemeters.ref.offset;
-		telemeters.ref.emitter_state = 0;
+		telemeters.ref_left_diag.adc_value = HAL_ADC_GetValue(&hadc2);
+		telemeters.ref_left_diag.telemeter_value = telemeters.ref_left_diag.adc_value;
+		telemeters.ref_left_diag.emitter_state = 0;
+	}
+	if (telemeters.ref_right_diag.emitter_state == 1)
+	{
+		telemeters.ref_right_diag.adc_value = HAL_ADC_GetValue(&hadc2);
+		telemeters.ref_right_diag.telemeter_value = telemeters.ref_right_diag.adc_value;
+		telemeters.ref_right_diag.emitter_state = 0;
+	}
+	if (telemeters.ref_left_front.emitter_state == 1)
+	{
+		telemeters.ref_left_front.adc_value = HAL_ADC_GetValue(&hadc2);
+		telemeters.ref_left_front.telemeter_value = telemeters.ref_left_front.adc_value;
+		telemeters.ref_left_front.emitter_state = 0;
+	}
+	if (telemeters.ref_right_front.emitter_state == 1)
+	{
+		telemeters.ref_right_front.adc_value = HAL_ADC_GetValue(&hadc2);
+		telemeters.ref_right_front.telemeter_value = telemeters.ref_right_front.adc_value;
+		telemeters.ref_right_front.emitter_state = 0;
 	}
 	telemeters.end_of_conversion++;
 }
