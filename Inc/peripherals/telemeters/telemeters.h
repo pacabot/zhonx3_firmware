@@ -27,11 +27,6 @@
 #define RX_RIGHT_DIAG				ADC_CHANNEL_10
 #define RX_RIGHT_FRONT				ADC_CHANNEL_11
 
-#define RX_REF_LEFT_FRONT			RX_LEFT_FRONT
-#define RX_REF_LEFT_DIAG			RX_LEFT_DIAG
-#define RX_REF_RIGHT_DIAG			RX_RIGHT_DIAG
-#define RX_REF_RIGHT_FRONT			RX_RIGHT_FRONT
-
 /* Types definitions */
 typedef struct
 {

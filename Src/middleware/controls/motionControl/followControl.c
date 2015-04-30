@@ -67,7 +67,10 @@ int followControlInit(void)
 
 int followControlLoop(void)
 {
-	if ((telemeters.left_diag.telemeter_value > 1000) || (telemeters.right_diag.telemeter_value > 1000))
+
+//	if (((telemeters.left_diag.telemeter_value > 1000) && (telemeters.right_diag.telemeter_value > 1000)) && (follow_params.active_state == 1))
+	if (((telemeters.left_front.telemeter_value > 1000) && (telemeters.right_front.telemeter_value > 1000)) && (follow_params.active_state == 1))
+
 	{
 		follow_control.follow_error = (telemeters.left_diag.telemeter_value - telemeters.right_diag.telemeter_value);
 
@@ -76,8 +79,10 @@ int followControlLoop(void)
 
 		follow_control.follow_command = (pidController(follow_control.follow_pid.instance, follow_control.follow_error)) * (float)follow_params.sign;
 	}
-		//	follow_control.old_distance = follow_control.current_diff_dist;
-
-		return SPEED_CONTROL_E_SUCCESS;
+	else
+	{
+		follow_control.follow_command = 0;
+	}
+	return SPEED_CONTROL_E_SUCCESS;
 }
 

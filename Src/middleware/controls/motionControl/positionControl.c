@@ -185,8 +185,8 @@ float positionProfileCompute(float distance, float time)
 			sqrt((time * time) * (position_params.accel * position_params.accel) - 4.0 * distance * position_params.accel));
 
 
-	position_params.accel_dist = pow(position_params.max_speed, 2)/(2.0 * position_params.accel);
-	position_params.decel_dist = pow(position_params.max_speed, 2)/(2.0 * position_params.decel);
+	position_params.accel_dist = pow(position_params.max_speed, 2) / (2.0 * position_params.accel);
+	position_params.decel_dist = pow(position_params.max_speed, 2) / (2.0 * position_params.decel);
 
 	if ((position_params.accel_dist + position_params.decel_dist ) > distance)
 	{
@@ -195,8 +195,8 @@ float positionProfileCompute(float distance, float time)
 		position_params.accel_dist *= clipping_ratio;
 		position_params.decel_dist *= clipping_ratio;
 
-		position_params.accel *= (1.0+clipping_ratio);
-		position_params.decel *= (1.0+clipping_ratio);
+		position_params.accel *= (1.0 + clipping_ratio);
+		position_params.decel *= (1.0 + clipping_ratio);
 	}
 
 	position_params.maintain_dist = distance - (position_params.accel_dist + position_params.decel_dist);

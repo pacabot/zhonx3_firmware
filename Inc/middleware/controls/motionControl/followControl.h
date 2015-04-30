@@ -22,6 +22,7 @@
 typedef struct
 {
 	int sign;
+	int active_state;
 }follow_params_struct;
 
 extern follow_params_struct follow_params;
@@ -29,8 +30,6 @@ extern follow_params_struct follow_params;
 typedef struct
 {
 	double follow_error;
-//	double current_diff_dist_consign;
-//	double current_diff_dist;
 	double follow_command;
     pid_control_struct follow_pid;
 }follow_control_struct;

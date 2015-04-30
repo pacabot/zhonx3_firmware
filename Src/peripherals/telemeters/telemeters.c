@@ -55,7 +55,7 @@ void telemetersInit(void)
 	hadc2.Instance = ADC2;
 	hadc2.Init.ClockPrescaler = ADC_CLOCKPRESCALER_PCLK_DIV2;
 	hadc2.Init.Resolution = ADC_RESOLUTION12b;
-	hadc2.Init.ScanConvMode = ENABLE;
+	hadc2.Init.ScanConvMode = DISABLE;
 	hadc2.Init.ContinuousConvMode = DISABLE;
 	hadc2.Init.DiscontinuousConvMode = DISABLE;
 	hadc2.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
@@ -64,13 +64,6 @@ void telemetersInit(void)
 	hadc2.Init.DMAContinuousRequests = DISABLE;
 	hadc2.Init.EOCSelection = EOC_SINGLE_CONV;
 	HAL_ADC_Init(&hadc2);
-
-	/**Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time.
-	 */
-	sConfig.Channel = RX_LEFT_FRONT;
-	sConfig.Rank = 1;
-	sConfig.SamplingTime = ADC_SAMPLETIME_480CYCLES;
-	HAL_ADC_ConfigChannel(&hadc2, &sConfig);
 
 	telemetersStart();
 }
@@ -121,43 +114,52 @@ void telemetersCalibrate(void)
 
 void telemeters_IT(void)
 {
+	telemeters.selector++;
 	switch (telemeters.selector)
 	{
-	case 0:
+	case 1:
 		HAL_GPIO_WritePin(GPIOB, TX_RIGHT_FRONT, SET);
+		return;
+	case 2:
 		telemeters.right_front.emitter_state = 1;
 		sConfig.Channel = RX_RIGHT_FRONT;
 		break;
-	case 1:
+	case 3:
 		telemeters.ref_right_front.emitter_state = 1;
-		sConfig.Channel = RX_REF_RIGHT_FRONT;
+		sConfig.Channel = RX_RIGHT_FRONT;
 		break;
-	case 2:
+	case 4:
 		HAL_GPIO_WritePin(GPIOB, TX_LEFT_FRONT, SET);
+		return;
+	case 5:
 		telemeters.left_front.emitter_state = 1;
 		sConfig.Channel = RX_LEFT_FRONT;
 		break;
-	case 3:
+	case 6:
 		telemeters.ref_left_front.emitter_state = 1;
-		sConfig.Channel = RX_REF_LEFT_FRONT;
+		sConfig.Channel = RX_LEFT_FRONT;
 		break;
-	case 4:
+	case 7:
 		HAL_GPIO_WritePin(GPIOB, TX_DUAL_DIAG, SET);
+		return;
+	case 8:
 		telemeters.left_diag.emitter_state = 1;
 		sConfig.Channel = RX_LEFT_DIAG;
 		break;
-	case 5:
+	case 9:
 		telemeters.ref_left_diag.emitter_state = 1;
-		sConfig.Channel = RX_REF_LEFT_DIAG;
+		sConfig.Channel = RX_LEFT_DIAG;;
 		break;
-	case 6:
+	case 10:
 		HAL_GPIO_WritePin(GPIOB, TX_DUAL_DIAG, SET);
+		return;
+	case 11:
 		telemeters.right_diag.emitter_state = 1;
 		sConfig.Channel = RX_RIGHT_DIAG;
 		break;
-	case 7:
+	case 12:
 		telemeters.ref_right_diag.emitter_state = 1;
-		sConfig.Channel = RX_REF_RIGHT_DIAG;
+		sConfig.Channel = RX_RIGHT_DIAG;
 		break;
 	default :
 		telemeters.selector=0;
@@ -170,11 +172,12 @@ void telemeters_IT(void)
 		telemeters.left_diag.emitter_state = 0;
 		telemeters.right_diag.emitter_state = 0;
 	}
+	sConfig.Rank = 1;
+	sConfig.SamplingTime = ADC_SAMPLETIME_28CYCLES;
 	HAL_ADC_ConfigChannel(&hadc2, &sConfig);
 	HAL_ADC_Start_IT(&hadc2);
 	telemeters.it_cnt++;
-	telemeters.selector++;
-	if (telemeters.selector > 7)
+	if (telemeters.selector > 11)
 		telemeters.selector = 0;
 }
 

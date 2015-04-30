@@ -166,15 +166,14 @@ int getTelemeterValueWithoutAmbientLight (int *value_front_left, int *value_fron
 	int old_mesure, length;
 	int values_for_statistique_front_left [number_of_measure], values_for_statistique_front_right [number_of_measure];
 	int values_for_statistique_diag_left [number_of_measure], values_for_statistique_diag_right [number_of_measure];
-	old_mesure=telemeters.end_of_conversion;
 	for (int y = 0; y < number_of_measure; ++y)
 	{
-		while(old_mesure==telemeters.end_of_conversion);
+		old_mesure = telemeters.end_of_conversion;
+		while(old_mesure == telemeters.end_of_conversion);
 		values_for_statistique_front_left[y]=telemeters.left_front.telemeter_value-telemeters.ref_left_front.telemeter_value;
 		values_for_statistique_front_right[y]=telemeters.right_front.telemeter_value-telemeters.ref_right_front.telemeter_value;
 		values_for_statistique_diag_left[y]=telemeters.left_diag.telemeter_value-telemeters.ref_left_diag.telemeter_value;
 		values_for_statistique_diag_right[y]=telemeters.right_diag.telemeter_value-telemeters.ref_right_diag.telemeter_value;
-		old_mesure=telemeters.end_of_conversion;
 	}
 	length=number_of_measure;
 	eliminateExtremeValues(values_for_statistique_front_left,&length);

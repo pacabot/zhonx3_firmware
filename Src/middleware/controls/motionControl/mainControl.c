@@ -98,6 +98,7 @@ int move(float angle, float radius_or_distance, float max_speed, float end_speed
 
 	if (angle == 0)
 	{
+		follow_params.active_state = 0;
 		distance = radius_or_distance;
 
 		speedProfileCompute(distance);
@@ -105,6 +106,7 @@ int move(float angle, float radius_or_distance, float max_speed, float end_speed
 	}
 	else
 	{
+		follow_params.active_state = 0;
 		distance_per_wheel = (2.0 * PI * ROTATION_DIAMETER * (angle / 360.0)) * slip_compensation;
 		distance = fabsf((PI * (2 * radius_or_distance) * (angle / 360.0)));
 
@@ -121,17 +123,18 @@ void mainControlTest(void)
 	mainControlInit();
 	HAL_Delay(500);
 
-	move(0, 90, 200, 200);
-	while(speed_control.end_control != 1);
-	move(90, 90, 200, 200);
-	while(speed_control.end_control != 1);
-	move(-90, 90, 200, 200);
-	while(speed_control.end_control != 1);
-	move(0, 360, 1000, 200);
-	while(speed_control.end_control != 1);
-	move(90, 90, 200, 200);
-	while(speed_control.end_control != 1);
-	move(0, 90, 200, 0);
+//	move(0, 90, 500, 400);
+//	while(speed_control.end_control != 1);
+//	move(90, 90, 500, 400);
+//	while(speed_control.end_control != 1);
+//	move(-90, 90, 500, 400);
+//	while(speed_control.end_control != 1);
+//	move(0, 360, 2000, 400);
+//	while(speed_control.end_control != 1);
+//	move(90, 90, 500, 400);
+//	while(speed_control.end_control != 1);
+	move(0, (int)90, 50, 0);
+
 	while(speed_control.end_control != 1);
 
 	while(expanderJoyFiltered()!=JOY_LEFT)
