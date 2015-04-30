@@ -36,7 +36,7 @@ typedef struct
     uint16_t higher_interval;
     uint16_t lower_interval;
     char wall_presence;
-    char emitter_state;
+    char sensor_state;
 }telemeter_state;
 
 typedef struct
@@ -55,6 +55,7 @@ typedef struct
 	char active_state;
 	char emitter_state;
 	char selector;
+	char ref_selector;
 } telemeters_struct;
 
 volatile telemeters_struct telemeters;
