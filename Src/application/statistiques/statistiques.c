@@ -10,19 +10,19 @@
 
 int cStandardError (int statistical_series[], int statistical_serial_length)
 {
-	return cStandardDeviation(statistical_series,statistical_serial_length)/sqrtf(statistical_serial_length);
+	return sqrtf(cVariance(statistical_series,statistical_serial_length));
 }
 
-int cVariance (int statistical_series[], int statistical_serial_length)
+float cVariance (int statistical_series[], int statistical_serial_length)
 {
-	long variance=0;
+	float variance=0;
 	int average =cAverage(statistical_series,statistical_serial_length);
 	for (int i = 0; i<statistical_serial_length; i++)
 	{
 		variance+=powf((statistical_series[i]-average),2);
 	}
 	variance/=statistical_serial_length;
-	return (int)variance;
+	return variance;
 }
 
 int cStandardDeviation (int statistical_series[], int statistical_serial_length)
@@ -43,10 +43,10 @@ int cAverage (int statistical_series[], int statistical_serial_length)
 void eliminateExtremeValues (int *statistical_series, int *statistical_serial_length)
 {
 	int average = cAverage (statistical_series, *statistical_serial_length);
-	int Standard_deviation = cStandardDeviation(statistical_series, *statistical_serial_length);
+	int standardError = cStandardError (statistical_series, *statistical_serial_length);
 	for (int i=0;i<*statistical_serial_length;i++)
 	{
-		if(statistical_series[i] > average+Standard_deviation || statistical_series[i] < (average - Standard_deviation))
+		if(statistical_series[i] > average+standardError || statistical_series[i] < (average - standardError))
 		{
 			statistical_series[i]=-1;
 		}

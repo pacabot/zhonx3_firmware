@@ -170,41 +170,38 @@ int getTelemeterValueWithoutAmbientLight (int *value_front_left, int *value_fron
 	int i = 0;
 	int y = 0;
 	int j = 0;
-	for (y = 0; y < 1; y++)
-	{
-		j = telemeters.end_of_conversion;
-		while(j == telemeters.end_of_conversion);
-		i+=telemeters.left_front.telemeter_value;
-	}
-	*value_front_left = telemeters.left_front.telemeter_value;
-//	for (int y = 0; y < number_of_measure; y++)
+//	for (y = 0; y < 1; y++)
 //	{
-//		old_mesure = telemeters.end_of_conversion;
-//		while(old_mesure == telemeters.end_of_conversion);
-//
-//		values_for_statistique_front_left[y]=telemeters.left_front.telemeter_value;
-//		values_for_statistique_front_right[y]=telemeters.right_front.telemeter_value;
-//		values_for_statistique_diag_left[y]=telemeters.left_diag.telemeter_value;
-//		values_for_statistique_diag_right[y]=telemeters.right_diag.telemeter_value;
+//		j = telemeters.end_of_conversion;
+//		while(j == telemeters.end_of_conversion);
+//		i+=telemeters.left_front.telemeter_value;
 //	}
-//	length=number_of_measure;
+//	*value_front_left = telemeters.left_front.telemeter_value;
+	for (int y = 0; y < number_of_measure; y++)
+	{
+		old_mesure = telemeters.end_of_conversion;
+		while(old_mesure == telemeters.end_of_conversion);
 
+		values_for_statistique_front_left[y]=telemeters.left_front.telemeter_value;
+		values_for_statistique_front_right[y]=telemeters.right_front.telemeter_value;
+		values_for_statistique_diag_left[y]=telemeters.left_diag.telemeter_value;
+		values_for_statistique_diag_right[y]=telemeters.right_diag.telemeter_value;
+	}
+	length=number_of_measure;
+	//eliminateExtremeValues(values_for_statistique_front_left,&length);
+	*value_front_left = cAverage(values_for_statistique_front_left,length);
 
-//	eliminateExtremeValues(values_for_statistique_front_left,&length);
-//	*value_front_left = cAverage(values_for_statistique_front_left,length);
-//
-//	length=number_of_measure;
-//	eliminateExtremeValues(values_for_statistique_front_right,&length);
-//	*value_front_right = cAverage(values_for_statistique_front_right,length);
-//
-//	length=number_of_measure;
-//	eliminateExtremeValues(values_for_statistique_diag_left,&length);
-//	*value_diag_left = cAverage(values_for_statistique_diag_left,length);
-//
-//	length=number_of_measure;
-//	eliminateExtremeValues(values_for_statistique_diag_right,&length);
-//	*value_diag_right = cAverage(values_for_statistique_diag_right,length);
-//	bluetoothPrintf("\n");
+	length=number_of_measure;
+	//eliminateExtremeValues(values_for_statistique_front_right,&length);
+	*value_front_right = cAverage(values_for_statistique_front_right,length);
+
+	length=number_of_measure;
+	//eliminateExtremeValues(values_for_statistique_diag_left,&length);
+	*value_diag_left = cAverage(values_for_statistique_diag_left,length);
+
+	length=number_of_measure;
+	//eliminateExtremeValues(values_for_statistique_diag_right,&length);
+	*value_diag_right = cAverage(values_for_statistique_diag_right,length);
 	return WALL_SENSORS_E_SUCCESS;
 }
 /*
