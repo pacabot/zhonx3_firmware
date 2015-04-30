@@ -15,14 +15,15 @@ int cStandardError (int statistical_series[], int statistical_serial_length)
 
 float cVariance (int statistical_series[], int statistical_serial_length)
 {
-	float variance=0;
+	//float variance=0;
+	double variance=0;// TODO test if in double the precision is better
 	int average =cAverage(statistical_series,statistical_serial_length);
 	for (int i = 0; i<statistical_serial_length; i++)
 	{
 		variance+=powf((statistical_series[i]-average),2);
 	}
 	variance/=statistical_serial_length;
-	return variance;
+	return (float)variance;
 }
 
 int cStandardDeviation (int statistical_series[], int statistical_serial_length)

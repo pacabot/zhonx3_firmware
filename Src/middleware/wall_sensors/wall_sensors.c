@@ -22,6 +22,7 @@ int telemeter_left_diag_voltage[NUMBER_OF_CELL];
 
 int wallSensorsCalibration (void)
 {
+	int unused_value;
 	int value_to_retest_front_right [NUMBER_OF_CELL+1];
 	int length_front_right;
 	int value_to_retest_front_left [NUMBER_OF_CELL+1];
@@ -40,12 +41,20 @@ int wallSensorsCalibration (void)
 #if DEBUG_WALL_SENSOR>1
 	bluetoothPrintf("step|front left|front right");
 #endif
+	ssd1306ClearScreen();
+	ssd1306Printf(0,0,&Font_5x8,"Calibrating front sensors");
+	ssd1306Refresh();
+
 	telemetersInit();
 	mainControlInit();
-	HAL_Delay(500);
+	HAL_Delay(1000);
 	for(int i = 0; i < NUMBER_OF_CELL; i++)
 	{
-		getTelemeterValueWithoutAmbientLight(&telemeter_left_front_voltage[i], &telemeter_right_front_voltage[i], &telemeter_left_diag_voltage[i], &telemeter_right_diag_voltage[i],NUMBER_OF_MEASURE_BY_STEP);
+		ssd1306ProgressBar(10,10,(i*100)/NUMBER_OF_CELL);
+		ssd1306ProgressBar(10,40,(i*50)/NUMBER_OF_CELL);
+		ssd1306Refresh();
+
+		getTelemeterValueWithoutAmbientLight(&telemeter_left_front_voltage[i], &telemeter_right_front_voltage[i], &unused_value, &unused_value,NUMBER_OF_MEASURE_BY_STEP);
 
 		mainControlInit();move(0,-NUMBER_OF_MILLIMETER_BY_LOOP,50,0);
 		while(speed_control.end_control != 1);
@@ -63,7 +72,7 @@ int wallSensorsCalibration (void)
 					|| length_front_right<=0))
 			{
 				distance=(position_zhonx-value_to_retest_front_left[length_front_left])*NUMBER_OF_MILLIMETER_BY_LOOP;
-				bluetoothPrintf("position Zhonx=%d,\tvaleur gauche a re tester=%d\t diff=%d\n", position_zhonx, value_to_retest_front_left[length_front_left], distance);
+				bluetoothPrintf("position Zhonx=%d,\tvaleur gauche a retester=%d\t diff=%d\n", position_zhonx, value_to_retest_front_left[length_front_left], distance);
 				if (distance!=0)
 				{
 					mainControlInit();move(0,(float)distance,10,0);
@@ -86,8 +95,7 @@ int wallSensorsCalibration (void)
 					while(speed_control.end_control != 1);
 					position_zhonx=value_to_retest_front_right[length_front_right];
 				}
-				int value_unuse;
-				getTelemeterValueWithoutAmbientLight(&value_unuse,&telemeter_right_front_voltage[value_to_retest_front_right[length_front_right]],&value_unuse,&value_unuse,NUMBER_OF_MEASURE_BY_STEP);
+				getTelemeterValueWithoutAmbientLight(&unused_value,&telemeter_right_front_voltage[value_to_retest_front_right[length_front_right]],&unused_value,&unused_value,NUMBER_OF_MEASURE_BY_STEP);
 
 				length_front_right--;
 			}
@@ -146,7 +154,7 @@ int wallSensorsCalibration (void)
 		}
 		length_front_left --;
 		length_front_right --;
-		bluetoothPrintf("nombre de valeur a retester : a gauche : %d, a droite %d\n",length_front_left,length_front_right);
+		bluetoothPrintf("nombre de valeur a retester : a gauche : %d, a d)roite %d\n",length_front_left,length_front_right);
 	}while (length_front_right>0 || length_front_left>0);
 #if DEBUG_WALL_SENSOR>1
 	bluetoothPrintf("\n\n\nfilterd measures :\n");
@@ -155,6 +163,21 @@ int wallSensorsCalibration (void)
 		bluetoothPrintf("%2d|%10d|%d\n",i,telemeter_left_front_voltage[i],telemeter_right_front_voltage[i]);
 	}
 #endif
+	//diag telemeters calibration
+	ssd1306ClearScreen();
+	ssd1306Printf(0,0,&Font_5x8,"calibrating diag telemeters");
+	ssd1306ProgressBar(10,10,50);
+	ssd1306ProgressBar(10,40,0);
+	ssd1306Refresh();
+	while(expanderJoyFiltered()!=JOY_RIGHT);
+	for(int i=0;i<NUMBER_OF_CELL;i++)
+	{
+		ssd1306ProgressBar(10,10,(i*100)/NUMBER_OF_CELL);
+		ssd1306ProgressBar(10,40,50+(i*50)/NUMBER_OF_CELL);
+		ssd1306Refresh();
+		move(0,sqrtf(2*powf(NUMBER_OF_MILLIMETER_BY_LOOP,2)),10,0);
+		getTelemeterValueWithoutAmbientLight(&unused_value, &unused_value, &telemeter_left_diag_voltage[i], &telemeter_right_diag_voltage[i],NUMBER_OF_MEASURE_BY_STEP);
+	}
 	telemetersStop();
 	motorsSleepDriver(ON);
 	return WALL_SENSORS_E_SUCCESS;
