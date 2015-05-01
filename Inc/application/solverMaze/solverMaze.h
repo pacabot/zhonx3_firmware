@@ -30,7 +30,9 @@
 #define NO_KNOW 0
 #define WALL_KNOW 1
 #define NO_WALL 2
-//#define test
+
+#define SPEED_ROTATION		500
+#define SPEED_TRANSLATION	1000
 
 #include <stdlib.h>
 
@@ -51,10 +53,17 @@ typedef struct
 
 typedef struct
 {
-  int right;
-  int front;
-  int left;
-}inputs;
+	char front;
+	char left;
+	char right;
+}walls;
+
+//typedef struct
+//{
+//  int right;
+//  int front;
+//  int left;
+//}inputs;
 
 typedef struct coordinate
 {
@@ -77,7 +86,7 @@ extern int mazeColin(void);
 void exploration(labyrinthe *maze, positionRobot* poitionZhonx,char xFinish, char yFinish);
 void moveVirtualZhonx(labyrinthe maze, positionRobot positionZhonxVirtuel,coordinate *way, char xFinish, char yFinish);
 void move_zhonx (int direction_to_go, char *direction_robot, int numberOfCase);
-void new_cell(inputs new_walls, labyrinthe *maze, positionRobot positionZhonx);
+void new_cell(walls new_walls, labyrinthe *maze, positionRobot positionZhonx);
 void new_dot(coordinate **old_dot,int x,int y);
 void poids(labyrinthe *maze, int xFinish, int yfinish, char wallNoKnow);
 void maze_init (labyrinthe *maze);
@@ -85,7 +94,7 @@ void* calloc_s (size_t nombre, size_t taille);
 void print_maze(const labyrinthe maze, const int x_robot, const int y_robot);
 void print_length(const labyrinthe maze);
 void clearMazelength(labyrinthe* maze);
-inputs see_walls ();
+//inputs see_walls ();
 void commande(int dir, int dist);
 char mini_way_find(labyrinthe *maze,char xStart, char yStart, char xFinish, char yFinish);
 void trajectoire1(char *Tab, int taille);

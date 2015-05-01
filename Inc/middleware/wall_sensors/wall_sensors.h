@@ -5,6 +5,8 @@
  *      Author: Colin
  */
 
+#include "application/solverMaze/solverMaze.h"
+
 #ifndef WALL_SENSORS_H_
 #define WALL_SENSORS_H_
 
@@ -20,11 +22,13 @@
 #define NUMBER_OF_MILLIMETER_BY_LOOP DISTANCE_MEASURED/NUMBER_OF_CELL
 #define NUMBER_OF_MEASURE_BY_STEP 5000
 
-// select debug level or comment debug
-#define DEBUG_WALL_SENSOR 	2
-
+#define DISTANCE_WALL_FRONT	CELL_LENGTH
+#define DISTANCE_WALL_DIAG	(CELL_LENGTH*3)/4
 
 int wallSensorsCalibration();
 int getTelemeterValueWithoutAmbientLight (int *value_front_left, int *value_front_right, int *value_diag_left, int *value_diag_right, int number_of_measure);
 int getTelemetersDistance (float *distance_front_left, float *distance_front_right, float *distance_diag_left, float *distance_diag_right, int *precision);
+walls getWallsPosition();
+void testWallsSensors();
+
 #endif /* WALL_SENSORS_H_ */

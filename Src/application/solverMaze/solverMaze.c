@@ -6,12 +6,15 @@
 #include "middleware/settings/setting.h"
 #include "peripherals/display/ssd1306.h"
 #include "peripherals/expander/pcf8574.h"
+#include "middleware/wall_sensors/wall_sensors.h"
+#include "middleware/controls/motionControl/mainControl.h"
+#include "peripherals/motors/motors.h"
 
 #include "application/solverMaze/solverMaze.h"
 
 #include "stm32f4xx.h"
 
-extern int mazeColin(void)
+extern int maze(void)
 {
 	char posXStart, posYStart; // it's the coordinates which Zhonx have at the start
 	labyrinthe maze;
@@ -68,8 +71,9 @@ extern int mazeColin(void)
 void exploration(labyrinthe *maze, positionRobot* positionZhonx,char xFinish, char yFinish)
 {
 	coordinate way={0,0,0};
-	//	hal_step_motor_enable();
-	new_cell(see_walls(),maze,*positionZhonx);
+	motorsSleepDriver(OFF); // TODO : modify if it's nessesary
+	walls new_walls=getWallsPosition();
+	new_cell(new_walls,maze,*positionZhonx);
 
 	while(positionZhonx->x!=xFinish || positionZhonx->y!=yFinish)
 	{
@@ -79,7 +83,7 @@ void exploration(labyrinthe *maze, positionRobot* positionZhonx,char xFinish, ch
 		moveRealZhonx(maze,positionZhonx,way.next,&xFinish,&yFinish);
 	}
 	HAL_Delay(200);
-	//	hal_step_motor_disable();
+	motorsSleepDriver(ON); // TODO : modify if it's nessesary
 
 }
 void run1(labyrinthe *maze, positionRobot *positionZhonx,char posXStart, char posYStart)
@@ -125,9 +129,9 @@ void run2(labyrinthe *maze, positionRobot *positionZhonx,char posXStart, char po
 		choice=-1;
 		moveVirtualZhonx(*maze,*positionZhonx,&way,zhonxSettings.x_finish_maze,zhonxSettings.y_finish_maze);
 		waitStart();
-		//hal_step_motor_enable();
+		motorsSleepDriver(OFF); // TODO : modify if it's nessesary
 		moveRealZhonxArc(maze,positionZhonx,way.next);
-		//hal_step_motor_disable();
+		motorsSleepDriver(ON);
 		if (zhonxSettings.calibration_enabled==true)
 			calibrateSimple();
 		HAL_Delay(2000);
@@ -186,7 +190,7 @@ void moveVirtualZhonx(labyrinthe maze, positionRobot positionZhonxVirtuel,coordi
 				ssd1306ClearScreen();
 				ssd1306DrawString(0,0,"no solution",&Font_5x8);
 				ssd1306Refresh();
-				//						hal_step_motor_disable();
+				motorsSleepDriver(ON); // TODO : modify if it's nessesary
 				while (boucle)
 				{
 				}
@@ -236,7 +240,7 @@ void moveRealZhonx(labyrinthe *maze, positionRobot *positionZhonx, coordinate *w
 		else
 		{
 			HAL_Delay(200);
-			//hal_step_motor_disable();
+			motorsSleepDriver(ON);
 			ssd1306ClearScreen();
 			ssd1306DrawString(0,0,"Error way",&Font_5x8);
 			ssd1306Refresh();
@@ -253,8 +257,8 @@ void moveRealZhonx(labyrinthe *maze, positionRobot *positionZhonx, coordinate *w
 			free(oldDote);
 		}
 		move_zhonx(orientaionToGo,&positionZhonx->orientation,length);
-		new_cell(see_walls(),maze,*positionZhonx);
-		//		if (zhonxSettings.color_sensor_enabled==true)
+		new_cell(getWallsPosition(),maze,*positionZhonx);
+		//		if (zhonxSettings.color_sensor_enabled==true) //TODO : implement colors sensor for Nîmes competition
 		//		{
 		//			if ((zhonxSettings.threshold_greater==false && hal_sensor_get_color(app_context.sensors) < zhonxSettings.threshold_color)
 		//					||
@@ -270,26 +274,26 @@ void moveRealZhonx(labyrinthe *maze, positionRobot *positionZhonx, coordinate *w
 	}
 }
 
-void move_zhonx (int direction_to_go, char *direction_robot, int numberOfCase)
+void move_zhonx (int direction_to_go, char *direction_robot, int numberOfCell)
 {
 	int turn=(4+direction_to_go-*direction_robot)%4;
 	*direction_robot=direction_to_go;
 	switch (turn)
 	{
-	case FORWARD :
-		break;
-	case RIGHT :
-		//				step_motors_rotate_in_place(-90);
-		break;
-	case UTURN :
-		//				step_motors_rotate_in_place(180);
-		break;
-	case LEFT :
-		//				step_motors_rotate_in_place(90);
+		case FORWARD :
+			break;
+		case RIGHT :
+			move (-90,0,SPEED_ROTATION,0);
+			break;
+		case UTURN :
+			move (180,0,SPEED_ROTATION,0);
+			break;
+		case LEFT :
+			move (90,0,SPEED_ROTATION,0);
 
-		break;
+			break;
 	}
-	//	step_motors_move(CELL_LENGTH*numberOfCase, 0, 0);
+	move (0,CELL_LENGTH*numberOfCell,SPEED_TRANSLATION,0);
 }
 
 void moveRealZhonxArc(labyrinthe *maze, positionRobot *positionZhonx, coordinate *way)
@@ -332,7 +336,7 @@ void moveRealZhonxArc(labyrinthe *maze, positionRobot *positionZhonx, coordinate
 		else
 		{
 			HAL_Delay(200);
-			//hal_step_motor_disable();
+			motorsSleepDriver(ON);
 			ssd1306ClearScreen();
 			ssd1306DrawString(0,0,"Error way",&Font_5x8);
 			ssd1306Refresh();
@@ -354,7 +358,7 @@ void moveRealZhonxArc(labyrinthe *maze, positionRobot *positionZhonx, coordinate
 			endMidCase=true;
 		move_zhonx_arc(orientaionToGo,positionZhonx,length,endMidCase);
 		if(positionZhonx->midOfCase==true)
-			new_cell(see_walls(),maze,*positionZhonx);
+			new_cell(getWallsPosition(),maze,*positionZhonx);
 	}
 }
 
@@ -398,7 +402,7 @@ void testMoveRealZhonx(labyrinthe *maze, positionRobot *positionZhonx, coordinat
 		else
 		{
 			HAL_Delay(200);
-			//hal_step_motor_disable();
+			motorsSleepDriver(ON);
 			ssd1306ClearScreen();
 			ssd1306DrawString(0,0,"Error way",&Font_5x8);
 			ssd1306Refresh();
@@ -419,7 +423,7 @@ void testMoveRealZhonx(labyrinthe *maze, positionRobot *positionZhonx, coordinat
 		else
 			endMidCase=true;
 		move_zhonx_arc(orientaionToGo,positionZhonx,length,endMidCase);
-		new_cell(see_walls(),maze,*positionZhonx);
+		new_cell(getWallsPosition(),maze,*positionZhonx);
 		//		if (zhonxSettings.color_sensor_enabled==true)
 		//		{
 		//			if ((zhonxSettings.threshold_greater==false && hal_sensor_get_color(app_context.sensors) < zhonxSettings.threshold_color)
@@ -438,78 +442,70 @@ void testMoveRealZhonx(labyrinthe *maze, positionRobot *positionZhonx, coordinat
 
 void move_zhonx_arc (int direction_to_go, positionRobot *positionZhonx, int numberOfCase, char endMidOfCase)
 {
-	//	unsigned char chain=CHAIN_AFTER;
-	//	int distanceToMove=CELL_LENGTH*numberOfCase;
-	//	int turn=(4+direction_to_go-positionZhonx->orientation)%4;
-	//
-	//	if (positionZhonx->midOfCase==false)
-	//	{
-	//		chain=chain|CHAIN_BEFORE;
-	//	}
-	//
-	//	positionZhonx->orientation=direction_to_go;
-	//	switch (turn)
-	//	{
-	//		case FORWARD :
-	//			break;
-	//		case RIGHT :
-	//				if(positionZhonx->midOfCase==true)
-	//					step_motors_rotate_in_place(-90);
-	//				else
-	//				{
-	//					step_motors_rotate(90, CELL_LENGTH/2, chain);
-	//					distanceToMove-=CELL_LENGTH;
-	//				}
-	//	//			step_motors_rotate(-90, 90, 0);
-	////				step_motors_rotate_in_place(-90);
-	//				break;
-	//		case UTURN :
-	//				step_motors_rotate_in_place(180);
-	//				break;
-	//		case LEFT :
-	//				if(positionZhonx->midOfCase==true)
-	//					step_motors_rotate_in_place(90);
-	//				else
-	//				{
-	//					step_motors_rotate(-90, CELL_LENGTH/2, chain);
-	//					distanceToMove-=CELL_LENGTH;
-	//				}
-	////				step_motors_rotate_in_place(90);
-	//
-	//			break;
-	//	}
-	//	if (positionZhonx->midOfCase==endMidOfCase)
-	//	{
-	//		/*
-	//		 * distanceToMove-=CELL_LENGTH/2;
-	//		 * distanceToMove+=CELL_LENGTH/2;
-	//		 */
-	//	}
-	//	else if(positionZhonx->midOfCase==true) // so endMidOfCase=false
-	//	{
-	//		distanceToMove-=CELL_LENGTH/2;
-	//	}
-	//	else
-	//	{
-	//		distanceToMove+=CELL_LENGTH/2;
-	//	}
-	//	chain=0;
-	//
-	//	if (positionZhonx->midOfCase==false)
-	//	{
-	//		chain=chain | CHAIN_BEFORE;
-	//	}
-	//	if (endMidOfCase==false)
-	//	{
-	//
-	//		chain=chain | CHAIN_AFTER;
-	//	}
-	//
-	//	step_motors_move(distanceToMove, 0, chain);
-	//	positionZhonx->midOfCase=endMidOfCase;
+		unsigned int chain=SPEED_TRANSLATION;
+		int distanceToMove=CELL_LENGTH*numberOfCase;
+		int turn=(4+direction_to_go-positionZhonx->orientation)%4;
+
+		positionZhonx->orientation=direction_to_go;
+		switch (turn)
+		{
+			case FORWARD :
+				break;
+			case RIGHT :
+					if(positionZhonx->midOfCase==true)
+						move(90,0,SPEED_ROTATION,0);//step_motors_rotate_in_place(-90); // TODO : verify the angle sine
+					else
+					{
+						move (90,CELL_LENGTH/2,SPEED_TRANSLATION,SPEED_TRANSLATION);//step_motors_rotate(90, CELL_LENGTH/2, chain);
+						distanceToMove-=CELL_LENGTH;
+					}
+					break;
+			case UTURN :
+					move (180,0,SPEED_ROTATION,0);//step_motors_rotate_in_place(180);
+					break;
+			case LEFT :
+					if(positionZhonx->midOfCase==true)
+						move (-90,0,SPEED_ROTATION,0);//step_motors_rotate_in_place(-90);
+					else
+					{
+						move (-90,CELL_LENGTH/2,SPEED_ROTATION,0); //step_motors_rotate(-90, CELL_LENGTH/2, chain);
+						distanceToMove-=CELL_LENGTH;
+					}
+
+				break;
+		}
+		if (positionZhonx->midOfCase==endMidOfCase)
+		{
+			/*
+			 * distanceToMove-=CELL_LENGTH/2;
+			 * distanceToMove+=CELL_LENGTH/2;
+			 */
+		}
+		else if(positionZhonx->midOfCase==true)
+		{
+			distanceToMove-=CELL_LENGTH/2;
+		}
+		else // so endMidOfCase=false and
+		{
+			distanceToMove+=CELL_LENGTH/2;
+		}
+		chain=0;
+
+//		if (positionZhonx->midOfCase==false)
+//		{
+//			chain=chain | CHAIN_BEFORE;
+//		}
+		if (endMidOfCase==false)
+		{
+
+			chain=SPEED_TRANSLATION;
+		}
+
+		move (0,distanceToMove,0,chain);//step_motors_move(distanceToMove, 0, chain);
+		positionZhonx->midOfCase=endMidOfCase;
 }
 
-void new_cell(inputs new_walls, labyrinthe *maze,positionRobot positionZhonx)
+void new_cell(walls new_walls, labyrinthe *maze,positionRobot positionZhonx)
 {
 	switch(positionZhonx.orientation)
 	{
@@ -1008,26 +1004,26 @@ void clearMazelength(labyrinthe* maze)
 	}
 }
 
-inputs see_walls ()
-{
-	//TODO fonction for see wall
-//	unsigned char   sensors_state = hal_sensor_get_state(app_context.sensors);
-	inputs walls={NO_WALL,NO_WALL,NO_WALL};
-//	if (check_bit(sensors_state, SENSOR_L10_POS) == false)
-//	   {
-//		   walls.left=WALL_KNOW;
-//	   }
-//	if (check_bit(sensors_state, SENSOR_R10_POS) == false)
-//	   {
-//		   walls.right=WALL_KNOW;
-//	   }
-//	if (check_bit(sensors_state, SENSOR_F10_POS) == false)
-//	   {
-//		   walls.front=WALL_KNOW;
-//	   }
-
-	return walls;
-}
+//inputs see_walls ()
+//{
+//	//TODO fonction for see wall
+////	unsigned char   sensors_state = hal_sensor_get_state(app_context.sensors);
+//	inputs walls={NO_WALL,NO_WALL,NO_WALL};
+////	if (check_bit(sensors_state, SENSOR_L10_POS) == false)
+////	   {
+////		   walls.left=WALL_KNOW;
+////	   }
+////	if (check_bit(sensors_state, SENSOR_R10_POS) == false)
+////	   {
+////		   walls.right=WALL_KNOW;
+////	   }
+////	if (check_bit(sensors_state, SENSOR_F10_POS) == false)
+////	   {
+////		   walls.front=WALL_KNOW;
+////	   }
+//
+//	return walls;
+//}
 
 char mini_way_find(labyrinthe *maze,char xStart, char yStart, char xFinish, char yFinish)
 {
@@ -1096,7 +1092,7 @@ void waitStart()
 
 void calibrateSimple()
 {
-//	hal_step_motor_enable();
+//	motorsSleepDriver(OFF); // TODO : modify if it's nessesary
 //	char orientation=0;
 //	unsigned char sensors_state = 0;
 //	for(int i=0; i<2;i++)
@@ -1116,7 +1112,7 @@ void calibrateSimple()
 //	}
 //	goOrientation(&orientation,0);
 //	HAL_Delay(100);
-//	hal_step_motor_disable();
+//	motorsSleepDriver(ON); // TODO : modify if it's nessesary
 
 }
 
@@ -1143,7 +1139,7 @@ void goOrientation(char *orientationZhonx, char directionToGo)
 
 void doUTurn(positionRobot *positionZhonx)
 {
-	//hal_step_motor_enable();
+	motorsSleepDriver(OFF); // TODO : modify if it's nessesary
 	goOrientation(&positionZhonx->orientation, (positionZhonx->orientation+2)%4);
-	//hal_step_motor_disable();
+	motorsSleepDriver(ON);
 }
