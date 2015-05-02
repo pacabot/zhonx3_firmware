@@ -72,12 +72,25 @@ menuItem testGraphicMenu =
 		{(char*)NULL,	0,				NULL}
 	}
 };
+menuItem parameters_menu=
+{
+		"Parameters menu",
+		{
+				{"calibration",'f',(void*)wallSensorsCalibration}
+		}
+};
+menuItem peripheral_test_menu=
+{
+		"peripherals test menu",
+		{
+
+		}
+};
 menuItem tests_menu=
 {
 		"TEST MENU",
 		{
 				{"test distantce",'f',(void*)testTelemeterDistance},
-				{"test calibration",'f',(void*)wallSensorsCalibration},
 				{"test bluetooth",'f', (void*)bluetoothTest},
 				{"test multimeter",'f', (void*)mulimeterTest},
 				{"test display",'f', (void*)ssd1306Test},
@@ -98,7 +111,8 @@ menuItem mainMenu =
 		"ZHONX III        V0.2",
 		{
 				{"Test menu",'m',			(void*)&tests_menu},
-				{"mainControl Test",'f',		(void*)&mainControlTest},
+				{"mainControl Test",'f',	(void*)&mainControlTest},
+				{"parameters menu",'m',		(void*)&parameters_menu},
 				{"test graph",'m',			(void*)&testGraphicMenu},
 				{0,0,0}
 		}
