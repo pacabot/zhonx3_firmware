@@ -34,7 +34,7 @@ typedef struct
 {
     int16_t adc_value;
     int16_t telemeter_values[SIZE_OF_AVEVAGE_TABLE];
-    int16_t telemeter_average;
+    int16_t value_average;
     int64_t offset;
     uint16_t higher_interval;
     uint16_t lower_interval;
