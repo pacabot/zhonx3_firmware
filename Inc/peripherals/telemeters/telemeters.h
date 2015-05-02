@@ -27,11 +27,14 @@
 #define RX_RIGHT_DIAG				ADC_CHANNEL_10
 #define RX_RIGHT_FRONT				ADC_CHANNEL_11
 
+#define SIZE_OF_AVEVAGE_TABLE 3
+
 /* Types definitions */
 typedef struct
 {
     int16_t adc_value;
-    int16_t telemeter_value;
+    int16_t telemeter_values[SIZE_OF_AVEVAGE_TABLE];
+    int16_t telemeter_average;
     int64_t offset;
     uint16_t higher_interval;
     uint16_t lower_interval;

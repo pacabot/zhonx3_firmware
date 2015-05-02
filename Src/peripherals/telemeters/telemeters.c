@@ -13,6 +13,7 @@
 #include "config/basetypes.h"
 #include "config/config.h"
 #include "config/errors.h"
+#include "application/statistiques/statistiques.h"
 
 #include "stdbool.h"
 #include <arm_math.h>
@@ -195,28 +196,32 @@ void telemeters_ADC_IT(void)
 	if (telemeters.right_front.sensor_state == 1)
 	{
 		telemeters.right_front.adc_value = HAL_ADC_GetValue(&hadc2);
-		telemeters.right_front.telemeter_value = telemeters.right_front.adc_value - telemeters.right_front.offset - telemeters.ref_right_front.adc_value;
+		telemeters.right_front.telemeter_values[(telemeters.end_of_conversion/8)%3] = telemeters.right_front.adc_value - telemeters.right_front.offset - telemeters.ref_right_front.adc_value;
+		telemeters.right_front.telemeter_average=cAverage((int*)telemeters.right_front.telemeter_values,SIZE_OF_AVEVAGE_TABLE);
 		HAL_GPIO_WritePin(GPIOB, TX_RIGHT_FRONT, RESET);
 		telemeters.right_front.sensor_state = 0;
 	}
 	if (telemeters.left_front.sensor_state == 1)
 	{
 		telemeters.left_front.adc_value = HAL_ADC_GetValue(&hadc2);
-		telemeters.left_front.telemeter_value = telemeters.left_front.adc_value - telemeters.left_front.offset- telemeters.ref_left_front.adc_value;
+		telemeters.left_front.telemeter_values[(telemeters.end_of_conversion/8)%SIZE_OF_AVEVAGE_TABLE] = telemeters.left_front.adc_value - telemeters.left_front.offset- telemeters.ref_left_front.adc_value;
+		telemeters.left_front.telemeter_average=cAverage((int*)telemeters.left_front.telemeter_values,SIZE_OF_AVEVAGE_TABLE);
 		HAL_GPIO_WritePin(GPIOB, TX_LEFT_FRONT, RESET);
 		telemeters.left_front.sensor_state = 0;
 	}
 	if (telemeters.left_diag.sensor_state == 1)
 	{
 		telemeters.left_diag.adc_value = HAL_ADC_GetValue(&hadc2);
-		telemeters.left_diag.telemeter_value = telemeters.left_diag.adc_value - telemeters.left_diag.offset - telemeters.ref_left_diag.adc_value;
+		telemeters.left_diag.telemeter_values[(telemeters.end_of_conversion/8)%SIZE_OF_AVEVAGE_TABLE] = telemeters.left_diag.adc_value - telemeters.left_diag.offset - telemeters.ref_left_diag.adc_value;
+		telemeters.left_diag.telemeter_average=cAverage((int*)telemeters.left_diag.telemeter_values,SIZE_OF_AVEVAGE_TABLE);
 		HAL_GPIO_WritePin(GPIOB, TX_DUAL_DIAG, RESET);
 		telemeters.left_diag.sensor_state = 0;
 	}
 	if (telemeters.right_diag.sensor_state == 1)
 	{
 		telemeters.right_diag.adc_value = HAL_ADC_GetValue(&hadc2);
-		telemeters.right_diag.telemeter_value = telemeters.right_diag.adc_value - telemeters.right_diag.offset - telemeters.ref_right_diag.adc_value;
+		telemeters.right_diag.telemeter_values[(telemeters.end_of_conversion/8)%SIZE_OF_AVEVAGE_TABLE] = telemeters.right_diag.adc_value - telemeters.right_diag.offset - telemeters.ref_right_diag.adc_value;
+		telemeters.right_diag.telemeter_average=cAverage((int*)telemeters.right_diag.telemeter_values,SIZE_OF_AVEVAGE_TABLE);
 		HAL_GPIO_WritePin(GPIOB, TX_DUAL_DIAG, RESET);
 		telemeters.right_diag.sensor_state = 0;
 	}
@@ -257,14 +262,14 @@ void telemetersTest(void)
 		{
 			j = telemeters.end_of_conversion;
 			while(j == telemeters.end_of_conversion);
-			i+=telemeters.left_front.telemeter_value;
+			i+=telemeters.left_front.telemeter_average;
 		}
 		i/=y;
 		ssd1306ClearScreen();
-		ssd1306PrintInt(10, 0,  "LFRONT  = ", (int32_t) i,&Font_5x8);// telemeters.left_front.telemeter_value, &Font_5x8);
-		ssd1306PrintInt(10, 9,  "LDIAG   = ", (int32_t) telemeters.left_diag.telemeter_value, &Font_5x8);
-		ssd1306PrintInt(10, 18, "RDIAG   = ", (int32_t) telemeters.right_diag.telemeter_value, &Font_5x8);
-		ssd1306PrintInt(10, 27, "RFRONT  = ", (int32_t) telemeters.right_front.telemeter_value, &Font_5x8);
+		ssd1306PrintInt(10, 0,  "LFRONT  = ", (int32_t) i,&Font_5x8);// telemeters.left_front.telemeter_average, &Font_5x8);
+		ssd1306PrintInt(10, 9,  "LDIAG   = ", (int32_t) telemeters.left_diag.telemeter_average, &Font_5x8);
+		ssd1306PrintInt(10, 18, "RDIAG   = ", (int32_t) telemeters.right_diag.telemeter_average, &Font_5x8);
+		ssd1306PrintInt(10, 27, "RFRONT  = ", (int32_t) telemeters.right_front.telemeter_average, &Font_5x8);
 
 		ssd1306PrintInt(10, 47, "interrupt cnt =  ", (int32_t) telemeters.it_cnt/1000, &Font_5x8);
 		ssd1306PrintInt(10, 57, "end of conv.  =  ", (int32_t) telemeters.end_of_conversion/1000, &Font_5x8);

@@ -99,12 +99,12 @@ void toneSetVolulme(int volume)
 void toneTest(void)
 {
 	toneSetVolulme(100);
-	telemetersInit();
+//	telemetersInit();
 	imperialMarch();
 //	while(1)
 //	{
-//		tone(telemeters.left_diag.telemeter_value/10, 2);
-//		toneSetVolulme(telemeters.right_diag.telemeter_value/20);
+//		tone(telemeters.left_diag.telemeter_average/10, 2);
+//		toneSetVolulme(telemeters.right_diag.telemeter_average/20);
 //	}
 }
 

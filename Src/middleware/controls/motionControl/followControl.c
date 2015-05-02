@@ -68,11 +68,11 @@ int followControlInit(void)
 int followControlLoop(void)
 {
 
-//	if (((telemeters.left_diag.telemeter_value > 1000) && (telemeters.right_diag.telemeter_value > 1000)) && (follow_params.active_state == 1))
-	if (((telemeters.left_front.telemeter_value > 1000) && (telemeters.right_front.telemeter_value > 1000)) && (follow_params.active_state == 1))
+//	if (((telemeters.left_diag.telemeter_average > 1000) && (telemeters.right_diag.telemeter_average > 1000)) && (follow_params.active_state == 1))
+	if (((telemeters.left_front.telemeter_average > 1000) && (telemeters.right_front.telemeter_average > 1000)) && (follow_params.active_state == 1))
 
 	{
-		follow_control.follow_error = (telemeters.left_diag.telemeter_value - telemeters.right_diag.telemeter_value);
+		follow_control.follow_error = (telemeters.left_diag.telemeter_average - telemeters.right_diag.telemeter_average);
 
 		follow_params.sign = SIGN(follow_control.follow_error);
 		follow_control.follow_error = fabsf(follow_control.follow_error);
