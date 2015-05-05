@@ -32,6 +32,7 @@
 #include "application/lineFollower/lineFollower.h"
 #include "peripherals/lineSensors/lineSensors.h"
 
+lineFollower_struct lineFollower;
 
 //__IO uint16_t ADC1ConvertedValues[2] = {0};
 //__IO uint16_t ADC3ConvertedValues[3] = {0};
@@ -57,4 +58,10 @@ void LineTest(void)
 		ssd1306Refresh();
 	}
 
+}
+
+void lineFollower_test(void)
+{
+	lineFollower.position = 0.00;
+	lineFollower.position=lineSensors.front.adc_value/100 - lineSensors.right.adc_value/100;
 }
