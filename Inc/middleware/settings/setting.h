@@ -23,6 +23,8 @@ typedef struct
 	char color_sensor_enabled;
 	char x_finish_maze;
 	char y_finish_maze;
+	unsigned long threshold_color;
+	unsigned long threshold_greater;
 }settings;
 settings zhonxSettings;
 #endif /* SETTING_H_ */

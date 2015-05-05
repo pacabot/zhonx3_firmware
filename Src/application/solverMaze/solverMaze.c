@@ -485,7 +485,7 @@ void move_zhonx_arc (int direction_to_go, positionRobot *positionZhonx, int numb
 		{
 			distanceToMove-=CELL_LENGTH/2;
 		}
-		else // so endMidOfCase=false and
+		else // so endMidOfCase=true and positionZhonx->midOfCase=false
 		{
 			distanceToMove+=CELL_LENGTH/2;
 		}
@@ -1004,30 +1004,9 @@ void clearMazelength(labyrinthe* maze)
 	}
 }
 
-//inputs see_walls ()
-//{
-//	//TODO fonction for see wall
-////	unsigned char   sensors_state = hal_sensor_get_state(app_context.sensors);
-//	inputs walls={NO_WALL,NO_WALL,NO_WALL};
-////	if (check_bit(sensors_state, SENSOR_L10_POS) == false)
-////	   {
-////		   walls.left=WALL_KNOW;
-////	   }
-////	if (check_bit(sensors_state, SENSOR_R10_POS) == false)
-////	   {
-////		   walls.right=WALL_KNOW;
-////	   }
-////	if (check_bit(sensors_state, SENSOR_F10_POS) == false)
-////	   {
-////		   walls.front=WALL_KNOW;
-////	   }
-//
-//	return walls;
-//}
-
 char mini_way_find(labyrinthe *maze,char xStart, char yStart, char xFinish, char yFinish)
 {
-	// TODO trouver non pas le chemain le plus court mais le chemain le plus rapide
+	// TODO trouver non pas le chemin le plus court mais le chemin le plus rapide
 	coordinate *way1=null;
 	coordinate *way2=null;
 	clearMazelength(maze);
@@ -1081,7 +1060,7 @@ void deletWay(coordinate *way) // TODO: verifier la fonction
 
 void waitStart()
 {
-//TODO :
+//TODO : wait start
 //	unsigned char sensors_state = hal_sensor_get_state(app_context.sensors);
 //	while(check_bit(sensors_state, SENSOR_F10_POS)==true)
 //		sensors_state = hal_sensor_get_state(app_context.sensors);
@@ -1118,23 +1097,23 @@ void calibrateSimple()
 
 void goOrientation(char *orientationZhonx, char directionToGo)
 {
-//	int turn=(4+directionToGo-*orientationZhonx)%4;
-//	*orientationZhonx=directionToGo;
-//	switch (turn)
-//	{
-//		case FORWARD :
-//			break;
-//		case RIGHT :
-//				step_motors_rotate_in_place(-90);
-//				break;
-//		case UTURN :
-//				step_motors_rotate_in_place(180);
-//				break;
-//		case LEFT :
-//				step_motors_rotate_in_place(90);
-//
-//			break;
-//	}
+	int turn=(4+directionToGo-*orientationZhonx)%4;
+	*orientationZhonx=directionToGo;
+	switch (turn)
+	{
+		case FORWARD :
+			break;
+		case RIGHT :
+				move(-90,0,SPEED_ROTATION,0);
+				break;
+		case UTURN :
+				move(180,0,SPEED_ROTATION,0);
+				break;
+		case LEFT :
+				move(90,0,SPEED_ROTATION,0);
+
+			break;
+	}
 }
 
 void doUTurn(positionRobot *positionZhonx)
@@ -1142,4 +1121,97 @@ void doUTurn(positionRobot *positionZhonx)
 	motorsSleepDriver(OFF); // TODO : modify if it's nessesary
 	goOrientation(&positionZhonx->orientation, (positionZhonx->orientation+2)%4);
 	motorsSleepDriver(ON);
+}
+
+int sensor_calibrate(void)
+{
+    int             rv;
+    int 			i=0;
+    unsigned long	arrival_color = 30000;
+    unsigned long	area_color = 500000;
+    char            str[100];
+
+	lineSensorsInit();
+	lineSensorsStart();
+    while (1)
+    {
+        ssd1306ClearScreen();
+        ssd1306Printf(0, 9,&Font_5x8, "Present arrival color");
+        ssd1306Printf(0, 64 - 9,&Font_5x8, "'RIGHT' TO VALIDATE");
+        ssd1306Refresh();
+
+        arrival_color = lineSensors.front.adc_value;
+        ssd1306Printf(10, 18,  "Color sens: %i", arrival_color);
+
+        ssd1306Refresh();
+
+        rv = wait_validation(500);
+        if (rv == 0)
+        {
+            // Value validated
+        	for (i=0; i<100;i++)
+        	{
+        		arrival_color+=lineSensors.front.adc_value;
+        		hal_os_sleep(50);
+        	}
+        	arrival_color/=i;
+        	ssd1306ClearScreen();
+            ssd1306Printf(2, 9,&Font_5x8, "Value %i validated", arrival_color);
+            ssd1306Refresh();
+            hal_os_sleep(1000);
+            break;
+        }
+        else if (rv == -2)
+        {
+            // User aborted
+        	ssd1306ClearScreen();
+        	ssd1306Printf(2, 9,&Font_5x8, "Calibration aborted");
+        	ssd1306Refresh();
+            hal_os_sleep(1000);
+            return 0;
+        }
+    }
+
+    while (1)
+    {
+        ssd1306clearScreen();
+        ssd1306Printf(0, 9,&Font_5x8, "Present area color");
+        ssd1306Printf(0, 64 - 9,&Font_5x8,
+                           "'RIGHT' TO VALIDATE");
+        ssd1306Refresh();
+
+
+        area_color = lineSensors.front.adc_value;
+        ssd1306Printf(10, 18,&Font_5x8, "Color sens: %i", area_color);
+
+        ssd1306Refresh();
+
+        rv = wait_validation(500);
+        if (rv == 0)
+        {
+            // Value validated
+        	for (i=0; i<100;i++)
+        	{
+        		area_color+=lineSensors.front.adc_value;
+        		hal_os_sleep(50);
+        	}
+        	area_color/=i;
+            ssd1306clearScreen();
+            ssd1306Printf(2, 9, &Font_5x8,"Value %i validated", area_color);
+            ssd1306Refresh();
+            hal_os_sleep(1000);
+            break;
+        }
+    }
+
+    zhonxSettings.threshold_color = (MAX(arrival_color, area_color) - \
+                                      MIN(arrival_color, area_color)) / 2;
+    ssd1306clearScreen();
+    ssd1306Printf(1,1,&Font_5x8,"diff col : %d",zhonxSettings.threshold_color);
+    ssd1306Refresh();
+    hal_os_sleep(2000);
+    zhonxSettings.threshold_color += MIN(arrival_color, area_color);
+    zhonxSettings.threshold_greater = (arrival_color > area_color);
+
+    return 0;
 }

@@ -25,11 +25,12 @@
 #include "peripherals/expander/pcf8574.h"
 
 /* Middleware declarations */
+#include "middleware/settings/setting.h"
 
 /* Declarations for this module */
 #include "application/display/menu.h"
 
-/*external fonctions */
+/*external functions */
 extern void bluetoothTest();
 extern void eepromTest ();
 extern void encoderTest ();
@@ -41,7 +42,8 @@ extern void motorsTest ();
 extern void lineSensorsTest ();
 extern void mainControlTest ();
 extern int wallSensorsCalibration (void);
-void testTelemeterDistance();
+extern void testTelemeterDistance();
+extern void maze();
 /*
  * to create a new menu you have to create a new variable of type "menuItem" like this :
  * menuItem name =
@@ -54,7 +56,6 @@ void testTelemeterDistance();
  * 		}
  * }
  */
-// les variables si dessous existe juste pour montrer comment modifier des variables
 
 float toto=4.0;
 float titi=4.0;
@@ -72,6 +73,20 @@ menuItem testGraphicMenu =
 		{(char*)NULL,	0,				NULL}
 	}
 };
+
+menuItem maze_menu=
+{
+		"maze menu",
+		{
+			{"new maze",'f',		(void*)maze},
+			{"calibration",'b',		(void*)&zhonxSettings.calibration_enabled},
+			{"color finish",'b',	(void*)&zhonxSettings.color_sensor_enabled},
+			{"x finish",'i',		(void*)&zhonxSettings.x_finish_maze},
+			{"y finish",'i',		(void*)&zhonxSettings.y_finish_maze}
+		}
+
+};
+
 menuItem parameters_menu=
 {
 		"Parameters menu",
@@ -81,10 +96,7 @@ menuItem parameters_menu=
 };
 menuItem peripheral_test_menu=
 {
-		"peripherals test menu",
-		{
-
-		}
+		"peripherals test menu"
 };
 menuItem tests_menu=
 {
