@@ -205,10 +205,10 @@ int getTelemeterValueWithoutAmbientLight (int *value_front_left, int *value_fron
 		old_mesure = telemeters.end_of_conversion;
 //		while(old_mesure == telemeters.end_of_conversion);
 
-		values_for_statistique_front_left[y]=telemeters.left_front.telemeter_value;
-		values_for_statistique_front_right[y]=telemeters.right_front.telemeter_value;
-		values_for_statistique_diag_left[y]=telemeters.left_diag.telemeter_value;
-		values_for_statistique_diag_right[y]=telemeters.right_diag.telemeter_value;
+		values_for_statistique_front_left[y]=telemeters.left_front.telemeter_values;
+		values_for_statistique_front_right[y]=telemeters.right_front.telemeter_values;
+		values_for_statistique_diag_left[y]=telemeters.left_diag.telemeter_values;
+		values_for_statistique_diag_right[y]=telemeters.right_diag.telemeter_values;
 	}
 	length=number_of_measure;
 	//eliminateExtremeValues(values_for_statistique_front_left,&length);

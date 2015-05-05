@@ -32,10 +32,10 @@
 /* Types definitions */
 typedef struct
 {
-    int16_t adc_value;
-    int16_t telemeter_values[SIZE_OF_AVEVAGE_TABLE];
-    int16_t value_average;
-    int64_t offset;
+    int32_t adc_value;
+    int32_t telemeter_values[SIZE_OF_AVEVAGE_TABLE];
+    int32_t value_average;
+    int32_t offset;
     uint16_t higher_interval;
     uint16_t lower_interval;
     char wall_presence;
