@@ -73,7 +73,7 @@ int followControlLoop(void)
 //	if (((telemeters.left_front.telemeter_values > 1000) && (telemeters.right_front.telemeter_values > 1000)) && (follow_params.active_state == 1))
 
 //	{
-		follow_control.follow_error = ((telemeters.left_front.value_average) - (telemeters.right_front.value_average) );
+		follow_control.follow_error = (telemeters.right_front.value_average - telemeters.left_front.value_average);
 
 //	{
 //		follow_control.follow_error = (telemeters.left_diag.value_average - telemeters.right_diag.value_average);
