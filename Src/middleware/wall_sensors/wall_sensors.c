@@ -22,6 +22,7 @@ int telemeter_left_diag_voltage[NUMBER_OF_CELL];
 
 int wallSensorsCalibration (void)
 {
+	int unused_value;
 	int value_to_retest_front_right [NUMBER_OF_CELL+1];
 	int length_front_right;
 	int value_to_retest_front_left [NUMBER_OF_CELL+1];
@@ -32,11 +33,14 @@ int wallSensorsCalibration (void)
 //	int length_diag_left;
 
 	ssd1306ClearScreen();
-	ssd1306DrawString(0,0,"Place the robot front",&Font_5x8);
-	ssd1306DrawString(0,10,"of wall and press 'RIGHT'",&Font_5x8);
+	ssd1306DrawString(0,0,"Place the robot in",&Font_5x8);
+	ssd1306DrawString(0,10,"30 cms of front wall",&Font_5x8);
+	ssd1306DrawString(0,20,"and press 'RIGHT'",&Font_5x8);
 	ssd1306Refresh();
 	while(expanderJoyFiltered()!=JOY_RIGHT);
-
+#if DEBUG_WALL_SENSOR>1
+	bluetoothPrintf("step|front left|front right");
+#endif
 	ssd1306ClearScreen();
 	ssd1306Printf(0,0,&Font_5x8,"Calibrating front sensors");
 	ssd1306Refresh();
@@ -50,8 +54,7 @@ int wallSensorsCalibration (void)
 		ssd1306ProgressBar(10,40,(i*50)/NUMBER_OF_CELL);
 		ssd1306Refresh();
 
-		telemeter_left_front_voltage[i]=telemeters.left_front.value_average;
-		telemeter_right_front_voltage[i]=telemeters.right_front.value_average;
+		getTelemeterValueWithoutAmbientLight(&telemeter_left_front_voltage[i], &telemeter_right_front_voltage[i], &unused_value, &unused_value,NUMBER_OF_MEASURE_BY_STEP);
 
 		mainControlInit();move(0,-NUMBER_OF_MILLIMETER_BY_LOOP,50,0);
 		while(speed_control.end_control != 1);
@@ -77,7 +80,8 @@ int wallSensorsCalibration (void)
 					position_zhonx=value_to_retest_front_left[length_front_left];
 				}
 
-				telemeter_left_front_voltage[value_to_retest_front_left[length_front_left]]=telemeters.left_front.value_average;
+				int value_unuse;
+				getTelemeterValueWithoutAmbientLight(&telemeter_left_front_voltage[value_to_retest_front_left[length_front_left]],&value_unuse,&value_unuse,&value_unuse,NUMBER_OF_MEASURE_BY_STEP);
 
 				length_front_left--;
 			}
@@ -91,16 +95,18 @@ int wallSensorsCalibration (void)
 					while(speed_control.end_control != 1);
 					position_zhonx=value_to_retest_front_right[length_front_right];
 				}
-				telemeter_right_front_voltage[value_to_retest_front_right[length_front_right]]=telemeters.right_front.value_average;
+				getTelemeterValueWithoutAmbientLight(&unused_value,&telemeter_right_front_voltage[value_to_retest_front_right[length_front_right]],&unused_value,&unused_value,NUMBER_OF_MEASURE_BY_STEP);
 
 				length_front_right--;
 			}
 		}
-		bluetoothPrintf("\n\n\nfilterd measures :\n");
-		for (int i = 0; i < NUMBER_OF_CELL; ++i)
-		{
-			bluetoothPrintf("%2d|%10d|%d\n",i,telemeter_left_front_voltage[i],telemeter_right_front_voltage[i]);
-		}
+		#if DEBUG_WALL_SENSOR>1
+			bluetoothPrintf("\n\n\nfilterd measures :\n");
+			for (int i = 0; i < NUMBER_OF_CELL; ++i)
+			{
+				bluetoothPrintf("%2d|%10d|%d\n",i,telemeter_left_front_voltage[i],telemeter_right_front_voltage[i]);
+			}
+		#endif
 		length_front_left=0;
 		length_front_right=0;
 		for(int i = 1; i<(NUMBER_OF_CELL-1); i++)
@@ -150,18 +156,18 @@ int wallSensorsCalibration (void)
 		length_front_right --;
 		bluetoothPrintf("nombre de valeur a retester : a gauche : %d, a d)roite %d\n",length_front_left,length_front_right);
 	}while (length_front_right>0 || length_front_left>0);
-
+#if DEBUG_WALL_SENSOR>1
 	bluetoothPrintf("\n\n\nfilterd measures :\n");
 	for (int i = 0; i < NUMBER_OF_CELL; ++i)
 	{
 		bluetoothPrintf("%2d|%10d|%d\n",i,telemeter_left_front_voltage[i],telemeter_right_front_voltage[i]);
 	}
-
+#endif
 	//diag telemeters calibration
 	ssd1306ClearScreen();
 	ssd1306Printf(0,0,&Font_5x8,"calibrating diag telemeters");
-	ssd1306ProgressBar(10,10,0);
-	ssd1306ProgressBar(10,40,50);
+	ssd1306ProgressBar(10,10,50);
+	ssd1306ProgressBar(10,40,0);
 	ssd1306Refresh();
 	while(expanderJoyFiltered()!=JOY_RIGHT);
 	for(int i=0;i<NUMBER_OF_CELL;i++)
@@ -169,14 +175,8 @@ int wallSensorsCalibration (void)
 		ssd1306ProgressBar(10,10,(i*100)/NUMBER_OF_CELL);
 		ssd1306ProgressBar(10,40,50+(i*50)/NUMBER_OF_CELL);
 		ssd1306Refresh();
-		move(0,-sqrtf(2*powf(NUMBER_OF_MILLIMETER_BY_LOOP,2)),10,0);
-		telemeter_left_diag_voltage[i]=telemeters.left_diag.value_average;
-		telemeter_right_diag_voltage[i]=telemeters.right_diag.value_average;
-	}
-	bluetoothPrintf("\n\n\nfilterd diag measures :\n");
-	for (int i = 0; i < NUMBER_OF_CELL; ++i)
-	{
-		bluetoothPrintf("%2d|%10d|%d\n",i,telemeter_left_diag_voltage[i],telemeter_right_diag_voltage[i]);
+		move(0,sqrtf(2*powf(NUMBER_OF_MILLIMETER_BY_LOOP,2)),10,0);
+		getTelemeterValueWithoutAmbientLight(&unused_value, &unused_value, &telemeter_left_diag_voltage[i], &telemeter_right_diag_voltage[i],NUMBER_OF_MEASURE_BY_STEP);
 	}
 	telemetersStop();
 	motorsSleepDriver(ON);
@@ -184,6 +184,49 @@ int wallSensorsCalibration (void)
 }
 
 
+int getTelemeterValueWithoutAmbientLight (int *value_front_left, int *value_front_right, int *value_diag_left, int *value_diag_right, int number_of_measure)
+{
+	int old_mesure, length;
+	int values_for_statistique_front_left [number_of_measure], values_for_statistique_front_right [number_of_measure];
+	int values_for_statistique_diag_left [number_of_measure], values_for_statistique_diag_right [number_of_measure];
+
+	int i = 0;
+	int y = 0;
+	int j = 0;
+//	for (y = 0; y < 1; y++)
+//	{
+//		j = telemeters.end_of_conversion;
+//		while(j == telemeters.end_of_conversion);
+//		i+=telemeters.left_front.telemeter_value;
+//	}
+//	*value_front_left = telemeters.left_front.telemeter_value;
+	for (int y = 0; y < number_of_measure; y++)
+	{
+		old_mesure = telemeters.end_of_conversion;
+//		while(old_mesure == telemeters.end_of_conversion);
+
+		values_for_statistique_front_left[y]=telemeters.left_front.telemeter_values;
+		values_for_statistique_front_right[y]=telemeters.right_front.telemeter_values;
+		values_for_statistique_diag_left[y]=telemeters.left_diag.telemeter_values;
+		values_for_statistique_diag_right[y]=telemeters.right_diag.telemeter_values;
+	}
+	length=number_of_measure;
+	//eliminateExtremeValues(values_for_statistique_front_left,&length);
+	*value_front_left = cAverage(values_for_statistique_front_left,length);
+
+	length=number_of_measure;
+	//eliminateExtremeValues(values_for_statistique_front_right,&length);
+	*value_front_right = cAverage(values_for_statistique_front_right,length);
+
+	length=number_of_measure;
+	//eliminateExtremeValues(values_for_statistique_diag_left,&length);
+	*value_diag_left = cAverage(values_for_statistique_diag_left,length);
+
+	length=number_of_measure;
+	//eliminateExtremeValues(values_for_statistique_diag_right,&length);
+	*value_diag_right = cAverage(values_for_statistique_diag_right,length);
+	return WALL_SENSORS_E_SUCCESS;
+}
 /*
  * formule
  * y=ax+b
@@ -221,10 +264,11 @@ int getTelemetersDistance (float *distance_front_left, float *distance_front_rig
 	int value_front_right;
 	int value_front_left;
 
-	value_front_left = telemeters.left_front.value_average;
-	value_front_right = telemeters.right_front.value_average;
-	value_diag_left = telemeters.left_diag.value_average;
-	value_diag_right = telemeters.right_diag.value_average;
+	int rv;
+
+	rv=getTelemeterValueWithoutAmbientLight(&value_front_left, &value_front_right, &value_diag_left, &value_diag_right, 1);
+	if (rv != WALL_SENSORS_E_SUCCESS)
+		return rv;
 
 	if(value_front_left > old_voltage_front_left)
 	{
@@ -336,21 +380,6 @@ int getTelemetersDistance (float *distance_front_left, float *distance_front_rig
 	return WALL_SENSORS_E_SUCCESS;
 }
 
-walls getWallsPosition()
-{
-	int unused;
-	walls walls_position = {NO_WALL,NO_WALL,NO_WALL};
-	float distance_front_right, distance_front_left,distance_diag_right, distance_diag_left;
-	getTelemetersDistance(&distance_front_left,&distance_front_right,&distance_diag_left,&distance_diag_right,&unused);
-	if (distance_front_left < DISTANCE_WALL_FRONT)
-		walls_position.front = WALL_KNOW;
-	if (distance_diag_left < DISTANCE_WALL_DIAG)
-		walls_position.left = WALL_KNOW;
-	if (distance_front_right < DISTANCE_WALL_DIAG)
-		walls_position.right = WALL_KNOW;
-	return walls_position;
-}
-
 void testTelemeterDistance()
 {
 	telemetersInit();
@@ -368,6 +397,21 @@ void testTelemeterDistance()
 		bluetoothPrintf("distance \tleft :%d\tright : %d\n",(int)distance_left,(int)distance_left);
 	}
 	telemetersStop();
+}
+
+walls getWallsPosition()
+{
+	int unused;
+	walls walls_position = {NO_WALL,NO_WALL,NO_WALL};
+	float distance_front_right, distance_front_left,distance_diag_right, distance_diag_left;
+	getTelemetersDistance(&distance_front_left,&distance_front_right,&distance_diag_left,&distance_diag_right,&unused);
+	if (distance_front_left < DISTANCE_WALL_FRONT)
+		walls_position.front = WALL_KNOW;
+	if (distance_diag_left < DISTANCE_WALL_DIAG)
+		walls_position.left = WALL_KNOW;
+	if (distance_front_right < DISTANCE_WALL_DIAG)
+		walls_position.right = WALL_KNOW;
+	return walls_position;
 }
 
 void testWallsSensors()

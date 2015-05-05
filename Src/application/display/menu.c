@@ -40,6 +40,7 @@ extern void telemetersTest ();
 extern void toneTest ();
 extern void motorsTest ();
 extern void lineSensorsTest ();
+extern void LineTest ();
 extern void mainControlTest ();
 extern int wallSensorsCalibration (void);
 extern void testTelemeterDistance();
@@ -123,7 +124,8 @@ menuItem mainMenu =
 		"ZHONX III        V0.2",
 		{
 				{"Test menu",'m',			(void*)&tests_menu},
-				{"mainControl Test",'f',	(void*)&mainControlTest},
+				{"mainControl Test",'f',		(void*)&mainControlTest},
+				{"test line",'f', (void*)LineTest},		
 				{"parameters menu",'m',		(void*)&parameters_menu},
 				{"test graph",'m',			(void*)&testGraphicMenu},
 				{0,0,0}

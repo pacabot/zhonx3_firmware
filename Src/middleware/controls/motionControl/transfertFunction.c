@@ -72,8 +72,8 @@ int transfertFunctionLoop(void)
 	else
 		transfert_function.pwm_ratio = (PWM_RATIO_COEFF_A * 8000 + PWM_RATIO_COEFF_B);						//if vbat read fail
 
-	transfert_function.right_motor_pwm = ((speed_control.speed_command - position_control.position_command) - follow_control.follow_command) * transfert_function.pwm_ratio;
-	transfert_function.left_motor_pwm  = ((speed_control.speed_command + position_control.position_command) + follow_control.follow_command) * transfert_function.pwm_ratio;
+	transfert_function.right_motor_pwm = (speed_control.speed_command - (position_control.position_command + follow_control.follow_command)) * transfert_function.pwm_ratio;
+	transfert_function.left_motor_pwm  = (speed_control.speed_command + (position_control.position_command + follow_control.follow_command)) * transfert_function.pwm_ratio;
 
 	transfertFunctionLimiter();
 	motorSet(&right_motor, transfert_function.right_motor_pwm, DECAY_FAST);

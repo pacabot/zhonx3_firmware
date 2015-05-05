@@ -109,6 +109,6 @@ void waitStart(void);
 void goOrientation(char *orientationZhonx, char directionToGo);
 void calibrateSimple();
 char diffWay(coordinate *way1,coordinate *way2);
-void deletWay(coordinate *way);
+void deleteWay(coordinate *way);
 int sensor_calibrate(void);
 #endif /* RESOLUTION_MAZE_H_ */

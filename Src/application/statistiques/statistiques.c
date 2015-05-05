@@ -36,7 +36,7 @@ int cAverage (int statistical_series[], int statistical_serial_length)
 	long average=0;
 	for (int i = 0 ; i < statistical_serial_length ; i++)
 	{
-		average+=statistical_series[i];
+		average+=(long)statistical_series[i];
 	}
 	return (int)(average/=statistical_serial_length);
 }

@@ -30,6 +30,7 @@
 #include "peripherals/encoders/ie512.h"
 #include "peripherals/multimeter/multimeter.h"
 #include "peripherals/telemeters/telemeters.h"
+#include "peripherals/bluetooth/bluetooth.h"
 
 /* Middleware declarations */
 #include "middleware/controls/pidController/pidController.h"
@@ -60,7 +61,7 @@ int mainControlInit(void)
 int mainControlLoop(void)
 {
 	speedControlLoop();
-	positionControlLoop();
+//	positionControlLoop();
 	followControlLoop();
 	transfertFunctionLoop();
 
@@ -123,6 +124,7 @@ void mainControlTest(void)
 	mainControlInit();
 	HAL_Delay(500);
 
+	move(0, 0, 500, 400);
 //	move(0, 90, 500, 400);
 //	while(speed_control.end_control != 1);
 //	move(90, 90, 500, 400);
@@ -133,19 +135,25 @@ void mainControlTest(void)
 //	while(speed_control.end_control != 1);
 //	move(90, 90, 500, 400);
 //	while(speed_control.end_control != 1);
-	move(0, (int)90, 50, 0);
-
-	while(speed_control.end_control != 1);
+//	move(0, 90, 500, 0);
+//	while(speed_control.end_control != 1);
 
 	while(expanderJoyFiltered()!=JOY_LEFT)
 	{
-		ssd1306ClearScreen();
-		ssd1306PrintInt(10,  5,  "speed dist =  ",(int) (speed_control.current_distance * 100), &Font_5x8);
-		ssd1306PrintInt(10,  15, "posit.dist =  ",(int) (position_control.end_control * 100), &Font_5x8);
-		ssd1306PrintInt(10,  25, "right_dist =  ",(int) (position_control.end_control * 100), &Font_5x8);
-		ssd1306PrintInt(10,  35, "error =  ",(int16_t) speed_control.speed_error, &Font_5x8);
-		ssd1306PrintInt(10,  45, "left PWM =  ",(int16_t) transfert_function.left_motor_pwm, &Font_5x8);
-		ssd1306PrintInt(10,  55, "right PWM =  ",(int16_t) transfert_function.right_motor_pwm, &Font_5x8);
+		HAL_Delay(10);
+//		ssd1306ClearScreen();
+//		ssd1306PrintInt(10,  5,  "speed dist =  ",(int) (speed_control.current_distance * 100), &Font_5x8);
+//		ssd1306PrintInt(10,  15, "posit.dist =  ",(int) (follow_control.follow_error), &Font_5x8);
+//		ssd1306PrintInt(10,  25, "right_dist =  ",(int) (position_control.end_control * 100), &Font_5x8);
+//		ssd1306PrintInt(10,  35, "error =  ",(int16_t) speed_control.speed_error, &Font_5x8);
+//		ssd1306PrintInt(10,  45, "left PWM =  ",(int16_t) transfert_function.left_motor_pwm, &Font_5x8);
+//		ssd1306PrintInt(10,  55, "right PWM =  ",(int16_t) transfert_function.right_motor_pwm, &Font_5x8);
+
+		bluetoothPrintf("pwm right :%d \t %d \n",(int)transfert_function.right_motor_pwm, (int)(follow_control.follow_error*100));
+
+//		bluetoothPrintInt("error", follow_control.follow_error);
+//		transfert_function.right_motor_pwm = (speed_control.speed_command - (position_control.position_command + follow_control.follow_command)) * transfert_function.pwm_ratio;
+//			transfert_function.left_motor_pwm  = (speed_control.speed_command + (position_control.position_command + follow_control.follow_command)) * transfert_function.pwm_ratio;
 
 		ssd1306Refresh();
 	}

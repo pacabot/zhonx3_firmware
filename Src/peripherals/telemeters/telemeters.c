@@ -170,7 +170,6 @@ void telemeters_IT(void)
 	case 16:
 		telemeters.ref_right_diag.sensor_state = 1;
 		sConfig.Channel = RX_RIGHT_DIAG;
-		telemeters.selector = 0;
 		break;
 	default :
 		telemeters.selector = 0;
@@ -188,6 +187,8 @@ void telemeters_IT(void)
 	sConfig.SamplingTime = ADC_SAMPLETIME_28CYCLES;
 	HAL_ADC_ConfigChannel(&hadc2, &sConfig);
 	HAL_ADC_Start_IT(&hadc2);
+	if (telemeters.selector > 100)
+		telemeters.selector = 0;
 	telemeters.it_cnt++;
 }
 
@@ -196,33 +197,33 @@ void telemeters_ADC_IT(void)
 	if (telemeters.right_front.sensor_state == 1)
 	{
 		telemeters.right_front.adc_value = HAL_ADC_GetValue(&hadc2);
-		telemeters.right_front.telemeter_values[(telemeters.end_of_conversion/8)%3] = telemeters.right_front.adc_value - telemeters.right_front.offset - telemeters.ref_right_front.adc_value;
-		telemeters.right_front.value_average=cAverage((int*)telemeters.right_front.telemeter_values,SIZE_OF_AVEVAGE_TABLE);
 		HAL_GPIO_WritePin(GPIOB, TX_RIGHT_FRONT, RESET);
+		telemeters.right_front.telemeter_values[(telemeters.end_of_conversion / 8) % 3] = telemeters.right_front.adc_value - telemeters.right_front.offset - telemeters.ref_right_front.adc_value;
+		telemeters.right_front.value_average=cAverage((int*)telemeters.right_front.telemeter_values,SIZE_OF_AVEVAGE_TABLE);
 		telemeters.right_front.sensor_state = 0;
 	}
 	if (telemeters.left_front.sensor_state == 1)
 	{
 		telemeters.left_front.adc_value = HAL_ADC_GetValue(&hadc2);
-		telemeters.left_front.telemeter_values[(telemeters.end_of_conversion/8)%SIZE_OF_AVEVAGE_TABLE] = telemeters.left_front.adc_value - telemeters.left_front.offset- telemeters.ref_left_front.adc_value;
-		telemeters.left_front.value_average=cAverage((int*)telemeters.left_front.telemeter_values,SIZE_OF_AVEVAGE_TABLE);
 		HAL_GPIO_WritePin(GPIOB, TX_LEFT_FRONT, RESET);
+		telemeters.left_front.telemeter_values[(telemeters.end_of_conversion / 8) % SIZE_OF_AVEVAGE_TABLE] = telemeters.left_front.adc_value - telemeters.left_front.offset- telemeters.ref_left_front.adc_value;
+		telemeters.left_front.value_average=cAverage((int*)telemeters.left_front.telemeter_values,SIZE_OF_AVEVAGE_TABLE);
 		telemeters.left_front.sensor_state = 0;
 	}
 	if (telemeters.left_diag.sensor_state == 1)
 	{
 		telemeters.left_diag.adc_value = HAL_ADC_GetValue(&hadc2);
-		telemeters.left_diag.telemeter_values[(telemeters.end_of_conversion/8)%SIZE_OF_AVEVAGE_TABLE] = telemeters.left_diag.adc_value - telemeters.left_diag.offset - telemeters.ref_left_diag.adc_value;
-		telemeters.left_diag.value_average=cAverage((int*)telemeters.left_diag.telemeter_values,SIZE_OF_AVEVAGE_TABLE);
 		HAL_GPIO_WritePin(GPIOB, TX_DUAL_DIAG, RESET);
+		telemeters.left_diag.telemeter_values[(telemeters.end_of_conversion / 8) % SIZE_OF_AVEVAGE_TABLE] = telemeters.left_diag.adc_value - telemeters.left_diag.offset - telemeters.ref_left_diag.adc_value;
+		telemeters.left_diag.value_average=cAverage((int*)telemeters.left_diag.telemeter_values,SIZE_OF_AVEVAGE_TABLE);
 		telemeters.left_diag.sensor_state = 0;
 	}
 	if (telemeters.right_diag.sensor_state == 1)
 	{
 		telemeters.right_diag.adc_value = HAL_ADC_GetValue(&hadc2);
-		telemeters.right_diag.telemeter_values[(telemeters.end_of_conversion/8)%SIZE_OF_AVEVAGE_TABLE] = telemeters.right_diag.adc_value - telemeters.right_diag.offset - telemeters.ref_right_diag.adc_value;
-		telemeters.right_diag.value_average=cAverage((int*)telemeters.right_diag.telemeter_values,SIZE_OF_AVEVAGE_TABLE);
 		HAL_GPIO_WritePin(GPIOB, TX_DUAL_DIAG, RESET);
+		telemeters.right_diag.telemeter_values[(telemeters.end_of_conversion/8) % SIZE_OF_AVEVAGE_TABLE] = telemeters.right_diag.adc_value - telemeters.right_diag.offset - telemeters.ref_right_diag.adc_value;
+		telemeters.right_diag.value_average=cAverage((int*)telemeters.right_diag.telemeter_values,SIZE_OF_AVEVAGE_TABLE);
 		telemeters.right_diag.sensor_state = 0;
 	}
 	if (telemeters.ref_left_diag.sensor_state == 1)
