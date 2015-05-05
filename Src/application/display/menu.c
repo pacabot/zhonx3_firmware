@@ -39,6 +39,7 @@ extern void telemetersTest ();
 extern void toneTest ();
 extern void motorsTest ();
 extern void lineSensorsTest ();
+extern void LineTest ();
 extern void mainControlTest ();
 /*
  * to create a new menu you have to create a new variable of type "menuItem" like this :
@@ -95,6 +96,7 @@ menuItem mainMenu =
 		{
 				{"Test menu",'m',			(void*)&tests_menu},
 				{"mainControl Test",'f',		(void*)&mainControlTest},
+				{"test line",'f', (void*)LineTest},
 				{"test graph",'m',			(void*)&testGraphicMenu},
 				{0,0,0}
 		}
