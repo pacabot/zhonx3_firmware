@@ -26,7 +26,6 @@
 #define DISTANCE_WALL_DIAG	(CELL_LENGTH*3)/4
 
 int wallSensorsCalibration();
-int getTelemeterValueWithoutAmbientLight (int *value_front_left, int *value_front_right, int *value_diag_left, int *value_diag_right, int number_of_measure);
 int getTelemetersDistance (float *distance_front_left, float *distance_front_right, float *distance_diag_left, float *distance_diag_right, int *precision);
 walls getWallsPosition();
 void testWallsSensors();
