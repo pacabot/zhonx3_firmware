@@ -49,13 +49,13 @@
 /* global variables */
 position_control_struct position_control;
 position_params_struct position_params;
-arm_pid_instance_f32 telemeters_pid_instance;
+arm_pid_instance_f32 encoder_or_gyro_pid_instance;
 
 int positionControlInit(void)
 {
-	telemeters_pid_instance.Kp = 300;
-	telemeters_pid_instance.Ki = 0;
-	telemeters_pid_instance.Kd = 800;
+	encoder_or_gyro_pid_instance.Kp = 300;
+	encoder_or_gyro_pid_instance.Ki = 0;
+	encoder_or_gyro_pid_instance.Kd = 800;
 
 	position_control.current_angle = 0;
 	position_control.position_command = 0;
@@ -63,7 +63,7 @@ int positionControlInit(void)
 	position_control.current_diff_dist = 0;
 	position_control.current_diff_dist_consign = 0;
 	position_control.position_consign = 0;
-	position_control.position_pid.instance = &telemeters_pid_instance;
+	position_control.position_pid.instance = &encoder_or_gyro_pid_instance;
 	position_control.end_control = 0;
 
 	position_params.sign = 1;
@@ -185,8 +185,8 @@ float positionProfileCompute(float distance, float time)
 			sqrt((time * time) * (position_params.accel * position_params.accel) - 4.0 * distance * position_params.accel));
 
 
-	position_params.accel_dist = pow(position_params.max_speed, 2)/(2.0 * position_params.accel);
-	position_params.decel_dist = pow(position_params.max_speed, 2)/(2.0 * position_params.decel);
+	position_params.accel_dist = pow(position_params.max_speed, 2) / (2.0 * position_params.accel);
+	position_params.decel_dist = pow(position_params.max_speed, 2) / (2.0 * position_params.decel);
 
 	if ((position_params.accel_dist + position_params.decel_dist ) > distance)
 	{
@@ -195,13 +195,8 @@ float positionProfileCompute(float distance, float time)
 		position_params.accel_dist *= clipping_ratio;
 		position_params.decel_dist *= clipping_ratio;
 
-		position_params.accel *= (1.0+clipping_ratio);
-		position_params.decel *= (1.0+clipping_ratio);
-
-		//			position_params.max_speed = (sqrt(2.0) * sqrt(0.5 * distance * position_params.accel_dist));
-		//
-		//			position_params.accel_dist = pow(position_params.max_speed, 2)/(2.0 * position_params.accel);
-		//			position_params.decel_dist = pow(position_params.max_speed, 2)/(2.0 * position_params.decel);
+		position_params.accel *= (1.0 + clipping_ratio);
+		position_params.decel *= (1.0 + clipping_ratio);
 	}
 
 	position_params.maintain_dist = distance - (position_params.accel_dist + position_params.decel_dist);

@@ -27,30 +27,38 @@
 #define RX_RIGHT_DIAG				ADC_CHANNEL_10
 #define RX_RIGHT_FRONT				ADC_CHANNEL_11
 
+#define SIZE_OF_AVEVAGE_TABLE 3
+
 /* Types definitions */
 typedef struct
 {
-    int16_t adc_value;
-    int16_t telemeter_value;
-    int64_t offset;
+    int32_t adc_value;
+    int32_t telemeter_values[SIZE_OF_AVEVAGE_TABLE];
+    int32_t value_average;
+    int32_t offset;
     uint16_t higher_interval;
     uint16_t lower_interval;
     char wall_presence;
-    char emitter_state;
+    char sensor_state;
 }telemeter_state;
 
 typedef struct
 {
 	telemeter_state right_front;
+	telemeter_state ref_right_front;
 	telemeter_state right_diag;
+	telemeter_state ref_right_diag;
 	telemeter_state left_front;
+	telemeter_state ref_left_front;
 	telemeter_state left_diag;
+	telemeter_state ref_left_diag;
 
-	uint32_t it_cnt;
-	uint32_t end_of_conversion;
+	uint64_t it_cnt;
+	uint64_t end_of_conversion;
 	char active_state;
 	char emitter_state;
 	char selector;
+	char ref_selector;
 } telemeters_struct;
 
 volatile telemeters_struct telemeters;

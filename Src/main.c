@@ -105,6 +105,7 @@ int main(void)
   /* USER CODE BEGIN 2 */
 	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, SET);
 
+	HAL_Delay(100);
 	ssd1306Init(0);
 	timesBaseInit();
 	ledPowerBlink(990, 10, 0);

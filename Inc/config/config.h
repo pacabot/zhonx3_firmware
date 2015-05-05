@@ -16,7 +16,7 @@
 /**************************************************************************************/
 #define LOW_TIME_FREQ			100
 #define HI_TIME_FREQ			1000.0 //use for pids inner loop
-#define TELEMETERS_TIME_FREQ	4000  	//each telemeter use 1/4 of TELEMETERS_TIME_FREQ
+#define TELEMETERS_TIME_FREQ	16000  	//each telemeter use 1/4 of TELEMETERS_TIME_FREQ
 #define GYRO_TIME_FREQ			1000
 #define LINESENSORS_TIME_FREQ	GYRO_TIME_FREQ //same timer
 #define MULTIMMETER_TIME_FREQ	0.1f
@@ -95,15 +95,17 @@
 
 /**************************************************************************************/
 /***************                   Maze Properties                 ********************/
+/********* you can see also Inc/application/solverMaze.h for more details *************/
 /**************************************************************************************/
 #define CELL_LENGTH				178
+#define MAZE_SIZE				16
 
 /**************************************************************************************/
 /***************                 Physical Constants                ********************/
 /**************************************************************************************/
 #define MAX_SPEED				4000.0	//mm/s
-#define MAX_ACCEL				4000.0	//mm/s²
-#define MAX_DECEL				4000.0	//mm/s²
+#define MAX_ACCEL				8000.0	//mm/s²
+#define MAX_DECEL				8000.0	//mm/s²
 
 #define MAX_TURN_SPEED			500.0	//mm/s
 #define MAX_TURN_ACCEL			8000.0	//mm/s²

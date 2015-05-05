@@ -41,6 +41,8 @@ extern void motorsTest ();
 extern void lineSensorsTest ();
 extern void LineTest ();
 extern void mainControlTest ();
+extern int wallSensorsCalibration (void);
+void testTelemeterDistance();
 /*
  * to create a new menu you have to create a new variable of type "menuItem" like this :
  * menuItem name =
@@ -71,10 +73,25 @@ menuItem testGraphicMenu =
 		{(char*)NULL,	0,				NULL}
 	}
 };
+menuItem parameters_menu=
+{
+		"Parameters menu",
+		{
+				{"calibration",'f',(void*)wallSensorsCalibration}
+		}
+};
+menuItem peripheral_test_menu=
+{
+		"peripherals test menu",
+		{
+
+		}
+};
 menuItem tests_menu=
 {
 		"TEST MENU",
 		{
+				{"test distantce",'f',(void*)testTelemeterDistance},
 				{"test bluetooth",'f', (void*)bluetoothTest},
 				{"test multimeter",'f', (void*)mulimeterTest},
 				{"test display",'f', (void*)ssd1306Test},
@@ -96,7 +113,8 @@ menuItem mainMenu =
 		{
 				{"Test menu",'m',			(void*)&tests_menu},
 				{"mainControl Test",'f',		(void*)&mainControlTest},
-				{"test line",'f', (void*)LineTest},
+				{"test line",'f', (void*)LineTest},		
+				{"parameters menu",'m',		(void*)&parameters_menu},
 				{"test graph",'m',			(void*)&testGraphicMenu},
 				{0,0,0}
 		}

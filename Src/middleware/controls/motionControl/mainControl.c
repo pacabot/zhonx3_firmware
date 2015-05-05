@@ -30,12 +30,14 @@
 #include "peripherals/encoders/ie512.h"
 #include "peripherals/multimeter/multimeter.h"
 #include "peripherals/telemeters/telemeters.h"
+#include "peripherals/bluetooth/bluetooth.h"
 
 /* Middleware declarations */
 #include "middleware/controls/pidController/pidController.h"
 #include "middleware/controls/motionControl/positionControl.h"
 #include "middleware/controls/motionControl/speedControl.h"
 #include "middleware/controls/motionControl/transfertFunction.h"
+#include "middleware/controls/motionControl/followControl.h"
 
 /* Declarations for this module */
 #include "middleware/controls/motionControl/mainControl.h"
@@ -45,9 +47,10 @@ int mainControlInit(void)
 	motorsInit();
 	encodersInit();
 	mulimeterInit();
-	//	telemetersInit();
+	telemetersInit();
 	speedControlInit();
 	positionControlInit();
+	followControlInit();
 	transfertFunctionInit();
 
 	speed_params.initial_speed = 0;
@@ -58,7 +61,8 @@ int mainControlInit(void)
 int mainControlLoop(void)
 {
 	speedControlLoop();
-	positionControlLoop();
+//	positionControlLoop();
+	followControlLoop();
 	transfertFunctionLoop();
 
 	return MAIN_CONTROL_E_SUCCESS;
@@ -95,6 +99,7 @@ int move(float angle, float radius_or_distance, float max_speed, float end_speed
 
 	if (angle == 0)
 	{
+		follow_params.active_state = 0;
 		distance = radius_or_distance;
 
 		speedProfileCompute(distance);
@@ -102,6 +107,7 @@ int move(float angle, float radius_or_distance, float max_speed, float end_speed
 	}
 	else
 	{
+		follow_params.active_state = 0;
 		distance_per_wheel = (2.0 * PI * ROTATION_DIAMETER * (angle / 360.0)) * slip_compensation;
 		distance = fabsf((PI * (2 * radius_or_distance) * (angle / 360.0)));
 
@@ -118,26 +124,39 @@ void mainControlTest(void)
 	mainControlInit();
 	HAL_Delay(500);
 
-	move(-180, 0, 500, 0);
-	while(speed_control.end_control != 1);
-//	move(0, 50, 500, 285);
+	move(0, 0, 500, 400);
+//	move(0, 90, 500, 400);
 //	while(speed_control.end_control != 1);
-//	move(-180, 90, 286, 0);
-
+//	move(90, 90, 500, 400);
+//	while(speed_control.end_control != 1);
+//	move(-90, 90, 500, 400);
+//	while(speed_control.end_control != 1);
+//	move(0, 360, 2000, 400);
+//	while(speed_control.end_control != 1);
+//	move(90, 90, 500, 400);
+//	while(speed_control.end_control != 1);
+//	move(0, 90, 500, 0);
+//	while(speed_control.end_control != 1);
 
 	while(expanderJoyFiltered()!=JOY_LEFT)
 	{
-		ssd1306ClearScreen();
-		ssd1306PrintInt(10,  5,  "speed dist =  ",(int) (speed_control.current_distance * 100), &Font_5x8);
-		ssd1306PrintInt(10,  15, "posit.dist =  ",(int) (position_control.end_control * 100), &Font_5x8);
-		ssd1306PrintInt(10,  25, "right_dist =  ",(int) (position_control.end_control * 100), &Font_5x8);
-		ssd1306PrintInt(10,  35, "error =  ",(int16_t) speed_control.speed_error, &Font_5x8);
-		ssd1306PrintInt(10,  45, "left PWM =  ",(int16_t) transfert_function.left_motor_pwm, &Font_5x8);
-		ssd1306PrintInt(10,  55, "right PWM =  ",(int16_t) transfert_function.right_motor_pwm, &Font_5x8);
+		HAL_Delay(10);
+//		ssd1306ClearScreen();
+//		ssd1306PrintInt(10,  5,  "speed dist =  ",(int) (speed_control.current_distance * 100), &Font_5x8);
+//		ssd1306PrintInt(10,  15, "posit.dist =  ",(int) (follow_control.follow_error), &Font_5x8);
+//		ssd1306PrintInt(10,  25, "right_dist =  ",(int) (position_control.end_control * 100), &Font_5x8);
+//		ssd1306PrintInt(10,  35, "error =  ",(int16_t) speed_control.speed_error, &Font_5x8);
+//		ssd1306PrintInt(10,  45, "left PWM =  ",(int16_t) transfert_function.left_motor_pwm, &Font_5x8);
+//		ssd1306PrintInt(10,  55, "right PWM =  ",(int16_t) transfert_function.right_motor_pwm, &Font_5x8);
+
+		bluetoothPrintf("pwm right :%d \t %d \n",(int)transfert_function.right_motor_pwm, (int)(follow_control.follow_error*100));
+
+//		bluetoothPrintInt("error", follow_control.follow_error);
+//		transfert_function.right_motor_pwm = (speed_control.speed_command - (position_control.position_command + follow_control.follow_command)) * transfert_function.pwm_ratio;
+//			transfert_function.left_motor_pwm  = (speed_control.speed_command + (position_control.position_command + follow_control.follow_command)) * transfert_function.pwm_ratio;
 
 		ssd1306Refresh();
 	}
-	antiBounceJoystick();
 	pid_loop.start_state = FALSE;
 	telemetersStop();
 	motorsSleepDriver(ON);
