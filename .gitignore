@@ -7,6 +7,7 @@ cproject
 *.xml
 *.elf
 *.map
+*.settings*
 
 # Ignorer tous les fichiers intermédiares de construction
 *.o
@@ -19,3 +20,4 @@ cproject
 *.orig
 /Debug/
 /Release/
+/home/zhonx/workspace/ZHONX_III/.settings/language.settings.xml
