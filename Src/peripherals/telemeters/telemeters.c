@@ -170,7 +170,6 @@ void telemeters_IT(void)
 	case 16:
 		telemeters.ref_right_diag.sensor_state = 1;
 		sConfig.Channel = RX_RIGHT_DIAG;
-		telemeters.selector = 0;
 		break;
 	default :
 		telemeters.selector = 0;
@@ -188,6 +187,8 @@ void telemeters_IT(void)
 	sConfig.SamplingTime = ADC_SAMPLETIME_28CYCLES;
 	HAL_ADC_ConfigChannel(&hadc2, &sConfig);
 	HAL_ADC_Start_IT(&hadc2);
+	if (telemeters.selector > 100)
+		telemeters.selector = 0;
 	telemeters.it_cnt++;
 }
 

@@ -71,7 +71,7 @@ extern int maze(void)
 void exploration(labyrinthe *maze, positionRobot* positionZhonx,char xFinish, char yFinish)
 {
 	coordinate way={0,0,0};
-	motorsSleepDriver(OFF); // TODO : modify if it's nessesary
+	motorsSleepDriver(OFF); // TODO : modify if it's necessary
 	walls new_walls=getWallsPosition();
 	new_cell(new_walls,maze,*positionZhonx);
 
@@ -83,7 +83,7 @@ void exploration(labyrinthe *maze, positionRobot* positionZhonx,char xFinish, ch
 		moveRealZhonx(maze,positionZhonx,way.next,&xFinish,&yFinish);
 	}
 	HAL_Delay(200);
-	motorsSleepDriver(ON); // TODO : modify if it's nessesary
+	motorsSleepDriver(ON); // TODO : modify if it's necessary
 
 }
 void run1(labyrinthe *maze, positionRobot *positionZhonx,char posXStart, char posYStart)
@@ -129,7 +129,7 @@ void run2(labyrinthe *maze, positionRobot *positionZhonx,char posXStart, char po
 		choice=-1;
 		moveVirtualZhonx(*maze,*positionZhonx,&way,zhonxSettings.x_finish_maze,zhonxSettings.y_finish_maze);
 		waitStart();
-		motorsSleepDriver(OFF); // TODO : modify if it's nessesary
+		motorsSleepDriver(OFF); // TODO : modify if it's necessary
 		moveRealZhonxArc(maze,positionZhonx,way.next);
 		motorsSleepDriver(ON);
 		if (zhonxSettings.calibration_enabled==true)
@@ -190,7 +190,7 @@ void moveVirtualZhonx(labyrinthe maze, positionRobot positionZhonxVirtuel,coordi
 				ssd1306ClearScreen();
 				ssd1306DrawString(0,0,"no solution",&Font_5x8);
 				ssd1306Refresh();
-				motorsSleepDriver(ON); // TODO : modify if it's nessesary
+				motorsSleepDriver(ON); // TODO : modify if it's necessary
 				while (boucle)
 				{
 				}
@@ -1046,8 +1046,8 @@ char mini_way_find(labyrinthe *maze,char xStart, char yStart, char xFinish, char
 		ssd1306DrawString(0,20,"2 way = : no",&Font_5x8);
 		break;
 	}
-	deletWay(way1);
-	deletWay(way2);
+	deleteWay(way1);
+	deleteWay(way2);
 	ssd1306Refresh();
 	HAL_Delay(3000);
 	return (waySame);
@@ -1069,7 +1069,7 @@ char diffWay(coordinate *way1,coordinate *way2)
 	}
 	return true;
 }
-void deletWay(coordinate *way) // TODO: verifier la fonction
+void deleteWay(coordinate *way) // TODO: verifier la fonction
 {
 	while (way!=null)
 	{
@@ -1092,7 +1092,7 @@ void waitStart()
 
 void calibrateSimple()
 {
-//	motorsSleepDriver(OFF); // TODO : modify if it's nessesary
+//	motorsSleepDriver(OFF); // TODO : modify if it's necessary
 //	char orientation=0;
 //	unsigned char sensors_state = 0;
 //	for(int i=0; i<2;i++)
@@ -1112,7 +1112,7 @@ void calibrateSimple()
 //	}
 //	goOrientation(&orientation,0);
 //	HAL_Delay(100);
-//	motorsSleepDriver(ON); // TODO : modify if it's nessesary
+//	motorsSleepDriver(ON); // TODO : modify if it's necessary
 
 }
 
@@ -1139,7 +1139,7 @@ void goOrientation(char *orientationZhonx, char directionToGo)
 
 void doUTurn(positionRobot *positionZhonx)
 {
-	motorsSleepDriver(OFF); // TODO : modify if it's nessesary
+	motorsSleepDriver(OFF); // TODO : modify if it's necessary
 	goOrientation(&positionZhonx->orientation, (positionZhonx->orientation+2)%4);
 	motorsSleepDriver(ON);
 }

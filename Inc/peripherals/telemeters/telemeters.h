@@ -53,8 +53,8 @@ typedef struct
 	telemeter_state left_diag;
 	telemeter_state ref_left_diag;
 
-	uint32_t it_cnt;
-	uint32_t end_of_conversion;
+	uint64_t it_cnt;
+	uint64_t end_of_conversion;
 	char active_state;
 	char emitter_state;
 	char selector;

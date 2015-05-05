@@ -35,6 +35,7 @@
 #include "middleware/controls/motionControl/mainControl.h"
 #include "middleware/controls/motionControl/transfertFunction.h"
 #include "middleware/controls/motionControl/positionControl.h"
+#include "middleware/wall_sensors/wall_sensors.h"
 
 /* Declarations for this module */
 #include "middleware/controls/motionControl/followControl.h"
@@ -68,11 +69,14 @@ int followControlInit(void)
 int followControlLoop(void)
 {
 
-//	if (((telemeters.left_diag.telemeter_average > 1000) && (telemeters.right_diag.telemeter_average > 1000)) && (follow_params.active_state == 1))
-	if (((telemeters.left_front.value_average > 1000) && (telemeters.right_front.value_average > 1000)) && (follow_params.active_state == 1))
+//	if (((telemeters.left_diag.telemeter_value > 1000) && (telemeters.right_diag.telemeter_value > 1000)) && (follow_params.active_state == 1))
+	if (((telemeters.left_front.telemeter_value > 1000) && (telemeters.right_front.telemeter_value > 1000)) && (follow_params.active_state == 1))
+
+//	{
+//		follow_control.follow_error = ((telemeters.right_front.telemeter_value) - (telemeters.left_front.telemeter_value));
 
 	{
-		follow_control.follow_error = (telemeters.left_diag.value_average - telemeters.right_diag.value_average);
+		follow_control.follow_error = (telemeters.left_diag.telemeter_value - telemeters.right_diag.telemeter_value);
 
 		follow_params.sign = SIGN(follow_control.follow_error);
 		follow_control.follow_error = fabsf(follow_control.follow_error);
