@@ -123,6 +123,7 @@ menuItem mainMenu =
 {
 		"ZHONX III        V0.2",
 		{
+				{"maze menu",'m',			(void*)&maze_menu},
 				{"Test menu",'m',			(void*)&tests_menu},
 				{"mainControl Test",'f',		(void*)&mainControlTest},
 				{"test line",'f', (void*)LineTest},		
