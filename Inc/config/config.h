@@ -16,7 +16,7 @@
 /**************************************************************************************/
 #define LOW_TIME_FREQ			100
 #define HI_TIME_FREQ			1000.0 //use for pids inner loop
-#define TELEMETERS_TIME_FREQ	30000  	//each telemeter use 1/15 of TELEMETERS_TIME_FREQ
+#define TELEMETERS_TIME_FREQ	16000  	//each telemeter use 1/4 of TELEMETERS_TIME_FREQ
 #define GYRO_TIME_FREQ			1000
 #define LINESENSORS_TIME_FREQ	GYRO_TIME_FREQ //same timer
 #define MULTIMMETER_TIME_FREQ	0.1f
@@ -93,6 +93,16 @@
 #define MM_PER_WHEEL_REV		((M_PI) * (WHEEL_DIAMETER))		//Number of millimeters per wheel revolution
 #define STEPS_PER_MM			((STEPS_PER_WHEEL_REV) / (MM_PER_WHEEL_REV))	//Number of steps per millimeter
 
+//#define DARK
+//#define MEDDLE
+
+#if defined MEDDLE && defined DARK
+#error you must define only one robot
+#endif
+#if (!defined MEDDLE) && (!defined DARK)
+#error  you must define one robot
+#endif
+
 /**************************************************************************************/
 /***************                   Maze Properties                 ********************/
 /********* you can see also Inc/application/solverMaze.h for more details *************/
@@ -118,6 +128,7 @@
 #define PWM_RATIO_COEFF_B		1.50				//PWM_RATIO_COEFF_A * battery voltage + PWM_RATIO_COEFF_B = TRUE MOTOR PWM
 
 #define MOTORS_PERIOD			1000
+
 
 #endif // __CONFIG_H__
 

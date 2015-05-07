@@ -27,7 +27,7 @@
 #define RX_RIGHT_DIAG				ADC_CHANNEL_10
 #define RX_RIGHT_FRONT				ADC_CHANNEL_11
 
-#define SIZE_OF_AVEVAGE_TABLE 10
+#define SIZE_OF_AVEVAGE_TABLE 15
 
 /* Types definitions */
 typedef struct

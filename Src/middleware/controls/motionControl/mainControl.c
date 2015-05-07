@@ -61,8 +61,8 @@ int mainControlInit(void)
 int mainControlLoop(void)
 {
 	speedControlLoop();
-	positionControlLoop();
-//	followControlLoop();
+//	positionControlLoop();
+	followControlLoop();
 	transfertFunctionLoop();
 
 	return MAIN_CONTROL_E_SUCCESS;

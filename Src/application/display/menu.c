@@ -124,7 +124,11 @@ menuItem tests_menu=
 
 menuItem mainMenu =
 {
-		"ZHONX III        V0.2",
+#ifdef MEDDLE
+		"ZHONX III meddle V0.2",
+#else
+		"ZHONX III dark   V0.2",
+#endif
 		{
 				{"maze menu",'m',			(void*)&maze_menu},
 				{"Test menu",'m',			(void*)&tests_menu},
