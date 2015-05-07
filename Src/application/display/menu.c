@@ -25,7 +25,7 @@
 #include "peripherals/expander/pcf8574.h"
 
 /* Middleware declarations */
-#include "middleware/settings/setting.h"
+#include "middleware/settings/settings.h"
 
 /* Declarations for this module */
 #include "application/display/menu.h"
@@ -45,6 +45,8 @@ extern void mainControlTest ();
 extern int wallSensorsCalibration (void);
 extern void testTelemeterDistance();
 extern void maze();
+extern void testWallsSensors();
+
 /*
  * to create a new menu you have to create a new variable of type "menuItem" like this :
  * menuItem name =
@@ -104,6 +106,7 @@ menuItem tests_menu=
 		"TEST MENU",
 		{
 				{"test distantce",'f',(void*)testTelemeterDistance},
+				{"test wall sensor",'f',(void*)testWallsSensors},
 				{"test bluetooth",'f', (void*)bluetoothTest},
 				{"test multimeter",'f', (void*)mulimeterTest},
 				{"test display",'f', (void*)ssd1306Test},

@@ -58,9 +58,9 @@ arm_pid_instance_f32 telemeters_pid_instance;
 
 int followControlInit(void)
 {
-	telemeters_pid_instance.Kp = 30;
+	telemeters_pid_instance.Kp = 10;
 	telemeters_pid_instance.Ki = 0;
-	telemeters_pid_instance.Kd = 30;
+	telemeters_pid_instance.Kd = 0;
 
 	follow_control.follow_pid.instance = &telemeters_pid_instance;
 
@@ -71,20 +71,17 @@ int followControlInit(void)
 
 int followControlLoop(void)
 {
-	float unusedf;
-	int unusedi;
-	float distance_left;
-	float distance_right;
+	telemetersDistancesTypeDef distances;
 
 //	if (((telemeters.left_diag.telemeter_value > 1000) && (telemeters.right_diag.telemeter_value > 1000)) && (follow_params.active_state == 1))
 //	if (((telemeters.left_front.telemeter_values > 1000) && (telemeters.right_front.telemeter_values > 1000)) && (follow_params.active_state == 1))
 
 //	{
-	getTelemetersDistance(&distance_left,&distance_right,&unusedf,&unusedf,&unusedi);
-	//follow_control.follow_error = distance_left - distance_right;
-	follow_control.follow_error = (telemeters.right_front.value_average - telemeters.left_front.value_average);
+	getTelemetersDistance(&distances);
+	follow_control.follow_error = distances.distance_front_left - distances.distance_front_right;
+	follow_control.follow_error = (telemeters.right_front.average_value - telemeters.left_front.average_value);
 
-	follow_control.follow_error = -lineFollower.position;
+	//follow_control.follow_error = -lineFollower.position;
 //	{
 //		follow_control.follow_error = (telemeters.left_diag.value_average - telemeters.right_diag.value_average);
 

@@ -111,4 +111,5 @@ void calibrateSimple();
 char diffWay(coordinate *way1,coordinate *way2);
 void deleteWay(coordinate *way);
 int sensor_calibrate(void);
+int wait_validation(unsigned long timeout);
 #endif /* RESOLUTION_MAZE_H_ */

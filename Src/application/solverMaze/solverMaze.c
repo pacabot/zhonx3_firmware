@@ -2,17 +2,20 @@
 #include <string.h>
 #include <math.h>
 
+#include "stm32f4xx_hal.h"
+#include "stm32f4xx.h"
 #include "config/basetypes.h"
-#include "middleware/settings/setting.h"
+/* peripherale inlcudes*/
 #include "peripherals/display/ssd1306.h"
 #include "peripherals/expander/pcf8574.h"
+#include "peripherals/motors/motors.h"
+#include "peripherals/lineSensors/lineSensors.h"
+/* meddleware include */
+#include "middleware/settings/settings.h"
 #include "middleware/wall_sensors/wall_sensors.h"
 #include "middleware/controls/motionControl/mainControl.h"
-#include "peripherals/motors/motors.h"
-
+/*application include */
 #include "application/solverMaze/solverMaze.h"
-
-#include "stm32f4xx.h"
 
 extern int maze(void)
 {
@@ -1129,7 +1132,6 @@ int sensor_calibrate(void)
     int 			i=0;
     unsigned long	arrival_color = 30000;
     unsigned long	area_color = 500000;
-    char            str[100];
 
 	lineSensorsInit();
 	lineSensorsStart();
@@ -1141,40 +1143,40 @@ int sensor_calibrate(void)
         ssd1306Refresh();
 
         arrival_color = lineSensors.front.adc_value;
-        ssd1306Printf(10, 18,  "Color sens: %i", arrival_color);
+        ssd1306Printf(10, 18,&Font_5x8,  "Color sens: %i", arrival_color);
 
         ssd1306Refresh();
 
         rv = wait_validation(500);
-        if (rv == 0)
+        if (rv == JOY_RIGHT)
         {
             // Value validated
         	for (i=0; i<100;i++)
         	{
         		arrival_color+=lineSensors.front.adc_value;
-        		hal_os_sleep(50);
+        		HAL_Delay(50);
         	}
         	arrival_color/=i;
         	ssd1306ClearScreen();
             ssd1306Printf(2, 9,&Font_5x8, "Value %i validated", arrival_color);
             ssd1306Refresh();
-            hal_os_sleep(1000);
+            HAL_Delay(1000);
             break;
         }
-        else if (rv == -2)
+        else if (rv == JOY_LEFT)
         {
             // User aborted
         	ssd1306ClearScreen();
         	ssd1306Printf(2, 9,&Font_5x8, "Calibration aborted");
         	ssd1306Refresh();
-            hal_os_sleep(1000);
+            HAL_Delay(1000);
             return 0;
         }
     }
 
     while (1)
     {
-        ssd1306clearScreen();
+        ssd1306ClearScreen();
         ssd1306Printf(0, 9,&Font_5x8, "Present area color");
         ssd1306Printf(0, 64 - 9,&Font_5x8,
                            "'RIGHT' TO VALIDATE");
@@ -1187,31 +1189,47 @@ int sensor_calibrate(void)
         ssd1306Refresh();
 
         rv = wait_validation(500);
-        if (rv == 0)
+        if (rv == JOY_RIGHT)
         {
             // Value validated
         	for (i=0; i<100;i++)
         	{
         		area_color+=lineSensors.front.adc_value;
-        		hal_os_sleep(50);
+        		HAL_Delay(50);
         	}
         	area_color/=i;
-            ssd1306clearScreen();
+            ssd1306ClearScreen();
             ssd1306Printf(2, 9, &Font_5x8,"Value %i validated", area_color);
             ssd1306Refresh();
-            hal_os_sleep(1000);
+            HAL_Delay(1000);
             break;
         }
     }
 
     zhonxSettings.threshold_color = (MAX(arrival_color, area_color) - \
                                       MIN(arrival_color, area_color)) / 2;
-    ssd1306clearScreen();
+    ssd1306ClearScreen();
     ssd1306Printf(1,1,&Font_5x8,"diff col : %d",zhonxSettings.threshold_color);
     ssd1306Refresh();
-    hal_os_sleep(2000);
+    HAL_Delay(2000);
     zhonxSettings.threshold_color += MIN(arrival_color, area_color);
     zhonxSettings.threshold_greater = (arrival_color > area_color);
 
     return 0;
+}
+int wait_validation(unsigned long timeout)
+{
+    timeout += HAL_GetTick();
+    do
+    {
+    	switch (expanderJoyFiltered()) {
+			case JOY_RIGHT:
+	            return JOY_RIGHT;
+				break;
+			case JOY_LEFT :
+				return JOY_LEFT;
+				break;
+		}
+    } while (timeout > HAL_GetTick());
+    return -1;
 }

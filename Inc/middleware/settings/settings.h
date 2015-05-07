@@ -21,8 +21,8 @@ typedef struct
 {
 	char calibration_enabled;
 	char color_sensor_enabled;
-	char x_finish_maze;
-	char y_finish_maze;
+	int x_finish_maze;
+	int y_finish_maze;
 	unsigned long threshold_color;
 	unsigned long threshold_greater;
 }settings;

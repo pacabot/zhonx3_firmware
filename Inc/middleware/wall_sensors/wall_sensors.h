@@ -25,8 +25,17 @@
 #define DISTANCE_WALL_FRONT	CELL_LENGTH
 #define DISTANCE_WALL_DIAG	(CELL_LENGTH*3)/4
 
+
+typedef struct
+{
+	float distance_front_left;
+	float distance_front_right;
+	float distance_diag_left;
+	float distance_diag_right;
+}telemetersDistancesTypeDef;
+
 int wallSensorsCalibration();
-int getTelemetersDistance (float *distance_front_left, float *distance_front_right, float *distance_diag_left, float *distance_diag_right, int *precision);
+int getTelemetersDistance (telemetersDistancesTypeDef *telemeter_distances);
 walls getWallsPosition();
 void testWallsSensors();
 
