@@ -93,6 +93,16 @@
 #define MM_PER_WHEEL_REV		((M_PI) * (WHEEL_DIAMETER))		//Number of millimeters per wheel revolution
 #define STEPS_PER_MM			((STEPS_PER_WHEEL_REV) / (MM_PER_WHEEL_REV))	//Number of steps per millimeter
 
+//#define DARK
+//#define MEDDLE
+
+#if defined MEDDLE && defined DARK
+#error you must define only one robot
+#endif
+#if (!defined MEDDLE) && (!defined DARK)
+#error  you must define one robot
+#endif
+
 /**************************************************************************************/
 /***************                   Maze Properties                 ********************/
 /********* you can see also Inc/application/solverMaze.h for more details *************/
