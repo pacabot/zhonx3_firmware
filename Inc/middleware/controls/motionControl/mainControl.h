@@ -20,6 +20,14 @@
 #define MAIN_CONTROL_E_ERROR    MAKE_ERROR(MAIN_CONTROL_MODULE_ID, 1)
 
 /* Types definitions */
+typedef struct
+{
+	char follow_state;
+	char position_state;
+	char speed_state;
+}control_params_struct;
+
+extern control_params_struct control_params;
 
 int mainControlInit(void);
 int mainControlLoop(void);

@@ -58,9 +58,9 @@ arm_pid_instance_f32 telemeters_pid_instance;
 
 int followControlInit(void)
 {
-	telemeters_pid_instance.Kp = 10;
+	telemeters_pid_instance.Kp = 1;
 	telemeters_pid_instance.Ki = 0;
-	telemeters_pid_instance.Kd = 0;
+	telemeters_pid_instance.Kd = 5;
 
 	follow_control.follow_pid.instance = &telemeters_pid_instance;
 
@@ -77,9 +77,9 @@ int followControlLoop(void)
 //	if (((telemeters.left_front.telemeter_values > 1000) && (telemeters.right_front.telemeter_values > 1000)) && (follow_params.active_state == 1))
 
 //	{
-	getTelemetersDistance(&distances);
-	follow_control.follow_error = distances.distance_front_left - distances.distance_front_right;
-	follow_control.follow_error = (telemeters.right_front.average_value - telemeters.left_front.average_value);
+//	getTelemetersDistance(&distances);
+//	follow_control.follow_error = distances.distance_front_left - distances.distance_front_right;
+	follow_control.follow_error = ((double) telemeters.right_front.average_value - (double)telemeters.left_front.average_value);
 
 	//follow_control.follow_error = -lineFollower.position;
 //	{
@@ -88,7 +88,7 @@ int followControlLoop(void)
 		follow_params.sign = SIGN(follow_control.follow_error);
 		follow_control.follow_error = fabsf(follow_control.follow_error);
 
-		follow_control.follow_command = (pidController(follow_control.follow_pid.instance, follow_control.follow_error)) * (float)follow_params.sign;
+		follow_control.follow_command = (pidController(follow_control.follow_pid.instance, follow_control.follow_error)) * (double)follow_params.sign;
 //	}
 //	else
 //	{

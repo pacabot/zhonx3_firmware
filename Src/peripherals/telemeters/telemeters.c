@@ -145,27 +145,31 @@ void telemeters_IT(void)
 		sConfig.Channel = RX_LEFT_DIAG;
 		break;
 	case 9:
-		HAL_GPIO_WritePin(GPIOB, TX_DUAL_DIAG, SET);
 		return;
 	case 10:
-		telemeters.right_diag.sensor_state = 1;
-		sConfig.Channel = RX_RIGHT_DIAG;
-		break;
+		HAL_GPIO_WritePin(GPIOB, TX_DUAL_DIAG, SET);
+		return;
 	case 11:
 		return;
 	case 12:
+		telemeters.right_diag.sensor_state = 1;
+		sConfig.Channel = RX_RIGHT_DIAG;
+		break;
+	case 13:
+		return;
+	case 14:
 		telemeters.ref_right_front.sensor_state = 1;
 		sConfig.Channel = RX_RIGHT_FRONT;
 		break;
-	case 13:
+	case 15:
 		telemeters.ref_left_front.sensor_state = 1;
 		sConfig.Channel = RX_LEFT_FRONT;
 		break;
-	case 14:
+	case 16:
 		telemeters.ref_left_diag.sensor_state = 1;
 		sConfig.Channel = RX_LEFT_DIAG;
 		break;
-	case 15:
+	case 17:
 		telemeters.ref_right_diag.sensor_state = 1;
 		sConfig.Channel = RX_RIGHT_DIAG;
 		break;
@@ -185,7 +189,7 @@ void telemeters_IT(void)
 	sConfig.SamplingTime = ADC_SAMPLETIME_28CYCLES;
 	HAL_ADC_ConfigChannel(&hadc2, &sConfig);
 	HAL_ADC_Start_IT(&hadc2);
-	if (telemeters.selector > 14)
+	if (telemeters.selector > 160)
 		telemeters.selector = 0;
 	telemeters.it_cnt++;
 }
