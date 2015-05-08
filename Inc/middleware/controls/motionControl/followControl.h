@@ -30,7 +30,7 @@
 
 #define DIAG_DIST_FOR_FOLLOW 86.00
 
-enum follow_type_enum {ALIGN_FRONT, FOLLOW_WALL};
+enum follow_type_enum {ALIGN_FRONT, FOLLOW_WALL, FOLLOW_LINE};
 
 typedef struct
 {
