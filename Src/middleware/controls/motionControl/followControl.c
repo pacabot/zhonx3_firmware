@@ -114,21 +114,7 @@ int followControlLoop(void)
 	}
 	if (follow_control.follow_type == FOLLOW_LINE)
 	{
-		walls wall_saw;
-		wall_saw = getCellState();
-		getTelemetersDistance(&distances);
-		if (wall_saw.left == WALL_PRESENCE && wall_saw.right == WALL_PRESENCE)
-		{
-			bothWallFollow(&distances);
-		}
-		else if (wall_saw.left == WALL_PRESENCE)
-		{
-			leftWallFollow(&distances);
-		}
-		else if (wall_saw.right == WALL_PRESENCE)
-		{
-			rightWallFollow(&distances);
-		}
+		follow_control.follow_error = lineFollower.position;
 	}
 
 	follow_control.follow_command = (pidController(follow_control.follow_pid.instance, follow_control.follow_error));
