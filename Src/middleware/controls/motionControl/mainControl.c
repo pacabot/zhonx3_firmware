@@ -33,6 +33,7 @@
 #include "peripherals/bluetooth/bluetooth.h"
 
 /* Middleware declarations */
+#include "middleware/wall_sensors/wall_sensors.h"
 #include "middleware/controls/pidController/pidController.h"
 #include "middleware/controls/motionControl/positionControl.h"
 #include "middleware/controls/motionControl/speedControl.h"
