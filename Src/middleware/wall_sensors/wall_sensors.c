@@ -233,7 +233,7 @@ int getTelemetersDistance (telemetersDistancesTypeDef *telemeters_distances)
 	value_front_right = telemeters.right_front.average_value;
 	value_diag_left = telemeters.left_diag.average_value;
 	value_diag_right = telemeters.right_diag.average_value;
-	bluetoothPrintf("%d,\t%d",value_front_left, value_front_right);
+//	bluetoothPrintf("%d,\t%d",value_front_left, value_front_right);
 	if(value_front_left > old_voltage_front_left)
 	{
 		sens_front_left=-1;

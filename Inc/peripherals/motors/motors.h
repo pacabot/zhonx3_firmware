@@ -24,8 +24,8 @@ typedef struct
 
 #define MOTORS_TIMER		htim8
 
-#define DECAY_SLOW			1
-#define DECAY_FAST			0
+#define DECAY_SLOW			0
+#define DECAY_FAST			1
 
 #define MOTORS_STANDBY 	GPIO_PIN_11
 

@@ -16,7 +16,7 @@
 /**************************************************************************************/
 #define LOW_TIME_FREQ			100
 #define HI_TIME_FREQ			1000.0 //use for pids inner loop
-#define TELEMETERS_TIME_FREQ	16000  	//each telemeter use 1/15 of TELEMETERS_TIME_FREQ
+#define TELEMETERS_TIME_FREQ	9000  	//each telemeter use 1/9 of TELEMETERS_TIME_FREQ
 #define GYRO_TIME_FREQ			1000
 #define LINESENSORS_TIME_FREQ	GYRO_TIME_FREQ //same timer
 #define MULTIMMETER_TIME_FREQ	0.1f
@@ -94,7 +94,7 @@
 #define STEPS_PER_MM			((STEPS_PER_WHEEL_REV) / (MM_PER_WHEEL_REV))	//Number of steps per millimeter
 
 //#define DARK
-//#define MEDDLE
+#define MEDDLE
 
 #if defined MEDDLE && defined DARK
 #error you must define only one robot

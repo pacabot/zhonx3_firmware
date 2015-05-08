@@ -27,7 +27,7 @@
 #define RX_RIGHT_DIAG				ADC_CHANNEL_10
 #define RX_RIGHT_FRONT				ADC_CHANNEL_11
 
-#define SIZE_OF_AVEVAGE_TABLE 3
+#define SIZE_OF_AVEVAGE_TABLE 10
 
 /* Types definitions */
 typedef struct
@@ -69,7 +69,10 @@ void telemetersStop(void);
 void telemetersCalibrate(void);
 void telemeters_IT(void);
 void telemeters_DMA_IT(void);
-void telemeters_ADC_IT(void);
+void telemetersAdc2Start(void);
+void telemetersAdc3Start(void);
+void telemeters_ADC2_IT(void);
+void telemeters_ADC3_IT(void);
 void telemetersTest(void);
 
 #endif

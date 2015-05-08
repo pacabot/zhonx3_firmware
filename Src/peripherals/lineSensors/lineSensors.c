@@ -34,6 +34,9 @@
 extern ADC_HandleTypeDef hadc2;
 extern ADC_HandleTypeDef hadc3;
 
+extern ADC_ChannelConfTypeDef sConfig;
+ADC_InjectionConfTypeDef sConfigInjected;
+
 //__IO uint16_t ADC1ConvertedValues[2] = {0};
 //__IO uint16_t ADC3ConvertedValues[3] = {0};
 
@@ -55,9 +58,6 @@ GPIO_InitTypeDef GPIO_InitStruct;
 /**************************************************************************/
 void lineSensorsInit(void)
 {
-//	ADC_ChannelConfTypeDef sConfig;
-	ADC_InjectionConfTypeDef sConfigInjected;
-
 	/**Configures for the selected ADC injected channel its corresponding rank in the sequencer and its sample time
 	 */
 	sConfigInjected.InjectedChannel = RX_LEFT;
@@ -132,15 +132,17 @@ void lineSensorsInit(void)
 
 void lineSensorsStart(void)
 {
-	lineSensors.active_state 	= TRUE;
+	lineSensors.active_state = TRUE;
 	HAL_ADCEx_InjectedStart_IT(&hadc2);
 	HAL_ADCEx_InjectedStart_IT(&hadc3);
 }
 
 void lineSensorsStop(void)
 {
-	lineSensors.active_state 	= FALSE;
+	lineSensors.active_state = FALSE;
 	HAL_GPIO_WritePin(GPIOA, TX_LINESENSORS, RESET);
+	HAL_ADCEx_InjectedStop_IT(&hadc2);
+	HAL_ADCEx_InjectedStop_IT(&hadc3);
 }
 
 void lineSensorsCalibrate(void)
@@ -210,6 +212,6 @@ void lineSensorsTest(void)
 		ssd1306PrintInt(10, 45, "RIGHT_EXT =  ", (uint16_t) lineSensors.right_ext.adc_value, &Font_5x8);
 		ssd1306Refresh();
 	}
-
+	lineSensorsStop();
 }
 

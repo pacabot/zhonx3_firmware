@@ -1,7 +1,7 @@
 /**
   ******************************************************************************
   * File Name          : ADC.c
-  * Date               : 20/02/2015 22:25:09
+  * Date               : 08/05/2015 12:17:10
   * Description        : This file provides code for the configuration
   *                      of the ADC instances.
   ******************************************************************************
@@ -173,8 +173,8 @@ void MX_ADC3_Init(void)
 
     /**Configures for the selected ADC injected channel its corresponding rank in the sequencer and its sample time 
     */
-  sConfigInjected.InjectedChannel = ADC_CHANNEL_3;
-  sConfigInjected.InjectedRank = 1;
+  sConfigInjected.InjectedChannel = ADC_CHANNEL_1;
+  sConfigInjected.InjectedRank = 2;
   sConfigInjected.InjectedNbrOfConversion = 0;
   sConfigInjected.InjectedSamplingTime = ADC_SAMPLETIME_15CYCLES;
   sConfigInjected.AutoInjectedConv = DISABLE;
@@ -184,13 +184,13 @@ void MX_ADC3_Init(void)
 
     /**Configures for the selected ADC injected channel its corresponding rank in the sequencer and its sample time 
     */
-  sConfigInjected.InjectedChannel = ADC_CHANNEL_1;
-  sConfigInjected.InjectedRank = 2;
+  sConfigInjected.InjectedChannel = ADC_CHANNEL_3;
+  sConfigInjected.InjectedRank = 1;
   HAL_ADCEx_InjectedConfigChannel(&hadc3, &sConfigInjected);
 
     /**Configures for the selected ADC injected channel its corresponding rank in the sequencer and its sample time 
     */
-  sConfigInjected.InjectedChannel = ADC_CHANNEL_12;
+  sConfigInjected.InjectedChannel = ADC_CHANNEL_10;
   sConfigInjected.InjectedRank = 3;
   HAL_ADCEx_InjectedConfigChannel(&hadc3, &sConfigInjected);
 
@@ -203,14 +203,16 @@ void MX_ADC3_Init(void)
 
     /**Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time. 
     */
-  sConfig.Channel = ADC_CHANNEL_12;
+  sConfig.Channel = ADC_CHANNEL_10;
   sConfig.Rank = 3;
+  sConfig.SamplingTime = ADC_SAMPLETIME_28CYCLES;
   HAL_ADC_ConfigChannel(&hadc3, &sConfig);
 
     /**Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time. 
     */
   sConfig.Channel = ADC_CHANNEL_1;
   sConfig.Rank = 2;
+  sConfig.SamplingTime = ADC_SAMPLETIME_15CYCLES;
   HAL_ADC_ConfigChannel(&hadc3, &sConfig);
 
 }
@@ -307,11 +309,12 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef* hadc)
     __ADC3_CLK_ENABLE();
   
     /**ADC3 GPIO Configuration    
+    PC0     ------> ADC3_IN10
     PC2     ------> ADC3_IN12
     PA1     ------> ADC3_IN1
     PA3     ------> ADC3_IN3 
     */
-    GPIO_InitStruct.Pin = GPIO_PIN_2;
+    GPIO_InitStruct.Pin = GPIO_PIN_0|GPIO_PIN_2;
     GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
@@ -408,11 +411,12 @@ void HAL_ADC_MspDeInit(ADC_HandleTypeDef* hadc)
     __ADC3_CLK_DISABLE();
   
     /**ADC3 GPIO Configuration    
+    PC0     ------> ADC3_IN10
     PC2     ------> ADC3_IN12
     PA1     ------> ADC3_IN1
     PA3     ------> ADC3_IN3 
     */
-    HAL_GPIO_DeInit(GPIOC, GPIO_PIN_2);
+    HAL_GPIO_DeInit(GPIOC, GPIO_PIN_0|GPIO_PIN_2);
 
     HAL_GPIO_DeInit(GPIOA, GPIO_PIN_1|GPIO_PIN_3);
 

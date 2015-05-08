@@ -56,7 +56,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 	  if (htim == &htim5)
 	  {
 		  if (lineSensors.active_state == TRUE)
-			  lineSensors_IT();
+		  lineSensors_IT();
 	  }
 	  if (htim == &htim7)
 	  {
@@ -109,6 +109,10 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
 {
 	if (hadc == &hadc2)
 	{
-		telemeters_ADC_IT();
+		telemeters_ADC2_IT();
+	}
+	if (hadc == &hadc3)
+	{
+		telemeters_ADC3_IT();
 	}
 }
