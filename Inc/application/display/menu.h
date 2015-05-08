@@ -31,9 +31,9 @@ typedef struct
 		lineItem line[MAX_LINE_IN_MENU];
 }menuItem;
 
-int menu(menuItem);
+int menu(const menuItem);
 void menuHighlightedMove(unsigned char y, unsigned char max_y);
-void displayMenu(menuItem menu,int first_line);
+void displayMenu(const menuItem menu,int first_line);
 int modifyBoolParam( char *param_name, unsigned char *param);
 int modifyLongParam( char *param_name,long *param);
 void graphMotorSettings (float *acceleration, float *maxSpeed, float *deceleration);

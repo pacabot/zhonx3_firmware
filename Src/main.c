@@ -44,7 +44,7 @@
 #include "gpio.h"
 
 /* USER CODE BEGIN Includes */
-
+#include "middleware/settings/settings.h"
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
@@ -109,6 +109,7 @@ int main(void)
 	ssd1306Init(0);
 	timesBaseInit();
 	ledPowerBlink(990, 10, 0);
+	settingsInit();
 
 	LineTest();
 	while (1)

@@ -31,8 +31,8 @@
 #define WALL_KNOW 1
 #define NO_WALL 2
 
-#define SPEED_ROTATION		500
-#define SPEED_TRANSLATION	1000
+#define SPEED_ROTATION		50
+#define SPEED_TRANSLATION	50
 
 #include <stdlib.h>
 
