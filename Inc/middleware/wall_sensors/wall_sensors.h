@@ -26,7 +26,6 @@
 #define DISTANCE_SEGOND_WALL_FRONT	CELL_LENGTH+CELL_LENGTH/2
 #define DISTANCE_WALL_DIAG			(CELL_LENGTH*3)/4
 
-
 typedef struct
 {
 	float distance_front_left;
@@ -37,7 +36,7 @@ typedef struct
 
 int wallSensorsCalibration();
 int getTelemetersDistance (telemetersDistancesTypeDef *telemeter_distances);
-walls getWallsPosition();
+walls getCellState();
 void testWallsSensors();
 
 #endif /* WALL_SENSORS_H_ */

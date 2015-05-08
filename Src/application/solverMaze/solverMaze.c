@@ -80,7 +80,7 @@ void exploration(labyrinthe *maze, positionRobot* positionZhonx,char xFinish, ch
 {
 	coordinate way={0,0,0};
 	motorsSleepDriver(OFF); // TODO : modify if it's necessary
-	walls new_walls=getWallsPosition();
+	walls new_walls=getCellState();
 	new_cell(new_walls,maze,*positionZhonx);
 
 	while(positionZhonx->x!=xFinish || positionZhonx->y!=yFinish)
@@ -265,7 +265,7 @@ void moveRealZhonx(labyrinthe *maze, positionRobot *positionZhonx, coordinate *w
 			free(oldDote);
 		}
 		move_zhonx(orientaionToGo,&positionZhonx->orientation,length);
-		new_cell(getWallsPosition(),maze,*positionZhonx);
+		new_cell(getCellState(),maze,*positionZhonx);
 		//		if (zhonxSettings.color_sensor_enabled==true) //TODO : implement colors sensor for Nîmes competition
 		//		{
 		//			if ((zhonxSettings.threshold_greater==false && hal_sensor_get_color(app_context.sensors) < zhonxSettings.threshold_color)
@@ -366,7 +366,7 @@ void moveRealZhonxArc(labyrinthe *maze, positionRobot *positionZhonx, coordinate
 			endMidCase=true;
 		move_zhonx_arc(orientaionToGo,positionZhonx,length,endMidCase);
 		if(positionZhonx->midOfCase==true)
-			new_cell(getWallsPosition(),maze,*positionZhonx);
+			new_cell(getCellState(),maze,*positionZhonx);
 	}
 }
 
@@ -431,7 +431,7 @@ void testMoveRealZhonx(labyrinthe *maze, positionRobot *positionZhonx, coordinat
 		else
 			endMidCase=true;
 		move_zhonx_arc(orientaionToGo,positionZhonx,length,endMidCase);
-		new_cell(getWallsPosition(),maze,*positionZhonx);
+		new_cell(getCellState(),maze,*positionZhonx);
 		//		if (zhonxSettings.color_sensor_enabled==true)
 		//		{
 		//			if ((zhonxSettings.threshold_greater==false && hal_sensor_get_color(app_context.sensors) < zhonxSettings.threshold_color)
@@ -620,22 +620,22 @@ void poids(labyrinthe *maze, int xFinish, int yfinish, char wallNoKnow)
 			pt=dotes_to_verifie->previous;
 			free(dotes_to_verifie);
 			dotes_to_verifie=pt;
-			if((maze->cell[x][y].wall_north==NO_WALL || (wallNoKnow == true && maze->cell[x][y].wall_north == NO_KNOW)) && maze->cell[x][y-1].length>length-1 && y>0)
+			if((maze->cell[x][y].wall_north==NO_WALL || (wallNoKnow == true && maze->cell[x][y].wall_north == NO_KNOWN)) && maze->cell[x][y-1].length>length-1 && y>0)
 			{
 				new_dot(&new_dotes_to_verifie,x,y-1);
 				maze->cell[x][y-1].length=length;
 			}
-			if((maze->cell[x][y].wall_east==NO_WALL || (wallNoKnow == true && maze->cell[x][y].wall_east == NO_KNOW)) && maze->cell[x+1][y].length>length && x+1<MAZE_SIZE)
+			if((maze->cell[x][y].wall_east==NO_WALL || (wallNoKnow == true && maze->cell[x][y].wall_east == NO_KNOWN)) && maze->cell[x+1][y].length>length && x+1<MAZE_SIZE)
 			{
 				new_dot(&new_dotes_to_verifie,x+1,y);
 				maze->cell[x+1][y].length=length;
 			}
-			if((maze->cell[x][y].wall_south==NO_WALL || (wallNoKnow == true && maze->cell[x][y].wall_south == NO_KNOW)) && maze->cell[x][y+1].length>length && y+1<MAZE_SIZE)
+			if((maze->cell[x][y].wall_south==NO_WALL || (wallNoKnow == true && maze->cell[x][y].wall_south == NO_KNOWN)) && maze->cell[x][y+1].length>length && y+1<MAZE_SIZE)
 			{
 				new_dot(&new_dotes_to_verifie,x,y+1);
 				maze->cell[x][y+1].length=length;
 			}
-			if((maze->cell[x][y].wall_west==NO_WALL || (wallNoKnow == true && maze->cell[x][y].wall_west == NO_KNOW)) && maze->cell[x-1][y].length>length && x>0)
+			if((maze->cell[x][y].wall_west==NO_WALL || (wallNoKnow == true && maze->cell[x][y].wall_west == NO_KNOWN)) && maze->cell[x-1][y].length>length && x>0)
 			{
 				new_dot(&new_dotes_to_verifie,x-1,y);
 				maze->cell[x-1][y].length=length;
@@ -673,277 +673,277 @@ void maze_init (labyrinthe *maze)
 	{
 		for(int y=0; y<MAZE_SIZE; y++)
 		{
-			maze->cell[i][y].wall_north=NO_KNOW;
-			maze->cell[i][y].wall_west=NO_KNOW;
-			maze->cell[i][y].wall_south=NO_KNOW;
-			maze->cell[i][y].wall_east=NO_KNOW;
+			maze->cell[i][y].wall_north=NO_KNOWN;
+			maze->cell[i][y].wall_west=NO_KNOWN;
+			maze->cell[i][y].wall_south=NO_KNOWN;
+			maze->cell[i][y].wall_east=NO_KNOWN;
 			maze->cell[i][y].length=2000;
 		}
 	}
 	for(int i=0; i<16; i++)
 	{
-		maze->cell[i][0].wall_north=WALL_KNOW;
-		maze->cell[i][MAZE_SIZE-1].wall_south=WALL_KNOW;
-		maze->cell[0][i].wall_west=WALL_KNOW;
-		maze->cell[MAZE_SIZE-1][i].wall_east=WALL_KNOW;
+		maze->cell[i][0].wall_north=WALL_PRESENCE;
+		maze->cell[i][MAZE_SIZE-1].wall_south=WALL_PRESENCE;
+		maze->cell[0][i].wall_west=WALL_PRESENCE;
+		maze->cell[MAZE_SIZE-1][i].wall_east=WALL_PRESENCE;
 	}
 #else
-	labyrinthe maze_initial= {{{{NO_KNOW,NO_WALL,NO_WALL,NO_KNOW,2000},\
-								{NO_WALL,NO_WALL,NO_WALL,NO_KNOW,2000},\
-								{NO_WALL,NO_WALL,NO_WALL,NO_KNOW,2000},\
-								{NO_WALL,NO_WALL,NO_WALL,NO_KNOW,2000},\
-								{NO_WALL,NO_WALL,NO_WALL,NO_KNOW,2000},\
-								{NO_WALL,NO_WALL,NO_WALL,NO_KNOW,2000},\
-								{NO_WALL,NO_WALL,NO_WALL,NO_KNOW,2000},\
-								{NO_WALL,NO_WALL,NO_WALL,NO_KNOW,2000},\
-								{NO_WALL,NO_WALL,NO_WALL,NO_KNOW,2000},\
-								{NO_WALL,NO_WALL,NO_WALL,NO_KNOW,2000},\
-								{NO_WALL,NO_WALL,NO_WALL,NO_KNOW,2000},\
-								{NO_WALL,NO_WALL,NO_WALL,NO_KNOW,2000},\
-								{NO_WALL,NO_WALL,NO_KNOW,NO_KNOW,2000},\
-								{NO_WALL,NO_WALL,NO_WALL,NO_KNOW,2000},\
-								{NO_WALL,NO_WALL,NO_WALL,NO_KNOW,2000},\
-								{NO_WALL,NO_KNOW,NO_KNOW,NO_KNOW,2000}},\
-							{{NO_KNOW,NO_KNOW,NO_WALL,NO_WALL,2000},\
-								{NO_KNOW,NO_KNOW,NO_WALL,NO_WALL,2000},\
-								{NO_KNOW,NO_KNOW,NO_KNOW,NO_WALL,2000},\
-								{NO_KNOW,NO_KNOW,NO_KNOW,NO_WALL,2000},\
-								{NO_KNOW,NO_KNOW,NO_KNOW,NO_WALL,2000},\
-								{NO_KNOW,NO_KNOW,NO_KNOW,NO_WALL,2000},\
-								{NO_KNOW,NO_KNOW,NO_KNOW,NO_WALL,2000},\
-								{NO_KNOW,NO_KNOW,NO_WALL,NO_WALL,2000},\
-								{NO_KNOW,NO_KNOW,NO_KNOW,NO_WALL,2000},\
-								{NO_KNOW,NO_KNOW,NO_KNOW,NO_WALL,2000},\
-								{NO_KNOW,NO_KNOW,NO_KNOW,NO_WALL,2000},\
-								{NO_KNOW,NO_KNOW,NO_KNOW,NO_WALL,2000},\
-								{NO_KNOW,NO_WALL,NO_WALL,NO_KNOW,2000},\
-								{NO_WALL,NO_KNOW,NO_KNOW,NO_WALL,2000},\
-								{NO_KNOW,NO_WALL,NO_KNOW,NO_WALL,2000},\
-								{NO_WALL,NO_KNOW,NO_WALL,NO_KNOW,2000}},\
-							{{NO_KNOW,NO_KNOW,NO_WALL,NO_WALL,2000},\
-								{NO_KNOW,NO_KNOW,NO_WALL,NO_WALL,2000},\
-								{NO_KNOW,NO_WALL,NO_WALL,NO_KNOW,2000},\
-								{NO_WALL,NO_WALL,NO_WALL,NO_KNOW,2000},\
-								{NO_WALL,NO_KNOW,NO_WALL,NO_KNOW,2000},\
-								{NO_KNOW,NO_WALL,NO_WALL,NO_KNOW,2000},\
-								{NO_WALL,NO_KNOW,NO_KNOW,NO_KNOW,2000},\
-								{NO_KNOW,NO_WALL,NO_WALL,NO_WALL,2000},\
-								{NO_WALL,NO_WALL,NO_KNOW,NO_KNOW,2000},\
-								{NO_WALL,NO_KNOW,NO_WALL,NO_KNOW,2000},\
-								{NO_KNOW,NO_WALL,NO_WALL,NO_KNOW,2000},\
-								{NO_WALL,NO_KNOW,NO_WALL,NO_KNOW,2000},\
-								{NO_KNOW,NO_WALL,NO_KNOW,NO_WALL,2000},\
-								{NO_WALL,NO_WALL,NO_WALL,NO_KNOW,2000},\
-								{NO_WALL,NO_KNOW,NO_WALL,NO_KNOW,2000},\
-								{NO_KNOW,NO_KNOW,NO_KNOW,NO_WALL,2000}},\
-							{{NO_KNOW,NO_KNOW,NO_WALL,NO_WALL,2000},\
-								{NO_KNOW,NO_KNOW,NO_WALL,NO_WALL,2000},\
-								{NO_KNOW,NO_KNOW,NO_WALL,NO_WALL,2000},\
-								{NO_KNOW,NO_KNOW,NO_KNOW,NO_WALL,2000},\
-								{NO_KNOW,NO_KNOW,NO_KNOW,NO_WALL,2000},\
-								{NO_KNOW,NO_WALL,NO_KNOW,NO_WALL,2000},\
-								{NO_WALL,NO_KNOW,NO_WALL,NO_KNOW,2000},\
-								{NO_KNOW,NO_KNOW,NO_WALL,NO_WALL,2000},\
-								{NO_KNOW,NO_WALL,NO_WALL,NO_KNOW,2000},\
-								{NO_WALL,NO_KNOW,NO_KNOW,NO_WALL,2000},\
-								{NO_KNOW,NO_KNOW,NO_WALL,NO_WALL,2000},\
-								{NO_KNOW,NO_KNOW,NO_WALL,NO_WALL,2000},\
-								{NO_KNOW,NO_WALL,NO_WALL,NO_KNOW,2000},\
-								{NO_WALL,NO_KNOW,NO_KNOW,NO_WALL,2000},\
-								{NO_KNOW,NO_KNOW,NO_KNOW,NO_WALL,2000},\
-								{NO_KNOW,NO_KNOW,NO_WALL,NO_KNOW,2000}},\
-							{{NO_KNOW,NO_KNOW,NO_WALL,NO_WALL,2000},\
-								{NO_KNOW,NO_WALL,NO_WALL,NO_WALL,2000},\
-								{NO_WALL,NO_KNOW,NO_KNOW,NO_WALL,2000},\
-								{NO_KNOW,NO_WALL,NO_WALL,NO_KNOW,2000},\
-								{NO_WALL,NO_KNOW,NO_WALL,NO_KNOW,2000},\
-								{NO_KNOW,NO_WALL,NO_WALL,NO_KNOW,2000},\
-								{NO_WALL,NO_KNOW,NO_WALL,NO_WALL,2000},\
-								{NO_KNOW,NO_KNOW,NO_WALL,NO_WALL,2000},\
-								{NO_KNOW,NO_WALL,NO_KNOW,NO_WALL,2000},\
-								{NO_WALL,NO_WALL,NO_KNOW,NO_KNOW,2000},\
-								{NO_WALL,NO_KNOW,NO_KNOW,NO_WALL,2000},\
-								{NO_KNOW,NO_KNOW,NO_WALL,NO_WALL,2000},\
-								{NO_KNOW,NO_WALL,NO_KNOW,NO_WALL,2000},\
-								{NO_WALL,NO_KNOW,NO_WALL,NO_KNOW,2000},\
-								{NO_KNOW,NO_WALL,NO_WALL,NO_KNOW,2000},\
-								{NO_WALL,NO_KNOW,NO_WALL,NO_WALL,2000}},\
-							{{NO_KNOW,NO_KNOW,NO_WALL,NO_WALL,2000},\
-								{NO_KNOW,NO_WALL,NO_KNOW,NO_WALL,2000},\
-								{NO_WALL,NO_KNOW,NO_WALL,NO_KNOW,2000},\
-								{NO_KNOW,NO_KNOW,NO_WALL,NO_WALL,2000},\
-								{NO_KNOW,NO_WALL,NO_KNOW,NO_WALL,2000},\
-								{NO_WALL,NO_KNOW,NO_KNOW,NO_WALL,2000},\
-								{NO_KNOW,NO_KNOW,NO_WALL,NO_WALL,2000},\
-								{NO_KNOW,NO_KNOW,NO_WALL,NO_WALL,2000},\
-								{NO_KNOW,NO_WALL,NO_WALL,NO_KNOW,2000},\
-								{NO_WALL,NO_WALL,NO_KNOW,NO_KNOW,2000},\
-								{NO_WALL,NO_KNOW,NO_WALL,NO_KNOW,2000},\
-								{NO_KNOW,NO_KNOW,NO_KNOW,NO_WALL,2000},\
-								{NO_KNOW,NO_WALL,NO_WALL,NO_KNOW,2000},\
-								{NO_WALL,NO_KNOW,NO_KNOW,NO_WALL,2000},\
-								{NO_KNOW,NO_KNOW,NO_WALL,NO_WALL,2000},\
-								{NO_KNOW,NO_KNOW,NO_WALL,NO_WALL,2000}},\
-							{{NO_KNOW,NO_KNOW,NO_WALL,NO_WALL,2000},\
-								{NO_KNOW,NO_WALL,NO_KNOW,NO_KNOW,2000},\
-								{NO_WALL,NO_KNOW,NO_WALL,NO_WALL,2000},\
-								{NO_KNOW,NO_WALL,NO_KNOW,NO_WALL,2000},\
-								{NO_WALL,NO_KNOW,NO_WALL,NO_KNOW,2000},\
-								{NO_KNOW,NO_WALL,NO_WALL,NO_KNOW,2000},\
-								{NO_WALL,NO_WALL,NO_KNOW,NO_WALL,2000},\
-								{NO_WALL,NO_KNOW,NO_KNOW,NO_WALL,2000},\
-								{NO_KNOW,NO_WALL,NO_KNOW,NO_WALL,2000},\
-								{NO_WALL,NO_KNOW,NO_WALL,NO_KNOW,2000},\
-								{NO_KNOW,NO_WALL,NO_KNOW,NO_WALL,2000},\
-								{NO_WALL,NO_KNOW,NO_WALL,NO_KNOW,2000},\
-								{NO_KNOW,NO_WALL,NO_KNOW,NO_WALL,2000},\
-								{NO_WALL,NO_KNOW,NO_WALL,NO_KNOW,2000},\
-								{NO_KNOW,NO_KNOW,NO_WALL,NO_WALL,2000},\
-								{NO_KNOW,NO_KNOW,NO_WALL,NO_WALL,2000}},\
-							{{NO_KNOW,NO_KNOW,NO_WALL,NO_WALL,2000},\
-								{NO_KNOW,NO_WALL,NO_WALL,NO_KNOW,2000},\
-								{NO_WALL,NO_KNOW,NO_KNOW,NO_WALL,2000},\
-								{NO_KNOW,NO_WALL,NO_KNOW,NO_KNOW,2000},\
-								{NO_WALL,NO_KNOW,NO_WALL,NO_WALL,2000},\
-								{NO_KNOW,NO_WALL,NO_KNOW,NO_WALL,2000},\
-								{NO_WALL,NO_KNOW,NO_WALL,NO_KNOW,2000},\
-								{NO_KNOW,NO_WALL,NO_WALL,NO_KNOW,2000},\
-								{NO_WALL,NO_KNOW,NO_WALL,NO_KNOW,2000},\
-								{NO_KNOW,NO_WALL,NO_KNOW,NO_WALL,2000},\
-								{NO_WALL,NO_KNOW,NO_WALL,NO_KNOW,2000},\
-								{NO_KNOW,NO_WALL,NO_KNOW,NO_WALL,2000},\
-								{NO_WALL,NO_KNOW,NO_WALL,NO_KNOW,2000},\
-								{NO_KNOW,NO_WALL,NO_KNOW,NO_WALL,2000},\
-								{NO_WALL,NO_KNOW,NO_KNOW,NO_WALL,2000},\
-								{NO_KNOW,NO_KNOW,NO_WALL,NO_WALL,2000}},\
-							{{NO_KNOW,NO_KNOW,NO_WALL,NO_WALL,2000},\
-								{NO_KNOW,NO_KNOW,NO_WALL,NO_WALL,2000},\
-								{NO_KNOW,NO_KNOW,NO_WALL,NO_KNOW,2000},\
-								{NO_KNOW,NO_WALL,NO_WALL,NO_KNOW,2000},\
-								{NO_WALL,NO_KNOW,NO_KNOW,NO_WALL,2000},\
-								{NO_KNOW,NO_KNOW,NO_WALL,NO_KNOW,2000},\
-								{NO_KNOW,NO_KNOW,NO_WALL,NO_WALL,2000},\
-								{NO_KNOW,NO_WALL,NO_KNOW,NO_WALL,2000},\
-								{NO_WALL,NO_WALL,NO_KNOW,NO_WALL,2000},\
-								{NO_WALL,NO_KNOW,NO_WALL,NO_KNOW,2000},\
-								{NO_KNOW,NO_WALL,NO_KNOW,NO_WALL,2000},\
-								{NO_WALL,NO_KNOW,NO_WALL,NO_KNOW,2000},\
-								{NO_KNOW,NO_WALL,NO_KNOW,NO_WALL,2000},\
-								{NO_WALL,NO_WALL,NO_WALL,NO_KNOW,2000},\
-								{NO_WALL,NO_KNOW,NO_KNOW,NO_KNOW,2000},\
-								{NO_KNOW,NO_KNOW,NO_WALL,NO_WALL,2000}},\
-							{{NO_KNOW,NO_KNOW,NO_WALL,NO_WALL,2000},\
-								{NO_KNOW,NO_KNOW,NO_WALL,NO_WALL,2000},\
-								{NO_KNOW,NO_WALL,NO_KNOW,NO_WALL,2000},\
-								{NO_WALL,NO_KNOW,NO_WALL,NO_WALL,2000},\
-								{NO_KNOW,NO_WALL,NO_WALL,NO_KNOW,2000},\
+	labyrinthe maze_initial= {{{{NO_KNOWN,NO_WALL,NO_WALL,NO_KNOWN,2000},\
+								{NO_WALL,NO_WALL,NO_WALL,NO_KNOWN,2000},\
+								{NO_WALL,NO_WALL,NO_WALL,NO_KNOWN,2000},\
+								{NO_WALL,NO_WALL,NO_WALL,NO_KNOWN,2000},\
+								{NO_WALL,NO_WALL,NO_WALL,NO_KNOWN,2000},\
+								{NO_WALL,NO_WALL,NO_WALL,NO_KNOWN,2000},\
+								{NO_WALL,NO_WALL,NO_WALL,NO_KNOWN,2000},\
+								{NO_WALL,NO_WALL,NO_WALL,NO_KNOWN,2000},\
+								{NO_WALL,NO_WALL,NO_WALL,NO_KNOWN,2000},\
+								{NO_WALL,NO_WALL,NO_WALL,NO_KNOWN,2000},\
+								{NO_WALL,NO_WALL,NO_WALL,NO_KNOWN,2000},\
+								{NO_WALL,NO_WALL,NO_WALL,NO_KNOWN,2000},\
+								{NO_WALL,NO_WALL,NO_KNOWN,NO_KNOWN,2000},\
+								{NO_WALL,NO_WALL,NO_WALL,NO_KNOWN,2000},\
+								{NO_WALL,NO_WALL,NO_WALL,NO_KNOWN,2000},\
+								{NO_WALL,NO_KNOWN,NO_KNOWN,NO_KNOWN,2000}},\
+							{{NO_KNOWN,NO_KNOWN,NO_WALL,NO_WALL,2000},\
+								{NO_KNOWN,NO_KNOWN,NO_WALL,NO_WALL,2000},\
+								{NO_KNOWN,NO_KNOWN,NO_KNOWN,NO_WALL,2000},\
+								{NO_KNOWN,NO_KNOWN,NO_KNOWN,NO_WALL,2000},\
+								{NO_KNOWN,NO_KNOWN,NO_KNOWN,NO_WALL,2000},\
+								{NO_KNOWN,NO_KNOWN,NO_KNOWN,NO_WALL,2000},\
+								{NO_KNOWN,NO_KNOWN,NO_KNOWN,NO_WALL,2000},\
+								{NO_KNOWN,NO_KNOWN,NO_WALL,NO_WALL,2000},\
+								{NO_KNOWN,NO_KNOWN,NO_KNOWN,NO_WALL,2000},\
+								{NO_KNOWN,NO_KNOWN,NO_KNOWN,NO_WALL,2000},\
+								{NO_KNOWN,NO_KNOWN,NO_KNOWN,NO_WALL,2000},\
+								{NO_KNOWN,NO_KNOWN,NO_KNOWN,NO_WALL,2000},\
+								{NO_KNOWN,NO_WALL,NO_WALL,NO_KNOWN,2000},\
+								{NO_WALL,NO_KNOWN,NO_KNOWN,NO_WALL,2000},\
+								{NO_KNOWN,NO_WALL,NO_KNOWN,NO_WALL,2000},\
+								{NO_WALL,NO_KNOWN,NO_WALL,NO_KNOWN,2000}},\
+							{{NO_KNOWN,NO_KNOWN,NO_WALL,NO_WALL,2000},\
+								{NO_KNOWN,NO_KNOWN,NO_WALL,NO_WALL,2000},\
+								{NO_KNOWN,NO_WALL,NO_WALL,NO_KNOWN,2000},\
+								{NO_WALL,NO_WALL,NO_WALL,NO_KNOWN,2000},\
+								{NO_WALL,NO_KNOWN,NO_WALL,NO_KNOWN,2000},\
+								{NO_KNOWN,NO_WALL,NO_WALL,NO_KNOWN,2000},\
+								{NO_WALL,NO_KNOWN,NO_KNOWN,NO_KNOWN,2000},\
+								{NO_KNOWN,NO_WALL,NO_WALL,NO_WALL,2000},\
+								{NO_WALL,NO_WALL,NO_KNOWN,NO_KNOWN,2000},\
+								{NO_WALL,NO_KNOWN,NO_WALL,NO_KNOWN,2000},\
+								{NO_KNOWN,NO_WALL,NO_WALL,NO_KNOWN,2000},\
+								{NO_WALL,NO_KNOWN,NO_WALL,NO_KNOWN,2000},\
+								{NO_KNOWN,NO_WALL,NO_KNOWN,NO_WALL,2000},\
+								{NO_WALL,NO_WALL,NO_WALL,NO_KNOWN,2000},\
+								{NO_WALL,NO_KNOWN,NO_WALL,NO_KNOWN,2000},\
+								{NO_KNOWN,NO_KNOWN,NO_KNOWN,NO_WALL,2000}},\
+							{{NO_KNOWN,NO_KNOWN,NO_WALL,NO_WALL,2000},\
+								{NO_KNOWN,NO_KNOWN,NO_WALL,NO_WALL,2000},\
+								{NO_KNOWN,NO_KNOWN,NO_WALL,NO_WALL,2000},\
+								{NO_KNOWN,NO_KNOWN,NO_KNOWN,NO_WALL,2000},\
+								{NO_KNOWN,NO_KNOWN,NO_KNOWN,NO_WALL,2000},\
+								{NO_KNOWN,NO_WALL,NO_KNOWN,NO_WALL,2000},\
+								{NO_WALL,NO_KNOWN,NO_WALL,NO_KNOWN,2000},\
+								{NO_KNOWN,NO_KNOWN,NO_WALL,NO_WALL,2000},\
+								{NO_KNOWN,NO_WALL,NO_WALL,NO_KNOWN,2000},\
+								{NO_WALL,NO_KNOWN,NO_KNOWN,NO_WALL,2000},\
+								{NO_KNOWN,NO_KNOWN,NO_WALL,NO_WALL,2000},\
+								{NO_KNOWN,NO_KNOWN,NO_WALL,NO_WALL,2000},\
+								{NO_KNOWN,NO_WALL,NO_WALL,NO_KNOWN,2000},\
+								{NO_WALL,NO_KNOWN,NO_KNOWN,NO_WALL,2000},\
+								{NO_KNOWN,NO_KNOWN,NO_KNOWN,NO_WALL,2000},\
+								{NO_KNOWN,NO_KNOWN,NO_WALL,NO_KNOWN,2000}},\
+							{{NO_KNOWN,NO_KNOWN,NO_WALL,NO_WALL,2000},\
+								{NO_KNOWN,NO_WALL,NO_WALL,NO_WALL,2000},\
+								{NO_WALL,NO_KNOWN,NO_KNOWN,NO_WALL,2000},\
+								{NO_KNOWN,NO_WALL,NO_WALL,NO_KNOWN,2000},\
+								{NO_WALL,NO_KNOWN,NO_WALL,NO_KNOWN,2000},\
+								{NO_KNOWN,NO_WALL,NO_WALL,NO_KNOWN,2000},\
+								{NO_WALL,NO_KNOWN,NO_WALL,NO_WALL,2000},\
+								{NO_KNOWN,NO_KNOWN,NO_WALL,NO_WALL,2000},\
+								{NO_KNOWN,NO_WALL,NO_KNOWN,NO_WALL,2000},\
+								{NO_WALL,NO_WALL,NO_KNOWN,NO_KNOWN,2000},\
+								{NO_WALL,NO_KNOWN,NO_KNOWN,NO_WALL,2000},\
+								{NO_KNOWN,NO_KNOWN,NO_WALL,NO_WALL,2000},\
+								{NO_KNOWN,NO_WALL,NO_KNOWN,NO_WALL,2000},\
+								{NO_WALL,NO_KNOWN,NO_WALL,NO_KNOWN,2000},\
+								{NO_KNOWN,NO_WALL,NO_WALL,NO_KNOWN,2000},\
+								{NO_WALL,NO_KNOWN,NO_WALL,NO_WALL,2000}},\
+							{{NO_KNOWN,NO_KNOWN,NO_WALL,NO_WALL,2000},\
+								{NO_KNOWN,NO_WALL,NO_KNOWN,NO_WALL,2000},\
+								{NO_WALL,NO_KNOWN,NO_WALL,NO_KNOWN,2000},\
+								{NO_KNOWN,NO_KNOWN,NO_WALL,NO_WALL,2000},\
+								{NO_KNOWN,NO_WALL,NO_KNOWN,NO_WALL,2000},\
+								{NO_WALL,NO_KNOWN,NO_KNOWN,NO_WALL,2000},\
+								{NO_KNOWN,NO_KNOWN,NO_WALL,NO_WALL,2000},\
+								{NO_KNOWN,NO_KNOWN,NO_WALL,NO_WALL,2000},\
+								{NO_KNOWN,NO_WALL,NO_WALL,NO_KNOWN,2000},\
+								{NO_WALL,NO_WALL,NO_KNOWN,NO_KNOWN,2000},\
+								{NO_WALL,NO_KNOWN,NO_WALL,NO_KNOWN,2000},\
+								{NO_KNOWN,NO_KNOWN,NO_KNOWN,NO_WALL,2000},\
+								{NO_KNOWN,NO_WALL,NO_WALL,NO_KNOWN,2000},\
+								{NO_WALL,NO_KNOWN,NO_KNOWN,NO_WALL,2000},\
+								{NO_KNOWN,NO_KNOWN,NO_WALL,NO_WALL,2000},\
+								{NO_KNOWN,NO_KNOWN,NO_WALL,NO_WALL,2000}},\
+							{{NO_KNOWN,NO_KNOWN,NO_WALL,NO_WALL,2000},\
+								{NO_KNOWN,NO_WALL,NO_KNOWN,NO_KNOWN,2000},\
+								{NO_WALL,NO_KNOWN,NO_WALL,NO_WALL,2000},\
+								{NO_KNOWN,NO_WALL,NO_KNOWN,NO_WALL,2000},\
+								{NO_WALL,NO_KNOWN,NO_WALL,NO_KNOWN,2000},\
+								{NO_KNOWN,NO_WALL,NO_WALL,NO_KNOWN,2000},\
+								{NO_WALL,NO_WALL,NO_KNOWN,NO_WALL,2000},\
+								{NO_WALL,NO_KNOWN,NO_KNOWN,NO_WALL,2000},\
+								{NO_KNOWN,NO_WALL,NO_KNOWN,NO_WALL,2000},\
+								{NO_WALL,NO_KNOWN,NO_WALL,NO_KNOWN,2000},\
+								{NO_KNOWN,NO_WALL,NO_KNOWN,NO_WALL,2000},\
+								{NO_WALL,NO_KNOWN,NO_WALL,NO_KNOWN,2000},\
+								{NO_KNOWN,NO_WALL,NO_KNOWN,NO_WALL,2000},\
+								{NO_WALL,NO_KNOWN,NO_WALL,NO_KNOWN,2000},\
+								{NO_KNOWN,NO_KNOWN,NO_WALL,NO_WALL,2000},\
+								{NO_KNOWN,NO_KNOWN,NO_WALL,NO_WALL,2000}},\
+							{{NO_KNOWN,NO_KNOWN,NO_WALL,NO_WALL,2000},\
+								{NO_KNOWN,NO_WALL,NO_WALL,NO_KNOWN,2000},\
+								{NO_WALL,NO_KNOWN,NO_KNOWN,NO_WALL,2000},\
+								{NO_KNOWN,NO_WALL,NO_KNOWN,NO_KNOWN,2000},\
+								{NO_WALL,NO_KNOWN,NO_WALL,NO_WALL,2000},\
+								{NO_KNOWN,NO_WALL,NO_KNOWN,NO_WALL,2000},\
+								{NO_WALL,NO_KNOWN,NO_WALL,NO_KNOWN,2000},\
+								{NO_KNOWN,NO_WALL,NO_WALL,NO_KNOWN,2000},\
+								{NO_WALL,NO_KNOWN,NO_WALL,NO_KNOWN,2000},\
+								{NO_KNOWN,NO_WALL,NO_KNOWN,NO_WALL,2000},\
+								{NO_WALL,NO_KNOWN,NO_WALL,NO_KNOWN,2000},\
+								{NO_KNOWN,NO_WALL,NO_KNOWN,NO_WALL,2000},\
+								{NO_WALL,NO_KNOWN,NO_WALL,NO_KNOWN,2000},\
+								{NO_KNOWN,NO_WALL,NO_KNOWN,NO_WALL,2000},\
+								{NO_WALL,NO_KNOWN,NO_KNOWN,NO_WALL,2000},\
+								{NO_KNOWN,NO_KNOWN,NO_WALL,NO_WALL,2000}},\
+							{{NO_KNOWN,NO_KNOWN,NO_WALL,NO_WALL,2000},\
+								{NO_KNOWN,NO_KNOWN,NO_WALL,NO_WALL,2000},\
+								{NO_KNOWN,NO_KNOWN,NO_WALL,NO_KNOWN,2000},\
+								{NO_KNOWN,NO_WALL,NO_WALL,NO_KNOWN,2000},\
+								{NO_WALL,NO_KNOWN,NO_KNOWN,NO_WALL,2000},\
+								{NO_KNOWN,NO_KNOWN,NO_WALL,NO_KNOWN,2000},\
+								{NO_KNOWN,NO_KNOWN,NO_WALL,NO_WALL,2000},\
+								{NO_KNOWN,NO_WALL,NO_KNOWN,NO_WALL,2000},\
+								{NO_WALL,NO_WALL,NO_KNOWN,NO_WALL,2000},\
+								{NO_WALL,NO_KNOWN,NO_WALL,NO_KNOWN,2000},\
+								{NO_KNOWN,NO_WALL,NO_KNOWN,NO_WALL,2000},\
+								{NO_WALL,NO_KNOWN,NO_WALL,NO_KNOWN,2000},\
+								{NO_KNOWN,NO_WALL,NO_KNOWN,NO_WALL,2000},\
+								{NO_WALL,NO_WALL,NO_WALL,NO_KNOWN,2000},\
+								{NO_WALL,NO_KNOWN,NO_KNOWN,NO_KNOWN,2000},\
+								{NO_KNOWN,NO_KNOWN,NO_WALL,NO_WALL,2000}},\
+							{{NO_KNOWN,NO_KNOWN,NO_WALL,NO_WALL,2000},\
+								{NO_KNOWN,NO_KNOWN,NO_WALL,NO_WALL,2000},\
+								{NO_KNOWN,NO_WALL,NO_KNOWN,NO_WALL,2000},\
+								{NO_WALL,NO_KNOWN,NO_WALL,NO_WALL,2000},\
+								{NO_KNOWN,NO_WALL,NO_WALL,NO_KNOWN,2000},\
 								{NO_WALL,NO_WALL,NO_WALL,NO_WALL,2000},\
-								{NO_WALL,NO_KNOW,NO_KNOW,NO_WALL,2000},\
-								{NO_KNOW,NO_WALL,NO_WALL,NO_KNOW,2000},\
-								{NO_WALL,NO_KNOW,NO_KNOW,NO_KNOW,2000},\
-								{NO_KNOW,NO_WALL,NO_KNOW,NO_WALL,2000},\
-								{NO_WALL,NO_KNOW,NO_WALL,NO_KNOW,2000},\
-								{NO_KNOW,NO_WALL,NO_KNOW,NO_WALL,2000},\
-								{NO_WALL,NO_KNOW,NO_WALL,NO_KNOW,2000},\
-								{NO_KNOW,NO_WALL,NO_KNOW,NO_WALL,2000},\
-								{NO_WALL,NO_WALL,NO_WALL,NO_KNOW,2000},\
-								{NO_WALL,NO_KNOW,NO_WALL,NO_WALL,2000}},\
-							{{NO_KNOW,NO_KNOW,NO_WALL,NO_WALL,2000},\
-								{NO_KNOW,NO_KNOW,NO_WALL,NO_WALL,2000},\
-								{NO_KNOW,NO_WALL,NO_KNOW,NO_KNOW,2000},\
-								{NO_WALL,NO_KNOW,NO_KNOW,NO_WALL,2000},\
-								{NO_KNOW,NO_KNOW,NO_KNOW,NO_WALL,2000},\
-								{NO_KNOW,NO_WALL,NO_WALL,NO_WALL,2000},\
-								{NO_WALL,NO_KNOW,NO_WALL,NO_KNOW,2000},\
-								{NO_KNOW,NO_WALL,NO_WALL,NO_WALL,2000},\
-								{NO_WALL,NO_WALL,NO_KNOW,NO_KNOW,2000},\
-								{NO_WALL,NO_KNOW,NO_WALL,NO_KNOW,2000},\
-								{NO_KNOW,NO_WALL,NO_KNOW,NO_WALL,2000},\
-								{NO_WALL,NO_KNOW,NO_WALL,NO_KNOW,2000},\
-								{NO_KNOW,NO_WALL,NO_KNOW,NO_WALL,2000},\
-								{NO_WALL,NO_KNOW,NO_WALL,NO_KNOW,2000},\
-								{NO_KNOW,NO_KNOW,NO_KNOW,NO_WALL,2000},\
-								{NO_KNOW,NO_KNOW,NO_KNOW,NO_WALL,2000}},\
-							{{NO_KNOW,NO_KNOW,NO_WALL,NO_WALL,2000},\
-								{NO_KNOW,NO_WALL,NO_WALL,NO_WALL,2000},\
-								{NO_WALL,NO_WALL,NO_WALL,NO_KNOW,2000},\
-								{NO_WALL,NO_WALL,NO_KNOW,NO_KNOW,2000},\
-								{NO_WALL,NO_KNOW,NO_WALL,NO_KNOW,2000},\
-								{NO_KNOW,NO_KNOW,NO_KNOW,NO_WALL,2000},\
-								{NO_KNOW,NO_KNOW,NO_WALL,NO_WALL,2000},\
-								{NO_KNOW,NO_WALL,NO_WALL,NO_WALL,2000},\
-								{NO_WALL,NO_WALL,NO_KNOW,NO_KNOW,2000},\
-								{NO_WALL,NO_WALL,NO_KNOW,NO_WALL,2000},\
-								{NO_WALL,NO_KNOW,NO_WALL,NO_KNOW,2000},\
-								{NO_KNOW,NO_WALL,NO_KNOW,NO_WALL,2000},\
-								{NO_WALL,NO_KNOW,NO_WALL,NO_KNOW,2000},\
-								{NO_KNOW,NO_KNOW,NO_WALL,NO_WALL,2000},\
-								{NO_KNOW,NO_KNOW,NO_WALL,NO_KNOW,2000},\
-								{NO_KNOW,NO_KNOW,NO_WALL,NO_KNOW,2000}},\
-							{{NO_KNOW,NO_KNOW,NO_WALL,NO_WALL,2000},\
-								{NO_KNOW,NO_KNOW,NO_KNOW,NO_WALL,2000},\
-								{NO_KNOW,NO_KNOW,NO_WALL,NO_WALL,2000},\
-								{NO_KNOW,NO_KNOW,NO_WALL,NO_KNOW,2000},\
-								{NO_KNOW,NO_KNOW,NO_WALL,NO_WALL,2000},\
-								{NO_KNOW,NO_KNOW,NO_WALL,NO_KNOW,2000},\
-								{NO_KNOW,NO_KNOW,NO_WALL,NO_WALL,2000},\
-								{NO_KNOW,NO_WALL,NO_WALL,NO_WALL,2000},\
-								{NO_WALL,NO_KNOW,NO_WALL,NO_KNOW,2000},\
-								{NO_KNOW,NO_WALL,NO_WALL,NO_KNOW,2000},\
-								{NO_WALL,NO_WALL,NO_KNOW,NO_WALL,2000},\
-								{NO_WALL,NO_WALL,NO_WALL,NO_KNOW,2000},\
-								{NO_WALL,NO_WALL,NO_KNOW,NO_WALL,2000},\
-								{NO_WALL,NO_KNOW,NO_WALL,NO_WALL,2000},\
-								{NO_KNOW,NO_WALL,NO_KNOW,NO_WALL,2000},\
-								{NO_WALL,NO_KNOW,NO_WALL,NO_WALL,2000}},\
-							{{NO_KNOW,NO_KNOW,NO_WALL,NO_WALL,2000},\
-								{NO_KNOW,NO_WALL,NO_WALL,NO_KNOW,2000},\
-								{NO_WALL,NO_KNOW,NO_KNOW,NO_WALL,2000},\
-								{NO_KNOW,NO_WALL,NO_WALL,NO_WALL,2000},\
-								{NO_WALL,NO_KNOW,NO_KNOW,NO_WALL,2000},\
-								{NO_KNOW,NO_WALL,NO_KNOW,NO_WALL,2000},\
-								{NO_WALL,NO_KNOW,NO_KNOW,NO_WALL,2000},\
-								{NO_KNOW,NO_KNOW,NO_WALL,NO_WALL,2000},\
-								{NO_KNOW,NO_KNOW,NO_WALL,NO_WALL,2000},\
-								{NO_KNOW,NO_WALL,NO_WALL,NO_WALL,2000},\
-								{NO_WALL,NO_WALL,NO_KNOW,NO_KNOW,2000},\
-								{NO_WALL,NO_WALL,NO_KNOW,NO_WALL,2000},\
-								{NO_WALL,NO_KNOW,NO_WALL,NO_KNOW,2000},\
-								{NO_KNOW,NO_WALL,NO_KNOW,NO_WALL,2000},\
-								{NO_WALL,NO_KNOW,NO_WALL,NO_KNOW,2000},\
-								{NO_KNOW,NO_KNOW,NO_WALL,NO_WALL,2000}},\
-							{{NO_KNOW,NO_KNOW,NO_WALL,NO_WALL,2000},\
-								{NO_KNOW,NO_KNOW,NO_WALL,NO_WALL,2000},\
-								{NO_KNOW,NO_WALL,NO_KNOW,NO_KNOW,2000},\
-								{NO_WALL,NO_WALL,NO_KNOW,NO_WALL,2000},\
-								{NO_WALL,NO_WALL,NO_KNOW,NO_KNOW,2000},\
-								{NO_WALL,NO_WALL,NO_KNOW,NO_KNOW,2000},\
-								{NO_WALL,NO_WALL,NO_KNOW,NO_KNOW,2000},\
-								{NO_WALL,NO_KNOW,NO_KNOW,NO_WALL,2000},\
-								{NO_KNOW,NO_WALL,NO_KNOW,NO_WALL,2000},\
-								{NO_WALL,NO_KNOW,NO_KNOW,NO_WALL,2000},\
-								{NO_KNOW,NO_WALL,NO_KNOW,NO_KNOW,2000},\
-								{NO_WALL,NO_WALL,NO_KNOW,NO_KNOW,2000},\
-								{NO_WALL,NO_WALL,NO_KNOW,NO_WALL,2000},\
-								{NO_WALL,NO_KNOW,NO_KNOW,NO_KNOW,2000},\
-								{NO_KNOW,NO_WALL,NO_KNOW,NO_WALL,2000},\
-								{NO_WALL,NO_KNOW,NO_WALL,NO_WALL,2000}},\
-							{{NO_KNOW,NO_WALL,NO_KNOW,NO_WALL,2000},\
-								{NO_WALL,NO_WALL,NO_KNOW,NO_WALL,2000},\
-								{NO_WALL,NO_WALL,NO_KNOW,NO_KNOW,2000},\
-								{NO_WALL,NO_WALL,NO_KNOW,NO_KNOW,2000},\
-								{NO_WALL,NO_WALL,NO_KNOW,NO_KNOW,2000},\
-								{NO_WALL,NO_WALL,NO_KNOW,NO_KNOW,2000},\
-								{NO_WALL,NO_WALL,NO_KNOW,NO_KNOW,2000},\
-								{NO_WALL,NO_WALL,NO_KNOW,NO_KNOW,2000},\
-								{NO_WALL,NO_WALL,NO_KNOW,NO_KNOW,2000},\
-								{NO_WALL,NO_WALL,NO_KNOW,NO_KNOW,2000},\
-								{NO_WALL,NO_WALL,NO_KNOW,NO_KNOW,2000},\
-								{NO_WALL,NO_WALL,NO_KNOW,NO_KNOW,2000},\
-								{NO_WALL,NO_WALL,NO_KNOW,NO_KNOW,2000},\
-								{NO_WALL,NO_WALL,NO_KNOW,NO_KNOW,2000},\
-								{NO_WALL,NO_WALL,NO_KNOW,NO_KNOW,2000},\
-								{NO_WALL,NO_KNOW,NO_KNOW,NO_WALL,2000}}}};
+								{NO_WALL,NO_KNOWN,NO_KNOWN,NO_WALL,2000},\
+								{NO_KNOWN,NO_WALL,NO_WALL,NO_KNOWN,2000},\
+								{NO_WALL,NO_KNOWN,NO_KNOWN,NO_KNOWN,2000},\
+								{NO_KNOWN,NO_WALL,NO_KNOWN,NO_WALL,2000},\
+								{NO_WALL,NO_KNOWN,NO_WALL,NO_KNOWN,2000},\
+								{NO_KNOWN,NO_WALL,NO_KNOWN,NO_WALL,2000},\
+								{NO_WALL,NO_KNOWN,NO_WALL,NO_KNOWN,2000},\
+								{NO_KNOWN,NO_WALL,NO_KNOWN,NO_WALL,2000},\
+								{NO_WALL,NO_WALL,NO_WALL,NO_KNOWN,2000},\
+								{NO_WALL,NO_KNOWN,NO_WALL,NO_WALL,2000}},\
+							{{NO_KNOWN,NO_KNOWN,NO_WALL,NO_WALL,2000},\
+								{NO_KNOWN,NO_KNOWN,NO_WALL,NO_WALL,2000},\
+								{NO_KNOWN,NO_WALL,NO_KNOWN,NO_KNOWN,2000},\
+								{NO_WALL,NO_KNOWN,NO_KNOWN,NO_WALL,2000},\
+								{NO_KNOWN,NO_KNOWN,NO_KNOWN,NO_WALL,2000},\
+								{NO_KNOWN,NO_WALL,NO_WALL,NO_WALL,2000},\
+								{NO_WALL,NO_KNOWN,NO_WALL,NO_KNOWN,2000},\
+								{NO_KNOWN,NO_WALL,NO_WALL,NO_WALL,2000},\
+								{NO_WALL,NO_WALL,NO_KNOWN,NO_KNOWN,2000},\
+								{NO_WALL,NO_KNOWN,NO_WALL,NO_KNOWN,2000},\
+								{NO_KNOWN,NO_WALL,NO_KNOWN,NO_WALL,2000},\
+								{NO_WALL,NO_KNOWN,NO_WALL,NO_KNOWN,2000},\
+								{NO_KNOWN,NO_WALL,NO_KNOWN,NO_WALL,2000},\
+								{NO_WALL,NO_KNOWN,NO_WALL,NO_KNOWN,2000},\
+								{NO_KNOWN,NO_KNOWN,NO_KNOWN,NO_WALL,2000},\
+								{NO_KNOWN,NO_KNOWN,NO_KNOWN,NO_WALL,2000}},\
+							{{NO_KNOWN,NO_KNOWN,NO_WALL,NO_WALL,2000},\
+								{NO_KNOWN,NO_WALL,NO_WALL,NO_WALL,2000},\
+								{NO_WALL,NO_WALL,NO_WALL,NO_KNOWN,2000},\
+								{NO_WALL,NO_WALL,NO_KNOWN,NO_KNOWN,2000},\
+								{NO_WALL,NO_KNOWN,NO_WALL,NO_KNOWN,2000},\
+								{NO_KNOWN,NO_KNOWN,NO_KNOWN,NO_WALL,2000},\
+								{NO_KNOWN,NO_KNOWN,NO_WALL,NO_WALL,2000},\
+								{NO_KNOWN,NO_WALL,NO_WALL,NO_WALL,2000},\
+								{NO_WALL,NO_WALL,NO_KNOWN,NO_KNOWN,2000},\
+								{NO_WALL,NO_WALL,NO_KNOWN,NO_WALL,2000},\
+								{NO_WALL,NO_KNOWN,NO_WALL,NO_KNOWN,2000},\
+								{NO_KNOWN,NO_WALL,NO_KNOWN,NO_WALL,2000},\
+								{NO_WALL,NO_KNOWN,NO_WALL,NO_KNOWN,2000},\
+								{NO_KNOWN,NO_KNOWN,NO_WALL,NO_WALL,2000},\
+								{NO_KNOWN,NO_KNOWN,NO_WALL,NO_KNOWN,2000},\
+								{NO_KNOWN,NO_KNOWN,NO_WALL,NO_KNOWN,2000}},\
+							{{NO_KNOWN,NO_KNOWN,NO_WALL,NO_WALL,2000},\
+								{NO_KNOWN,NO_KNOWN,NO_KNOWN,NO_WALL,2000},\
+								{NO_KNOWN,NO_KNOWN,NO_WALL,NO_WALL,2000},\
+								{NO_KNOWN,NO_KNOWN,NO_WALL,NO_KNOWN,2000},\
+								{NO_KNOWN,NO_KNOWN,NO_WALL,NO_WALL,2000},\
+								{NO_KNOWN,NO_KNOWN,NO_WALL,NO_KNOWN,2000},\
+								{NO_KNOWN,NO_KNOWN,NO_WALL,NO_WALL,2000},\
+								{NO_KNOWN,NO_WALL,NO_WALL,NO_WALL,2000},\
+								{NO_WALL,NO_KNOWN,NO_WALL,NO_KNOWN,2000},\
+								{NO_KNOWN,NO_WALL,NO_WALL,NO_KNOWN,2000},\
+								{NO_WALL,NO_WALL,NO_KNOWN,NO_WALL,2000},\
+								{NO_WALL,NO_WALL,NO_WALL,NO_KNOWN,2000},\
+								{NO_WALL,NO_WALL,NO_KNOWN,NO_WALL,2000},\
+								{NO_WALL,NO_KNOWN,NO_WALL,NO_WALL,2000},\
+								{NO_KNOWN,NO_WALL,NO_KNOWN,NO_WALL,2000},\
+								{NO_WALL,NO_KNOWN,NO_WALL,NO_WALL,2000}},\
+							{{NO_KNOWN,NO_KNOWN,NO_WALL,NO_WALL,2000},\
+								{NO_KNOWN,NO_WALL,NO_WALL,NO_KNOWN,2000},\
+								{NO_WALL,NO_KNOWN,NO_KNOWN,NO_WALL,2000},\
+								{NO_KNOWN,NO_WALL,NO_WALL,NO_WALL,2000},\
+								{NO_WALL,NO_KNOWN,NO_KNOWN,NO_WALL,2000},\
+								{NO_KNOWN,NO_WALL,NO_KNOWN,NO_WALL,2000},\
+								{NO_WALL,NO_KNOWN,NO_KNOWN,NO_WALL,2000},\
+								{NO_KNOWN,NO_KNOWN,NO_WALL,NO_WALL,2000},\
+								{NO_KNOWN,NO_KNOWN,NO_WALL,NO_WALL,2000},\
+								{NO_KNOWN,NO_WALL,NO_WALL,NO_WALL,2000},\
+								{NO_WALL,NO_WALL,NO_KNOWN,NO_KNOWN,2000},\
+								{NO_WALL,NO_WALL,NO_KNOWN,NO_WALL,2000},\
+								{NO_WALL,NO_KNOWN,NO_WALL,NO_KNOWN,2000},\
+								{NO_KNOWN,NO_WALL,NO_KNOWN,NO_WALL,2000},\
+								{NO_WALL,NO_KNOWN,NO_WALL,NO_KNOWN,2000},\
+								{NO_KNOWN,NO_KNOWN,NO_WALL,NO_WALL,2000}},\
+							{{NO_KNOWN,NO_KNOWN,NO_WALL,NO_WALL,2000},\
+								{NO_KNOWN,NO_KNOWN,NO_WALL,NO_WALL,2000},\
+								{NO_KNOWN,NO_WALL,NO_KNOWN,NO_KNOWN,2000},\
+								{NO_WALL,NO_WALL,NO_KNOWN,NO_WALL,2000},\
+								{NO_WALL,NO_WALL,NO_KNOWN,NO_KNOWN,2000},\
+								{NO_WALL,NO_WALL,NO_KNOWN,NO_KNOWN,2000},\
+								{NO_WALL,NO_WALL,NO_KNOWN,NO_KNOWN,2000},\
+								{NO_WALL,NO_KNOWN,NO_KNOWN,NO_WALL,2000},\
+								{NO_KNOWN,NO_WALL,NO_KNOWN,NO_WALL,2000},\
+								{NO_WALL,NO_KNOWN,NO_KNOWN,NO_WALL,2000},\
+								{NO_KNOWN,NO_WALL,NO_KNOWN,NO_KNOWN,2000},\
+								{NO_WALL,NO_WALL,NO_KNOWN,NO_KNOWN,2000},\
+								{NO_WALL,NO_WALL,NO_KNOWN,NO_WALL,2000},\
+								{NO_WALL,NO_KNOWN,NO_KNOWN,NO_KNOWN,2000},\
+								{NO_KNOWN,NO_WALL,NO_KNOWN,NO_WALL,2000},\
+								{NO_WALL,NO_KNOWN,NO_WALL,NO_WALL,2000}},\
+							{{NO_KNOWN,NO_WALL,NO_KNOWN,NO_WALL,2000},\
+								{NO_WALL,NO_WALL,NO_KNOWN,NO_WALL,2000},\
+								{NO_WALL,NO_WALL,NO_KNOWN,NO_KNOWN,2000},\
+								{NO_WALL,NO_WALL,NO_KNOWN,NO_KNOWN,2000},\
+								{NO_WALL,NO_WALL,NO_KNOWN,NO_KNOWN,2000},\
+								{NO_WALL,NO_WALL,NO_KNOWN,NO_KNOWN,2000},\
+								{NO_WALL,NO_WALL,NO_KNOWN,NO_KNOWN,2000},\
+								{NO_WALL,NO_WALL,NO_KNOWN,NO_KNOWN,2000},\
+								{NO_WALL,NO_WALL,NO_KNOWN,NO_KNOWN,2000},\
+								{NO_WALL,NO_WALL,NO_KNOWN,NO_KNOWN,2000},\
+								{NO_WALL,NO_WALL,NO_KNOWN,NO_KNOWN,2000},\
+								{NO_WALL,NO_WALL,NO_KNOWN,NO_KNOWN,2000},\
+								{NO_WALL,NO_WALL,NO_KNOWN,NO_KNOWN,2000},\
+								{NO_WALL,NO_WALL,NO_KNOWN,NO_KNOWN,2000},\
+								{NO_WALL,NO_WALL,NO_KNOWN,NO_KNOWN,2000},\
+								{NO_WALL,NO_KNOWN,NO_KNOWN,NO_WALL,2000}}}};
 
 	*maze=maze_initial;
 #endif
@@ -958,19 +958,19 @@ void print_maze(const labyrinthe maze, const int x_robot, const int y_robot)
 	{
 		for (x=0; x<MAZE_SIZE; x++)
 		{
-			if (maze.cell[x][y].wall_north == WALL_KNOW)
+			if (maze.cell[x][y].wall_north == WALL_PRESENCE)
 			{
 				ssd1306FillRect(x*size_cell_on_oled, y*size_cell_on_oled, size_cell_on_oled+1, 1);
 			}
-			if (maze.cell[x][y].wall_west == WALL_KNOW)
+			if (maze.cell[x][y].wall_west == WALL_PRESENCE)
 			{
 				ssd1306FillRect(x*size_cell_on_oled, y*size_cell_on_oled, 1, size_cell_on_oled+1);
 			}
-			if (maze.cell[x][y].wall_south == WALL_KNOW)
+			if (maze.cell[x][y].wall_south == WALL_PRESENCE)
 			{
 				ssd1306FillRect(x*size_cell_on_oled, (y+1)*size_cell_on_oled, size_cell_on_oled+1, 1);
 			}
-			if (maze.cell[x][y].wall_east == WALL_KNOW)
+			if (maze.cell[x][y].wall_east == WALL_PRESENCE)
 			{
 				ssd1306FillRect((x+1)*size_cell_on_oled, y*size_cell_on_oled, 1, size_cell_on_oled+1);
 			}
@@ -1005,7 +1005,7 @@ void print_length(const labyrinthe maze)
 		printf("%2d ", i);
 		for(int j=0; j<MAZE_SIZE; j++)
 		{
-			if(maze.cell[j][i].wall_north==WALL_KNOW)
+			if(maze.cell[j][i].wall_north==WALL_PRESENCE)
 			{
 				printf("====*");
 			}
@@ -1018,7 +1018,7 @@ void print_length(const labyrinthe maze)
 		for(int j=0; j<MAZE_SIZE; j++)
 		{
 			printf("%4d",maze.cell[j][i].length);
-			if(maze.cell[j][i].wall_east==WALL_KNOW)
+			if(maze.cell[j][i].wall_east==WALL_PRESENCE)
 			{
 				printf("|");
 			}

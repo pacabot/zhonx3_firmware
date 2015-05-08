@@ -33,12 +33,12 @@
 #include "peripherals/bluetooth/bluetooth.h"
 
 /* Middleware declarations */
+#include "middleware/wall_sensors/wall_sensors.h"
 #include "middleware/controls/pidController/pidController.h"
 #include "middleware/controls/motionControl/positionControl.h"
 #include "middleware/controls/motionControl/speedControl.h"
 #include "middleware/controls/motionControl/transfertFunction.h"
 #include "middleware/controls/motionControl/followControl.h"
-#include "middleware/wall_sensors/wall_sensors.h"
 
 /* Declarations for this module */
 #include "middleware/controls/motionControl/mainControl.h"
@@ -136,6 +136,8 @@ int rotateWithCal(enum rotation_type_enum rotation_type)
 	speedControlInit();
 	positionControlInit();
 	transfertFunctionInit();
+	followControlInit();
+
 	encoderResetDistance(&left_encoder);
 	encoderResetDistance(&right_encoder);
 	telemetersDistancesTypeDef distances;
@@ -145,6 +147,7 @@ int rotateWithCal(enum rotation_type_enum rotation_type)
 	pid_loop.start_state = TRUE;
 	control_params.speed_state = TRUE;
 
+	/**************************************************************************/
 	ssd1306ClearScreen();
 	ssd1306DrawString(10,20,"Front Align",&Font_5x8);
 	ssd1306Refresh();
@@ -154,6 +157,7 @@ int rotateWithCal(enum rotation_type_enum rotation_type)
 	control_params.position_state = FALSE;
 	while (follow_control.succes != TRUE);
 
+	/**************************************************************************/
 	ssd1306ClearScreen();
 	ssd1306DrawString(10,20,"Move",&Font_5x8);
 	ssd1306Refresh();
@@ -166,33 +170,53 @@ int rotateWithCal(enum rotation_type_enum rotation_type)
 	move(0, relative_dist - CENTER_DISTANCE, 50, 0);
 	while(speed_control.end_control != 1);
 
-//	control_params.position_state = TRUE;
-//	if (rotation_type == CW)
-//		move(90, 0, 50, 0);
-//	else
-//		move(-90, 0, 50, 0);
-//	ssd1306ClearScreen();
-//	ssd1306DrawString(10,20,"Rotate 90",&Font_5x8);
-//	ssd1306Refresh();
-//	while(position_control.end_control != 1);
-//
-//	getTelemetersDistance(&distances);
-//	relative_dist = (distances.distance_front_left + distances.distance_front_right) / 2;
-//	move(0, relative_dist - CENTER_DISTANCE, 50, 0);
-//	ssd1306ClearScreen();
-//	ssd1306DrawString(10,20,"Move",&Font_5x8);
-//	ssd1306Refresh();
-//	while(speed_control.end_control != 1);
-//
-//	control_params.follow_state = FALSE;
-//	control_params.position_state = TRUE;
-//	if (rotation_type == CW)
-//		move(90, 0, 50, 0);
-//	else
-//		move(-90, 0, 50, 0);
-//	ssd1306ClearScreen();
-//	ssd1306DrawString(10,20,"Rotate 90",&Font_5x8);
-//	ssd1306Refresh();
+	/**************************************************************************/  // OK
+	ssd1306ClearScreen();
+	ssd1306DrawString(10,20,"Rotate 90",&Font_5x8);
+	ssd1306Refresh();
+
+	HAL_Delay(500);
+
+	control_params.follow_state = FALSE;
+	control_params.position_state = TRUE;
+	if (rotation_type == CW)
+		move(90, 0, 50, 0);
+	else
+		move(-90, 0, 50, 0);
+	while(position_control.end_control != 1);
+
+	/**************************************************************************/
+	ssd1306ClearScreen();
+	ssd1306DrawString(10,20,"Front Align",&Font_5x8);
+	ssd1306Refresh();
+
+	control_params.follow_state = TRUE;
+	follow_control.follow_type = ALIGN_FRONT;
+	control_params.position_state = FALSE;
+	while (follow_control.succes != TRUE);
+
+	/**************************************************************************/
+	ssd1306ClearScreen();
+	ssd1306DrawString(10,20,"Move",&Font_5x8);
+	ssd1306Refresh();
+
+	getTelemetersDistance(&distances);
+	relative_dist = (distances.distance_front_left + distances.distance_front_right) / 2;
+	move(0, relative_dist - CENTER_DISTANCE, 50, 0);
+	while(speed_control.end_control != 1);
+
+	/**************************************************************************/
+	ssd1306ClearScreen();
+	ssd1306DrawString(10,20,"Rotate 90",&Font_5x8);
+	ssd1306Refresh();
+
+	control_params.follow_state = FALSE;
+	control_params.position_state = TRUE;
+	if (rotation_type == CW)
+		move(90, 0, 50, 0);
+	else
+		move(-90, 0, 50, 0);
+
 //	while(position_control.end_control != 1);
 
 	return POSITION_CONTROL_E_SUCCESS;
@@ -207,7 +231,13 @@ void mainControlTest(void)
 	//	control_params.follow_state = TRUE;
 	//	control_params.position_state = FALSE;
 
-	rotateWithCal(CW);
+	control_params.speed_state = TRUE;
+	control_params.follow_state = TRUE;
+	control_params.position_state = FALSE;
+
+	follow_control.follow_type = FOLLOW_WALL;
+	move(0, 600, 1000, 0);
+//	rotateWithCal(CW);
 
 	//move(0, 0, 500, 400);
 	//	move(0, 90, 500, 400);

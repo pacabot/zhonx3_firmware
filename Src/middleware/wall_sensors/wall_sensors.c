@@ -350,7 +350,7 @@ int getTelemetersDistance (telemetersDistancesTypeDef *telemeters_distances)
 	return WALL_SENSORS_E_SUCCESS;
 }
 
-walls getWallsPosition()
+walls getCellState()
 {
 	telemetersDistancesTypeDef telemeters_distances;
 	walls walls_position = {NO_WALL,NO_WALL,NO_WALL,NO_WALL};
@@ -358,20 +358,20 @@ walls getWallsPosition()
 	getTelemetersDistance(&telemeters_distances);
 	if (telemeters_distances.distance_front_left < DISTANCE_FIRST_WALL_FRONT)
 	{
-		walls_position.front = WALL_KNOW;
+		walls_position.front = WALL_PRESENCE;
 
-		walls_position.next_front = NO_KNOW;
-		walls_position.left = NO_KNOW;
-		walls_position.right = NO_KNOW;
+		walls_position.next_front = NO_KNOWN;
+		walls_position.left = NO_KNOWN;
+		walls_position.right = NO_KNOWN;
 	}
 	else
 	{
 		if (telemeters_distances.distance_front_left < DISTANCE_SEGOND_WALL_FRONT)
-			walls_position.next_front = WALL_KNOW;
+			walls_position.next_front = WALL_PRESENCE;
 		if (telemeters_distances.distance_diag_left < DISTANCE_WALL_DIAG)
-			walls_position.left = WALL_KNOW;
+			walls_position.left = WALL_PRESENCE;
 		if (telemeters_distances.distance_diag_right < DISTANCE_WALL_DIAG)
-			walls_position.right = WALL_KNOW;
+			walls_position.right = WALL_PRESENCE;
 	}
 	return walls_position;
 }
@@ -405,14 +405,14 @@ void testTelemeterDistance()
 void testWallsSensors()
 {
 	telemetersInit();
-	walls wall_see;
+	walls wall_saw;
 	telemetersDistancesTypeDef distances;
 	while(expanderJoyFiltered()!=JOY_LEFT)
 	{
 		getTelemetersDistance(&distances);
-		wall_see=getWallsPosition();
+		wall_saw=getCellState();
 		ssd1306ClearScreen();
-		if (wall_see.front == WALL_KNOW)
+		if (wall_saw.front == WALL_PRESENCE)
 		{
 			ssd1306FillRect(0,49,54,5);
 		}
@@ -420,34 +420,34 @@ void testWallsSensors()
 		{
 			ssd1306DrawRect(0,49,54,5);
 		}
-		switch (wall_see.next_front)
+		switch (wall_saw.next_front)
 		{
-			case WALL_KNOW:
+			case WALL_PRESENCE:
 				ssd1306FillRect(0,0,54,5);
 				break;
-			case NO_KNOW :
+			case NO_KNOWN :
 				ssd1306DrawRect(0,0,54,5);
 				break;
 			default:
 				break;
 		}
-		switch (wall_see.left)
+		switch (wall_saw.left)
 		{
-			case WALL_KNOW:
+			case WALL_PRESENCE:
 				ssd1306FillRect(0,0,5,54);
 				break;
-			case NO_KNOW :
+			case NO_KNOWN :
 				ssd1306DrawRect(0,0,5,54);
 				break;
 			default:
 				break;
 		}
-		switch (wall_see.right)
+		switch (wall_saw.right)
 		{
-			case WALL_KNOW:
+			case WALL_PRESENCE:
 				ssd1306FillRect(49,0,5,54);
 				break;
-			case NO_KNOW :
+			case NO_KNOWN :
 				ssd1306DrawRect(49,0,5,54);
 				break;
 			default:
