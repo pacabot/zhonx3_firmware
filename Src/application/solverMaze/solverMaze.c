@@ -35,7 +35,7 @@ extern int maze(void)
 	{
 		positionZhonx.x = MAZE_SIZE / 2;
 		positionZhonx.y = MAZE_SIZE / 2; // the robot start at the middle of the maze
-		positionZhonx.orientation = NORTH; // the robot is pointing the north
+		positionZhonx.orientation = EAST; // the robot is pointing the north
 		zhonxSettings.x_finish_maze = 0;
 		zhonxSettings.y_finish_maze = 0; // we want to go to the case how have address (0,0)
 	}
@@ -43,7 +43,7 @@ extern int maze(void)
 	{
 		positionZhonx.x = 0;
 		positionZhonx.y = 0; // the robot start in the corner
-		positionZhonx.orientation = NORTH;
+		positionZhonx.orientation = EAST;
 		// the position of the finish is defined in the menu
 	}
 	/*end of initialization for different micromouse competition*/
@@ -84,8 +84,12 @@ void exploration(labyrinthe *maze, positionRobot* positionZhonx, char xFinish,
 {
 	coordinate way = { 0, 0, 0 };
 	motorsSleepDriver (OFF); // TODO : modify if it's necessary
+	telemetersStart();
+	HAL_Delay(500);
 	walls new_walls = getWallsPosition ();
+	telemetersStop();
 	new_cell (new_walls, maze, *positionZhonx);
+
 
 	while (positionZhonx->x != xFinish || positionZhonx->y != yFinish)
 	{
@@ -288,7 +292,10 @@ void moveRealZhonx(labyrinthe *maze, positionRobot *positionZhonx,
 			free (oldDote);
 		}
 		move_zhonx (orientaionToGo, &positionZhonx->orientation, length);
+		telemetersStart();
+		HAL_Delay(500);
 		new_cell (getWallsPosition (), maze, *positionZhonx);
+		telemetersStop();
 		//		if (zhonxSettings.color_sensor_enabled==true) //TODO : implement colors sensor for Nîmes competition
 		//		{
 		//			if ((zhonxSettings.threshold_greater==false && hal_sensor_get_color(app_context.sensors) < zhonxSettings.threshold_color)
@@ -586,7 +593,7 @@ void new_cell(walls new_walls, labyrinthe *maze, positionRobot positionZhonx)
 			break;
 
 		case EAST :
-			if (positionZhonx.x < (MAZE_SIZE - 1))
+			if (new_walls.front == NO_WALL && positionZhonx.x < (MAZE_SIZE - 1))
 			{
 //			maze->cell[(int)(positionZhonx.x+1)][(int)(positionZhonx.y)].wall_east=new_walls.next_front;
 				maze->cell[(int) (positionZhonx.x + 1)][(int) (positionZhonx.y)].wall_south =
@@ -611,7 +618,7 @@ void new_cell(walls new_walls, labyrinthe *maze, positionRobot positionZhonx)
 			break;
 
 		case SOUTH :
-			if (positionZhonx.y < (MAZE_SIZE - 1))
+			if (new_walls.front == NO_WALL && positionZhonx.y < (MAZE_SIZE - 1))
 			{
 //			maze->cell[(int)(positionZhonx.x)][(int)(positionZhonx.y+1)].wall_south=new_walls.next_front;
 				maze->cell[(int) (positionZhonx.x)][(int) (positionZhonx.y + 1)].wall_west =
@@ -636,7 +643,7 @@ void new_cell(walls new_walls, labyrinthe *maze, positionRobot positionZhonx)
 			break;
 
 		case WEST :
-			if (positionZhonx.x > 0)
+			if (new_walls.front == NO_WALL && positionZhonx.x > 0)
 			{
 //			maze->cell[(int)(positionZhonx.x-1)][(int)(positionZhonx.y)].wall_west=new_walls.next_front;
 				maze->cell[(int) (positionZhonx.x - 1)][(int) (positionZhonx.y)].wall_north =
