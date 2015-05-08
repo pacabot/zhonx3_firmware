@@ -26,6 +26,7 @@
 #include "peripherals/display/smallfonts.h"
 #include "peripherals/expander/pcf8574.h"
 #include "peripherals/lineSensors/lineSensors.h"
+#include "peripherals/tone/tone.h"
 
 /* Middleware declarations */
 #include "middleware/controls/motionControl/mainControl.h"
@@ -45,19 +46,25 @@ void LineTest(void)
 
 	lineSensorsInit();
 	lineSensorsStart();
-	mainControlInit();
-	HAL_Delay(500);
+	tone(a, 500);
+	HAL_Delay(2000);
+	double gauche_max=1000.0/(double)lineSensors.left.adc_value;
+	double devant_max=1000.0/(double)lineSensors.front.adc_value;
+	double droite_max=1000.0/(double)lineSensors.right.adc_value;
+	tone(c, 500);
+//	mainControlInit();
+//	HAL_Delay(500);
 
-	move(0, 0, 500, 400);
+//	move(0, 0, 500, 400);
 
 	while(expanderJoyFiltered()!=JOY_LEFT)
 	{
-		lineFollower_test();
+		lineFollower_test(gauche_max,devant_max,droite_max);
 
 		ssd1306ClearScreen();
 		ssd1306PrintInt(10, 5,  "LEFT_EXT  =  ", (uint16_t) lineSensors.left_ext.adc_value, &Font_5x8);
 		ssd1306PrintInt(10, 15, "LEFT      =  ", (uint16_t) lineSensors.left.adc_value, &Font_5x8);
-		ssd1306PrintInt(10, 25, "FRONT     =  ", (uint16_t) lineSensors.front.adc_value, &Font_5x8);
+		ssd1306PrintInt(10, 25, "FRONT --  =  ", (uint16_t) lineSensors.front.adc_value, &Font_5x8);
 		ssd1306PrintInt(10, 35, "RIGHT     =  ", (uint16_t) lineSensors.right.adc_value, &Font_5x8);
 		ssd1306PrintInt(10, 45, "RIGHT_EXT =  ", (uint16_t) lineSensors.right_ext.adc_value, &Font_5x8);
 		ssd1306Refresh();
@@ -65,8 +72,16 @@ void LineTest(void)
 
 }
 
-void lineFollower_test(void)
+void lineFollower_test(double CoefLeft, double CoefFront, double CoefRight)
 {
 	lineFollower.position = 0.00;
-	lineFollower.position=lineSensors.front.adc_value/100 - lineSensors.right.adc_value/100;
+	int gauche=lineSensors.left.adc_value*CoefLeft;
+	int devant=lineSensors.front.adc_value*CoefFront;
+	int droite=lineSensors.right.adc_value*CoefRight;
+
+	lineFollower.position=(gauche-droite)/100;
+	if ((devant*1.2)<gauche || (devant*1.2)<droite)
+	{
+		lineFollower.position=(gauche-droite)/10;
+	}
 }
