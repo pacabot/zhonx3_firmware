@@ -213,7 +213,11 @@ int menu(menuItem Menu)
 				break;
 			case 'f':
 				if (Menu.line[line_menu].param!=null)
+				{
+					ssd1306ClearScreen();
+					ssd1306Refresh();
 					Menu.line[line_menu].param();
+				}
 				break;
 			case 'g':
 				graphMotorSettings((float*)Menu.line[line_menu-3].param,(float*)Menu.line[line_menu-2].param,(float*)Menu.line[line_menu-1].param);

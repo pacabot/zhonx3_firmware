@@ -50,6 +50,9 @@ int wallSensorsCalibration (void)
 
 	telemetersInit();
 	mainControlInit();
+	control_params.speed_state = TRUE;
+	control_params.follow_state = FALSE;
+	control_params.position_state = TRUE;
 	HAL_Delay(1000);
 	for(int i = 0; i < NUMBER_OF_CELL; i++)
 	{
@@ -276,6 +279,7 @@ int getTelemetersDistance (telemetersDistancesTypeDef *telemeters_distances)
 		else if (cell_front_right >= NUMBER_OF_CELL)
 		{
 			cell_front_right=NUMBER_OF_CELL;
+			value_front_right=telemeter_right_front_voltage[cell_front_right];
 			break;
 		}
 	}	while ((value_diag_left>telemeter_left_diag_voltage[cell_diag_left]) || (value_diag_left<telemeter_left_diag_voltage[cell_diag_left + 1]) )
@@ -289,6 +293,7 @@ int getTelemetersDistance (telemetersDistancesTypeDef *telemeters_distances)
 		else if (cell_diag_left >= NUMBER_OF_CELL)
 		{
 			cell_diag_left=NUMBER_OF_CELL;
+			value_diag_left=telemeter_left_diag_voltage[cell_diag_left];
 			break;
 		}
 	}
@@ -304,6 +309,7 @@ int getTelemetersDistance (telemetersDistancesTypeDef *telemeters_distances)
 		else if (cell_diag_right >= NUMBER_OF_CELL)
 		{
 			cell_diag_right=NUMBER_OF_CELL;
+			value_diag_right=telemeter_right_diag_voltage[cell_diag_right];
 			break;
 		}
 	}
@@ -347,15 +353,26 @@ int getTelemetersDistance (telemetersDistancesTypeDef *telemeters_distances)
 walls getWallsPosition()
 {
 	telemetersDistancesTypeDef telemeters_distances;
-	walls walls_position = {NO_WALL,NO_WALL,NO_WALL};
+	walls walls_position = {NO_WALL,NO_WALL,NO_WALL,NO_WALL};
 
 	getTelemetersDistance(&telemeters_distances);
-	if (telemeters_distances.distance_front_left < DISTANCE_WALL_FRONT)
+	if (telemeters_distances.distance_front_left < DISTANCE_FIRST_WALL_FRONT)
+	{
 		walls_position.front = WALL_KNOW;
-	if (telemeters_distances.distance_diag_left < DISTANCE_WALL_DIAG)
-		walls_position.left = WALL_KNOW;
-	if (telemeters_distances.distance_front_right < DISTANCE_WALL_DIAG)
-		walls_position.right = WALL_KNOW;
+
+		walls_position.next_front = NO_KNOW;
+		walls_position.left = NO_KNOW;
+		walls_position.right = NO_KNOW;
+	}
+	else
+	{
+		if (telemeters_distances.distance_front_left < DISTANCE_SEGOND_WALL_FRONT)
+			walls_position.next_front = WALL_KNOW;
+		if (telemeters_distances.distance_diag_left < DISTANCE_WALL_DIAG)
+			walls_position.left = WALL_KNOW;
+		if (telemeters_distances.distance_diag_right < DISTANCE_WALL_DIAG)
+			walls_position.right = WALL_KNOW;
+	}
 	return walls_position;
 }
 
@@ -368,8 +385,10 @@ void testTelemeterDistance()
 	{
 		ssd1306ClearScreen();
 		getTelemetersDistance(&telemeters_distances);
-		ssd1306Printf(0,0,&Font_5x8,"distancd left = %d",(int)(telemeters_distances.distance_front_left));
-		ssd1306Printf(0,10,&Font_5x8,"distancd right = %d",(int)(telemeters_distances.distance_front_right));
+		ssd1306Printf(0,0,&Font_5x8,"D f left = %d",(int)(telemeters_distances.distance_front_left));
+		ssd1306Printf(0,10,&Font_5x8,"D f right = %d",(int)(telemeters_distances.distance_front_right));
+		ssd1306Printf(0,20,&Font_5x8,"D d left = %d",(int)(telemeters_distances.distance_diag_left));
+		ssd1306Printf(0,30,&Font_5x8,"D d right = %d",(int)(telemeters_distances.distance_diag_right));
 		ssd1306Refresh();
 		//bluetoothPrintf("distance left :%d\tright : %d\n",(int)telemeters_distances.distance_front_left,(int)telemeters_distances.distance_front_right);
 	}
@@ -384,20 +403,50 @@ void testWallsSensors()
 	{
 		wall_see=getWallsPosition();
 		ssd1306ClearScreen();
-		if(wall_see.front == WALL_KNOW)
-			ssd1306FillRect(0,0,54,5);
+		if (wall_see.front == WALL_KNOW)
+		{
+			ssd1306FillRect(0,49,54,5);
+		}
 		else
-			ssd1306DrawRect(0,0,54,5);
-
-		if(wall_see.left == WALL_KNOW)
-			ssd1306FillRect(44,0,5,54);
-		else
-			ssd1306DrawRect(44,0,5,54);
-
-		if(wall_see.right == WALL_KNOW)
-			ssd1306FillRect(0,0,5,54);
-		else
-			ssd1306DrawRect(0,0,5,54);
+		{
+			ssd1306DrawRect(0,49,54,5);
+		}
+		switch (wall_see.next_front)
+		{
+			case WALL_KNOW:
+				ssd1306FillRect(0,0,54,5);
+				break;
+			case NO_KNOW :
+				ssd1306DrawRect(0,0,54,5);
+				break;
+			default:
+				break;
+		}
+		switch (wall_see.left)
+		{
+			case WALL_KNOW:
+				ssd1306FillRect(0,0,5,54);
+				break;
+			case NO_KNOW :
+				ssd1306DrawRect(0,0,5,54);
+				break;
+			default:
+				break;
+		}
+		switch (wall_see.right)
+		{
+			case WALL_KNOW:
+				ssd1306FillRect(49,0,5,54);
+				break;
+			case NO_KNOW :
+				ssd1306DrawRect(49,0,5,54);
+				break;
+			default:
+				break;
+		}
+		ssd1306Printf(55, 0,&Font_5x8,"F L ;%d",telemeters.left_front.average_value);
+		ssd1306Printf(55, 0,&Font_5x8,"F L ;%d",telemeters.left_front.average_value);
+		ssd1306Printf(55, 0,&Font_5x8,"F L ;%d",telemeters.left_front.average_value);
 		ssd1306Refresh();
 	}
 	telemetersStop();

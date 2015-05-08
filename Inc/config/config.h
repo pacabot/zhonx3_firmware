@@ -105,7 +105,7 @@
 
 /**************************************************************************************/
 /***************                   Maze Properties                 ********************/
-/********* you can see also Inc/application/solverMaze.h for more details *************/
+/******** you can see also Inc/application/solverMaze.h for more properties ***********/
 /**************************************************************************************/
 #define CELL_LENGTH				178
 #define MAZE_SIZE				16
