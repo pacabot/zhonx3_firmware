@@ -61,7 +61,6 @@ extern position_control_struct position_control;
 
 int positionControlInit(void);
 int positionControlLoop(void);
-int rotate_in_place(float angle, enum speedRate speed_rate);
 float positionProfileCompute(float distance, float time);
 
 #endif

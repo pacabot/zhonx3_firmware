@@ -19,6 +19,11 @@
 #include "middleware/controls/motionControl/speedControl.h"
 
 /* Types definitions */
+#define CENTER_DISTANCE 50.0
+#define SUCCES_GAP_DIST 3.0
+
+enum follow_type_enum {ALIGN_FRONT, FOLLOW_WALL};
+
 typedef struct
 {
 	int sign;
@@ -31,6 +36,8 @@ typedef struct
 {
 	double follow_error;
 	double follow_command;
+	char succes;
+	enum follow_type_enum follow_type;
     pid_control_struct follow_pid;
 }follow_control_struct;
 

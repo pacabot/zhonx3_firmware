@@ -38,6 +38,7 @@
 #include "middleware/controls/motionControl/speedControl.h"
 #include "middleware/controls/motionControl/transfertFunction.h"
 #include "middleware/controls/motionControl/followControl.h"
+#include "middleware/wall_sensors/wall_sensors.h"
 
 /* Declarations for this module */
 #include "middleware/controls/motionControl/mainControl.h"
@@ -78,7 +79,7 @@ int mainControlLoop(void)
 	return MAIN_CONTROL_E_SUCCESS;
 }
 
-int move(float angle, float radius_or_distance, float max_speed, float end_speed)//enum speedRate speed_rate, float end_speed_ratio)
+int move(float angle, float radius_or_distance, float max_speed, float end_speed)
 {
 	pid_loop.start_state = FALSE;
 	speedControlInit();
@@ -129,16 +130,86 @@ int move(float angle, float radius_or_distance, float max_speed, float end_speed
 	return POSITION_CONTROL_E_SUCCESS;
 }
 
+int rotateWithCal(enum rotation_type_enum rotation_type)
+{
+	pid_loop.start_state = FALSE;
+	speedControlInit();
+	positionControlInit();
+	transfertFunctionInit();
+	encoderResetDistance(&left_encoder);
+	encoderResetDistance(&right_encoder);
+	telemetersDistancesTypeDef distances;
+	float relative_dist = 0.0;
+
+	motorsSleepDriver(OFF);
+	pid_loop.start_state = TRUE;
+	control_params.speed_state = TRUE;
+
+	ssd1306ClearScreen();
+	ssd1306DrawString(10,20,"Front Align",&Font_5x8);
+	ssd1306Refresh();
+
+	control_params.follow_state = TRUE;
+	follow_control.follow_type = ALIGN_FRONT;
+	control_params.position_state = FALSE;
+	while (follow_control.succes != TRUE);
+
+	ssd1306ClearScreen();
+	ssd1306DrawString(10,20,"Move",&Font_5x8);
+	ssd1306Refresh();
+
+	control_params.follow_state = TRUE;
+	follow_control.follow_type = ALIGN_FRONT;
+	control_params.position_state = FALSE;
+	getTelemetersDistance(&distances);
+	relative_dist = (distances.distance_front_left + distances.distance_front_right) / 2;
+	move(0, relative_dist - CENTER_DISTANCE, 50, 0);
+	while(speed_control.end_control != 1);
+
+//	control_params.position_state = TRUE;
+//	if (rotation_type == CW)
+//		move(90, 0, 50, 0);
+//	else
+//		move(-90, 0, 50, 0);
+//	ssd1306ClearScreen();
+//	ssd1306DrawString(10,20,"Rotate 90",&Font_5x8);
+//	ssd1306Refresh();
+//	while(position_control.end_control != 1);
+//
+//	getTelemetersDistance(&distances);
+//	relative_dist = (distances.distance_front_left + distances.distance_front_right) / 2;
+//	move(0, relative_dist - CENTER_DISTANCE, 50, 0);
+//	ssd1306ClearScreen();
+//	ssd1306DrawString(10,20,"Move",&Font_5x8);
+//	ssd1306Refresh();
+//	while(speed_control.end_control != 1);
+//
+//	control_params.follow_state = FALSE;
+//	control_params.position_state = TRUE;
+//	if (rotation_type == CW)
+//		move(90, 0, 50, 0);
+//	else
+//		move(-90, 0, 50, 0);
+//	ssd1306ClearScreen();
+//	ssd1306DrawString(10,20,"Rotate 90",&Font_5x8);
+//	ssd1306Refresh();
+//	while(position_control.end_control != 1);
+
+	return POSITION_CONTROL_E_SUCCESS;
+}
+
 void mainControlTest(void)
 {
 	mainControlInit();
 	HAL_Delay(500);
 
-	control_params.speed_state = TRUE;
-	control_params.follow_state = TRUE;
-	control_params.position_state = FALSE;
+	//	control_params.speed_state = TRUE;
+	//	control_params.follow_state = TRUE;
+	//	control_params.position_state = FALSE;
 
-	move(0, 0, 500, 400);
+	rotateWithCal(CW);
+
+	//move(0, 0, 500, 400);
 	//	move(0, 90, 500, 400);
 	//	while(speed_control.end_control != 1);
 	//	move(90, 90, 500, 400);
@@ -154,15 +225,15 @@ void mainControlTest(void)
 
 	while(expanderJoyFiltered()!=JOY_LEFT)
 	{
-				ssd1306ClearScreen();
-				ssd1306PrintInt(10,  5,  "speed dist =  ",(int) (speed_control.current_distance * 100), &Font_5x8);
-				ssd1306PrintInt(10,  15, "follow err =  ",(int) (follow_control.follow_error), &Font_5x8);
-				ssd1306PrintInt(10,  25, "right_dist =  ",(int) (position_control.end_control * 100), &Font_5x8);
-				ssd1306PrintInt(10,  35, "error =  ",(int16_t) speed_control.speed_error, &Font_5x8);
-				ssd1306PrintInt(10,  45, "left PWM =  ",(int16_t) transfert_function.left_motor_pwm, &Font_5x8);
-				ssd1306PrintInt(10,  55, "right PWM =  ",(int16_t) transfert_function.right_motor_pwm, &Font_5x8);
+		ssd1306ClearScreen();
+		ssd1306PrintInt(10,  5,  "speed dist =  ",(int) (speed_control.current_distance * 100), &Font_5x8);
+		ssd1306PrintInt(10,  15, "follow err =  ",(int) (follow_control.follow_error), &Font_5x8);
+		ssd1306PrintInt(10,  25, "right_dist =  ",(int) (position_control.end_control * 100), &Font_5x8);
+		ssd1306PrintInt(10,  35, "error =  ",(int16_t) speed_control.speed_error, &Font_5x8);
+		ssd1306PrintInt(10,  45, "left PWM =  ",(int16_t) transfert_function.left_motor_pwm, &Font_5x8);
+		ssd1306PrintInt(10,  55, "right PWM =  ",(int16_t) transfert_function.right_motor_pwm, &Font_5x8);
 
-//		bluetoothPrintf("pwm right :%d \t %d \n",(int)transfert_function.right_motor_pwm, (int)(follow_control.follow_error*100));
+		//		bluetoothPrintf("pwm right :%d \t %d \n",(int)transfert_function.right_motor_pwm, (int)(follow_control.follow_error*100));
 
 		//		bluetoothPrintInt("error", follow_control.follow_error);
 		//		transfert_function.right_motor_pwm = (speed_control.speed_command - (position_control.position_command + follow_control.follow_command)) * transfert_function.pwm_ratio;

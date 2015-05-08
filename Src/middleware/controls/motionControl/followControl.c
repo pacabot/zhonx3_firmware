@@ -58,11 +58,14 @@ arm_pid_instance_f32 telemeters_pid_instance;
 
 int followControlInit(void)
 {
-	telemeters_pid_instance.Kp = 15;
+	telemeters_pid_instance.Kp = 1;
 	telemeters_pid_instance.Ki = 0;
 	telemeters_pid_instance.Kd = 50;
 
 	follow_control.follow_pid.instance = &telemeters_pid_instance;
+
+	follow_control.succes = 0;
+	follow_control.follow_type = 0;
 
 	pidControllerInit(follow_control.follow_pid.instance);
 
@@ -73,14 +76,27 @@ int followControlLoop(void)
 {
 	telemetersDistancesTypeDef distances;
 
-	getTelemetersDistance(&distances);
-	if ((distances.distance_front_left < 100.00 || distances.distance_front_right < 100.00) &&
-			(distances.distance_front_left > 10.00 || distances.distance_front_right > 10.00))
-		follow_control.follow_error = distances.distance_front_left - distances.distance_front_right;
-	else
-		follow_control.follow_error = 0;
+	if (follow_control.follow_type == ALIGN_FRONT)
+	{
+		getTelemetersDistance(&distances);
+		if ((distances.distance_front_left < 100.00 || distances.distance_front_right < 100.00) &&
+				(distances.distance_front_left > 10.00 || distances.distance_front_right > 10.00))
+		{
+			follow_control.follow_error = distances.distance_front_left - distances.distance_front_right;
+			if (follow_control.follow_error < SUCCES_GAP_DIST)
+			{
+				follow_control.succes = TRUE;
+			}
+		}
+		else
+		{
+			follow_control.follow_error = 0;
+			follow_control.succes = FALSE;
+		}
 
-	follow_control.follow_command = (pidController(follow_control.follow_pid.instance, follow_control.follow_error));// * (double)follow_params.sign;
+	}
+
+	follow_control.follow_command = (pidController(follow_control.follow_pid.instance, follow_control.follow_error));
 
 	return SPEED_CONTROL_E_SUCCESS;
 }
