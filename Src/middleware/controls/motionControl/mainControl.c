@@ -135,22 +135,22 @@ void mainControlTest(void)
 	HAL_Delay(500);
 
 	control_params.speed_state = TRUE;
-	control_params.follow_state = TRUE;
-	control_params.position_state = FALSE;
+	control_params.follow_state = FALSE;
+	control_params.position_state = TRUE;
 
-	move(0, 0, 500, 400);
-	//	move(0, 90, 500, 400);
-	//	while(speed_control.end_control != 1);
-	//	move(90, 90, 500, 400);
-	//	while(speed_control.end_control != 1);
-	//	move(-90, 90, 500, 400);
-	//	while(speed_control.end_control != 1);
-	//	move(0, 360, 2000, 400);
-	//	while(speed_control.end_control != 1);
-	//	move(90, 90, 500, 400);
-	//	while(speed_control.end_control != 1);
-	//	move(0, 90, 500, 0);
-	//	while(speed_control.end_control != 1);
+	//move(0, 0, 500, 400);
+		move(0, 90, 500, 400);
+		while(speed_control.end_control != 1);
+		move(90, 90, 500, 400);
+		while(speed_control.end_control != 1);
+		move(-90, 90, 500, 400);
+		while(speed_control.end_control != 1);
+		move(0, 360, 2000, 400);
+		while(speed_control.end_control != 1);
+		move(90, 90, 500, 400);
+		while(speed_control.end_control != 1);
+		move(0, 90, 500, 0);
+		while(speed_control.end_control != 1);
 
 	while(expanderJoyFiltered()!=JOY_LEFT)
 	{

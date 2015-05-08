@@ -48,8 +48,8 @@ extern void maze();
 extern void testWallsSensors();
 
 /*
- * to create a new menu you have to create a new variable of type "menuItem" like this :
- * menuItem name =
+ * to create a new menu you have to create a new variable of type "const menuItem" like this :
+ * const menuItem name =
  * {
  * 		"menu name",
  * 		{
@@ -65,7 +65,7 @@ float titi=4.0;
 float tata=4.0;
 
 
-menuItem testGraphicMenu =
+const menuItem testGraphicMenu =
 {
 	"test graphic menu",
 	{
@@ -77,7 +77,7 @@ menuItem testGraphicMenu =
 	}
 };
 
-menuItem maze_menu=
+const menuItem maze_menu=
 {
 		"maze menu",
 		{
@@ -90,18 +90,18 @@ menuItem maze_menu=
 
 };
 
-menuItem parameters_menu=
+const menuItem parameters_menu=
 {
 		"Parameters menu",
 		{
 				{"calibration",'f',(void*)wallSensorsCalibration}
 		}
 };
-menuItem peripheral_test_menu=
+const menuItem peripheral_test_menu=
 {
 		"peripherals test menu"
 };
-menuItem tests_menu=
+const menuItem tests_menu=
 {
 		"TEST MENU",
 		{
@@ -122,7 +122,7 @@ menuItem tests_menu=
 		}
 };
 
-menuItem mainMenu =
+const menuItem mainMenu =
 {
 #ifdef MEDDLE
 		"ZHONX III meddle V0.2",
@@ -140,7 +140,7 @@ menuItem mainMenu =
 		}
 };
 
-int menu(menuItem Menu)
+int menu(const menuItem Menu)
 {
 	signed char line_screen=1;
 	signed char line_menu=0;
@@ -209,7 +209,7 @@ int menu(menuItem Menu)
 				modifyLongParam(Menu.line[line_menu].name,(long*)Menu.line[line_menu].param);
 				break;
 			case 'm':
-				menu(*(menuItem*)Menu.line[line_menu].param);
+				menu(*(const menuItem*)Menu.line[line_menu].param);
 				break;
 			case 'f':
 				if (Menu.line[line_menu].param!=null)
@@ -261,7 +261,7 @@ void menuHighlightedMove(unsigned char y, unsigned char max_y)
 	ssd1306Refresh();
 }
 
-void displayMenu(menuItem menu,int line)
+void displayMenu(const menuItem menu,int line)
 {
 	//char str[5];
 	ssd1306ClearScreen();
