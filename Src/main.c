@@ -62,7 +62,7 @@ void SystemClock_Config(void);
 
 /* USER CODE BEGIN 0 */
 #include "main.h"
-
+void LineTest(void);
 extern menuItem mainMenu;
 
 /* USER CODE END 0 */
@@ -111,6 +111,7 @@ int main(void)
 	ledPowerBlink(990, 10, 0);
 	settingsInit();
 
+	LineTest();
 	while (1)
 		menu(mainMenu);
 

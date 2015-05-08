@@ -9,7 +9,7 @@
 #define LINE_FOLLOWER_H_
 
 void LineTest(void);
-void lineFollower_test(void);
+void lineFollower_test(double LM, double FM, double RM);
 
 /* Types definitions */
 typedef struct
