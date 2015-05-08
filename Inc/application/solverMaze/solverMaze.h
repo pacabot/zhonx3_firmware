@@ -53,6 +53,7 @@ typedef struct
 
 typedef struct
 {
+	char next_front;
 	char front;
 	char left;
 	char right;
