@@ -50,6 +50,9 @@ int wallSensorsCalibration (void)
 
 	telemetersInit();
 	mainControlInit();
+	control_params.speed_state = TRUE;
+	control_params.follow_state = FALSE;
+	control_params.position_state = TRUE;
 	HAL_Delay(1000);
 	for(int i = 0; i < NUMBER_OF_CELL; i++)
 	{
@@ -276,6 +279,7 @@ int getTelemetersDistance (telemetersDistancesTypeDef *telemeters_distances)
 		else if (cell_front_right >= NUMBER_OF_CELL)
 		{
 			cell_front_right=NUMBER_OF_CELL;
+			value_front_right=telemeter_right_front_voltage[cell_front_right];
 			break;
 		}
 	}	while ((value_diag_left>telemeter_left_diag_voltage[cell_diag_left]) || (value_diag_left<telemeter_left_diag_voltage[cell_diag_left + 1]) )
@@ -289,6 +293,7 @@ int getTelemetersDistance (telemetersDistancesTypeDef *telemeters_distances)
 		else if (cell_diag_left >= NUMBER_OF_CELL)
 		{
 			cell_diag_left=NUMBER_OF_CELL;
+			value_diag_left=telemeter_left_diag_voltage[cell_diag_left];
 			break;
 		}
 	}
@@ -304,6 +309,7 @@ int getTelemetersDistance (telemetersDistancesTypeDef *telemeters_distances)
 		else if (cell_diag_right >= NUMBER_OF_CELL)
 		{
 			cell_diag_right=NUMBER_OF_CELL;
+			value_diag_right=telemeter_right_diag_voltage[cell_diag_right];
 			break;
 		}
 	}
