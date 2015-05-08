@@ -20,6 +20,8 @@
 #define MAIN_CONTROL_E_ERROR    MAKE_ERROR(MAIN_CONTROL_MODULE_ID, 1)
 
 /* Types definitions */
+enum rotation_type_enum {CW, CCW};
+
 typedef struct
 {
 	char follow_state;
@@ -45,6 +47,7 @@ int mainControlLoop(void);
  * @retval HAL status
  */
 int move(float angle, float radius_or_distance, float max_speed, float end_speed);
+int rotateWithCal(enum rotation_type_enum rotation_type);
 void mainControlTest(void);
 
 #endif // __MAINCONTROL_H

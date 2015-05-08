@@ -27,8 +27,8 @@
 #define RIGHT 1
 #define UTURN 2
 #define LEFT 3
-#define NO_KNOW 0
-#define WALL_KNOW 1
+#define NO_KNOWN 0
+#define WALL_PRESENCE 1
 #define NO_WALL 2
 
 #define SPEED_ROTATION		50

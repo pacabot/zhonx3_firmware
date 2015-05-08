@@ -1,7 +1,7 @@
 /**
   ******************************************************************************
   * File Name          : main.c
-  * Date               : 08/05/2015 12:17:14
+  * Date               : 09/05/2015 00:03:38
   * Description        : Main program body
   ******************************************************************************
   *
@@ -158,8 +158,6 @@ void SystemClock_Config(void)
   PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_RTC;
   PeriphClkInitStruct.RTCClockSelection = RCC_RTCCLKSOURCE_LSI;
   HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct);
-
-  HAL_RCC_EnableCSS();
 
 }
 
