@@ -111,7 +111,7 @@ int main(void)
 	ledPowerBlink(990, 10, 0);
 	settingsInit();
 
-	LineTest();
+//	LineTest();
 	while (1)
 		menu(mainMenu);
 

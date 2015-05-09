@@ -114,7 +114,7 @@ int followControlLoop(void)
 	}
 	if (follow_control.follow_type == FOLLOW_LINE)
 	{
-		follow_control.follow_error = lineFollower.position;
+		follow_control.follow_error = line_follower.position;
 	}
 
 	follow_control.follow_command = (pidController(follow_control.follow_pid.instance, follow_control.follow_error));

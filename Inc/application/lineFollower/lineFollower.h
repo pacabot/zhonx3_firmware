@@ -8,9 +8,6 @@
 #ifndef LINE_FOLLOWER_H_
 #define LINE_FOLLOWER_H_
 
-void LineTest(void);
-void lineFollower_test(double LM, double FM, double RM);
-
 /* Types definitions */
 typedef struct
 {
@@ -32,7 +29,10 @@ typedef struct
 //	double nb_loop_maint;
 //	double maintain_dist;
 //	int   sign;
-}lineFollower_struct;
-extern lineFollower_struct lineFollower;
+}line_follower_struct;
+extern line_follower_struct line_follower;
+
+void LineTest(void);
+void line_follower_test(double CoefLeft, double CoefFront, double CoefRight);
 
 #endif /* LINE_FOLLOWER_H_ */
