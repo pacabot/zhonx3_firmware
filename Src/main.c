@@ -1,7 +1,7 @@
 /**
   ******************************************************************************
   * File Name          : main.c
-  * Date               : 08/05/2015 12:17:14
+  * Date               : 09/05/2015 00:03:38
   * Description        : Main program body
   ******************************************************************************
   *
@@ -62,7 +62,7 @@ void SystemClock_Config(void);
 
 /* USER CODE BEGIN 0 */
 #include "main.h"
-
+void LineTest(void);
 extern menuItem mainMenu;
 
 /* USER CODE END 0 */
@@ -111,6 +111,7 @@ int main(void)
 	ledPowerBlink(990, 10, 0);
 	settingsInit();
 
+//	LineTest();
 	while (1)
 		menu(mainMenu);
 
@@ -157,8 +158,6 @@ void SystemClock_Config(void)
   PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_RTC;
   PeriphClkInitStruct.RTCClockSelection = RCC_RTCCLKSOURCE_LSI;
   HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct);
-
-  HAL_RCC_EnableCSS();
 
 }
 

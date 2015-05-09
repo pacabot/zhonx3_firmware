@@ -37,7 +37,7 @@ typedef struct
 
 int wallSensorsCalibration();
 int getTelemetersDistance (telemetersDistancesTypeDef *telemeter_distances);
-walls getWallsPosition();
+walls getCellState();
 void testWallsSensors();
 
 #endif /* WALL_SENSORS_H_ */

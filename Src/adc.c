@@ -1,7 +1,7 @@
 /**
   ******************************************************************************
   * File Name          : ADC.c
-  * Date               : 08/05/2015 12:17:10
+  * Date               : 09/05/2015 00:03:35
   * Description        : This file provides code for the configuration
   *                      of the ADC instances.
   ******************************************************************************
@@ -140,6 +140,12 @@ void MX_ADC2_Init(void)
     */
   sConfigInjected.InjectedChannel = ADC_CHANNEL_4;
   sConfigInjected.InjectedRank = 1;
+  HAL_ADCEx_InjectedConfigChannel(&hadc2, &sConfigInjected);
+
+    /**Configures for the selected ADC injected channel its corresponding rank in the sequencer and its sample time 
+    */
+  sConfigInjected.InjectedChannel = ADC_CHANNEL_11;
+  sConfigInjected.InjectedRank = 2;
   HAL_ADCEx_InjectedConfigChannel(&hadc2, &sConfigInjected);
 
     /**Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time. 
