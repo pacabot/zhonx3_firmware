@@ -239,8 +239,9 @@ void mainControlTest(void)
 //	move(0, 600, 1000, 0);
 //	rotateWithCal(CW);
 
-//	move(0, 0, 500, 400);
-//		move(90, 0, 400, 0);
+		move(0, 200, 500, 400);
+		while(speed_control.end_control != 1);
+		move(90, 0, 400, 0);
 		while(position_control.end_control != 1);
 	//	move(90, 90, 500, 400);
 	//	while(speed_control.end_control != 1);
