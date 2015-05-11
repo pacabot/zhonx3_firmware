@@ -132,8 +132,8 @@ const menuItem mainMenu =
 		{
 				{"maze menu",'m',			(void*)&maze_menu},
 				{"Test menu",'m',			(void*)&tests_menu},
-				{"mainControl Test",'f',		(void*)&mainControlTest},
-				{"test line",'f', (void*)LineTest},		
+				{"mainControl Test",'f',	(void*)&mainControlTest},
+				{"test line",'f', 			(void*)LineTest},
 				{"parameters menu",'m',		(void*)&parameters_menu},
 				{"test graph",'m',			(void*)&testGraphicMenu},
 				{0,0,0}
