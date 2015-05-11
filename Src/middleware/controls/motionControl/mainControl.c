@@ -72,7 +72,10 @@ int mainControlLoop(void)
 	if (control_params.position_state == TRUE)
 		positionControlLoop();
 	if (control_params.follow_state == TRUE)
+	{
 		followControlLoop();
+		control_params.position_state = FALSE;
+	}
 
 	transfertFunctionLoop();
 
