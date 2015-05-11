@@ -46,6 +46,10 @@ extern int wallSensorsCalibration (void);
 extern void testTelemeterDistance();
 extern void maze();
 extern void testWallsSensors();
+extern void followWallTest(void);
+extern void followLineTest(void);
+extern void rotateTest(void);
+extern void curveRotateTest(void);
 
 /*
  * to create a new menu you have to create a new variable of type "const menuItem" like this :
@@ -105,20 +109,32 @@ const menuItem tests_menu=
 {
 		"TEST MENU",
 		{
-				{"test distantce",'f',(void*)testTelemeterDistance},
-				{"test wall sensor",'f',(void*)testWallsSensors},
-				{"test bluetooth",'f', (void*)bluetoothTest},
-				{"test multimeter",'f', (void*)mulimeterTest},
-				{"test display",'f', (void*)ssd1306Test},
-				{"test eeprom",'f', (void*)eepromTest},
-				{"test encoders",'f', (void*)encoderTest},
-				{"test joystick",'f', (void*)joystickTest},
-				{"test gyroscope",'f', (void*)adxrs620Test},
-				{"test telemeters",'f', (void*)telemetersTest},
-				{"test beeper",'f', (void*)toneTest},
-				{"test motors",'f', (void*)motorsTest},
-				{"test line sensors",'f', (void*)lineSensorsTest},
+				{"test distantce",		'f', (void*)testTelemeterDistance},
+				{"test wall sensor",	'f', (void*)testWallsSensors},
+				{"test bluetooth",		'f', (void*)bluetoothTest},
+				{"test multimeter",		'f', (void*)mulimeterTest},
+				{"test display",		'f', (void*)ssd1306Test},
+				{"test eeprom",			'f', (void*)eepromTest},
+				{"test encoders",		'f', (void*)encoderTest},
+				{"test joystick",		'f', (void*)joystickTest},
+				{"test gyroscope",		'f', (void*)adxrs620Test},
+				{"test telemeters",		'f', (void*)telemetersTest},
+				{"test beeper",			'f', (void*)toneTest},
+				{"test motors",			'f', (void*)motorsTest},
+				{"test line sensors",	'f', (void*)lineSensorsTest},
 				{0,0,0}
+		}
+};
+
+const menuItem control_menu=
+{
+		"control menu",
+		{
+			{"control test",'f',		(void*)mainControlTest},
+			{"follow the wall",'f',		(void*)followWallTest},
+			{"follow the line",'f',		(void*)followLineTest},
+			{"rotate",'f',				(void*)rotateTest},
+			{"curve rotate",'f',		(void*)curveRotateTest},
 		}
 };
 
@@ -132,7 +148,7 @@ const menuItem mainMenu =
 		{
 				{"maze menu",'m',			(void*)&maze_menu},
 				{"Test menu",'m',			(void*)&tests_menu},
-				{"mainControl Test",'f',	(void*)&mainControlTest},
+				{"Control menu",'m',		(void*)&control_menu},
 				{"test line",'f', 			(void*)LineTest},
 				{"parameters menu",'m',		(void*)&parameters_menu},
 				{"test graph",'m',			(void*)&testGraphicMenu},
