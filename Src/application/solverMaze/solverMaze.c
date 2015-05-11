@@ -525,7 +525,7 @@ void move_zhonx_arc (int direction_to_go, positionRobot *positionZhonx, int numb
 			}
 			else
 			{
-				move (-90, CELL_LENGTH / 2, SPEED_ROTATION, 0); //step_motors_rotate(-90, CELL_LENGTH/2, chain);
+				move (-90, CELL_LENGTH / 2, SPEED_TRANSLATION, SPEED_TRANSLATION); //step_motors_rotate(-90, CELL_LENGTH/2, chain);
 				while(speed_control.end_control != 1);
 				distanceToMove -= CELL_LENGTH;
 			}
@@ -559,7 +559,7 @@ void move_zhonx_arc (int direction_to_go, positionRobot *positionZhonx, int numb
 		chain = SPEED_TRANSLATION;
 	}
 
-	move (0, distanceToMove, 0, chain);
+	move (0, distanceToMove, SPEED_TRANSLATION, chain);
 	//step_motors_move(distanceToMove, 0, chain);
 	while(speed_control.end_control != 1);
 	positionZhonx->midOfCell = end_mid_of_case;
