@@ -78,7 +78,7 @@ typedef struct
     char x;
     char y;
     char orientation;
-    char midOfCase;
+    char midOfCell;
 } positionRobot;
 
 
@@ -103,7 +103,7 @@ void moveRealZhonx(labyrinthe *maze, positionRobot *positionZhonx, coordinate *w
 void run1 (labyrinthe *maze,positionRobot *positionZhonx, char xFinish, char yFinish);
 void run2(labyrinthe *maze, positionRobot *positionZhonx,char posXStart, char posYStart);
 void moveRealZhonxArc(labyrinthe *maze, positionRobot *positionZhonx, coordinate *way);
-void move_zhonx_arc (int direction_to_go, positionRobot *positionZhonx, int numberOfCase, char endMidOfCase);
+void move_zhonx_arc (int direction_to_go, positionRobot *positionZhonx, int numberOfCase, char end_mid_of_cell);
 void testMoveRealZhonx(labyrinthe *maze, positionRobot *positionZhonx, coordinate *way, char *endX, char *endY);
 void doUTurn(positionRobot *positionZhonx);
 void waitStart(void);
