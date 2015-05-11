@@ -27,4 +27,5 @@ typedef struct
 	unsigned long threshold_greater;
 }settings;
 settings zhonxSettings;
+int settingsInit (void);
 #endif /* SETTING_H_ */
