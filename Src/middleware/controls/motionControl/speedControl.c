@@ -188,7 +188,13 @@ int speedCompute(void)
 float speedProfileCompute(float distance)
 {
 	if (distance == 0)
+	{
+		speed_control.end_control = 1;
+		speed_params.nb_loop_accel = 0;
+		speed_params.nb_loop_decel = 0;
+		speed_params.nb_loop_maint = 0;
 		return 0.0;
+	}
 
 	motorsSleepDriver(ON);
 

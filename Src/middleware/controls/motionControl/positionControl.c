@@ -168,6 +168,7 @@ float positionProfileCompute(float distance, float time)
 {
 	if (distance == 0)
 	{
+		position_control.end_control = 1;
 		position_params.nb_loop_accel = 0;
 		position_params.nb_loop_decel = 0;
 		position_params.nb_loop_maint = 0;
