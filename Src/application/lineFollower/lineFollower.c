@@ -65,12 +65,10 @@ void LineTest(void)
 	double droite_max=1000.0/(double)lineSensors.right.adc_value;
 	tone(c, 500);
 
-	control_params.speed_state = TRUE;
-	control_params.position_state = FALSE;
-	control_params.follow_state = TRUE;
 	follow_control.follow_type = FOLLOW_LINE;
 
 	move(0, 10000, 50, 0);
+	while(isEndMove() != TRUE);
 
 	while(expanderJoyFiltered()!=JOY_LEFT)
 	{

@@ -89,9 +89,7 @@ int mainControlLoop(void)
 int move(float angle, float radius_or_distance, float max_speed, float end_speed)
 {
 	pid_loop.start_state = FALSE;
-	speedControlInit();
-	positionControlInit();
-	transfertFunctionInit();
+	motorsSleepDriver(ON);
 
 	encoderResetDistance(&left_encoder);
 	encoderResetDistance(&right_encoder);
@@ -115,23 +113,21 @@ int move(float angle, float radius_or_distance, float max_speed, float end_speed
 	speed_params.accel 		= max_speed * 2;//(MAX_ACCEL)
 	speed_params.decel 		= max_speed * 2;//
 
-	control_params.follow_state = NOFOLLOW;
 	control_params.speed_state = TRUE;
+	control_params.follow_state = TRUE;
 
 	if (angle == 0)
 	{
-		if (follow_control.follow_type != NOFOLLOW)
-			control_params.follow_state = TRUE;
+		if (follow_control.follow_type == NOFOLLOW)
+			control_params.follow_state = FALSE;
 
-		follow_params.active_state = 0;
-		distance = radius_or_distance;
-
-		speedProfileCompute(distance);
+		speedProfileCompute(radius_or_distance);
 		positionProfileCompute(0,0);
 	}
 	else
 	{
-		follow_params.active_state = 0;
+		control_params.follow_state = NOFOLLOW;
+
 		distance_per_wheel = (2.0 * PI * ROTATION_DIAMETER * (angle / 360.0)) * slip_compensation;
 		distance = fabsf((PI * (2 * radius_or_distance) * (angle / 360.0)));
 
@@ -151,73 +147,50 @@ char isEndMove(void)
 		return FALSE;
 }
 
-int rotateWithCal(enum rotation_type_enum rotation_type)
+int rotate180WithCal(enum rotation_type_enum rotation_type, float max_speed, float end_speed)
 {
+	char save_folow_type = follow_control.follow_type;
 	telemetersDistancesTypeDef distances;
 	float relative_dist = 0.0;
 
-	control_params.follow_state = TRUE;
-
 	/**************************************************************************/
-	ssd1306ClearScreen();
-	ssd1306DrawString(10,20,"Front Align",&Font_5x8);
-	ssd1306Refresh();
 
 	follow_control.follow_type = ALIGN_FRONT;
 	move(0, 0, 0, 0);
-	while (follow_control.succes != TRUE);
-
-	/**************************************************************************/
-	ssd1306ClearScreen();
-	ssd1306DrawString(10,20,"Move",&Font_5x8);
-	ssd1306Refresh();
-
-	getTelemetersDistance(&distances);
-	relative_dist = (distances.distance_front_left + distances.distance_front_right) / 2;
-	move(0, relative_dist - CENTER_DISTANCE, 50, 0);
-	while(speed_control.end_control != 1);
-
-	/**************************************************************************/  // OK
-	ssd1306ClearScreen();
-	ssd1306DrawString(10,20,"Rotate 90",&Font_5x8);
-	ssd1306Refresh();
-
 	HAL_Delay(500);
-
-	if (rotation_type == CW)
-		move(90, 0, 50, 0);
-	else
-		move(-90, 0, 50, 0);
-	while(position_control.end_control != 1);
-
-	/**************************************************************************/
-	ssd1306ClearScreen();
-	ssd1306DrawString(10,20,"Front Align",&Font_5x8);
-	ssd1306Refresh();
-
 	while (follow_control.succes != TRUE);
 
 	/**************************************************************************/
-	ssd1306ClearScreen();
-	ssd1306DrawString(10,20,"Move",&Font_5x8);
-	ssd1306Refresh();
 
 	getTelemetersDistance(&distances);
 	relative_dist = (distances.distance_front_left + distances.distance_front_right) / 2;
-	move(0, relative_dist - CENTER_DISTANCE, 50, 0);
-	while(speed_control.end_control != 1);
+	move(0, relative_dist - CENTER_DISTANCE, max_speed, 0);
+	while(isEndMove() != TRUE);
 
 	/**************************************************************************/
-	ssd1306ClearScreen();
-	ssd1306DrawString(10,20,"Rotate 90",&Font_5x8);
-	ssd1306Refresh();
 
 	if (rotation_type == CW)
-		move(90, 0, 50, 0);
+		move(90, 0, max_speed, 0);
 	else
-		move(-90, 0, 50, 0);
+		move(-90, 0, max_speed, 0);
+	while(isEndMove() != TRUE);
 
-	//	while(position_control.end_control != 1);
+	/**************************************************************************/
+
+	getTelemetersDistance(&distances);
+	relative_dist = (distances.distance_front_left + distances.distance_front_right) / 2;
+	move(0, relative_dist - CENTER_DISTANCE, max_speed, 0);
+	while(isEndMove() != TRUE);
+
+	/**************************************************************************/
+
+	if (rotation_type == CW)
+		move(90, 0, max_speed, end_speed);
+	else
+		move(-90, 0, max_speed, end_speed);
+	while(isEndMove() != TRUE);
+
+	follow_control.follow_type = save_folow_type;
 
 	return POSITION_CONTROL_E_SUCCESS;
 }
@@ -249,8 +222,14 @@ void mainControlDisplayTest(void)
 void mainControlTest(void)
 {
 	mainControlInit();
+	telemetersStart();
 	HAL_Delay(500);
 
+	follow_control.follow_type = NOFOLLOW;
+
+	rotate180WithCal(CCW, 400, 0);
+
+	telemetersStop();
 	mainControlDisplayTest();
 }
 
@@ -274,6 +253,8 @@ void rotateTest()
 	move(90, 0, 100, 0);
 	while(isEndMove() != TRUE);
 	move(0, 180, 100, 0);
+	while(isEndMove() != TRUE);
+	move(0, 0, 0, 0);
 	while(isEndMove() != TRUE);
 
 	mainControlDisplayTest();

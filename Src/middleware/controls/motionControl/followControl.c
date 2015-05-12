@@ -58,14 +58,15 @@ arm_pid_instance_f32 telemeters_pid_instance;
 
 int followControlInit(void)
 {
-	telemeters_pid_instance.Kp = 15;
+	telemeters_pid_instance.Kp = 25;
 	telemeters_pid_instance.Ki = 0;
-	telemeters_pid_instance.Kd = 50;
+	telemeters_pid_instance.Kd = 60;
 
 	follow_control.follow_pid.instance = &telemeters_pid_instance;
 
 	follow_control.succes = 0;
 	follow_control.follow_type = 0;
+	follow_control.succes = FALSE;
 
 	pidControllerInit(follow_control.follow_pid.instance);
 
@@ -94,7 +95,7 @@ int followControlLoop(void)
 			follow_control.succes = FALSE;
 		}
 	}
-	if (follow_control.follow_type == FOLLOW_WALL)
+	else if (follow_control.follow_type == FOLLOW_WALL)
 	{
 		walls wall_saw;
 		wall_saw = getCellState();
@@ -112,7 +113,7 @@ int followControlLoop(void)
 			rightWallFollow(&distances);
 		}
 	}
-	if (follow_control.follow_type == FOLLOW_LINE)
+	else if (follow_control.follow_type == FOLLOW_LINE)
 	{
 		follow_control.follow_error = line_follower.position;
 	}

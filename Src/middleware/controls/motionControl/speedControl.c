@@ -63,7 +63,6 @@ int speedControlInit(void)
 	speed_control.old_distance = 0;
 	speed_control.current_speed = 0;
 	speed_control.end_control = 0;
-
 	speed_control.speed_error = 0;
 	speed_control.speed_command = 0;
 	speed_control.speed_consign = 0;
@@ -85,7 +84,6 @@ int speedControlLoop(void)
 		speed_control.current_distance = (encoderGetDistance(&left_encoder) + encoderGetDistance(&right_encoder)) / 2;
 	else
 		speed_control.current_distance = -1.0 * (encoderGetDistance(&left_encoder) + encoderGetDistance(&right_encoder)) / 2;
-
 
 	//	speedCompute();
 
@@ -187,16 +185,26 @@ int speedCompute(void)
 /**************************************************************************/
 float speedProfileCompute(float distance)
 {
+	speed_control.current_distance 	= 0;
+	speed_control.gap_distance_per_loop 	= 0;
+	speed_control.current_distance_consign 	= 0;
+	speed_control.old_distance 		= 0;
+	speed_control.current_speed 	= 0;
+	speed_control.end_control 		= 0;
+	speed_control.speed_error 		= 0;
+	speed_control.speed_command 	= 0;
+	speed_control.speed_consign 	= 0;
+
 	if (distance == 0)
 	{
 		speed_control.end_control = 1;
 		speed_params.nb_loop_accel = 0;
 		speed_params.nb_loop_decel = 0;
 		speed_params.nb_loop_maint = 0;
+		speed_params.end_speed = 0;
+		speed_params.distance_consign = 0;
 		return 0.0;
 	}
-
-	motorsSleepDriver(ON);
 
 	speed_params.accel_dist = 0.5 * (( (-1.0 * pow(speed_params.initial_speed, 2)) + pow(speed_params.max_speed, 2)) / speed_params.accel);
 	speed_params.decel_dist = -0.5 * ((speed_params.end_speed - speed_params.max_speed) * (speed_params.end_speed + speed_params.max_speed)) / speed_params.decel;
