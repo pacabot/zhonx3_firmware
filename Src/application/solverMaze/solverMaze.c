@@ -27,14 +27,16 @@
 
 void test()
 {
-	coordinate *end_way;
-	coordinate *start_way;
-	new_dot(&end_way,7,8);
-	start_way=end_way;
-	new_dot(&end_way,6,8);
-	new_dot(&end_way,6,7);
-	new_dot(&end_way,6,6);
 	positionRobot position_zhonx={8,8,NORTH,true};
+	coordinate *end_way=null;
+	coordinate *start_way;
+	new_dot(&end_way,8,7);
+	start_way=end_way;
+	new_dot(&end_way,8,6);
+//	new_dot(&end_way,7,6);
+//	new_dot(&end_way,8,6);
+	new_dot(&end_way,8,7);
+	new_dot(&end_way,8,8);
 	labyrinthe maze;
 	maze_init(&maze);
 	moveRealZhonxArc(&maze,&position_zhonx,start_way);
@@ -47,15 +49,13 @@ extern int maze(void)
 	maze_init (&maze);
 	positionRobot positionZhonx;
 
+	telemetersInit();
+	telemetersStop();
 	mainControlInit ();
-	control_params.speed_state = TRUE;
-	control_params.follow_state = FALSE;
-	control_params.position_state = TRUE;
-//	while(1)
-//	{
-//		test();
-//		HAL_Delay(1000);
-//	}
+	HAL_Delay(500);
+	follow_control.follow_type = NOFOLLOW;
+		test();
+		HAL_Delay(1000);
 
 	HAL_Delay(10000);
 
@@ -411,44 +411,45 @@ void moveRealZhonxArc(labyrinthe *maze, positionRobot *positionZhonx, coordinate
 void move_zhonx_arc (int direction_to_go, positionRobot *positionZhonx, int numberOfCell, char end_mid_of_case, char chain)
 {
 	ssd1306ClearScreen();
+	telemetersStart();
 	int distanceToMove = numberOfCell * CELL_LENGTH;
 	int turn = (4 + direction_to_go - positionZhonx->orientation) % 4;
 	switch (turn)
 	{
 		case FORWARD :
-			ssd1306Printf(0,0,&Font_5x8,"forward");
+//			ssd1306Printf(0,0,&Font_5x8,"forward");
 			break;
 		case RIGHT :
-			ssd1306Printf(0,0,&Font_5x8,"right");
+//			ssd1306Printf(0,0,&Font_5x8,"right");
 			if (positionZhonx->midOfCell == true)
 			{
-				move (90, 1, SPEED_ROTATION, 0);
-				while(position_control.end_control != 1);
+				move (90, 0, SPEED_ROTATION, 0);
+				while(isEndMove() != TRUE);
 			}
 			else
 			{
 				move (90, CELL_LENGTH / 2, SPEED_TRANSLATION, 0);
 				distanceToMove -= CELL_LENGTH;
-				while(speed_control.end_control != 1);
+				while(isEndMove() != TRUE);
 
 			}
 			break;
 		case UTURN :
 			ssd1306Printf(0,0,&Font_5x8,"uturn");
-			move (180, 1, SPEED_ROTATION, 0);
-			while(position_control.end_control != 1);
+			move (180, 0, SPEED_ROTATION, 0);
+			while(isEndMove() != TRUE);
 			break;
 		case LEFT :
-			ssd1306Printf(0,0,&Font_5x8,"left");
+//			ssd1306Printf(0,0,&Font_5x8,"left");
 			if (positionZhonx->midOfCell == true)
 			{
-				move (-90, 1, SPEED_ROTATION, 0);
-				while(position_control.end_control != 1);
+				move (-90, 0, SPEED_ROTATION, 0);
+				while(isEndMove() != TRUE);
 			}
 			else
 			{
 				move (-90, CELL_LENGTH / 2, SPEED_TRANSLATION, 0);
-				while(speed_control.end_control != 1);
+				while(isEndMove() != TRUE);
 				distanceToMove -= CELL_LENGTH;
 			}
 
@@ -472,8 +473,9 @@ void move_zhonx_arc (int direction_to_go, positionRobot *positionZhonx, int numb
 	}
 	move (0, distanceToMove, SPEED_TRANSLATION, 0);
 	while(speed_control.end_control != 1);
-	HAL_Delay(1000);
 	positionZhonx->midOfCell = end_mid_of_case;
+	telemetersStop();
+	HAL_Delay(500);
 
 }
 
