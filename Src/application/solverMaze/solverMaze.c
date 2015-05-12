@@ -27,12 +27,17 @@
 
 void test()
 {
-	positionRobot positionZhonx;
-	positionZhonx.midOfCell=true;
-	positionZhonx.orientation=NORTH;
-	move_zhonx_arc(WEST, &positionZhonx, 1,false, false);
-	move_zhonx_arc(NORTH, &positionZhonx, 1,false, true);
-	move_zhonx_arc(EAST, &positionZhonx, 1,true, false);
+	coordinate *end_way;
+	coordinate *start_way;
+	new_dot(&end_way,7,8);
+	start_way=end_way;
+	new_dot(&end_way,6,8);
+	new_dot(&end_way,6,7);
+	new_dot(&end_way,6,6);
+	positionRobot position_zhonx={8,8,NORTH,true};
+	labyrinthe maze;
+	maze_init(&maze);
+	moveRealZhonxArc(&maze,&position_zhonx,start_way);
 }
 
 extern int maze(void)
@@ -46,10 +51,13 @@ extern int maze(void)
 	control_params.speed_state = TRUE;
 	control_params.follow_state = FALSE;
 	control_params.position_state = TRUE;
+//	while(1)
+//	{
+//		test();
+//		HAL_Delay(1000);
+//	}
 
-	//test();
-
-	HAL_Delay(1000);
+	HAL_Delay(10000);
 
 	/*init for different micromouse competition*/
 
@@ -104,7 +112,7 @@ extern int maze(void)
 void exploration(labyrinthe *maze, positionRobot* positionZhonx, char xFinish,
 		char yFinish)
 {
-	coordinate way = { 0, 0, 0 };
+	coordinate way = { 0, 0, 0, 0};
 	motorsSleepDriver (OFF);
 	telemetersStart();
 	HAL_Delay(500);
@@ -391,7 +399,7 @@ void moveRealZhonxArc(labyrinthe *maze, positionRobot *positionZhonx, coordinate
 			endMidCase = false;
 		else
 			endMidCase = true;
-		if (way->next == null)
+		if (way == null)
 			chain = false;
 		else
 			chain = true;
@@ -400,71 +408,53 @@ void moveRealZhonxArc(labyrinthe *maze, positionRobot *positionZhonx, coordinate
 	}
 }
 
-void move_zhonx_arc (int direction_to_go, positionRobot *positionZhonx, int numberOfCase, char end_mid_of_case, char chain)
+void move_zhonx_arc (int direction_to_go, positionRobot *positionZhonx, int numberOfCell, char end_mid_of_case, char chain)
 {
-	int distance_in_rotation;
-	int end_chain;
-	int end_arc_speed = 0;
-	int distanceToMove = CELL_LENGTH * numberOfCase;
+	ssd1306ClearScreen();
+	int distanceToMove = numberOfCell * CELL_LENGTH;
 	int turn = (4 + direction_to_go - positionZhonx->orientation) % 4;
-	if (positionZhonx->midOfCell == true)
-	{
-		distance_in_rotation = 0;
-	}
-	else
-	{
-		distanceToMove -= CELL_LENGTH;
-		if (chain == true)
-		{
-			end_arc_speed = SPEED_TRANSLATION;
-		}
-	}
-	if(chain == true)
-	{
-		end_chain = SPEED_TRANSLATION;
-	}
-	else
-	{
-		end_chain = 0;
-	}
-
-	positionZhonx->orientation = direction_to_go;
 	switch (turn)
 	{
 		case FORWARD :
+			ssd1306Printf(0,0,&Font_5x8,"forward");
 			break;
 		case RIGHT :
+			ssd1306Printf(0,0,&Font_5x8,"right");
 			if (positionZhonx->midOfCell == true)
 			{
-				move (90, 0, SPEED_ROTATION, 0);
+				move (90, 1, SPEED_ROTATION, 0);
 				while(position_control.end_control != 1);
 			}
 			else
 			{
-				move (90, CELL_LENGTH / 2, SPEED_TRANSLATION, end_arc_speed);
+				move (90, CELL_LENGTH / 2, SPEED_TRANSLATION, 0);
+				distanceToMove -= CELL_LENGTH;
 				while(speed_control.end_control != 1);
 
 			}
 			break;
 		case UTURN :
-			move (180, 0, SPEED_ROTATION, 0);
+			ssd1306Printf(0,0,&Font_5x8,"uturn");
+			move (180, 1, SPEED_ROTATION, 0);
 			while(position_control.end_control != 1);
 			break;
 		case LEFT :
+			ssd1306Printf(0,0,&Font_5x8,"left");
 			if (positionZhonx->midOfCell == true)
 			{
-				move (-90, 0, SPEED_ROTATION, 0);
+				move (-90, 1, SPEED_ROTATION, 0);
 				while(position_control.end_control != 1);
 			}
 			else
 			{
-				move (-90, CELL_LENGTH / 2, SPEED_TRANSLATION, end_arc_speed);
+				move (-90, CELL_LENGTH / 2, SPEED_TRANSLATION, 0);
 				while(speed_control.end_control != 1);
 				distanceToMove -= CELL_LENGTH;
 			}
 
 			break;
 	}
+	ssd1306Refresh();
 	if (positionZhonx->midOfCell == end_mid_of_case)
 	{
 		/*
@@ -480,11 +470,11 @@ void move_zhonx_arc (int direction_to_go, positionRobot *positionZhonx, int numb
 	{
 		distanceToMove += CELL_LENGTH / 2;
 	}
-
-	move (0, distanceToMove, SPEED_TRANSLATION, end_chain);
+	move (0, distanceToMove, SPEED_TRANSLATION, 0);
 	while(speed_control.end_control != 1);
 	HAL_Delay(1000);
 	positionZhonx->midOfCell = end_mid_of_case;
+
 }
 
 void new_cell(walls new_walls, labyrinthe *maze, positionRobot positionZhonx)
