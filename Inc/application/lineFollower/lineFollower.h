@@ -32,7 +32,14 @@ typedef struct
 }line_follower_struct;
 extern line_follower_struct line_follower;
 
+typedef struct
+{
+	double left;
+	double front;
+	double right;
+} ground_sensors;
+
 void LineTest(void);
-void line_follower_test(double CoefLeft, double CoefFront, double CoefRight);
+void line_follower_test(ground_sensors, ground_sensors);
 
 #endif /* LINE_FOLLOWER_H_ */

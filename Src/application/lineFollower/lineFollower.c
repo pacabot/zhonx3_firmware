@@ -60,19 +60,34 @@ void LineTest(void)
 	lineSensorsStart();
 	tone(a, 500);
 	HAL_Delay(1000);
-	double gauche_max=1000.0/(double)lineSensors.left.adc_value;
-	double devant_max=1000.0/(double)lineSensors.front.adc_value;
-	double droite_max=1000.0/(double)lineSensors.right.adc_value;
+	ground_sensors coef_Floor;
+	coef_Floor.left=(double)lineSensors.left.adc_value;
+	coef_Floor.front=(double)lineSensors.front.adc_value;
+	coef_Floor.right=(double)lineSensors.right.adc_value;
+	tone(b, 500);
+	move(0, 40, 50, 0);
+
+	HAL_Delay(2000);
 	tone(c, 500);
+	ground_sensors min_Floor;
+	min_Floor.left =(double)lineSensors.left.adc_value;
+	min_Floor.front=(double)lineSensors.front.adc_value;
+	min_Floor.right=(double)lineSensors.right.adc_value;
+	tone(d, 500);
+	coef_Floor.left=1000.0/(coef_Floor.left-min_Floor.left);
+	coef_Floor.front=1000.0/(coef_Floor.front-min_Floor.front);
+	coef_Floor.right=1000.0/(coef_Floor.right-min_Floor.right);
+
+	HAL_Delay(2000);
 
 	follow_control.follow_type = FOLLOW_LINE;
 
 	move(0, 10000, 50, 0);
-	while(isEndMove() != TRUE);
+//	while(isEndMove() != TRUE);
 
 	while(expanderJoyFiltered()!=JOY_LEFT)
 	{
-		line_follower_test(gauche_max,devant_max,droite_max);
+		line_follower_test(coef_Floor, min_Floor);
 
 		ssd1306ClearScreen();
 		ssd1306PrintInt(10, 5,  "LEFT_EXT  =  ", (uint16_t) lineSensors.left_ext.adc_value, &Font_5x8);
@@ -88,17 +103,17 @@ void LineTest(void)
 	motorsSleepDriver(ON);
 }
 
-void line_follower_test(double CoefLeft, double CoefFront, double CoefRight)
+void line_follower_test(ground_sensors coef_Floor, ground_sensors min_Floor)
 {
 	line_follower.position = 0.00;
-	float gauche=(float)lineSensors.left.adc_value*CoefLeft;
-	float devant=(float)lineSensors.front.adc_value*CoefFront;
-	float droite=(float)lineSensors.right.adc_value*CoefRight;
+	double gauche=(double)lineSensors.left.adc_value * coef_Floor.left + min_Floor.left;
+	double devant=(double)lineSensors.front.adc_value * coef_Floor.front + min_Floor.front;
+	double droite=(double)lineSensors.right.adc_value * coef_Floor.right + min_Floor.right;
 
-	line_follower.position = (gauche-droite) * -0.01;
+	line_follower.position = (droite-gauche) * 0.01;
 	if ((devant*1.2) < gauche || (devant*1.2) < droite)
 	{
-		line_follower.position = (gauche-droite) * -0.02;
+		line_follower.position = (droite-gauche) * 0.02;
 	}
 
 }
