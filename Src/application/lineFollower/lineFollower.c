@@ -46,6 +46,8 @@
 #include "application/lineFollower/lineFollower.h"
 
 line_follower_struct line_follower;
+ground_sensors_struct coef_Floor;
+ground_sensors_struct min_Floor;
 
 //__IO uint16_t ADC1ConvertedValues[2] = {0};
 //__IO uint16_t ADC3ConvertedValues[3] = {0};
@@ -59,11 +61,8 @@ void lineTest(void)
 	lineSensorsInit();
 	lineSensorsStart();
 
-	line_follower.active_state = TRUE;
-
 	tone(a, 500);
 	HAL_Delay(1000);
-	ground_sensors coef_Floor;
 	coef_Floor.left=(double)lineSensors.left.adc_value;
 	coef_Floor.front=(double)lineSensors.front.adc_value;
 	coef_Floor.right=(double)lineSensors.right.adc_value;
@@ -72,7 +71,6 @@ void lineTest(void)
 
 	HAL_Delay(2000);
 	tone(c, 500);
-	ground_sensors min_Floor;
 	min_Floor.left =(double)lineSensors.left.adc_value;
 	min_Floor.front=(double)lineSensors.front.adc_value;
 	min_Floor.right=(double)lineSensors.right.adc_value;
@@ -85,13 +83,12 @@ void lineTest(void)
 
 	follow_control.follow_type = FOLLOW_LINE;
 
+	line_follower.active_state = TRUE;
 	move(0, 10000, 50, 0);
-	while(isEndMove() != TRUE);
+//	while(isEndMove() != TRUE);
 
 	while(expanderJoyFiltered()!=JOY_LEFT)
 	{
-		line_follower_test(coef_Floor, min_Floor);
-
 		ssd1306ClearScreen();
 		ssd1306PrintInt(10, 5,  "LEFT_EXT  =  ", (uint16_t) lineSensors.left_ext.adc_value, &Font_5x8);
 		ssd1306PrintInt(10, 15, "LEFT      =  ", (uint16_t) lineSensors.left.adc_value, &Font_5x8);
@@ -106,7 +103,7 @@ void lineTest(void)
 	motorsSleepDriver(ON);
 }
 
-void lineFollowerTest(ground_sensors coef_Floor, ground_sensors min_Floor)
+void lineFollower_IT(void)
 {
 	line_follower.position = 0.00;
 	double gauche=(double)lineSensors.left.adc_value * coef_Floor.left + min_Floor.left;
@@ -120,7 +117,3 @@ void lineFollowerTest(ground_sensors coef_Floor, ground_sensors min_Floor)
 	}
 }
 
-void lineFollower_IT(void)
-{
-
-}
