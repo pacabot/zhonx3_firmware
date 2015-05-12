@@ -23,6 +23,7 @@
 #include <stdint.h>
 
 /* Peripheral declarations */
+#include "peripherals/times_base/times_base.h"
 #include "peripherals/display/ssd1306.h"
 #include "peripherals/display/smallfonts.h"
 #include "peripherals/expander/pcf8574.h"
@@ -149,26 +150,29 @@ char isEndMove(void)
 
 int frontCal(float max_speed)
 {
+	int i = 0;
 	char save_folow_type = follow_control.follow_type;
 	telemetersDistancesTypeDef distances;
 	float relative_dist = 0.0;
 
 	follow_control.follow_type = ALIGN_FRONT;
 	move(0, 0, 0, 0);
-	while (follow_control.succes != TRUE);
+	while (follow_control.succes != TRUE)
+	{
+		if (timeOut(3, i) == TRUE)
+			return POSITION_CONTROL_E_ERROR;
+		i++;
+	}
 
 	/**************************************************************************/
 
 	getTelemetersDistance(&distances);
 	relative_dist = (distances.distance_front_left + distances.distance_front_right) / 2;
-	if ((relative_dist - CENTER_DISTANCE) > MIN_DIST_FOR_ALIGN)
-	{
 		if (relative_dist < MAX_DIST_FOR_ALIGN)
 		{
 			move(0, relative_dist - CENTER_DISTANCE, max_speed, 0);
 			while(isEndMove() != TRUE);
 		}
-	}
 
 	follow_control.follow_type = save_folow_type;
 
@@ -177,27 +181,27 @@ int frontCal(float max_speed)
 
 int rotate180WithCal(enum rotation_type_enum rotation_type, float max_speed, float end_speed)
 {;
-	frontCal(max_speed);
+frontCal(max_speed);
 
-	/***************************************/
-	if (rotation_type == CW)
-		move(90, 0, max_speed, 0);
-	else
-		move(-90, 0, max_speed, 0);
-	while(isEndMove() != TRUE);
-	/***************************************/
+/***************************************/
+if (rotation_type == CW)
+	move(90, 0, max_speed, 0);
+else
+	move(-90, 0, max_speed, 0);
+while(isEndMove() != TRUE);
+/***************************************/
 
-	frontCal(max_speed);
+frontCal(max_speed);
 
-	/***************************************/
-	if (rotation_type == CW)
-		move(90, 0, max_speed, end_speed);
-	else
-		move(-90, 0, max_speed, end_speed);
-	while(isEndMove() != TRUE);
-	/***************************************/
+/***************************************/
+if (rotation_type == CW)
+	move(90, 0, max_speed, end_speed);
+else
+	move(-90, 0, max_speed, end_speed);
+while(isEndMove() != TRUE);
+/***************************************/
 
-	return POSITION_CONTROL_E_SUCCESS;
+return POSITION_CONTROL_E_SUCCESS;
 }
 
 void mainControlDisplayTest(void)
