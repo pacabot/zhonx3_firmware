@@ -33,8 +33,8 @@ void test()
 	new_dot(&end_way,8,7);
 	start_way=end_way;
 	new_dot(&end_way,8,6);
-//	new_dot(&end_way,7,6);
-//	new_dot(&end_way,8,6);
+	new_dot(&end_way,7,6);
+	new_dot(&end_way,8,6);
 	new_dot(&end_way,8,7);
 	new_dot(&end_way,8,8);
 	labyrinthe maze;
@@ -50,14 +50,17 @@ extern int maze(void)
 	positionRobot positionZhonx;
 
 	telemetersInit();
-	telemetersStop();
+	telemetersStart();
 	mainControlInit ();
 	HAL_Delay(500);
 	follow_control.follow_type = NOFOLLOW;
-		test();
-		HAL_Delay(1000);
+//		test();
+//	while(1)
+//	{
+//		HAL_Delay(1000);
+//	}
 
-	HAL_Delay(10000);
+//	HAL_Delay(10000);
 
 	/*init for different micromouse competition*/
 
@@ -125,7 +128,9 @@ void exploration(labyrinthe *maze, positionRobot* positionZhonx, char xFinish,
 		poids (maze, xFinish, yFinish, true);
 		print_length(*maze);
 		moveVirtualZhonx (*maze, *positionZhonx, &way, xFinish, yFinish);
+		telemetersStart();
 		moveRealZhonxArc (maze, positionZhonx, way.next);//, &xFinish, &yFinish);
+		telemetersStop();
 	}
 	HAL_Delay (200);
 	motorsSleepDriver (ON);
@@ -403,7 +408,7 @@ void moveRealZhonxArc(labyrinthe *maze, positionRobot *positionZhonx, coordinate
 			chain = false;
 		else
 			chain = true;
-		move_zhonx_arc (orientaionToGo, positionZhonx, length, endMidCase,chain);
+		move_zhonx_arc (orientaionToGo, positionZhonx, length, false,false);
 		new_cell (getCellState (), maze, *positionZhonx);
 	}
 }
@@ -411,9 +416,9 @@ void moveRealZhonxArc(labyrinthe *maze, positionRobot *positionZhonx, coordinate
 void move_zhonx_arc (int direction_to_go, positionRobot *positionZhonx, int numberOfCell, char end_mid_of_case, char chain)
 {
 	ssd1306ClearScreen();
-	telemetersStart();
 	int distanceToMove = numberOfCell * CELL_LENGTH;
 	int turn = (4 + direction_to_go - positionZhonx->orientation) % 4;
+	positionZhonx->orientation = direction_to_go;
 	switch (turn)
 	{
 		case FORWARD :
@@ -436,6 +441,10 @@ void move_zhonx_arc (int direction_to_go, positionRobot *positionZhonx, int numb
 			break;
 		case UTURN :
 			ssd1306Printf(0,0,&Font_5x8,"uturn");
+			if(positionZhonx->midOfCell==false)
+			{
+				distanceToMove -= CELL_LENGTH;
+			}
 			move (180, 0, SPEED_ROTATION, 0);
 			while(isEndMove() != TRUE);
 			break;
@@ -474,7 +483,6 @@ void move_zhonx_arc (int direction_to_go, positionRobot *positionZhonx, int numb
 	move (0, distanceToMove, SPEED_TRANSLATION, 0);
 	while(speed_control.end_control != 1);
 	positionZhonx->midOfCell = end_mid_of_case;
-	telemetersStop();
 	HAL_Delay(500);
 
 }
@@ -483,6 +491,7 @@ void new_cell(walls new_walls, labyrinthe *maze, positionRobot positionZhonx)
 {
 
 	/*print walls position*/
+	telemetersStop();
 		ssd1306ClearScreen();
 		if (new_walls.front == WALL_PRESENCE)
 		{
@@ -527,103 +536,78 @@ void new_cell(walls new_walls, labyrinthe *maze, positionRobot positionZhonx)
 	switch (positionZhonx.orientation)
 	{
 		case NORTH :
-			if (new_walls.front == NO_WALL && positionZhonx.y > 0)
-			{
-
-				maze->cell[(int) (positionZhonx.x)][(int) (positionZhonx.y - 1)].wall_south = new_walls.front;
 //				maze->cell[(int)(positionZhonx.x)][(int)(positionZhonx.y-1)].wall_north=new_walls.next_front;
-//				if (positionZhonx.y > 1)
 //					maze->cell[(int) (positionZhonx.x)][(int) (positionZhonx.y- 2)].wall_south = new_walls.next_front;
-				if(positionZhonx.midOfCell == true)
-				{
-					maze->cell[(int) (positionZhonx.x)][(int) (positionZhonx.y - 1)].wall_east = new_walls.right;
-					maze->cell[(int) (positionZhonx.x)][(int) (positionZhonx.y - 1)].wall_west = new_walls.left;
+			if(positionZhonx.midOfCell == false)
+			{
+				maze->cell[(int) (positionZhonx.x)][(int) (positionZhonx.y)].wall_east = new_walls.right;
+				maze->cell[(int) (positionZhonx.x)][(int) (positionZhonx.y)].wall_west = new_walls.left;
 
-					if (positionZhonx.x < (MAZE_SIZE - 1))
-						maze->cell[(int) (positionZhonx.x + 1)][(int) (positionZhonx.y - 1)].wall_west = new_walls.right; // TODO : verify the "y-1"
-					if (positionZhonx.x > 0)
-						maze->cell[(int) (positionZhonx.x - 1)][(int) (positionZhonx.y - 1)].wall_east = new_walls.left;
-				}
+				if (positionZhonx.x < (MAZE_SIZE - 1))
+					maze->cell[(int) (positionZhonx.x + 1)][(int) (positionZhonx.y)].wall_west = new_walls.right; // TODO : verify the "y-1"
+				if (positionZhonx.x > 0)
+					maze->cell[(int) (positionZhonx.x - 1)][(int) (positionZhonx.y)].wall_east = new_walls.left;
 			}
-			maze->cell[(int) (positionZhonx.x)][(int) (positionZhonx.y)].wall_north =
-					new_walls.front;
+			if (positionZhonx.y > 0)
+				maze->cell[(int) (positionZhonx.x)][(int) (positionZhonx.y - 1)].wall_south = new_walls.front;
+
+			maze->cell[(int) (positionZhonx.x)][(int) (positionZhonx.y)].wall_north = new_walls.front;
 			break;
 
 		case EAST :
-			if (new_walls.front == NO_WALL && positionZhonx.x < (MAZE_SIZE - 1))
-			{
-				maze->cell[(int) (positionZhonx.x + 1)][(int) (positionZhonx.y)].wall_west = new_walls.front;
-//				maze->cell[(int)(positionZhonx.x+1)][(int)(positionZhonx.y)].wall_east=new_walls.next_front;
-//				if (positionZhonx.x < (MAZE_SIZE - 1))
-//					maze->cell[(int) (positionZhonx.x + 2)][(int) (positionZhonx.y)].wall_west = new_walls.next_front;
 
 				if(positionZhonx.midOfCell == false)
 				{
-					maze->cell[(int) (positionZhonx.x + 1)][(int) (positionZhonx.y)].wall_south = new_walls.right;
-					maze->cell[(int) (positionZhonx.x + 1)][(int) (positionZhonx.y)].wall_north = new_walls.left;
+					maze->cell[(int) (positionZhonx.x)][(int) (positionZhonx.y)].wall_south = new_walls.right;
+					maze->cell[(int) (positionZhonx.x)][(int) (positionZhonx.y)].wall_north = new_walls.left;
 
 					if (positionZhonx.y < (MAZE_SIZE - 1))
-						maze->cell[(int) (positionZhonx.x + 1)][(int) (positionZhonx.y + 1)].wall_north = new_walls.right;
+						maze->cell[(int) (positionZhonx.x)][(int) (positionZhonx.y + 1)].wall_north = new_walls.right;
 					if (positionZhonx.y > 0)
-						maze->cell[(int) (positionZhonx.x + 1)][(int) (positionZhonx.y - 1)].wall_south = new_walls.left;
+						maze->cell[(int) (positionZhonx.x)][(int) (positionZhonx.y - 1)].wall_south = new_walls.left;
+
 				}
-			}
-			maze->cell[(int) (positionZhonx.x)][(int) (positionZhonx.y)].wall_east =
-					new_walls.front;
+			if (positionZhonx.x < (MAZE_SIZE - 1) )
+				maze->cell[(int) (positionZhonx.x + 1)][(int) (positionZhonx.y)].wall_west = new_walls.front;
+			maze->cell[(int) (positionZhonx.x)][(int) (positionZhonx.y)].wall_east = new_walls.front;
 			break;
 
 		case SOUTH :
-			if (new_walls.front == NO_WALL && positionZhonx.y < (MAZE_SIZE - 1))
+
+			if(positionZhonx.midOfCell == false)
 			{
-	//			maze->cell[(int)(positionZhonx.x)][(int)(positionZhonx.y+1)].wall_south=new_walls.next_front;
-//				if (positionZhonx.y < (MAZE_SIZE - 2))
-//					maze->cell[(int) (positionZhonx.x)][(int) (positionZhonx.y + 2)].wall_north = new_walls.next_front;
+				maze->cell[(int) (positionZhonx.x)][(int) (positionZhonx.y)].wall_west = new_walls.right;
+				maze->cell[(int) (positionZhonx.x)][(int) (positionZhonx.y)].wall_east = new_walls.left;
 
-				maze->cell[(int) (positionZhonx.x)][(int) (positionZhonx.y + 1)].wall_north = new_walls.front;
-
-				if(positionZhonx.midOfCell == false)
-				{
-					maze->cell[(int) (positionZhonx.x)][(int) (positionZhonx.y + 1)].wall_west =
-							new_walls.right;
-					maze->cell[(int) (positionZhonx.x)][(int) (positionZhonx.y + 1)].wall_east =
-							new_walls.left;
-
-					if (positionZhonx.x > 0)
-						maze->cell[(int) (positionZhonx.x - 1)][(int) (positionZhonx.y
-								+ 2)].wall_east = new_walls.right;
-					if (positionZhonx.x < (MAZE_SIZE - 2))
-						maze->cell[(int) (positionZhonx.x + 1)][(int) (positionZhonx.y
-								+ 2)].wall_west = new_walls.left;
-				}
+				if (positionZhonx.x > 0)
+					maze->cell[(int) (positionZhonx.x - 1)][(int) (positionZhonx.y)].wall_east = new_walls.right;
+				if (positionZhonx.x < (MAZE_SIZE - 1))
+					maze->cell[(int) (positionZhonx.x + 1)][(int) (positionZhonx.y)].wall_west = new_walls.left;
 			}
+			if (positionZhonx.y > (MAZE_SIZE - 1))
+				maze->cell[(int) (positionZhonx.x)][(int) (positionZhonx.y + 1)].wall_north = new_walls.front;
 			maze->cell[(int) (positionZhonx.x)][(int) (positionZhonx.y)].wall_south =
 					new_walls.front;
 			break;
 
 		case WEST :
-			if (new_walls.front == NO_WALL && positionZhonx.x > 0)
+			if(positionZhonx.midOfCell == false)
 			{
-//				maze->cell[(int)(positionZhonx.x-1)][(int)(positionZhonx.y)].wall_west=new_walls.next_front;
-//				if (positionZhonx.x > 0)
-//					maze->cell[(int) (positionZhonx.x - 1)][(int) (positionZhonx.y)].wall_east = new_walls.next_front;
-				maze->cell[(int) (positionZhonx.x - 1)][(int) (positionZhonx.y)].wall_east = new_walls.front;
-				if(positionZhonx.midOfCell == false)
-				{
-					maze->cell[(int) (positionZhonx.x - 1)][(int) (positionZhonx.y)].wall_north =
-							new_walls.right;
-					maze->cell[(int) (positionZhonx.x - 1)][(int) (positionZhonx.y)].wall_south =
-							new_walls.left;
+				maze->cell[(int) (positionZhonx.x - 1)][(int) (positionZhonx.y)].wall_north = new_walls.right;
+				maze->cell[(int) (positionZhonx.x - 1)][(int) (positionZhonx.y)].wall_south = new_walls.left;
 
 
-					if (positionZhonx.y > 0)
-						maze->cell[(int) (positionZhonx.x)][(int) (positionZhonx.y - 1)].wall_south = new_walls.right;
-					if (positionZhonx.y < (MAZE_SIZE - 1))
-						maze->cell[(int) (positionZhonx.x)][(int) (positionZhonx.y + 1)].wall_north = new_walls.left;
-				}
+				if (positionZhonx.y > 0)
+					maze->cell[(int) (positionZhonx.x)][(int) (positionZhonx.y - 1)].wall_south = new_walls.right;
+				if (positionZhonx.y < (MAZE_SIZE - 1))
+					maze->cell[(int) (positionZhonx.x)][(int) (positionZhonx.y + 1)].wall_north = new_walls.left;
 			}
+			if (positionZhonx.x > 0)
+				maze->cell[(int) (positionZhonx.x - 1)][(int) (positionZhonx.y)].wall_east = new_walls.front;
 			maze->cell[(int) (positionZhonx.x)][(int) (positionZhonx.y)].wall_west = new_walls.front;
 			break;
 	}
+	telemetersStart();
 }
 
 void poids(labyrinthe *maze, int xFinish, int yfinish, char wallNoKnow)
