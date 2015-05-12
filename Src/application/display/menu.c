@@ -40,9 +40,9 @@ extern void telemetersTest ();
 extern void toneTest ();
 extern void motorsTest ();
 extern void lineSensorsTest ();
-extern void LineTest ();
+extern void lineTest ();
 extern void mainControlTest ();
-extern int wallSensorsCalibration (void);
+extern int 	wallSensorsCalibration (void);
 extern void testTelemeterDistance();
 extern void maze();
 extern void testWallsSensors();
@@ -149,7 +149,7 @@ const menuItem mainMenu =
 				{"maze menu",'m',			(void*)&maze_menu},
 				{"Test menu",'m',			(void*)&tests_menu},
 				{"Control menu",'m',		(void*)&control_menu},
-				{"test line",'f', 			(void*)LineTest},
+				{"test line",'f', 			(void*)lineTest},
 				{"parameters menu",'m',		(void*)&parameters_menu},
 				{"test graph",'m',			(void*)&testGraphicMenu},
 				{0,0,0}

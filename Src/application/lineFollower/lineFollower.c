@@ -52,12 +52,15 @@ line_follower_struct line_follower;
 
 GPIO_InitTypeDef GPIO_InitStruct;
 
-void LineTest(void)
+void lineTest(void)
 {
 	mainControlInit();
 	telemetersStop();
 	lineSensorsInit();
 	lineSensorsStart();
+
+	line_follower.active_state = TRUE;
+
 	tone(a, 500);
 	HAL_Delay(1000);
 	ground_sensors coef_Floor;
@@ -83,7 +86,7 @@ void LineTest(void)
 	follow_control.follow_type = FOLLOW_LINE;
 
 	move(0, 10000, 50, 0);
-//	while(isEndMove() != TRUE);
+	while(isEndMove() != TRUE);
 
 	while(expanderJoyFiltered()!=JOY_LEFT)
 	{
@@ -103,7 +106,7 @@ void LineTest(void)
 	motorsSleepDriver(ON);
 }
 
-void line_follower_test(ground_sensors coef_Floor, ground_sensors min_Floor)
+void lineFollowerTest(ground_sensors coef_Floor, ground_sensors min_Floor)
 {
 	line_follower.position = 0.00;
 	double gauche=(double)lineSensors.left.adc_value * coef_Floor.left + min_Floor.left;
@@ -115,5 +118,9 @@ void line_follower_test(ground_sensors coef_Floor, ground_sensors min_Floor)
 	{
 		line_follower.position = (droite-gauche) * 0.02;
 	}
+}
+
+void lineFollower_IT(void)
+{
 
 }
