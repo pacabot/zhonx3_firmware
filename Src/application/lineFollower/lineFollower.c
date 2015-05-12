@@ -75,7 +75,7 @@ void lineTest(void)
 	min_Floor.front=(double)lineSensors.front.adc_value;
 	min_Floor.right=(double)lineSensors.right.adc_value;
 	tone(d, 500);
-	coef_Floor.left=1000.0/(coef_Floor.left-min_Floor.left);
+	coef_Floor.left=1000.0/(coef_Floor.left-min_Floor.left);     //  1000/(max_capteur-min_capteur)
 	coef_Floor.front=1000.0/(coef_Floor.front-min_Floor.front);
 	coef_Floor.right=1000.0/(coef_Floor.right-min_Floor.right);
 
@@ -106,14 +106,14 @@ void lineTest(void)
 void lineFollower_IT(void)
 {
 	line_follower.position = 0.00;
-	double gauche=(double)lineSensors.left.adc_value * coef_Floor.left + min_Floor.left;
-	double devant=(double)lineSensors.front.adc_value * coef_Floor.front + min_Floor.front;
-	double droite=(double)lineSensors.right.adc_value * coef_Floor.right + min_Floor.right;
+	double gauche=(double)lineSensors.left.adc_value * coef_Floor.left - min_Floor.left;
+	double devant=(double)lineSensors.front.adc_value * coef_Floor.front - min_Floor.front;
+	double droite=(double)lineSensors.right.adc_value * coef_Floor.right - min_Floor.right;
 
-	line_follower.position = (droite-gauche) * 0.01;
+	line_follower.position = (droite-gauche) * 0.005;
 	if ((devant*1.2) < gauche || (devant*1.2) < droite)
 	{
-		line_follower.position = (droite-gauche) * 0.02;
+		line_follower.position = (droite-gauche) * 0.01;
 	}
 }
 
