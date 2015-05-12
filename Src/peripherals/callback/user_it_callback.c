@@ -42,8 +42,11 @@ extern ADC_HandleTypeDef hadc3;
 #include "peripherals/multimeter/multimeter.h"
 #include "peripherals/lineSensors/lineSensors.h"
 #include "peripherals/encoders/ie512.h"
-#include <middleware/controls/pidController/pidController.h>
+#include "middleware/controls/pidController/pidController.h"
 #include "peripherals/times_base/times_base.h"
+
+/* Application declarations */
+#include "application/lineFollower/lineFollower.h"
 
 /* TIM callback --------------------------------------------------------------*/
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
@@ -56,7 +59,9 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 	  if (htim == &htim5)
 	  {
 		  if (lineSensors.active_state == TRUE)
-		  lineSensors_IT();
+			  lineSensors_IT();
+		  if (line_follower.active_state == TRUE)
+			  lineFollower_IT();
 	  }
 	  if (htim == &htim7)
 	  {

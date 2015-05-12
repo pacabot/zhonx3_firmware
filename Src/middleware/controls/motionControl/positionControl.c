@@ -166,11 +166,21 @@ int positionControlLoop(void)
 /**************************************************************************/
 float positionProfileCompute(float distance, float time)
 {
+	position_control.current_angle 		= 0;
+	position_control.position_command 	= 0;
+	position_control.position_error 	= 0;
+	position_control.current_diff_dist 	= 0;
+	position_control.current_diff_dist_consign = 0;
+	position_control.position_consign 	= 0;
+	position_control.end_control 		= 0;
+
 	if (distance == 0)
 	{
+		position_control.end_control = 1;
 		position_params.nb_loop_accel = 0;
 		position_params.nb_loop_decel = 0;
 		position_params.nb_loop_maint = 0;
+		position_params.distance_consign = 0;
 		return (0);
 	}
 	if (time == 0.0f)

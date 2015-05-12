@@ -380,6 +380,7 @@ void testTelemeterDistance()
 {
 	telemetersDistancesTypeDef telemeters_distances;
 	telemetersInit();
+	telemetersStart();
 
 	while(expanderJoyFiltered()!=JOY_LEFT)
 	{
