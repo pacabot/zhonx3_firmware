@@ -68,7 +68,7 @@ extern int maze(void)
 	{
 		positionZhonx.x = MAZE_SIZE / 2;
 		positionZhonx.y = MAZE_SIZE / 2; // the robot start at the middle of the maze
-		positionZhonx.orientation = NORTH; // the robot is pointing the north
+		positionZhonx.orientation = WEST; // the robot is pointing the north
 		zhonxSettings.x_finish_maze = 0;
 		zhonxSettings.y_finish_maze = 0; // we want to go to the case how have address (0,0)
 	}
@@ -76,7 +76,7 @@ extern int maze(void)
 	{
 		positionZhonx.x = 0;
 		positionZhonx.y = 0; // the robot start in the corner
-		positionZhonx.orientation = NORTH;
+		positionZhonx.orientation = SOUTH;
 		// the position of the finish is defined in the menu
 	}
 	/*end of initialization for different micromouse competition*/
@@ -415,17 +415,14 @@ void moveRealZhonxArc(labyrinthe *maze, positionRobot *positionZhonx, coordinate
 
 void move_zhonx_arc (int direction_to_go, positionRobot *positionZhonx, int numberOfCell, char end_mid_of_case, char chain)
 {
-	ssd1306ClearScreen();
 	int distanceToMove = numberOfCell * CELL_LENGTH;
 	int turn = (4 + direction_to_go - positionZhonx->orientation) % 4;
 	positionZhonx->orientation = direction_to_go;
 	switch (turn)
 	{
 		case FORWARD :
-//			ssd1306Printf(0,0,&Font_5x8,"forward");
 			break;
 		case RIGHT :
-//			ssd1306Printf(0,0,&Font_5x8,"right");
 			if (positionZhonx->midOfCell == true)
 			{
 				move (90, 0, SPEED_ROTATION, 0);
@@ -440,7 +437,6 @@ void move_zhonx_arc (int direction_to_go, positionRobot *positionZhonx, int numb
 			}
 			break;
 		case UTURN :
-			ssd1306Printf(0,0,&Font_5x8,"uturn");
 			if(positionZhonx->midOfCell==false)
 			{
 				distanceToMove -= CELL_LENGTH;
@@ -490,48 +486,48 @@ void move_zhonx_arc (int direction_to_go, positionRobot *positionZhonx, int numb
 void new_cell(walls new_walls, labyrinthe *maze, positionRobot positionZhonx)
 {
 
-	/*print walls position*/
-	telemetersStop();
-		ssd1306ClearScreen();
-		if (new_walls.front == WALL_PRESENCE)
-		{
-			ssd1306FillRect(0,49,54,5);
-		}
-		switch (new_walls.next_front)
-		{
-			case WALL_PRESENCE:
-				ssd1306FillRect(0,0,54,5);
-				break;
-			case NO_KNOWN :
-				ssd1306DrawRect(0,0,54,5);
-				break;
-			default:
-				break;
-		}
-		switch (new_walls.left)
-		{
-			case WALL_PRESENCE:
-				ssd1306FillRect(0,0,5,54);
-				break;
-			case NO_KNOWN :
-				ssd1306DrawRect(0,0,5,54);
-				break;
-			default:
-				break;
-		}
-		switch (new_walls.right)
-		{
-			case WALL_PRESENCE:
-				ssd1306FillRect(49,0,5,54);
-				break;
-			case NO_KNOWN :
-				ssd1306DrawRect(49,0,5,54);
-				break;
-			default:
-				break;
-		}
-		ssd1306Refresh();
-		/*end print wall position*/
+//	/*print walls position*/
+//	telemetersStop();
+//		ssd1306ClearScreen();
+//		if (new_walls.front == WALL_PRESENCE)
+//		{
+//			ssd1306FillRect(0,49,54,5);
+//		}
+//		switch (new_walls.next_front)
+//		{
+//			case WALL_PRESENCE:
+//				ssd1306FillRect(0,0,54,5);
+//				break;
+//			case NO_KNOWN :
+//				ssd1306DrawRect(0,0,54,5);
+//				break;
+//			default:
+//				break;
+//		}
+//		switch (new_walls.left)
+//		{
+//			case WALL_PRESENCE:
+//				ssd1306FillRect(0,0,5,54);
+//				break;
+//			case NO_KNOWN :
+//				ssd1306DrawRect(0,0,5,54);
+//				break;
+//			default:
+//				break;
+//		}
+//		switch (new_walls.right)
+//		{
+//			case WALL_PRESENCE:
+//				ssd1306FillRect(49,0,5,54);
+//				break;
+//			case NO_KNOWN :
+//				ssd1306DrawRect(49,0,5,54);
+//				break;
+//			default:
+//				break;
+//		}
+//		ssd1306Refresh();
+//		/*end print wall position*/
 
 	switch (positionZhonx.orientation)
 	{
@@ -995,39 +991,39 @@ void maze_init(labyrinthe *maze)
 
 void print_maze(const labyrinthe maze, const int x_robot, const int y_robot)
 {
-//	ssd1306ClearScreen ();
-//	int size_cell_on_oled = ((63) / MAZE_SIZE);
-//	int x, y;
-//	for (y = 0; y < MAZE_SIZE; y++)
-//	{
-//		for (x = 0; x < MAZE_SIZE; x++)
-//		{
-//			if (maze.cell[x][y].wall_north == WALL_PRESENCE)
-//			{
-//				ssd1306FillRect (x * size_cell_on_oled, y * size_cell_on_oled,
-//						size_cell_on_oled + 1, 1);
-//			}
-//			if (maze.cell[x][y].wall_west == WALL_PRESENCE)
-//			{
-//				ssd1306FillRect (x * size_cell_on_oled, y * size_cell_on_oled,
-//						1, size_cell_on_oled + 1);
-//			}
-//			if (maze.cell[x][y].wall_south == WALL_PRESENCE)
-//			{
-//				ssd1306FillRect (x * size_cell_on_oled,
-//						(y + 1) * size_cell_on_oled, size_cell_on_oled + 1, 1);
-//			}
-//			if (maze.cell[x][y].wall_east == WALL_PRESENCE)
-//			{
-//				ssd1306FillRect ((x + 1) * size_cell_on_oled,
-//						y * size_cell_on_oled, 1, size_cell_on_oled + 1);
-//			}
-//		}
-//	}
-//	//print_length(maze);
-//	ssd1306FillRect (x_robot * size_cell_on_oled, y_robot * size_cell_on_oled,
-//			size_cell_on_oled, size_cell_on_oled);
-//	ssd1306Refresh ();
+	ssd1306ClearScreen ();
+	int size_cell_on_oled = ((63) / MAZE_SIZE);
+	int x, y;
+	for (y = 0; y < MAZE_SIZE; y++)
+	{
+		for (x = 0; x < MAZE_SIZE; x++)
+		{
+			if (maze.cell[x][y].wall_north == WALL_PRESENCE)
+			{
+				ssd1306FillRect (x * size_cell_on_oled, y * size_cell_on_oled,
+						size_cell_on_oled + 1, 1);
+			}
+			if (maze.cell[x][y].wall_west == WALL_PRESENCE)
+			{
+				ssd1306FillRect (x * size_cell_on_oled, y * size_cell_on_oled,
+						1, size_cell_on_oled + 1);
+			}
+			if (maze.cell[x][y].wall_south == WALL_PRESENCE)
+			{
+				ssd1306FillRect (x * size_cell_on_oled,
+						(y + 1) * size_cell_on_oled, size_cell_on_oled + 1, 1);
+			}
+			if (maze.cell[x][y].wall_east == WALL_PRESENCE)
+			{
+				ssd1306FillRect ((x + 1) * size_cell_on_oled,
+						y * size_cell_on_oled, 1, size_cell_on_oled + 1);
+			}
+		}
+	}
+	//print_length(maze);
+	ssd1306FillRect (x_robot * size_cell_on_oled, y_robot * size_cell_on_oled,
+			size_cell_on_oled, size_cell_on_oled);
+	ssd1306Refresh ();
 }
 
 void* calloc_s(size_t nombre, size_t taille)
