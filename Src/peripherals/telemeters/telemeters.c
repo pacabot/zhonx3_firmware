@@ -81,8 +81,6 @@ void telemetersInit(void)
 	hadc3.Init.DMAContinuousRequests = DISABLE;
 	hadc3.Init.EOCSelection = EOC_SINGLE_CONV;
 	HAL_ADC_Init(&hadc3);
-
-	telemetersStart();
 }
 
 void telemetersStart(void)
