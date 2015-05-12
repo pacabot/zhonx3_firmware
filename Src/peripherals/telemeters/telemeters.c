@@ -270,6 +270,7 @@ void telemeters_ADC3_IT(void)
 void telemetersTest(void)
 {
 	telemetersInit();
+	telemetersStart();
 
 	while(expanderJoyFiltered()!=JOY_LEFT)
 	{

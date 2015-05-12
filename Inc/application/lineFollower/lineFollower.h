@@ -12,27 +12,12 @@
 typedef struct
 {
 	double position;			//total distance
-//	double max_speed;
-//	double speed_average;
-//	double accel;
-//	double decel;
-//	double accel_dist;
-//	double decel_dist;
-//	double accel_time;
-//	double decel_time;
-//	double accel_speed_avrg;
-//	double decel_speed_avrg;
-//	double accel_dist_per_loop;
-//	double decel_dist_per_loop;
-//	double nb_loop_accel;
-//	double nb_loop_decel;
-//	double nb_loop_maint;
-//	double maintain_dist;
-//	int   sign;
+	char   active_state;
 }line_follower_struct;
 extern line_follower_struct line_follower;
 
-void LineTest(void);
-void line_follower_test(double CoefLeft, double CoefFront, double CoefRight);
+void lineTest(void);
+void lineFollowerTest(double CoefLeft, double CoefFront, double CoefRight);
+void lineFollower_IT(void);
 
 #endif /* LINE_FOLLOWER_H_ */

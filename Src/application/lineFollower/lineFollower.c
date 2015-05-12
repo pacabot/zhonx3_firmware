@@ -52,12 +52,15 @@ line_follower_struct line_follower;
 
 GPIO_InitTypeDef GPIO_InitStruct;
 
-void LineTest(void)
+void lineTest(void)
 {
 	mainControlInit();
 	telemetersStop();
 	lineSensorsInit();
 	lineSensorsStart();
+
+	line_follower.active_state = TRUE;
+
 	tone(a, 500);
 	HAL_Delay(1000);
 	double gauche_max=1000.0/(double)lineSensors.left.adc_value;
@@ -72,7 +75,7 @@ void LineTest(void)
 
 	while(expanderJoyFiltered()!=JOY_LEFT)
 	{
-		line_follower_test(gauche_max,devant_max,droite_max);
+		lineFollowerTest(gauche_max,devant_max,droite_max);
 
 		ssd1306ClearScreen();
 		ssd1306PrintInt(10, 5,  "LEFT_EXT  =  ", (uint16_t) lineSensors.left_ext.adc_value, &Font_5x8);
@@ -88,7 +91,7 @@ void LineTest(void)
 	motorsSleepDriver(ON);
 }
 
-void line_follower_test(double CoefLeft, double CoefFront, double CoefRight)
+void lineFollowerTest(double CoefLeft, double CoefFront, double CoefRight)
 {
 	line_follower.position = 0.00;
 	float gauche=(float)lineSensors.left.adc_value*CoefLeft;
@@ -100,5 +103,9 @@ void line_follower_test(double CoefLeft, double CoefFront, double CoefRight)
 	{
 		line_follower.position = (gauche-droite) * -0.02;
 	}
+}
+
+void lineFollower_IT(void)
+{
 
 }
