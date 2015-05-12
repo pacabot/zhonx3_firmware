@@ -83,10 +83,9 @@ typedef struct
 
 
 // fonctions
-extern int mazeColin(void);
+extern int maze(void);
 void exploration(labyrinthe *maze, positionRobot* poitionZhonx,char xFinish, char yFinish);
 void moveVirtualZhonx(labyrinthe maze, positionRobot positionZhonxVirtuel,coordinate *way, char xFinish, char yFinish);
-void move_zhonx (int direction_to_go, char *direction_robot, int numberOfCase);
 void new_cell(walls new_walls, labyrinthe *maze, positionRobot positionZhonx);
 void new_dot(coordinate **old_dot,int x,int y);
 void poids(labyrinthe *maze, int xFinish, int yfinish, char wallNoKnow);
@@ -95,16 +94,12 @@ void* calloc_s (size_t nombre, size_t taille);
 void print_maze(const labyrinthe maze, const int x_robot, const int y_robot);
 void print_length(const labyrinthe maze);
 void clearMazelength(labyrinthe* maze);
-//inputs see_walls ();
-void commande(int dir, int dist);
 char mini_way_find(labyrinthe *maze,char xStart, char yStart, char xFinish, char yFinish);
-void trajectoire1(char *Tab, int taille);
 void moveRealZhonx(labyrinthe *maze, positionRobot *positionZhonx, coordinate *way, char *endX, char *endY);
 void run1 (labyrinthe *maze,positionRobot *positionZhonx, char xFinish, char yFinish);
 void run2(labyrinthe *maze, positionRobot *positionZhonx,char posXStart, char posYStart);
 void moveRealZhonxArc(labyrinthe *maze, positionRobot *positionZhonx, coordinate *way);
-void move_zhonx_arc (int direction_to_go, positionRobot *positionZhonx, int numberOfCase, char end_mid_of_cell);
-void testMoveRealZhonx(labyrinthe *maze, positionRobot *positionZhonx, coordinate *way, char *endX, char *endY);
+void move_zhonx_arc (int direction_to_go, positionRobot *positionZhonx, int numberOfCase, char end_mid_of_case, char chain);
 void doUTurn(positionRobot *positionZhonx);
 void waitStart(void);
 void goOrientation(char *orientationZhonx, char directionToGo);

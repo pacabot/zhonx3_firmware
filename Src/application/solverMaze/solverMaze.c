@@ -13,7 +13,6 @@
 #include "peripherals/lineSensors/lineSensors.h"
 
 /* meddleware include */
-/* Middleware declarations */
 #include "middleware/settings/settings.h"
 #include "middleware/wall_sensors/wall_sensors.h"
 #include "middleware/controls/pidController/pidController.h"
@@ -26,6 +25,16 @@
 /*application include */
 #include "application/solverMaze/solverMaze.h"
 
+void test()
+{
+	positionRobot positionZhonx;
+	positionZhonx.midOfCell=true;
+	positionZhonx.orientation=NORTH;
+	move_zhonx_arc(WEST, &positionZhonx, 1,false, false);
+	move_zhonx_arc(NORTH, &positionZhonx, 1,false, true);
+	move_zhonx_arc(EAST, &positionZhonx, 1,true, false);
+}
+
 extern int maze(void)
 {
 	char posXStart, posYStart; // it's the coordinates which Zhonx have at the start
@@ -37,6 +46,10 @@ extern int maze(void)
 	control_params.speed_state = TRUE;
 	control_params.follow_state = FALSE;
 	control_params.position_state = TRUE;
+
+	//test();
+
+	HAL_Delay(1000);
 
 	/*init for different micromouse competition*/
 
@@ -92,24 +105,25 @@ void exploration(labyrinthe *maze, positionRobot* positionZhonx, char xFinish,
 		char yFinish)
 {
 	coordinate way = { 0, 0, 0 };
-	motorsSleepDriver (ON); // TODO : modify if it's necessary
+	motorsSleepDriver (OFF);
 	telemetersStart();
 	HAL_Delay(500);
-	walls new_walls = getCellState();
+	new_cell (getCellState(), maze, *positionZhonx);
 	telemetersStop();
-	new_cell (new_walls, maze, *positionZhonx);
 
 	while (positionZhonx->x != xFinish || positionZhonx->y != yFinish)
 	{
 		clearMazelength (maze);
 		poids (maze, xFinish, yFinish, true);
+		print_length(*maze);
 		moveVirtualZhonx (*maze, *positionZhonx, &way, xFinish, yFinish);
 		moveRealZhonxArc (maze, positionZhonx, way.next);//, &xFinish, &yFinish);
 	}
 	HAL_Delay (200);
-	motorsSleepDriver (ON); // TODO : modify if it's necessary
+	motorsSleepDriver (ON);
 
 }
+
 void run1(labyrinthe *maze, positionRobot *positionZhonx, char posXStart,
 		char posYStart)
 {
@@ -147,6 +161,7 @@ void run1(labyrinthe *maze, positionRobot *positionZhonx, char posXStart,
 		}
 	}while (choice == 1);
 }
+
 void run2(labyrinthe *maze, positionRobot *positionZhonx, char posXStart,
 		char posYStart)
 {
@@ -158,7 +173,7 @@ void run2(labyrinthe *maze, positionRobot *positionZhonx, char posXStart,
 		moveVirtualZhonx (*maze, *positionZhonx, &way,
 				zhonxSettings.x_finish_maze, zhonxSettings.y_finish_maze);
 		waitStart ();
-		motorsSleepDriver (ON); // TODO : modify if it's necessary
+		motorsSleepDriver (ON);
 		moveRealZhonxArc (maze, positionZhonx, way.next);
 		motorsSleepDriver (ON);
 		if (zhonxSettings.calibration_enabled == true)
@@ -187,6 +202,7 @@ void run2(labyrinthe *maze, positionRobot *positionZhonx, char posXStart,
 		}
 	}while (choice == 1);
 }
+
 void moveVirtualZhonx(labyrinthe maze, positionRobot positionZhonxVirtuel,
 		coordinate *way, char xFinish, char yFinish)
 {
@@ -222,7 +238,7 @@ void moveVirtualZhonx(labyrinthe maze, positionRobot positionZhonxVirtuel,
 				ssd1306ClearScreen ();
 				ssd1306DrawString (0, 0, "no solution", &Font_5x8);
 				ssd1306Refresh ();
-				motorsSleepDriver (ON); // TODO : modify if it's necessary
+				motorsSleepDriver (ON);
 				while (boucle)
 				{
 				}
@@ -312,35 +328,10 @@ void moveRealZhonx(labyrinthe *maze, positionRobot *positionZhonx,
 	}
 }
 
-void move_zhonx(int direction_to_go, char *direction_robot, int numberOfCell)
-{
-	int turn = (4 + direction_to_go - *direction_robot) % 4;
-	*direction_robot = direction_to_go;
-	switch (turn)
-	{
-		case FORWARD :
-			break;
-		case RIGHT :
-			move (-90, 0, SPEED_ROTATION, 0);
-			while(speed_control.end_control != 1);
-			break;
-		case UTURN :
-			move (180, 0, SPEED_ROTATION, 0);
-			while(speed_control.end_control != 1);
-			break;
-		case LEFT :
-			move (90, 0, SPEED_ROTATION, 0);
-			while(speed_control.end_control != 1);
-
-			break;
-	}
-	move (0, CELL_LENGTH * numberOfCell, SPEED_TRANSLATION, 0);
-	while(speed_control.end_control != 1);
-}
-
 void moveRealZhonxArc(labyrinthe *maze, positionRobot *positionZhonx, coordinate *way)
 {
 	char endMidCase;
+	char chain;
 	coordinate *oldDote;
 	int length;
 	char additionY = 0;
@@ -396,103 +387,46 @@ void moveRealZhonxArc(labyrinthe *maze, positionRobot *positionZhonx, coordinate
 			way = way->next;
 			free (oldDote);
 		}
-		if (way != null) // (way==null)
+		if (positionZhonx->x != zhonxSettings.x_finish_maze && positionZhonx->x != zhonxSettings.x_finish_maze)
 			endMidCase = false;
 		else
 			endMidCase = true;
-		move_zhonx_arc (orientaionToGo, positionZhonx, length, endMidCase);
-		if (positionZhonx->midOfCell == true)
-			new_cell (getCellState (), maze, *positionZhonx);
-	}
-}
-
-void testMoveRealZhonx(labyrinthe *maze, positionRobot *positionZhonx,
-		coordinate *way, char *endX, char *endY)
-{
-	char endMidCase;
-	coordinate *oldDote;
-	int length;
-	char additionY = 0;
-	char additionX = 0;
-	char orientaionToGo = NORTH;
-	while (way != null)
-	{
-		length = 0;
-		if (way->x == (positionZhonx->x + 1) && way->y == positionZhonx->y)
-		{
-			additionX = 1;
-			additionY = 0;
-			orientaionToGo = EAST;
-		}
-		else if (way->x == (positionZhonx->x - 1) && way->y == positionZhonx->y)
-		{
-			additionX = -1;
-			additionY = 0;
-			orientaionToGo = WEST;
-		}
-		else if (way->y == (positionZhonx->y - 1) && way->x == positionZhonx->x)
-		{
-
-			additionX = 0;
-			additionY = -1;
-			orientaionToGo = NORTH;
-		}
-		else if (way->y == (positionZhonx->y + 1) && way->x == positionZhonx->x)
-		{
-
-			additionX = 0;
-			additionY = 1;
-			orientaionToGo = SOUTH;
-		}
+		if (way->next == null)
+			chain = false;
 		else
-		{
-			HAL_Delay (200);
-			motorsSleepDriver (ON);
-			ssd1306ClearScreen ();
-			ssd1306DrawString (0, 0, "Error way", &Font_5x8);
-			ssd1306Refresh ();
-			while (1)
-				;
-		}
-
-		while (way->y == (positionZhonx->y + additionY)
-				&& way->x == positionZhonx->x + additionX)
-		{
-			length++;
-			positionZhonx->x = way->x;
-			positionZhonx->y = way->y;
-			oldDote = way;
-			way = way->next;
-			free (oldDote);
-		}
-		//if (way != null)
-		if (positionZhonx->x == zhonxSettings.x_finish_maze && positionZhonx->y == zhonxSettings.y_finish_maze)
-			endMidCase = false;
-		else
-			endMidCase = true;
-		move_zhonx_arc (orientaionToGo, positionZhonx, length, endMidCase);
+			chain = true;
+		move_zhonx_arc (orientaionToGo, positionZhonx, length, endMidCase,chain);
 		new_cell (getCellState (), maze, *positionZhonx);
-		//		if (zhonxSettings.color_sensor_enabled==true)
-		//		{
-		//			if ((zhonxSettings.threshold_greater==false && hal_sensor_get_color(app_context.sensors) < zhonxSettings.threshold_color)
-		//					||
-		//					(zhonxSettings.threshold_greater==true && hal_sensor_get_color(app_context.sensors) > zhonxSettings.threshold_color)) // si on se trouve sur la case d'arrivée
-		//			{
-		//					zhonxSettings.x_finish_maze=positionZhonx->x;
-		//					zhonxSettings.y_finish_maze=positionZhonx->y;
-		//					*endX=positionZhonx->x;
-		//					*endY=positionZhonx->y;
-		//					return;
-		//			}
-		//		}
 	}
 }
 
-void move_zhonx_arc (int direction_to_go, positionRobot *positionZhonx, int numberOfCase, char end_mid_of_case)
+void move_zhonx_arc (int direction_to_go, positionRobot *positionZhonx, int numberOfCase, char end_mid_of_case, char chain)
 {
-	unsigned int chain = 0; //speed end is 0 by default
+	int distance_in_rotation;
+	int end_chain;
+	int end_arc_speed = 0;
 	int distanceToMove = CELL_LENGTH * numberOfCase;
 	int turn = (4 + direction_to_go - positionZhonx->orientation) % 4;
+	if (positionZhonx->midOfCell == true)
+	{
+		distance_in_rotation = 0;
+	}
+	else
+	{
+		distanceToMove -= CELL_LENGTH;
+		if (chain == true)
+		{
+			end_arc_speed = SPEED_TRANSLATION;
+		}
+	}
+	if(chain == true)
+	{
+		end_chain = SPEED_TRANSLATION;
+	}
+	else
+	{
+		end_chain = 0;
+	}
 
 	positionZhonx->orientation = direction_to_go;
 	switch (turn)
@@ -502,30 +436,29 @@ void move_zhonx_arc (int direction_to_go, positionRobot *positionZhonx, int numb
 		case RIGHT :
 			if (positionZhonx->midOfCell == true)
 			{
-				move (90, 0, SPEED_ROTATION, 0);//step_motors_rotate_in_place(-90); // TODO : verify the angle sine
+				move (90, 0, SPEED_ROTATION, 0);
 				while(position_control.end_control != 1);
 			}
 			else
 			{
-				move (90, CELL_LENGTH / 2, SPEED_TRANSLATION,
-						SPEED_TRANSLATION);	//step_motors_rotate(90, CELL_LENGTH/2, chain);
+				move (90, CELL_LENGTH / 2, SPEED_TRANSLATION, end_arc_speed);
 				while(speed_control.end_control != 1);
-				distanceToMove -= CELL_LENGTH;
+
 			}
 			break;
 		case UTURN :
-			move (180, 0, SPEED_ROTATION, 0);//step_motors_rotate_in_place(180);
+			move (180, 0, SPEED_ROTATION, 0);
 			while(position_control.end_control != 1);
 			break;
 		case LEFT :
 			if (positionZhonx->midOfCell == true)
 			{
-				move (-90, 0, SPEED_ROTATION, 0);//step_motors_rotate_in_place(-90);
+				move (-90, 0, SPEED_ROTATION, 0);
 				while(position_control.end_control != 1);
 			}
 			else
 			{
-				move (-90, CELL_LENGTH / 2, SPEED_TRANSLATION, SPEED_TRANSLATION); //step_motors_rotate(-90, CELL_LENGTH/2, chain);
+				move (-90, CELL_LENGTH / 2, SPEED_TRANSLATION, end_arc_speed);
 				while(speed_control.end_control != 1);
 				distanceToMove -= CELL_LENGTH;
 			}
@@ -547,71 +480,57 @@ void move_zhonx_arc (int direction_to_go, positionRobot *positionZhonx, int numb
 	{
 		distanceToMove += CELL_LENGTH / 2;
 	}
-	chain = 0;
 
-//		if (positionZhonx->midOfCase==false)
-//		{
-//			chain=chain | CHAIN_BEFORE;
-//		}
-	if (end_mid_of_case == false)
-	{
-
-		chain = SPEED_TRANSLATION;
-	}
-
-	move (0, distanceToMove, SPEED_TRANSLATION, chain);
-	//step_motors_move(distanceToMove, 0, chain);
+	move (0, distanceToMove, SPEED_TRANSLATION, end_chain);
 	while(speed_control.end_control != 1);
+	HAL_Delay(1000);
 	positionZhonx->midOfCell = end_mid_of_case;
 }
 
 void new_cell(walls new_walls, labyrinthe *maze, positionRobot positionZhonx)
 {
-//	/*print walls position*/
-//		ssd1306ClearScreen();
-//		if (new_walls.front == WALL_PRESENCE)
-//		{
-//			ssd1306FillRect(0,49,54,5);
-//		}
-//		else
-//		{
-//			ssd1306DrawRect(0,49,54,5);
-//		}
-//		switch (new_walls.next_front)
-//		{
-//			case WALL_PRESENCE:
-//				ssd1306FillRect(0,0,54,5);
-//				break;
-//			case NO_KNOWN :
-//				ssd1306DrawRect(0,0,54,5);
-//				break;
-//			default:
-//				break;
-//		}
-//		switch (new_walls.left)
-//		{
-//			case WALL_PRESENCE:
-//				ssd1306FillRect(0,0,5,54);
-//				break;
-//			case NO_KNOWN :
-//				ssd1306DrawRect(0,0,5,54);
-//				break;
-//			default:
-//				break;
-//		}
-//		switch (new_walls.right)
-//		{
-//			case WALL_PRESENCE:
-//				ssd1306FillRect(49,0,5,54);
-//				break;
-//			case NO_KNOWN :
-//				ssd1306DrawRect(49,0,5,54);
-//				break;
-//			default:
-//				break;
-//		}
-//		ssd1306Refresh();
-//		/*end print wall position*/
+
+	/*print walls position*/
+		ssd1306ClearScreen();
+		if (new_walls.front == WALL_PRESENCE)
+		{
+			ssd1306FillRect(0,49,54,5);
+		}
+		switch (new_walls.next_front)
+		{
+			case WALL_PRESENCE:
+				ssd1306FillRect(0,0,54,5);
+				break;
+			case NO_KNOWN :
+				ssd1306DrawRect(0,0,54,5);
+				break;
+			default:
+				break;
+		}
+		switch (new_walls.left)
+		{
+			case WALL_PRESENCE:
+				ssd1306FillRect(0,0,5,54);
+				break;
+			case NO_KNOWN :
+				ssd1306DrawRect(0,0,5,54);
+				break;
+			default:
+				break;
+		}
+		switch (new_walls.right)
+		{
+			case WALL_PRESENCE:
+				ssd1306FillRect(49,0,5,54);
+				break;
+			case NO_KNOWN :
+				ssd1306DrawRect(49,0,5,54);
+				break;
+			default:
+				break;
+		}
+		ssd1306Refresh();
+		/*end print wall position*/
 
 	switch (positionZhonx.orientation)
 	{
@@ -623,7 +542,7 @@ void new_cell(walls new_walls, labyrinthe *maze, positionRobot positionZhonx)
 //				maze->cell[(int)(positionZhonx.x)][(int)(positionZhonx.y-1)].wall_north=new_walls.next_front;
 //				if (positionZhonx.y > 1)
 //					maze->cell[(int) (positionZhonx.x)][(int) (positionZhonx.y- 2)].wall_south = new_walls.next_front;
-				if(positionZhonx.midOfCell == false)
+				if(positionZhonx.midOfCell == true)
 				{
 					maze->cell[(int) (positionZhonx.x)][(int) (positionZhonx.y - 1)].wall_east = new_walls.right;
 					maze->cell[(int) (positionZhonx.x)][(int) (positionZhonx.y - 1)].wall_west = new_walls.left;
@@ -795,7 +714,7 @@ void new_dot(coordinate **old_dot, int x, int y)
 	(*old_dot)->x = x;
 	(*old_dot)->y = y;
 }
-
+//#define test
 void maze_init(labyrinthe *maze)
 {
 #ifndef test
@@ -803,7 +722,7 @@ void maze_init(labyrinthe *maze)
 	{
 		for (int y = 0; y < MAZE_SIZE; y++)
 		{
-			maze->cell[i][y].wall_north = WALL_PRESENCE;
+			maze->cell[i][y].wall_north = NO_KNOWN;
 			maze->cell[i][y].wall_west = NO_KNOWN;
 			maze->cell[i][y].wall_south = NO_KNOWN;
 			maze->cell[i][y].wall_east = NO_KNOWN;
@@ -822,277 +741,277 @@ void maze_init(labyrinthe *maze)
 	{
 		{
 			{
-				{	NO_KNOWN,NO_WALL,NO_WALL,NO_KNOWN,2000},
-				{	NO_WALL,NO_WALL,NO_WALL,NO_KNOWN,2000},
-				{	NO_WALL,NO_WALL,NO_WALL,NO_KNOWN,2000},
-				{	NO_WALL,NO_WALL,NO_WALL,NO_KNOWN,2000},
-				{	NO_WALL,NO_WALL,NO_WALL,NO_KNOWN,2000},
-				{	NO_WALL,NO_WALL,NO_WALL,NO_KNOWN,2000},
-				{	NO_WALL,NO_WALL,NO_WALL,NO_KNOWN,2000},
-				{	NO_WALL,NO_WALL,NO_WALL,NO_KNOWN,2000},
-				{	NO_WALL,NO_WALL,NO_WALL,NO_KNOWN,2000},
-				{	NO_WALL,NO_WALL,NO_WALL,NO_KNOWN,2000},
-				{	NO_WALL,NO_WALL,NO_WALL,NO_KNOWN,2000},
-				{	NO_WALL,NO_WALL,NO_WALL,NO_KNOWN,2000},
-				{	NO_WALL,NO_WALL,NO_KNOWN,NO_KNOWN,2000},
-				{	NO_WALL,NO_WALL,NO_WALL,NO_KNOWN,2000},
-				{	NO_WALL,NO_WALL,NO_WALL,NO_KNOWN,2000},
-				{	NO_WALL,NO_KNOWN,NO_KNOWN,NO_KNOWN,2000}},
+				{	WALL_PRESENCE,NO_WALL,NO_WALL,WALL_PRESENCE,2000},
+				{	NO_WALL,NO_WALL,NO_WALL,WALL_PRESENCE,2000},
+				{	NO_WALL,NO_WALL,NO_WALL,WALL_PRESENCE,2000},
+				{	NO_WALL,NO_WALL,NO_WALL,WALL_PRESENCE,2000},
+				{	NO_WALL,NO_WALL,NO_WALL,WALL_PRESENCE,2000},
+				{	NO_WALL,NO_WALL,NO_WALL,WALL_PRESENCE,2000},
+				{	NO_WALL,NO_WALL,NO_WALL,WALL_PRESENCE,2000},
+				{	NO_WALL,NO_WALL,NO_WALL,WALL_PRESENCE,2000},
+				{	NO_WALL,NO_WALL,NO_WALL,WALL_PRESENCE,2000},
+				{	NO_WALL,NO_WALL,NO_WALL,WALL_PRESENCE,2000},
+				{	NO_WALL,NO_WALL,NO_WALL,WALL_PRESENCE,2000},
+				{	NO_WALL,NO_WALL,NO_WALL,WALL_PRESENCE,2000},
+				{	NO_WALL,NO_WALL,WALL_PRESENCE,WALL_PRESENCE,2000},
+				{	NO_WALL,NO_WALL,NO_WALL,WALL_PRESENCE,2000},
+				{	NO_WALL,NO_WALL,NO_WALL,WALL_PRESENCE,2000},
+				{	NO_WALL,WALL_PRESENCE,WALL_PRESENCE,WALL_PRESENCE,2000}},
 			{
-				{	NO_KNOWN,NO_KNOWN,NO_WALL,NO_WALL,2000},
-				{	NO_KNOWN,NO_KNOWN,NO_WALL,NO_WALL,2000},
-				{	NO_KNOWN,NO_KNOWN,NO_KNOWN,NO_WALL,2000},
-				{	NO_KNOWN,NO_KNOWN,NO_KNOWN,NO_WALL,2000},
-				{	NO_KNOWN,NO_KNOWN,NO_KNOWN,NO_WALL,2000},
-				{	NO_KNOWN,NO_KNOWN,NO_KNOWN,NO_WALL,2000},
-				{	NO_KNOWN,NO_KNOWN,NO_KNOWN,NO_WALL,2000},
-				{	NO_KNOWN,NO_KNOWN,NO_WALL,NO_WALL,2000},
-				{	NO_KNOWN,NO_KNOWN,NO_KNOWN,NO_WALL,2000},
-				{	NO_KNOWN,NO_KNOWN,NO_KNOWN,NO_WALL,2000},
-				{	NO_KNOWN,NO_KNOWN,NO_KNOWN,NO_WALL,2000},
-				{	NO_KNOWN,NO_KNOWN,NO_KNOWN,NO_WALL,2000},
-				{	NO_KNOWN,NO_WALL,NO_WALL,NO_KNOWN,2000},
-				{	NO_WALL,NO_KNOWN,NO_KNOWN,NO_WALL,2000},
-				{	NO_KNOWN,NO_WALL,NO_KNOWN,NO_WALL,2000},
-				{	NO_WALL,NO_KNOWN,NO_WALL,NO_KNOWN,2000}},
+				{	WALL_PRESENCE,WALL_PRESENCE,NO_WALL,NO_WALL,2000},
+				{	WALL_PRESENCE,WALL_PRESENCE,NO_WALL,NO_WALL,2000},
+				{	WALL_PRESENCE,WALL_PRESENCE,WALL_PRESENCE,NO_WALL,2000},
+				{	WALL_PRESENCE,WALL_PRESENCE,WALL_PRESENCE,NO_WALL,2000},
+				{	WALL_PRESENCE,WALL_PRESENCE,WALL_PRESENCE,NO_WALL,2000},
+				{	WALL_PRESENCE,WALL_PRESENCE,WALL_PRESENCE,NO_WALL,2000},
+				{	WALL_PRESENCE,WALL_PRESENCE,WALL_PRESENCE,NO_WALL,2000},
+				{	WALL_PRESENCE,WALL_PRESENCE,NO_WALL,NO_WALL,2000},
+				{	WALL_PRESENCE,WALL_PRESENCE,WALL_PRESENCE,NO_WALL,2000},
+				{	WALL_PRESENCE,WALL_PRESENCE,WALL_PRESENCE,NO_WALL,2000},
+				{	WALL_PRESENCE,WALL_PRESENCE,WALL_PRESENCE,NO_WALL,2000},
+				{	WALL_PRESENCE,WALL_PRESENCE,WALL_PRESENCE,NO_WALL,2000},
+				{	WALL_PRESENCE,NO_WALL,NO_WALL,WALL_PRESENCE,2000},
+				{	NO_WALL,WALL_PRESENCE,WALL_PRESENCE,NO_WALL,2000},
+				{	WALL_PRESENCE,NO_WALL,WALL_PRESENCE,NO_WALL,2000},
+				{	NO_WALL,WALL_PRESENCE,NO_WALL,WALL_PRESENCE,2000}},
 			{
-				{	NO_KNOWN,NO_KNOWN,NO_WALL,NO_WALL,2000},
-				{	NO_KNOWN,NO_KNOWN,NO_WALL,NO_WALL,2000},
-				{	NO_KNOWN,NO_WALL,NO_WALL,NO_KNOWN,2000},
-				{	NO_WALL,NO_WALL,NO_WALL,NO_KNOWN,2000},
-				{	NO_WALL,NO_KNOWN,NO_WALL,NO_KNOWN,2000},
-				{	NO_KNOWN,NO_WALL,NO_WALL,NO_KNOWN,2000},
-				{	NO_WALL,NO_KNOWN,NO_KNOWN,NO_KNOWN,2000},
-				{	NO_KNOWN,NO_WALL,NO_WALL,NO_WALL,2000},
-				{	NO_WALL,NO_WALL,NO_KNOWN,NO_KNOWN,2000},
-				{	NO_WALL,NO_KNOWN,NO_WALL,NO_KNOWN,2000},
-				{	NO_KNOWN,NO_WALL,NO_WALL,NO_KNOWN,2000},
-				{	NO_WALL,NO_KNOWN,NO_WALL,NO_KNOWN,2000},
-				{	NO_KNOWN,NO_WALL,NO_KNOWN,NO_WALL,2000},
-				{	NO_WALL,NO_WALL,NO_WALL,NO_KNOWN,2000},
-				{	NO_WALL,NO_KNOWN,NO_WALL,NO_KNOWN,2000},
-				{	NO_KNOWN,NO_KNOWN,NO_KNOWN,NO_WALL,2000}},
+				{	WALL_PRESENCE,WALL_PRESENCE,NO_WALL,NO_WALL,2000},
+				{	WALL_PRESENCE,WALL_PRESENCE,NO_WALL,NO_WALL,2000},
+				{	WALL_PRESENCE,NO_WALL,NO_WALL,WALL_PRESENCE,2000},
+				{	NO_WALL,NO_WALL,NO_WALL,WALL_PRESENCE,2000},
+				{	NO_WALL,WALL_PRESENCE,NO_WALL,WALL_PRESENCE,2000},
+				{	WALL_PRESENCE,NO_WALL,NO_WALL,WALL_PRESENCE,2000},
+				{	NO_WALL,WALL_PRESENCE,WALL_PRESENCE,WALL_PRESENCE,2000},
+				{	WALL_PRESENCE,NO_WALL,NO_WALL,NO_WALL,2000},
+				{	NO_WALL,NO_WALL,WALL_PRESENCE,WALL_PRESENCE,2000},
+				{	NO_WALL,WALL_PRESENCE,NO_WALL,WALL_PRESENCE,2000},
+				{	WALL_PRESENCE,NO_WALL,NO_WALL,WALL_PRESENCE,2000},
+				{	NO_WALL,WALL_PRESENCE,NO_WALL,WALL_PRESENCE,2000},
+				{	WALL_PRESENCE,NO_WALL,WALL_PRESENCE,NO_WALL,2000},
+				{	NO_WALL,NO_WALL,NO_WALL,WALL_PRESENCE,2000},
+				{	NO_WALL,WALL_PRESENCE,NO_WALL,WALL_PRESENCE,2000},
+				{	WALL_PRESENCE,WALL_PRESENCE,WALL_PRESENCE,NO_WALL,2000}},
 			{
-				{	NO_KNOWN,NO_KNOWN,NO_WALL,NO_WALL,2000},
-				{	NO_KNOWN,NO_KNOWN,NO_WALL,NO_WALL,2000},
-				{	NO_KNOWN,NO_KNOWN,NO_WALL,NO_WALL,2000},
-				{	NO_KNOWN,NO_KNOWN,NO_KNOWN,NO_WALL,2000},
-				{	NO_KNOWN,NO_KNOWN,NO_KNOWN,NO_WALL,2000},
-				{	NO_KNOWN,NO_WALL,NO_KNOWN,NO_WALL,2000},
-				{	NO_WALL,NO_KNOWN,NO_WALL,NO_KNOWN,2000},
-				{	NO_KNOWN,NO_KNOWN,NO_WALL,NO_WALL,2000},
-				{	NO_KNOWN,NO_WALL,NO_WALL,NO_KNOWN,2000},
-				{	NO_WALL,NO_KNOWN,NO_KNOWN,NO_WALL,2000},
-				{	NO_KNOWN,NO_KNOWN,NO_WALL,NO_WALL,2000},
-				{	NO_KNOWN,NO_KNOWN,NO_WALL,NO_WALL,2000},
-				{	NO_KNOWN,NO_WALL,NO_WALL,NO_KNOWN,2000},
-				{	NO_WALL,NO_KNOWN,NO_KNOWN,NO_WALL,2000},
-				{	NO_KNOWN,NO_KNOWN,NO_KNOWN,NO_WALL,2000},
-				{	NO_KNOWN,NO_KNOWN,NO_WALL,NO_KNOWN,2000}},
+				{	WALL_PRESENCE,WALL_PRESENCE,NO_WALL,NO_WALL,2000},
+				{	WALL_PRESENCE,WALL_PRESENCE,NO_WALL,NO_WALL,2000},
+				{	WALL_PRESENCE,WALL_PRESENCE,NO_WALL,NO_WALL,2000},
+				{	WALL_PRESENCE,WALL_PRESENCE,WALL_PRESENCE,NO_WALL,2000},
+				{	WALL_PRESENCE,WALL_PRESENCE,WALL_PRESENCE,NO_WALL,2000},
+				{	WALL_PRESENCE,NO_WALL,WALL_PRESENCE,NO_WALL,2000},
+				{	NO_WALL,WALL_PRESENCE,NO_WALL,WALL_PRESENCE,2000},
+				{	WALL_PRESENCE,WALL_PRESENCE,NO_WALL,NO_WALL,2000},
+				{	WALL_PRESENCE,NO_WALL,NO_WALL,WALL_PRESENCE,2000},
+				{	NO_WALL,WALL_PRESENCE,WALL_PRESENCE,NO_WALL,2000},
+				{	WALL_PRESENCE,WALL_PRESENCE,NO_WALL,NO_WALL,2000},
+				{	WALL_PRESENCE,WALL_PRESENCE,NO_WALL,NO_WALL,2000},
+				{	WALL_PRESENCE,NO_WALL,NO_WALL,WALL_PRESENCE,2000},
+				{	NO_WALL,WALL_PRESENCE,WALL_PRESENCE,NO_WALL,2000},
+				{	WALL_PRESENCE,WALL_PRESENCE,WALL_PRESENCE,NO_WALL,2000},
+				{	WALL_PRESENCE,WALL_PRESENCE,NO_WALL,WALL_PRESENCE,2000}},
 			{
-				{	NO_KNOWN,NO_KNOWN,NO_WALL,NO_WALL,2000},
-				{	NO_KNOWN,NO_WALL,NO_WALL,NO_WALL,2000},
-				{	NO_WALL,NO_KNOWN,NO_KNOWN,NO_WALL,2000},
-				{	NO_KNOWN,NO_WALL,NO_WALL,NO_KNOWN,2000},
-				{	NO_WALL,NO_KNOWN,NO_WALL,NO_KNOWN,2000},
-				{	NO_KNOWN,NO_WALL,NO_WALL,NO_KNOWN,2000},
-				{	NO_WALL,NO_KNOWN,NO_WALL,NO_WALL,2000},
-				{	NO_KNOWN,NO_KNOWN,NO_WALL,NO_WALL,2000},
-				{	NO_KNOWN,NO_WALL,NO_KNOWN,NO_WALL,2000},
-				{	NO_WALL,NO_WALL,NO_KNOWN,NO_KNOWN,2000},
-				{	NO_WALL,NO_KNOWN,NO_KNOWN,NO_WALL,2000},
-				{	NO_KNOWN,NO_KNOWN,NO_WALL,NO_WALL,2000},
-				{	NO_KNOWN,NO_WALL,NO_KNOWN,NO_WALL,2000},
-				{	NO_WALL,NO_KNOWN,NO_WALL,NO_KNOWN,2000},
-				{	NO_KNOWN,NO_WALL,NO_WALL,NO_KNOWN,2000},
-				{	NO_WALL,NO_KNOWN,NO_WALL,NO_WALL,2000}},
+				{	WALL_PRESENCE,WALL_PRESENCE,NO_WALL,NO_WALL,2000},
+				{	WALL_PRESENCE,NO_WALL,NO_WALL,NO_WALL,2000},
+				{	NO_WALL,WALL_PRESENCE,WALL_PRESENCE,NO_WALL,2000},
+				{	WALL_PRESENCE,NO_WALL,NO_WALL,WALL_PRESENCE,2000},
+				{	NO_WALL,WALL_PRESENCE,NO_WALL,WALL_PRESENCE,2000},
+				{	WALL_PRESENCE,NO_WALL,NO_WALL,WALL_PRESENCE,2000},
+				{	NO_WALL,WALL_PRESENCE,NO_WALL,NO_WALL,2000},
+				{	WALL_PRESENCE,WALL_PRESENCE,NO_WALL,NO_WALL,2000},
+				{	WALL_PRESENCE,NO_WALL,WALL_PRESENCE,NO_WALL,2000},
+				{	NO_WALL,NO_WALL,WALL_PRESENCE,WALL_PRESENCE,2000},
+				{	NO_WALL,WALL_PRESENCE,WALL_PRESENCE,NO_WALL,2000},
+				{	WALL_PRESENCE,WALL_PRESENCE,NO_WALL,NO_WALL,2000},
+				{	WALL_PRESENCE,NO_WALL,WALL_PRESENCE,NO_WALL,2000},
+				{	NO_WALL,WALL_PRESENCE,NO_WALL,WALL_PRESENCE,2000},
+				{	WALL_PRESENCE,NO_WALL,NO_WALL,WALL_PRESENCE,2000},
+				{	NO_WALL,WALL_PRESENCE,NO_WALL,NO_WALL,2000}},
 			{
-				{	NO_KNOWN,NO_KNOWN,NO_WALL,NO_WALL,2000},
-				{	NO_KNOWN,NO_WALL,NO_KNOWN,NO_WALL,2000},
-				{	NO_WALL,NO_KNOWN,NO_WALL,NO_KNOWN,2000},
-				{	NO_KNOWN,NO_KNOWN,NO_WALL,NO_WALL,2000},
-				{	NO_KNOWN,NO_WALL,NO_KNOWN,NO_WALL,2000},
-				{	NO_WALL,NO_KNOWN,NO_KNOWN,NO_WALL,2000},
-				{	NO_KNOWN,NO_KNOWN,NO_WALL,NO_WALL,2000},
-				{	NO_KNOWN,NO_KNOWN,NO_WALL,NO_WALL,2000},
-				{	NO_KNOWN,NO_WALL,NO_WALL,NO_KNOWN,2000},
-				{	NO_WALL,NO_WALL,NO_KNOWN,NO_KNOWN,2000},
-				{	NO_WALL,NO_KNOWN,NO_WALL,NO_KNOWN,2000},
-				{	NO_KNOWN,NO_KNOWN,NO_KNOWN,NO_WALL,2000},
-				{	NO_KNOWN,NO_WALL,NO_WALL,NO_KNOWN,2000},
-				{	NO_WALL,NO_KNOWN,NO_KNOWN,NO_WALL,2000},
-				{	NO_KNOWN,NO_KNOWN,NO_WALL,NO_WALL,2000},
-				{	NO_KNOWN,NO_KNOWN,NO_WALL,NO_WALL,2000}},
+				{	WALL_PRESENCE,WALL_PRESENCE,NO_WALL,NO_WALL,2000},
+				{	WALL_PRESENCE,NO_WALL,WALL_PRESENCE,NO_WALL,2000},
+				{	NO_WALL,WALL_PRESENCE,NO_WALL,WALL_PRESENCE,2000},
+				{	WALL_PRESENCE,WALL_PRESENCE,NO_WALL,NO_WALL,2000},
+				{	WALL_PRESENCE,NO_WALL,WALL_PRESENCE,NO_WALL,2000},
+				{	NO_WALL,WALL_PRESENCE,WALL_PRESENCE,NO_WALL,2000},
+				{	WALL_PRESENCE,WALL_PRESENCE,NO_WALL,NO_WALL,2000},
+				{	WALL_PRESENCE,WALL_PRESENCE,NO_WALL,NO_WALL,2000},
+				{	WALL_PRESENCE,NO_WALL,NO_WALL,WALL_PRESENCE,2000},
+				{	NO_WALL,NO_WALL,WALL_PRESENCE,WALL_PRESENCE,2000},
+				{	NO_WALL,WALL_PRESENCE,NO_WALL,WALL_PRESENCE,2000},
+				{	WALL_PRESENCE,WALL_PRESENCE,WALL_PRESENCE,NO_WALL,2000},
+				{	WALL_PRESENCE,NO_WALL,NO_WALL,WALL_PRESENCE,2000},
+				{	NO_WALL,WALL_PRESENCE,WALL_PRESENCE,NO_WALL,2000},
+				{	WALL_PRESENCE,WALL_PRESENCE,NO_WALL,NO_WALL,2000},
+				{	WALL_PRESENCE,WALL_PRESENCE,NO_WALL,NO_WALL,2000}},
 			{
-				{	NO_KNOWN,NO_KNOWN,NO_WALL,NO_WALL,2000},
-				{	NO_KNOWN,NO_WALL,NO_KNOWN,NO_KNOWN,2000},
-				{	NO_WALL,NO_KNOWN,NO_WALL,NO_WALL,2000},
-				{	NO_KNOWN,NO_WALL,NO_KNOWN,NO_WALL,2000},
-				{	NO_WALL,NO_KNOWN,NO_WALL,NO_KNOWN,2000},
-				{	NO_KNOWN,NO_WALL,NO_WALL,NO_KNOWN,2000},
-				{	NO_WALL,NO_WALL,NO_KNOWN,NO_WALL,2000},
-				{	NO_WALL,NO_KNOWN,NO_KNOWN,NO_WALL,2000},
-				{	NO_KNOWN,NO_WALL,NO_KNOWN,NO_WALL,2000},
-				{	NO_WALL,NO_KNOWN,NO_WALL,NO_KNOWN,2000},
-				{	NO_KNOWN,NO_WALL,NO_KNOWN,NO_WALL,2000},
-				{	NO_WALL,NO_KNOWN,NO_WALL,NO_KNOWN,2000},
-				{	NO_KNOWN,NO_WALL,NO_KNOWN,NO_WALL,2000},
-				{	NO_WALL,NO_KNOWN,NO_WALL,NO_KNOWN,2000},
-				{	NO_KNOWN,NO_KNOWN,NO_WALL,NO_WALL,2000},
-				{	NO_KNOWN,NO_KNOWN,NO_WALL,NO_WALL,2000}},
+				{	WALL_PRESENCE,WALL_PRESENCE,NO_WALL,NO_WALL,2000},
+				{	WALL_PRESENCE,NO_WALL,WALL_PRESENCE,WALL_PRESENCE,2000},
+				{	NO_WALL,WALL_PRESENCE,NO_WALL,NO_WALL,2000},
+				{	WALL_PRESENCE,NO_WALL,WALL_PRESENCE,NO_WALL,2000},
+				{	NO_WALL,WALL_PRESENCE,NO_WALL,WALL_PRESENCE,2000},
+				{	WALL_PRESENCE,NO_WALL,NO_WALL,WALL_PRESENCE,2000},
+				{	NO_WALL,NO_WALL,WALL_PRESENCE,NO_WALL,2000},
+				{	NO_WALL,WALL_PRESENCE,WALL_PRESENCE,NO_WALL,2000},
+				{	WALL_PRESENCE,NO_WALL,WALL_PRESENCE,NO_WALL,2000},
+				{	NO_WALL,WALL_PRESENCE,NO_WALL,WALL_PRESENCE,2000},
+				{	WALL_PRESENCE,NO_WALL,WALL_PRESENCE,NO_WALL,2000},
+				{	NO_WALL,WALL_PRESENCE,NO_WALL,WALL_PRESENCE,2000},
+				{	WALL_PRESENCE,NO_WALL,WALL_PRESENCE,NO_WALL,2000},
+				{	NO_WALL,WALL_PRESENCE,NO_WALL,WALL_PRESENCE,2000},
+				{	WALL_PRESENCE,WALL_PRESENCE,NO_WALL,NO_WALL,2000},
+				{	WALL_PRESENCE,WALL_PRESENCE,NO_WALL,NO_WALL,2000}},
 			{
-				{	NO_KNOWN,NO_KNOWN,NO_WALL,NO_WALL,2000},
-				{	NO_KNOWN,NO_WALL,NO_WALL,NO_KNOWN,2000},
-				{	NO_WALL,NO_KNOWN,NO_KNOWN,NO_WALL,2000},
-				{	NO_KNOWN,NO_WALL,NO_KNOWN,NO_KNOWN,2000},
-				{	NO_WALL,NO_KNOWN,NO_WALL,NO_WALL,2000},
-				{	NO_KNOWN,NO_WALL,NO_KNOWN,NO_WALL,2000},
-				{	NO_WALL,NO_KNOWN,NO_WALL,NO_KNOWN,2000},
-				{	NO_KNOWN,NO_WALL,NO_WALL,NO_KNOWN,2000},
-				{	NO_WALL,NO_KNOWN,NO_WALL,NO_KNOWN,2000},
-				{	NO_KNOWN,NO_WALL,NO_KNOWN,NO_WALL,2000},
-				{	NO_WALL,NO_KNOWN,NO_WALL,NO_KNOWN,2000},
-				{	NO_KNOWN,NO_WALL,NO_KNOWN,NO_WALL,2000},
-				{	NO_WALL,NO_KNOWN,NO_WALL,NO_KNOWN,2000},
-				{	NO_KNOWN,NO_WALL,NO_KNOWN,NO_WALL,2000},
-				{	NO_WALL,NO_KNOWN,NO_KNOWN,NO_WALL,2000},
-				{	NO_KNOWN,NO_KNOWN,NO_WALL,NO_WALL,2000}},
+				{	WALL_PRESENCE,WALL_PRESENCE,NO_WALL,NO_WALL,2000},
+				{	WALL_PRESENCE,NO_WALL,NO_WALL,WALL_PRESENCE,2000},
+				{	NO_WALL,WALL_PRESENCE,WALL_PRESENCE,NO_WALL,2000},
+				{	WALL_PRESENCE,NO_WALL,WALL_PRESENCE,WALL_PRESENCE,2000},
+				{	NO_WALL,WALL_PRESENCE,NO_WALL,NO_WALL,2000},
+				{	WALL_PRESENCE,NO_WALL,WALL_PRESENCE,NO_WALL,2000},
+				{	NO_WALL,WALL_PRESENCE,NO_WALL,WALL_PRESENCE,2000},
+				{	WALL_PRESENCE,NO_WALL,NO_WALL,WALL_PRESENCE,2000},
+				{	NO_WALL,WALL_PRESENCE,NO_WALL,WALL_PRESENCE,2000},
+				{	WALL_PRESENCE,NO_WALL,WALL_PRESENCE,NO_WALL,2000},
+				{	NO_WALL,WALL_PRESENCE,NO_WALL,WALL_PRESENCE,2000},
+				{	WALL_PRESENCE,NO_WALL,WALL_PRESENCE,NO_WALL,2000},
+				{	NO_WALL,WALL_PRESENCE,NO_WALL,WALL_PRESENCE,2000},
+				{	WALL_PRESENCE,NO_WALL,WALL_PRESENCE,NO_WALL,2000},
+				{	NO_WALL,WALL_PRESENCE,WALL_PRESENCE,NO_WALL,2000},
+				{	WALL_PRESENCE,WALL_PRESENCE,NO_WALL,NO_WALL,2000}},
 			{
-				{	NO_KNOWN,NO_KNOWN,NO_WALL,NO_WALL,2000},
-				{	NO_KNOWN,NO_KNOWN,NO_WALL,NO_WALL,2000},
-				{	NO_KNOWN,NO_KNOWN,NO_WALL,NO_KNOWN,2000},
-				{	NO_KNOWN,NO_WALL,NO_WALL,NO_KNOWN,2000},
-				{	NO_WALL,NO_KNOWN,NO_KNOWN,NO_WALL,2000},
-				{	NO_KNOWN,NO_KNOWN,NO_WALL,NO_KNOWN,2000},
-				{	NO_KNOWN,NO_KNOWN,NO_WALL,NO_WALL,2000},
-				{	NO_KNOWN,NO_WALL,NO_KNOWN,NO_WALL,2000},
-				{	NO_WALL,NO_WALL,NO_KNOWN,NO_WALL,2000},
-				{	NO_WALL,NO_KNOWN,NO_WALL,NO_KNOWN,2000},
-				{	NO_KNOWN,NO_WALL,NO_KNOWN,NO_WALL,2000},
-				{	NO_WALL,NO_KNOWN,NO_WALL,NO_KNOWN,2000},
-				{	NO_KNOWN,NO_WALL,NO_KNOWN,NO_WALL,2000},
-				{	NO_WALL,NO_WALL,NO_WALL,NO_KNOWN,2000},
-				{	NO_WALL,NO_KNOWN,NO_KNOWN,NO_KNOWN,2000},
-				{	NO_KNOWN,NO_KNOWN,NO_WALL,NO_WALL,2000}},
+				{	WALL_PRESENCE,WALL_PRESENCE,NO_WALL,NO_WALL,2000},
+				{	WALL_PRESENCE,WALL_PRESENCE,NO_WALL,NO_WALL,2000},
+				{	WALL_PRESENCE,WALL_PRESENCE,NO_WALL,WALL_PRESENCE,2000},
+				{	WALL_PRESENCE,NO_WALL,NO_WALL,WALL_PRESENCE,2000},
+				{	NO_WALL,WALL_PRESENCE,WALL_PRESENCE,NO_WALL,2000},
+				{	WALL_PRESENCE,WALL_PRESENCE,NO_WALL,WALL_PRESENCE,2000},
+				{	WALL_PRESENCE,WALL_PRESENCE,NO_WALL,NO_WALL,2000},
+				{	WALL_PRESENCE,NO_WALL,WALL_PRESENCE,NO_WALL,2000},
+				{	NO_WALL,NO_WALL,WALL_PRESENCE,NO_WALL,2000},
+				{	NO_WALL,WALL_PRESENCE,NO_WALL,WALL_PRESENCE,2000},
+				{	WALL_PRESENCE,NO_WALL,WALL_PRESENCE,NO_WALL,2000},
+				{	NO_WALL,WALL_PRESENCE,NO_WALL,WALL_PRESENCE,2000},
+				{	WALL_PRESENCE,NO_WALL,WALL_PRESENCE,NO_WALL,2000},
+				{	NO_WALL,NO_WALL,NO_WALL,WALL_PRESENCE,2000},
+				{	NO_WALL,WALL_PRESENCE,WALL_PRESENCE,WALL_PRESENCE,2000},
+				{	WALL_PRESENCE,WALL_PRESENCE,NO_WALL,NO_WALL,2000}},
 			{
-				{	NO_KNOWN,NO_KNOWN,NO_WALL,NO_WALL,2000},
-				{	NO_KNOWN,NO_KNOWN,NO_WALL,NO_WALL,2000},
-				{	NO_KNOWN,NO_WALL,NO_KNOWN,NO_WALL,2000},
-				{	NO_WALL,NO_KNOWN,NO_WALL,NO_WALL,2000},
-				{	NO_KNOWN,NO_WALL,NO_WALL,NO_KNOWN,2000},
+				{	WALL_PRESENCE,WALL_PRESENCE,NO_WALL,NO_WALL,2000},
+				{	WALL_PRESENCE,WALL_PRESENCE,NO_WALL,NO_WALL,2000},
+				{	WALL_PRESENCE,NO_WALL,WALL_PRESENCE,NO_WALL,2000},
+				{	NO_WALL,WALL_PRESENCE,NO_WALL,NO_WALL,2000},
+				{	WALL_PRESENCE,NO_WALL,NO_WALL,WALL_PRESENCE,2000},
 				{	NO_WALL,NO_WALL,NO_WALL,NO_WALL,2000},
-				{	NO_WALL,NO_KNOWN,NO_KNOWN,NO_WALL,2000},
-				{	NO_KNOWN,NO_WALL,NO_WALL,NO_KNOWN,2000},
-				{	NO_WALL,NO_KNOWN,NO_KNOWN,NO_KNOWN,2000},
-				{	NO_KNOWN,NO_WALL,NO_KNOWN,NO_WALL,2000},
-				{	NO_WALL,NO_KNOWN,NO_WALL,NO_KNOWN,2000},
-				{	NO_KNOWN,NO_WALL,NO_KNOWN,NO_WALL,2000},
-				{	NO_WALL,NO_KNOWN,NO_WALL,NO_KNOWN,2000},
-				{	NO_KNOWN,NO_WALL,NO_KNOWN,NO_WALL,2000},
-				{	NO_WALL,NO_WALL,NO_WALL,NO_KNOWN,2000},
-				{	NO_WALL,NO_KNOWN,NO_WALL,NO_WALL,2000}},
+				{	NO_WALL,WALL_PRESENCE,WALL_PRESENCE,NO_WALL,2000},
+				{	WALL_PRESENCE,NO_WALL,NO_WALL,WALL_PRESENCE,2000},
+				{	NO_WALL,WALL_PRESENCE,WALL_PRESENCE,WALL_PRESENCE,2000},
+				{	WALL_PRESENCE,NO_WALL,WALL_PRESENCE,NO_WALL,2000},
+				{	NO_WALL,WALL_PRESENCE,NO_WALL,WALL_PRESENCE,2000},
+				{	WALL_PRESENCE,NO_WALL,WALL_PRESENCE,NO_WALL,2000},
+				{	NO_WALL,WALL_PRESENCE,NO_WALL,WALL_PRESENCE,2000},
+				{	WALL_PRESENCE,NO_WALL,WALL_PRESENCE,NO_WALL,2000},
+				{	NO_WALL,NO_WALL,NO_WALL,WALL_PRESENCE,2000},
+				{	NO_WALL,WALL_PRESENCE,NO_WALL,NO_WALL,2000}},
 			{
-				{	NO_KNOWN,NO_KNOWN,NO_WALL,NO_WALL,2000},
-				{	NO_KNOWN,NO_KNOWN,NO_WALL,NO_WALL,2000},
-				{	NO_KNOWN,NO_WALL,NO_KNOWN,NO_KNOWN,2000},
-				{	NO_WALL,NO_KNOWN,NO_KNOWN,NO_WALL,2000},
-				{	NO_KNOWN,NO_KNOWN,NO_KNOWN,NO_WALL,2000},
-				{	NO_KNOWN,NO_WALL,NO_WALL,NO_WALL,2000},
-				{	NO_WALL,NO_KNOWN,NO_WALL,NO_KNOWN,2000},
-				{	NO_KNOWN,NO_WALL,NO_WALL,NO_WALL,2000},
-				{	NO_WALL,NO_WALL,NO_KNOWN,NO_KNOWN,2000},
-				{	NO_WALL,NO_KNOWN,NO_WALL,NO_KNOWN,2000},
-				{	NO_KNOWN,NO_WALL,NO_KNOWN,NO_WALL,2000},
-				{	NO_WALL,NO_KNOWN,NO_WALL,NO_KNOWN,2000},
-				{	NO_KNOWN,NO_WALL,NO_KNOWN,NO_WALL,2000},
-				{	NO_WALL,NO_KNOWN,NO_WALL,NO_KNOWN,2000},
-				{	NO_KNOWN,NO_KNOWN,NO_KNOWN,NO_WALL,2000},
-				{	NO_KNOWN,NO_KNOWN,NO_KNOWN,NO_WALL,2000}},
+				{	WALL_PRESENCE,WALL_PRESENCE,NO_WALL,NO_WALL,2000},
+				{	WALL_PRESENCE,WALL_PRESENCE,NO_WALL,NO_WALL,2000},
+				{	WALL_PRESENCE,NO_WALL,WALL_PRESENCE,WALL_PRESENCE,2000},
+				{	NO_WALL,WALL_PRESENCE,WALL_PRESENCE,NO_WALL,2000},
+				{	WALL_PRESENCE,WALL_PRESENCE,WALL_PRESENCE,NO_WALL,2000},
+				{	WALL_PRESENCE,NO_WALL,NO_WALL,NO_WALL,2000},
+				{	NO_WALL,WALL_PRESENCE,NO_WALL,WALL_PRESENCE,2000},
+				{	WALL_PRESENCE,NO_WALL,NO_WALL,NO_WALL,2000},
+				{	NO_WALL,NO_WALL,WALL_PRESENCE,WALL_PRESENCE,2000},
+				{	NO_WALL,WALL_PRESENCE,NO_WALL,WALL_PRESENCE,2000},
+				{	WALL_PRESENCE,NO_WALL,WALL_PRESENCE,NO_WALL,2000},
+				{	NO_WALL,WALL_PRESENCE,NO_WALL,WALL_PRESENCE,2000},
+				{	WALL_PRESENCE,NO_WALL,WALL_PRESENCE,NO_WALL,2000},
+				{	NO_WALL,WALL_PRESENCE,NO_WALL,WALL_PRESENCE,2000},
+				{	WALL_PRESENCE,WALL_PRESENCE,WALL_PRESENCE,NO_WALL,2000},
+				{	WALL_PRESENCE,WALL_PRESENCE,WALL_PRESENCE,NO_WALL,2000}},
 			{
-				{	NO_KNOWN,NO_KNOWN,NO_WALL,NO_WALL,2000},
-				{	NO_KNOWN,NO_WALL,NO_WALL,NO_WALL,2000},
-				{	NO_WALL,NO_WALL,NO_WALL,NO_KNOWN,2000},
-				{	NO_WALL,NO_WALL,NO_KNOWN,NO_KNOWN,2000},
-				{	NO_WALL,NO_KNOWN,NO_WALL,NO_KNOWN,2000},
-				{	NO_KNOWN,NO_KNOWN,NO_KNOWN,NO_WALL,2000},
-				{	NO_KNOWN,NO_KNOWN,NO_WALL,NO_WALL,2000},
-				{	NO_KNOWN,NO_WALL,NO_WALL,NO_WALL,2000},
-				{	NO_WALL,NO_WALL,NO_KNOWN,NO_KNOWN,2000},
-				{	NO_WALL,NO_WALL,NO_KNOWN,NO_WALL,2000},
-				{	NO_WALL,NO_KNOWN,NO_WALL,NO_KNOWN,2000},
-				{	NO_KNOWN,NO_WALL,NO_KNOWN,NO_WALL,2000},
-				{	NO_WALL,NO_KNOWN,NO_WALL,NO_KNOWN,2000},
-				{	NO_KNOWN,NO_KNOWN,NO_WALL,NO_WALL,2000},
-				{	NO_KNOWN,NO_KNOWN,NO_WALL,NO_KNOWN,2000},
-				{	NO_KNOWN,NO_KNOWN,NO_WALL,NO_KNOWN,2000}},
+				{	WALL_PRESENCE,WALL_PRESENCE,NO_WALL,NO_WALL,2000},
+				{	WALL_PRESENCE,NO_WALL,NO_WALL,NO_WALL,2000},
+				{	NO_WALL,NO_WALL,NO_WALL,WALL_PRESENCE,2000},
+				{	NO_WALL,NO_WALL,WALL_PRESENCE,WALL_PRESENCE,2000},
+				{	NO_WALL,WALL_PRESENCE,NO_WALL,WALL_PRESENCE,2000},
+				{	WALL_PRESENCE,WALL_PRESENCE,WALL_PRESENCE,NO_WALL,2000},
+				{	WALL_PRESENCE,WALL_PRESENCE,NO_WALL,NO_WALL,2000},
+				{	WALL_PRESENCE,NO_WALL,NO_WALL,NO_WALL,2000},
+				{	NO_WALL,NO_WALL,WALL_PRESENCE,WALL_PRESENCE,2000},
+				{	NO_WALL,NO_WALL,WALL_PRESENCE,NO_WALL,2000},
+				{	NO_WALL,WALL_PRESENCE,NO_WALL,WALL_PRESENCE,2000},
+				{	WALL_PRESENCE,NO_WALL,WALL_PRESENCE,NO_WALL,2000},
+				{	NO_WALL,WALL_PRESENCE,NO_WALL,WALL_PRESENCE,2000},
+				{	WALL_PRESENCE,WALL_PRESENCE,NO_WALL,NO_WALL,2000},
+				{	WALL_PRESENCE,WALL_PRESENCE,NO_WALL,WALL_PRESENCE,2000},
+				{	WALL_PRESENCE,WALL_PRESENCE,NO_WALL,WALL_PRESENCE,2000}},
 			{
-				{	NO_KNOWN,NO_KNOWN,NO_WALL,NO_WALL,2000},
-				{	NO_KNOWN,NO_KNOWN,NO_KNOWN,NO_WALL,2000},
-				{	NO_KNOWN,NO_KNOWN,NO_WALL,NO_WALL,2000},
-				{	NO_KNOWN,NO_KNOWN,NO_WALL,NO_KNOWN,2000},
-				{	NO_KNOWN,NO_KNOWN,NO_WALL,NO_WALL,2000},
-				{	NO_KNOWN,NO_KNOWN,NO_WALL,NO_KNOWN,2000},
-				{	NO_KNOWN,NO_KNOWN,NO_WALL,NO_WALL,2000},
-				{	NO_KNOWN,NO_WALL,NO_WALL,NO_WALL,2000},
-				{	NO_WALL,NO_KNOWN,NO_WALL,NO_KNOWN,2000},
-				{	NO_KNOWN,NO_WALL,NO_WALL,NO_KNOWN,2000},
-				{	NO_WALL,NO_WALL,NO_KNOWN,NO_WALL,2000},
-				{	NO_WALL,NO_WALL,NO_WALL,NO_KNOWN,2000},
-				{	NO_WALL,NO_WALL,NO_KNOWN,NO_WALL,2000},
-				{	NO_WALL,NO_KNOWN,NO_WALL,NO_WALL,2000},
-				{	NO_KNOWN,NO_WALL,NO_KNOWN,NO_WALL,2000},
-				{	NO_WALL,NO_KNOWN,NO_WALL,NO_WALL,2000}},
+				{	WALL_PRESENCE,WALL_PRESENCE,NO_WALL,NO_WALL,2000},
+				{	WALL_PRESENCE,WALL_PRESENCE,WALL_PRESENCE,NO_WALL,2000},
+				{	WALL_PRESENCE,WALL_PRESENCE,NO_WALL,NO_WALL,2000},
+				{	WALL_PRESENCE,WALL_PRESENCE,NO_WALL,WALL_PRESENCE,2000},
+				{	WALL_PRESENCE,WALL_PRESENCE,NO_WALL,NO_WALL,2000},
+				{	WALL_PRESENCE,WALL_PRESENCE,NO_WALL,WALL_PRESENCE,2000},
+				{	WALL_PRESENCE,WALL_PRESENCE,NO_WALL,NO_WALL,2000},
+				{	WALL_PRESENCE,NO_WALL,NO_WALL,NO_WALL,2000},
+				{	NO_WALL,WALL_PRESENCE,NO_WALL,WALL_PRESENCE,2000},
+				{	WALL_PRESENCE,NO_WALL,NO_WALL,WALL_PRESENCE,2000},
+				{	NO_WALL,NO_WALL,WALL_PRESENCE,NO_WALL,2000},
+				{	NO_WALL,NO_WALL,NO_WALL,WALL_PRESENCE,2000},
+				{	NO_WALL,NO_WALL,WALL_PRESENCE,NO_WALL,2000},
+				{	NO_WALL,WALL_PRESENCE,NO_WALL,NO_WALL,2000},
+				{	WALL_PRESENCE,NO_WALL,WALL_PRESENCE,NO_WALL,2000},
+				{	NO_WALL,WALL_PRESENCE,NO_WALL,NO_WALL,2000}},
 			{
-				{	NO_KNOWN,NO_KNOWN,NO_WALL,NO_WALL,2000},
-				{	NO_KNOWN,NO_WALL,NO_WALL,NO_KNOWN,2000},
-				{	NO_WALL,NO_KNOWN,NO_KNOWN,NO_WALL,2000},
-				{	NO_KNOWN,NO_WALL,NO_WALL,NO_WALL,2000},
-				{	NO_WALL,NO_KNOWN,NO_KNOWN,NO_WALL,2000},
-				{	NO_KNOWN,NO_WALL,NO_KNOWN,NO_WALL,2000},
-				{	NO_WALL,NO_KNOWN,NO_KNOWN,NO_WALL,2000},
-				{	NO_KNOWN,NO_KNOWN,NO_WALL,NO_WALL,2000},
-				{	NO_KNOWN,NO_KNOWN,NO_WALL,NO_WALL,2000},
-				{	NO_KNOWN,NO_WALL,NO_WALL,NO_WALL,2000},
-				{	NO_WALL,NO_WALL,NO_KNOWN,NO_KNOWN,2000},
-				{	NO_WALL,NO_WALL,NO_KNOWN,NO_WALL,2000},
-				{	NO_WALL,NO_KNOWN,NO_WALL,NO_KNOWN,2000},
-				{	NO_KNOWN,NO_WALL,NO_KNOWN,NO_WALL,2000},
-				{	NO_WALL,NO_KNOWN,NO_WALL,NO_KNOWN,2000},
-				{	NO_KNOWN,NO_KNOWN,NO_WALL,NO_WALL,2000}},
+				{	WALL_PRESENCE,WALL_PRESENCE,NO_WALL,NO_WALL,2000},
+				{	WALL_PRESENCE,NO_WALL,NO_WALL,WALL_PRESENCE,2000},
+				{	NO_WALL,WALL_PRESENCE,WALL_PRESENCE,NO_WALL,2000},
+				{	WALL_PRESENCE,NO_WALL,NO_WALL,NO_WALL,2000},
+				{	NO_WALL,WALL_PRESENCE,WALL_PRESENCE,NO_WALL,2000},
+				{	WALL_PRESENCE,NO_WALL,WALL_PRESENCE,NO_WALL,2000},
+				{	NO_WALL,WALL_PRESENCE,WALL_PRESENCE,NO_WALL,2000},
+				{	WALL_PRESENCE,WALL_PRESENCE,NO_WALL,NO_WALL,2000},
+				{	WALL_PRESENCE,WALL_PRESENCE,NO_WALL,NO_WALL,2000},
+				{	WALL_PRESENCE,NO_WALL,NO_WALL,NO_WALL,2000},
+				{	NO_WALL,NO_WALL,WALL_PRESENCE,WALL_PRESENCE,2000},
+				{	NO_WALL,NO_WALL,WALL_PRESENCE,NO_WALL,2000},
+				{	NO_WALL,WALL_PRESENCE,NO_WALL,WALL_PRESENCE,2000},
+				{	WALL_PRESENCE,NO_WALL,WALL_PRESENCE,NO_WALL,2000},
+				{	NO_WALL,WALL_PRESENCE,NO_WALL,WALL_PRESENCE,2000},
+				{	WALL_PRESENCE,WALL_PRESENCE,NO_WALL,NO_WALL,2000}},
 			{
-				{	NO_KNOWN,NO_KNOWN,NO_WALL,NO_WALL,2000},
-				{	NO_KNOWN,NO_KNOWN,NO_WALL,NO_WALL,2000},
-				{	NO_KNOWN,NO_WALL,NO_KNOWN,NO_KNOWN,2000},
-				{	NO_WALL,NO_WALL,NO_KNOWN,NO_WALL,2000},
-				{	NO_WALL,NO_WALL,NO_KNOWN,NO_KNOWN,2000},
-				{	NO_WALL,NO_WALL,NO_KNOWN,NO_KNOWN,2000},
-				{	NO_WALL,NO_WALL,NO_KNOWN,NO_KNOWN,2000},
-				{	NO_WALL,NO_KNOWN,NO_KNOWN,NO_WALL,2000},
-				{	NO_KNOWN,NO_WALL,NO_KNOWN,NO_WALL,2000},
-				{	NO_WALL,NO_KNOWN,NO_KNOWN,NO_WALL,2000},
-				{	NO_KNOWN,NO_WALL,NO_KNOWN,NO_KNOWN,2000},
-				{	NO_WALL,NO_WALL,NO_KNOWN,NO_KNOWN,2000},
-				{	NO_WALL,NO_WALL,NO_KNOWN,NO_WALL,2000},
-				{	NO_WALL,NO_KNOWN,NO_KNOWN,NO_KNOWN,2000},
-				{	NO_KNOWN,NO_WALL,NO_KNOWN,NO_WALL,2000},
-				{	NO_WALL,NO_KNOWN,NO_WALL,NO_WALL,2000}},
+				{	WALL_PRESENCE,WALL_PRESENCE,NO_WALL,NO_WALL,2000},
+				{	WALL_PRESENCE,WALL_PRESENCE,NO_WALL,NO_WALL,2000},
+				{	WALL_PRESENCE,NO_WALL,WALL_PRESENCE,WALL_PRESENCE,2000},
+				{	NO_WALL,NO_WALL,WALL_PRESENCE,NO_WALL,2000},
+				{	NO_WALL,NO_WALL,WALL_PRESENCE,WALL_PRESENCE,2000},
+				{	NO_WALL,NO_WALL,WALL_PRESENCE,WALL_PRESENCE,2000},
+				{	NO_WALL,NO_WALL,WALL_PRESENCE,WALL_PRESENCE,2000},
+				{	NO_WALL,WALL_PRESENCE,WALL_PRESENCE,NO_WALL,2000},
+				{	WALL_PRESENCE,NO_WALL,WALL_PRESENCE,NO_WALL,2000},
+				{	NO_WALL,WALL_PRESENCE,WALL_PRESENCE,NO_WALL,2000},
+				{	WALL_PRESENCE,NO_WALL,WALL_PRESENCE,WALL_PRESENCE,2000},
+				{	NO_WALL,NO_WALL,WALL_PRESENCE,WALL_PRESENCE,2000},
+				{	NO_WALL,NO_WALL,WALL_PRESENCE,NO_WALL,2000},
+				{	NO_WALL,WALL_PRESENCE,WALL_PRESENCE,WALL_PRESENCE,2000},
+				{	WALL_PRESENCE,NO_WALL,WALL_PRESENCE,NO_WALL,2000},
+				{	NO_WALL,WALL_PRESENCE,NO_WALL,NO_WALL,2000}},
 			{
-				{	NO_KNOWN,NO_WALL,NO_KNOWN,NO_WALL,2000},
-				{	NO_WALL,NO_WALL,NO_KNOWN,NO_WALL,2000},
-				{	NO_WALL,NO_WALL,NO_KNOWN,NO_KNOWN,2000},
-				{	NO_WALL,NO_WALL,NO_KNOWN,NO_KNOWN,2000},
-				{	NO_WALL,NO_WALL,NO_KNOWN,NO_KNOWN,2000},
-				{	NO_WALL,NO_WALL,NO_KNOWN,NO_KNOWN,2000},
-				{	NO_WALL,NO_WALL,NO_KNOWN,NO_KNOWN,2000},
-				{	NO_WALL,NO_WALL,NO_KNOWN,NO_KNOWN,2000},
-				{	NO_WALL,NO_WALL,NO_KNOWN,NO_KNOWN,2000},
-				{	NO_WALL,NO_WALL,NO_KNOWN,NO_KNOWN,2000},
-				{	NO_WALL,NO_WALL,NO_KNOWN,NO_KNOWN,2000},
-				{	NO_WALL,NO_WALL,NO_KNOWN,NO_KNOWN,2000},
-				{	NO_WALL,NO_WALL,NO_KNOWN,NO_KNOWN,2000},
-				{	NO_WALL,NO_WALL,NO_KNOWN,NO_KNOWN,2000},
-				{	NO_WALL,NO_WALL,NO_KNOWN,NO_KNOWN,2000},
-				{	NO_WALL,NO_KNOWN,NO_KNOWN,NO_WALL,2000}}}};
+				{	WALL_PRESENCE,NO_WALL,WALL_PRESENCE,NO_WALL,2000},
+				{	NO_WALL,NO_WALL,WALL_PRESENCE,NO_WALL,2000},
+				{	NO_WALL,NO_WALL,WALL_PRESENCE,WALL_PRESENCE,2000},
+				{	NO_WALL,NO_WALL,WALL_PRESENCE,WALL_PRESENCE,2000},
+				{	NO_WALL,NO_WALL,WALL_PRESENCE,WALL_PRESENCE,2000},
+				{	NO_WALL,NO_WALL,WALL_PRESENCE,WALL_PRESENCE,2000},
+				{	NO_WALL,NO_WALL,WALL_PRESENCE,WALL_PRESENCE,2000},
+				{	NO_WALL,NO_WALL,WALL_PRESENCE,WALL_PRESENCE,2000},
+				{	NO_WALL,NO_WALL,WALL_PRESENCE,WALL_PRESENCE,2000},
+				{	NO_WALL,NO_WALL,WALL_PRESENCE,WALL_PRESENCE,2000},
+				{	NO_WALL,NO_WALL,WALL_PRESENCE,WALL_PRESENCE,2000},
+				{	NO_WALL,NO_WALL,WALL_PRESENCE,WALL_PRESENCE,2000},
+				{	NO_WALL,NO_WALL,WALL_PRESENCE,WALL_PRESENCE,2000},
+				{	NO_WALL,NO_WALL,WALL_PRESENCE,WALL_PRESENCE,2000},
+				{	NO_WALL,NO_WALL,WALL_PRESENCE,WALL_PRESENCE,2000},
+				{	NO_WALL,WALL_PRESENCE,WALL_PRESENCE,NO_WALL,2000}}}};
 
 	*maze=maze_initial;
 #endif
@@ -1100,39 +1019,39 @@ void maze_init(labyrinthe *maze)
 
 void print_maze(const labyrinthe maze, const int x_robot, const int y_robot)
 {
-	ssd1306ClearScreen ();
-	int size_cell_on_oled = ((63) / MAZE_SIZE);
-	int x, y;
-	for (y = 0; y < MAZE_SIZE; y++)
-	{
-		for (x = 0; x < MAZE_SIZE; x++)
-		{
-			if (maze.cell[x][y].wall_north == WALL_PRESENCE)
-			{
-				ssd1306FillRect (x * size_cell_on_oled, y * size_cell_on_oled,
-						size_cell_on_oled + 1, 1);
-			}
-			if (maze.cell[x][y].wall_west == WALL_PRESENCE)
-			{
-				ssd1306FillRect (x * size_cell_on_oled, y * size_cell_on_oled,
-						1, size_cell_on_oled + 1);
-			}
-			if (maze.cell[x][y].wall_south == WALL_PRESENCE)
-			{
-				ssd1306FillRect (x * size_cell_on_oled,
-						(y + 1) * size_cell_on_oled, size_cell_on_oled + 1, 1);
-			}
-			if (maze.cell[x][y].wall_east == WALL_PRESENCE)
-			{
-				ssd1306FillRect ((x + 1) * size_cell_on_oled,
-						y * size_cell_on_oled, 1, size_cell_on_oled + 1);
-			}
-		}
-	}
-	//print_length(maze);
-	ssd1306FillRect (x_robot * size_cell_on_oled, y_robot * size_cell_on_oled,
-			size_cell_on_oled, size_cell_on_oled);
-	ssd1306Refresh ();
+//	ssd1306ClearScreen ();
+//	int size_cell_on_oled = ((63) / MAZE_SIZE);
+//	int x, y;
+//	for (y = 0; y < MAZE_SIZE; y++)
+//	{
+//		for (x = 0; x < MAZE_SIZE; x++)
+//		{
+//			if (maze.cell[x][y].wall_north == WALL_PRESENCE)
+//			{
+//				ssd1306FillRect (x * size_cell_on_oled, y * size_cell_on_oled,
+//						size_cell_on_oled + 1, 1);
+//			}
+//			if (maze.cell[x][y].wall_west == WALL_PRESENCE)
+//			{
+//				ssd1306FillRect (x * size_cell_on_oled, y * size_cell_on_oled,
+//						1, size_cell_on_oled + 1);
+//			}
+//			if (maze.cell[x][y].wall_south == WALL_PRESENCE)
+//			{
+//				ssd1306FillRect (x * size_cell_on_oled,
+//						(y + 1) * size_cell_on_oled, size_cell_on_oled + 1, 1);
+//			}
+//			if (maze.cell[x][y].wall_east == WALL_PRESENCE)
+//			{
+//				ssd1306FillRect ((x + 1) * size_cell_on_oled,
+//						y * size_cell_on_oled, 1, size_cell_on_oled + 1);
+//			}
+//		}
+//	}
+//	//print_length(maze);
+//	ssd1306FillRect (x_robot * size_cell_on_oled, y_robot * size_cell_on_oled,
+//			size_cell_on_oled, size_cell_on_oled);
+//	ssd1306Refresh ();
 }
 
 void* calloc_s(size_t nombre, size_t taille)
@@ -1149,42 +1068,42 @@ void* calloc_s(size_t nombre, size_t taille)
 
 void print_length(const labyrinthe maze)
 {
-	printf ("  ");
+	bluetoothPrintf ("  ");
 	for (int i = 0; i < MAZE_SIZE; i++)
 	{
-		printf ("%4d", i);
+		bluetoothPrintf ("%4d", i);
 	}
-	printf ("\n\n");
+	bluetoothPrintf ("\n\n");
 	for (int i = 0; i < MAZE_SIZE; i++)
 	{
-		printf ("%2d ", i);
+		bluetoothPrintf ("%2d ", i);
 		for (int j = 0; j < MAZE_SIZE; j++)
 		{
 			if (maze.cell[j][i].wall_north == NO_KNOWN)
 			{
-				printf ("====*");
+				bluetoothPrintf("====*");
 			}
 			else
 			{
-				printf ("    *");
+				bluetoothPrintf ("    *");
 			}
 		}
-		printf ("\n   ");
+		bluetoothPrintf ("\n   ");
 		for (int j = 0; j < MAZE_SIZE; j++)
 		{
-			printf ("%4d", maze.cell[j][i].length);
+			bluetoothPrintf ("%4d", maze.cell[j][i].length);
 			if (maze.cell[j][i].wall_east == NO_KNOWN)
 			{
-				printf ("|");
+				bluetoothPrintf ("|");
 			}
 			else
 			{
-				printf (" ");
+				bluetoothPrintf (" ");
 			}
 		}
-		printf ("\n");
+		bluetoothPrintf ("\n");
 	}
-	printf ("\n");
+	bluetoothPrintf ("\n");
 }
 
 void clearMazelength(labyrinthe* maze)
@@ -1230,6 +1149,7 @@ char mini_way_find(labyrinthe *maze, char xStart, char yStart, char xFinish,
 	HAL_Delay (3000);
 	return (waySame);
 }
+
 char diffWay(coordinate *way1, coordinate *way2)
 {
 	while (way1 != null && way2 != null)
@@ -1247,7 +1167,8 @@ char diffWay(coordinate *way1, coordinate *way2)
 	}
 	return true;
 }
-void deleteWay(coordinate *way) // TODO: verifier la fonction
+
+void deleteWay(coordinate *way) // TODO: verify the function
 {
 	while (way != null)
 	{
@@ -1269,7 +1190,7 @@ void waitStart()
 
 void calibrateSimple()
 {
-//	motorsSleepDriver(OFF); // TODO : modify if it's necessary
+//	motorsSleepDriver (OFF);
 //	char orientation=0;
 //	unsigned char sensors_state = 0;
 //	for(int i=0; i<2;i++)
@@ -1289,7 +1210,7 @@ void calibrateSimple()
 //	}
 //	goOrientation(&orientation,0);
 //	HAL_Delay(100);
-//	motorsSleepDriver(ON); // TODO : modify if it's necessary
+//	motorsSleepDriver(ON);
 
 }
 
@@ -1318,7 +1239,7 @@ void goOrientation(char *orientationZhonx, char directionToGo)
 
 void doUTurn(positionRobot *positionZhonx)
 {
-	motorsSleepDriver (ON); // TODO : modify if it's necessary
+	motorsSleepDriver (ON);
 	goOrientation (&positionZhonx->orientation,
 			(positionZhonx->orientation + 2) % 4);
 	motorsSleepDriver (ON);
@@ -1415,6 +1336,7 @@ int sensor_calibrate(void)
 
 	return 0;
 }
+
 int wait_validation(unsigned long timeout)
 {
 	timeout += HAL_GetTick ();
