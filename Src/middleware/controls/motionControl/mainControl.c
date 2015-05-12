@@ -147,50 +147,55 @@ char isEndMove(void)
 		return FALSE;
 }
 
-int rotate180WithCal(enum rotation_type_enum rotation_type, float max_speed, float end_speed)
+int frontCal(float max_speed)
 {
 	char save_folow_type = follow_control.follow_type;
 	telemetersDistancesTypeDef distances;
 	float relative_dist = 0.0;
 
-	/**************************************************************************/
-
 	follow_control.follow_type = ALIGN_FRONT;
 	move(0, 0, 0, 0);
-	HAL_Delay(500);
 	while (follow_control.succes != TRUE);
 
 	/**************************************************************************/
 
 	getTelemetersDistance(&distances);
 	relative_dist = (distances.distance_front_left + distances.distance_front_right) / 2;
-	move(0, relative_dist - CENTER_DISTANCE, max_speed, 0);
-	while(isEndMove() != TRUE);
+	if ((relative_dist - CENTER_DISTANCE) > MIN_DIST_FOR_ALIGN)
+	{
+		if (relative_dist < MAX_DIST_FOR_ALIGN)
+		{
+			move(0, relative_dist - CENTER_DISTANCE, max_speed, 0);
+			while(isEndMove() != TRUE);
+		}
+	}
 
-	/**************************************************************************/
+	follow_control.follow_type = save_folow_type;
 
+	return POSITION_CONTROL_E_SUCCESS;
+}
+
+int rotate180WithCal(enum rotation_type_enum rotation_type, float max_speed, float end_speed)
+{;
+	frontCal(max_speed);
+
+	/***************************************/
 	if (rotation_type == CW)
 		move(90, 0, max_speed, 0);
 	else
 		move(-90, 0, max_speed, 0);
 	while(isEndMove() != TRUE);
+	/***************************************/
 
-	/**************************************************************************/
+	frontCal(max_speed);
 
-	getTelemetersDistance(&distances);
-	relative_dist = (distances.distance_front_left + distances.distance_front_right) / 2;
-	move(0, relative_dist - CENTER_DISTANCE, max_speed, 0);
-	while(isEndMove() != TRUE);
-
-	/**************************************************************************/
-
+	/***************************************/
 	if (rotation_type == CW)
 		move(90, 0, max_speed, end_speed);
 	else
 		move(-90, 0, max_speed, end_speed);
 	while(isEndMove() != TRUE);
-
-	follow_control.follow_type = save_folow_type;
+	/***************************************/
 
 	return POSITION_CONTROL_E_SUCCESS;
 }
