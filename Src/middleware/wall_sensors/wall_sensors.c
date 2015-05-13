@@ -359,10 +359,6 @@ walls getCellState()
 	if (telemeters_distances.distance_front_left < DISTANCE_FIRST_WALL_FRONT)
 	{
 		walls_position.front = WALL_PRESENCE;
-
-		walls_position.next_front = NO_KNOWN;
-		walls_position.left = NO_KNOWN;
-		walls_position.right = NO_KNOWN;
 	}
 	if (telemeters_distances.distance_front_left < DISTANCE_SEGOND_WALL_FRONT)
 		walls_position.next_front = WALL_PRESENCE;

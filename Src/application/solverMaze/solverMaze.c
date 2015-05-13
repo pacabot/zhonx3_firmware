@@ -53,14 +53,7 @@ extern int maze(void)
 	telemetersStart();
 	mainControlInit ();
 	HAL_Delay(500);
-	follow_control.follow_type = NOFOLLOW;
-//		test();
-//	while(1)
-//	{
-//		HAL_Delay(1000);
-//	}
-
-//	HAL_Delay(10000);
+	follow_control.follow_type = FOLLOW_WALL;
 
 	/*init for different micromouse competition*/
 
@@ -93,8 +86,11 @@ extern int maze(void)
 	{
 		move(90,0,SPEED_ROTATION,0);
 		while(isEndMove() != TRUE);
+		HAL_Delay(1000);
 		positionZhonx.orientation=(positionZhonx.orientation+1)%4;
+		HAL_Delay(500);
 		new_cell (getCellState (), &maze, positionZhonx);
+		print_maze(maze,positionZhonx.x, positionZhonx.y);
 	}
 	do
 	{
@@ -231,19 +227,19 @@ void moveVirtualZhonx(labyrinthe maze, positionRobot positionZhonxVirtuel,
 //		clearMazelength (&maze);
 		//poids (&maze, xFinish, yFinish, true);
 		print_maze (maze, positionZhonxVirtuel.x, positionZhonxVirtuel.y);
-		if (maze.cell[(int) (positionZhonxVirtuel.x + 1)][(int) (positionZhonxVirtuel.y)].length + 1 == maze.cell[(int) (positionZhonxVirtuel.x)][(int) (positionZhonxVirtuel.y)].length&& positionZhonxVirtuel.x+1<MAZE_SIZE && maze.cell[(int)(positionZhonxVirtuel.x)][(int)(positionZhonxVirtuel.y)].wall_east==NO_WALL)
+		if (maze.cell[(int) (positionZhonxVirtuel.x + 1)][(int) (positionZhonxVirtuel.y)].length + 1 == maze.cell[(int) (positionZhonxVirtuel.x)][(int) (positionZhonxVirtuel.y)].length && positionZhonxVirtuel.x+1<MAZE_SIZE && maze.cell[(int)(positionZhonxVirtuel.x)][(int)(positionZhonxVirtuel.y)].wall_east==NO_WALL)
 		{
 			positionZhonxVirtuel.x = positionZhonxVirtuel.x + 1;
 		}
-		else if (maze.cell[(int) (positionZhonxVirtuel.x)][(int) (positionZhonxVirtuel.y + 1)].length + 1 == maze.cell[(int) (positionZhonxVirtuel.x)][(int) (positionZhonxVirtuel.y)].length&& positionZhonxVirtuel.y+1<MAZE_SIZE && maze.cell[(int)(positionZhonxVirtuel.x)][(int)(positionZhonxVirtuel.y)].wall_south==NO_WALL)
+		else if (maze.cell[(int) (positionZhonxVirtuel.x)][(int) (positionZhonxVirtuel.y + 1)].length + 1 == maze.cell[(int) (positionZhonxVirtuel.x)][(int) (positionZhonxVirtuel.y)].length && positionZhonxVirtuel.y+1<MAZE_SIZE && maze.cell[(int)(positionZhonxVirtuel.x)][(int)(positionZhonxVirtuel.y)].wall_south==NO_WALL)
 		{
 			positionZhonxVirtuel.y = positionZhonxVirtuel.y + 1;
 		}
-		else if (maze.cell[(int) (positionZhonxVirtuel.x - 1)][(int) (positionZhonxVirtuel.y)].length + 1 == maze.cell[(int) (positionZhonxVirtuel.x)][(int) (positionZhonxVirtuel.y)].length&& positionZhonxVirtuel.x>0 && maze.cell[(int)(positionZhonxVirtuel.x)][(int)(positionZhonxVirtuel.y)].wall_west==NO_WALL)
+		else if (maze.cell[(int) (positionZhonxVirtuel.x - 1)][(int) (positionZhonxVirtuel.y)].length + 1 == maze.cell[(int) (positionZhonxVirtuel.x)][(int) (positionZhonxVirtuel.y)].length && positionZhonxVirtuel.x>0 && maze.cell[(int)(positionZhonxVirtuel.x)][(int)(positionZhonxVirtuel.y)].wall_west==NO_WALL)
 		{
 			positionZhonxVirtuel.x = positionZhonxVirtuel.x - 1;
 		}
-		else if (maze.cell[(int) (positionZhonxVirtuel.x)][(int) (positionZhonxVirtuel.y - 1)].length + 1 == maze.cell[(int) (positionZhonxVirtuel.x)][(int) (positionZhonxVirtuel.y)].length&& positionZhonxVirtuel.y>0 && maze.cell[(int)(positionZhonxVirtuel.x)][(int)(positionZhonxVirtuel.y)].wall_north==NO_WALL)
+		else if (maze.cell[(int) (positionZhonxVirtuel.x)][(int) (positionZhonxVirtuel.y - 1)].length + 1 == maze.cell[(int) (positionZhonxVirtuel.x)][(int) (positionZhonxVirtuel.y)].length && positionZhonxVirtuel.y>0 && maze.cell[(int)(positionZhonxVirtuel.x)][(int)(positionZhonxVirtuel.y)].wall_north==NO_WALL)
 		{
 			positionZhonxVirtuel.y = positionZhonxVirtuel.y - 1;
 		}
@@ -254,6 +250,7 @@ void moveVirtualZhonx(labyrinthe maze, positionRobot positionZhonxVirtuel,
 			else
 			{
 				char boucle = true;
+				print_maze(maze,positionZhonxVirtuel.x,positionZhonxVirtuel.y);
 				ssd1306DrawString (60, 0, "no solution", &Font_5x8);
 				ssd1306Refresh ();
 				motorsSleepDriver (ON);
@@ -491,6 +488,7 @@ void new_cell(walls new_walls, labyrinthe *maze, positionRobot positionZhonx)
 
 	/*print walls position*/
 	telemetersStop();
+	motorsSleepDriver(ON);
 		ssd1306ClearRect(64,0,64,64);
 		if (new_walls.front == WALL_PRESENCE)
 		{
@@ -592,8 +590,8 @@ void new_cell(walls new_walls, labyrinthe *maze, positionRobot positionZhonx)
 		case WEST :
 			if(positionZhonx.midOfCell == false)
 			{
-				maze->cell[(int) (positionZhonx.x - 1)][(int) (positionZhonx.y)].wall_north = new_walls.right;
-				maze->cell[(int) (positionZhonx.x - 1)][(int) (positionZhonx.y)].wall_south = new_walls.left;
+				maze->cell[(int) (positionZhonx.x)][(int) (positionZhonx.y)].wall_north = new_walls.right;
+				maze->cell[(int) (positionZhonx.x)][(int) (positionZhonx.y)].wall_south = new_walls.left;
 
 
 				if (positionZhonx.y > 0)
@@ -607,6 +605,7 @@ void new_cell(walls new_walls, labyrinthe *maze, positionRobot positionZhonx)
 			break;
 	}
 	telemetersStart();
+	motorsSleepDriver(ON);
 }
 
 void poids(labyrinthe *maze, int xFinish, int yfinish, char wallNoKnow)
@@ -1003,29 +1002,49 @@ void print_maze(const labyrinthe maze, const int x_robot, const int y_robot)
 		{
 			if (maze.cell[x][y].wall_north == WALL_PRESENCE)
 			{
-				ssd1306FillRect (x * size_cell_on_oled, y * size_cell_on_oled,
-						size_cell_on_oled + 1, 1);
+				ssd1306DrawLine (x * size_cell_on_oled, y * size_cell_on_oled,
+		x * size_cell_on_oled + size_cell_on_oled + 1, y * size_cell_on_oled);
 			}
+//			else if (maze.cell[x][y].wall_north == NO_KNOWN)
+//			{
+//				ssd1306DrawDashedLine (x * size_cell_on_oled, y * size_cell_on_oled,
+//			   x * size_cell_on_oled + size_cell_on_oled + 1, y * size_cell_on_oled);
+//			}
 			if (maze.cell[x][y].wall_west == WALL_PRESENCE)
 			{
-				ssd1306FillRect (x * size_cell_on_oled, y * size_cell_on_oled,
-						1, size_cell_on_oled + 1);
+				ssd1306DrawLine (x * size_cell_on_oled, y * size_cell_on_oled,
+								 x * size_cell_on_oled, y * size_cell_on_oled + size_cell_on_oled + 1);
 			}
+//			else if (maze.cell[x][y].wall_west == NO_KNOWN)
+//			{
+//				ssd1306DrawDashedLine (x * size_cell_on_oled, y * size_cell_on_oled,
+//									   x * size_cell_on_oled, y * size_cell_on_oled + size_cell_on_oled + 1);
+//			}
+
 			if (maze.cell[x][y].wall_south == WALL_PRESENCE)
 			{
-				ssd1306FillRect (x * size_cell_on_oled,
-						(y + 1) * size_cell_on_oled, size_cell_on_oled + 1, 1);
+				ssd1306DrawLine (x * size_cell_on_oled,(y + 1) * size_cell_on_oled,
+			 size_cell_on_oled + x * size_cell_on_oled,(y + 1) * size_cell_on_oled);
 			}
+//			else if (maze.cell[x][y].wall_south == NO_KNOWN)
+//			{
+//				ssd1306DrawDashedLine (x * size_cell_on_oled,(y + 1) * size_cell_on_oled,
+//				   size_cell_on_oled + x * size_cell_on_oled,(y + 1) * size_cell_on_oled);
+//			}
 			if (maze.cell[x][y].wall_east == WALL_PRESENCE)
 			{
-				ssd1306FillRect ((x + 1) * size_cell_on_oled,
-						y * size_cell_on_oled, 1, size_cell_on_oled + 1);
+				ssd1306DrawLine ((x + 1) * size_cell_on_oled, y * size_cell_on_oled,
+								 (x + 1) * size_cell_on_oled, y * size_cell_on_oled + size_cell_on_oled + 1);
 			}
+//			else if (maze.cell[x][y].wall_east == NO_KNOWN)
+//			{
+//				ssd1306DrawDashedLine  ((x + 1) * size_cell_on_oled, y * size_cell_on_oled,
+//										(x + 1) * size_cell_on_oled, y * size_cell_on_oled + size_cell_on_oled + 1);
+//			}
 		}
 	}
 	//print_length(maze);
-	ssd1306FillRect (x_robot * size_cell_on_oled, y_robot * size_cell_on_oled,
-			size_cell_on_oled, size_cell_on_oled);
+	ssd1306DrawPixel(x_robot * size_cell_on_oled+1, y_robot * size_cell_on_oled+1);
 	ssd1306Refresh ();
 }
 
