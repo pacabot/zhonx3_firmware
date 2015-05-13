@@ -364,15 +364,12 @@ walls getCellState()
 		walls_position.left = NO_KNOWN;
 		walls_position.right = NO_KNOWN;
 	}
-	else
-	{
-		if (telemeters_distances.distance_front_left < DISTANCE_SEGOND_WALL_FRONT)
-			walls_position.next_front = WALL_PRESENCE;
-		if (telemeters_distances.distance_diag_left < DISTANCE_WALL_DIAG)
-			walls_position.left = WALL_PRESENCE;
-		if (telemeters_distances.distance_diag_right < DISTANCE_WALL_DIAG)
-			walls_position.right = WALL_PRESENCE;
-	}
+	if (telemeters_distances.distance_front_left < DISTANCE_SEGOND_WALL_FRONT)
+		walls_position.next_front = WALL_PRESENCE;
+	if (telemeters_distances.distance_diag_left < DISTANCE_WALL_DIAG)
+		walls_position.left = WALL_PRESENCE;
+	if (telemeters_distances.distance_diag_right < DISTANCE_WALL_DIAG)
+		walls_position.right = WALL_PRESENCE;
 	return walls_position;
 }
 
@@ -406,6 +403,7 @@ void testTelemeterDistance()
 void testWallsSensors()
 {
 	telemetersInit();
+	telemetersStart();
 	walls wall_saw;
 	telemetersDistancesTypeDef distances;
 	while(expanderJoyFiltered()!=JOY_LEFT)
