@@ -83,7 +83,7 @@
 /**************************************************************************************/
 /***************                 Mechanical Constants              ********************/
 /**************************************************************************************/
-#define WHEEL_DIAMETER			24.46	//Wheel diameter in millimeters
+#define WHEEL_DIAMETER			23.90	//Wheel diameter in millimeters
 #define WHEELS_DISTANCE			63.20	//Distance between right and left wheels
 #define WHEELS_SPACING			25.96	//Distance between front and rear wheels
 #define	GEAR_RATIO				(50.00/15.00)	//wheel gear teeth per motor gear teeth

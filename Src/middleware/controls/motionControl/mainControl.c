@@ -168,11 +168,11 @@ int frontCal(float max_speed)
 
 	getTelemetersDistance(&distances);
 	relative_dist = (distances.distance_front_left + distances.distance_front_right) / 2;
-		if (relative_dist < MAX_DIST_FOR_ALIGN)
-		{
-			move(0, relative_dist - CENTER_DISTANCE, max_speed, 0);
-			while(isEndMove() != TRUE);
-		}
+	if (relative_dist < MAX_DIST_FOR_ALIGN)
+	{
+		move(0, relative_dist - CENTER_DISTANCE, max_speed, 0);
+		while(isEndMove() != TRUE);
+	}
 
 	follow_control.follow_type = save_folow_type;
 
@@ -180,28 +180,43 @@ int frontCal(float max_speed)
 }
 
 int rotate180WithCal(enum rotation_type_enum rotation_type, float max_speed, float end_speed)
-{;
-frontCal(max_speed);
+{
+	frontCal(max_speed);
 
-/***************************************/
-if (rotation_type == CW)
-	move(90, 0, max_speed, 0);
-else
-	move(-90, 0, max_speed, 0);
-while(isEndMove() != TRUE);
-/***************************************/
+	/***************************************/
+	if (rotation_type == CW)
+		move(90, 0, max_speed, 0);
+	else
+		move(-90, 0, max_speed, 0);
+	while(isEndMove() != TRUE);
+	/***************************************/
 
-frontCal(max_speed);
+	frontCal(max_speed);
 
-/***************************************/
-if (rotation_type == CW)
-	move(90, 0, max_speed, end_speed);
-else
-	move(-90, 0, max_speed, end_speed);
-while(isEndMove() != TRUE);
-/***************************************/
+	/***************************************/
+	if (rotation_type == CW)
+		move(90, 0, max_speed, end_speed);
+	else
+		move(-90, 0, max_speed, end_speed);
+	while(isEndMove() != TRUE);
+	/***************************************/
 
-return POSITION_CONTROL_E_SUCCESS;
+	return POSITION_CONTROL_E_SUCCESS;
+}
+
+int rotate90WithCal(enum rotation_type_enum rotation_type, float max_speed, float end_speed)
+{
+	frontCal(max_speed);
+
+	/***************************************/
+	if (rotation_type == CW)
+		move(90, 0, max_speed, 0);
+	else
+		move(-90, 0, max_speed, 0);
+	while(isEndMove() != TRUE);
+	/***************************************/
+
+	return POSITION_CONTROL_E_SUCCESS;
 }
 
 void mainControlDisplayTest(void)
@@ -251,16 +266,33 @@ void followWallTest()
 
 	follow_control.follow_type = FOLLOW_WALL;
 
-	move(0, 90, 500, 200);
+		double i = 0.9;
+		move(0, (CELL_LENGTH/2)*i, 200, 100);
+		while(isEndMove() != TRUE);
+		move(180, (CELL_LENGTH/2)*i, 200, 100);
+		while(isEndMove() != TRUE);
+		move(0, CELL_LENGTH, 500, 200);
+		while(isEndMove() != TRUE);
+		move(-180, (CELL_LENGTH/2)*i, 200, 100);
+		while(isEndMove() != TRUE);
+	move(0, CELL_LENGTH*4, 1000, 100);
 	while(isEndMove() != TRUE);
-	move(180, 90, 500, 200);
-	while(isEndMove() != TRUE);
-	move(0, 180, 500, 200);
-	while(isEndMove() != TRUE);
-	move(-180, 90, 500, 200);
-	while(isEndMove() != TRUE);
-	move(0, 720, 500, 200);
-	while(isEndMove() != TRUE);
+//		move(90, (CELL_LENGTH/2)*i, 500, 200);
+//		while(isEndMove() != TRUE);
+//		move(-90, (CELL_LENGTH/2)*i, 500, 200);
+//		while(isEndMove() != TRUE);
+//		move(90, (CELL_LENGTH/2)*i, 500, 200);
+//		while(isEndMove() != TRUE);
+//		move(-90, (CELL_LENGTH/2)*i, 500, 200);
+//		while(isEndMove() != TRUE);
+//		move(90, (CELL_LENGTH/2)*i, 500, 200);
+//		while(isEndMove() != TRUE);
+//		move(-90, (CELL_LENGTH/2)*i, 500, 200);
+//		while(isEndMove() != TRUE);
+//		move(90, (CELL_LENGTH/2)*i, 500, 200);
+//		while(isEndMove() != TRUE);
+//		move(0, CELL_LENGTH, 500, 0);
+//		while(isEndMove() != TRUE);
 
 	telemetersStop();
 	mainControlDisplayTest();

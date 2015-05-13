@@ -60,7 +60,7 @@ int followControlInit(void)
 {
 	telemeters_pid_instance.Kp = 25;
 	telemeters_pid_instance.Ki = 0;
-	telemeters_pid_instance.Kd = 60;
+	telemeters_pid_instance.Kd = 400;
 
 	follow_control.follow_pid.instance = &telemeters_pid_instance;
 
@@ -111,7 +111,7 @@ int followControlLoop(void)
 		{
 			rightWallFollow(&distances);
 		}
-	follow_control.follow_error /= 2.00;
+//	follow_control.follow_error /= 2.00;
 	}
 	else if (follow_control.follow_type == FOLLOW_LINE)
 	{
