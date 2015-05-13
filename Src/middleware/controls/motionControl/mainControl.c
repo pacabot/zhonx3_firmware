@@ -244,6 +244,26 @@ void mainControlTest(void)
 
 void followWallTest()
 {
+	follow_control.follow_type = FOLLOW_WALL;
+	mainControlInit();
+	telemetersStart();
+	HAL_Delay(500);
+
+	follow_control.follow_type = FOLLOW_WALL;
+
+	move(0, 90, 500, 200);
+	while(isEndMove() != TRUE);
+	move(180, 90, 500, 200);
+	while(isEndMove() != TRUE);
+	move(0, 180, 500, 200);
+	while(isEndMove() != TRUE);
+	move(-180, 90, 500, 200);
+	while(isEndMove() != TRUE);
+	move(0, 720, 500, 200);
+	while(isEndMove() != TRUE);
+
+	telemetersStop();
+	mainControlDisplayTest();
 	mainControlDisplayTest();
 }
 
