@@ -111,6 +111,7 @@ int followControlLoop(void)
 		{
 			rightWallFollow(&distances);
 		}
+	follow_control.follow_error /= 2.00;
 	}
 	else if (follow_control.follow_type == FOLLOW_LINE)
 	{
@@ -125,7 +126,8 @@ int followControlLoop(void)
 int bothWallFollow(telemetersDistancesTypeDef *distances)
 {
 	if ((distances->distance_diag_left < MAX_DIST_FOR_FOLLOW && distances->distance_diag_right < MAX_DIST_FOR_FOLLOW) &&
-			(distances->distance_diag_left > MIN_DIST_FOR_FOLLOW && distances->distance_diag_right > MIN_DIST_FOR_FOLLOW))
+			(distances->distance_diag_left > MIN_DIST_FOR_FOLLOW && distances->distance_diag_right > MIN_DIST_FOR_FOLLOW) &&
+			((distances->distance_diag_left + distances->distance_diag_right) < BOTH_WALL_DIST))
 	{
 		follow_control.follow_error = distances->distance_diag_right - distances->distance_diag_left;
 		if (fabs(follow_control.follow_error) < SUCCES_GAP_DIST)
