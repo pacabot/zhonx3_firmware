@@ -68,7 +68,7 @@ extern int maze(void)
 	{
 		positionZhonx.x = MAZE_SIZE / 2;
 		positionZhonx.y = MAZE_SIZE / 2; // the robot start at the middle of the maze
-		positionZhonx.orientation = WEST; // the robot is pointing the north
+		positionZhonx.orientation = NORTH; // the robot is pointing the north
 		zhonxSettings.x_finish_maze = 0;
 		zhonxSettings.y_finish_maze = 0; // we want to go to the case how have address (0,0)
 	}
@@ -76,7 +76,7 @@ extern int maze(void)
 	{
 		positionZhonx.x = 0;
 		positionZhonx.y = 0; // the robot start in the corner
-		positionZhonx.orientation = SOUTH;
+		positionZhonx.orientation = EAST;
 		// the position of the finish is defined in the menu
 	}
 	/*end of initialization for different micromouse competition*/
@@ -89,7 +89,13 @@ extern int maze(void)
 		HAL_Delay (1000);
 		calibrateSimple ();
 	}
-
+	for (int i = 0; i < 4; ++i)
+	{
+		move(90,0,SPEED_ROTATION,0);
+		while(isEndMove() != TRUE);
+		positionZhonx.orientation=(positionZhonx.orientation+1)%4;
+		new_cell (getCellState (), &maze, positionZhonx);
+	}
 	do
 	{
 		waitStart ();
@@ -248,8 +254,7 @@ void moveVirtualZhonx(labyrinthe maze, positionRobot positionZhonxVirtuel,
 			else
 			{
 				char boucle = true;
-				ssd1306ClearScreen ();
-				ssd1306DrawString (0, 0, "no solution", &Font_5x8);
+				ssd1306DrawString (60, 0, "no solution", &Font_5x8);
 				ssd1306Refresh ();
 				motorsSleepDriver (ON);
 				while (boucle)
@@ -303,8 +308,7 @@ void moveRealZhonx(labyrinthe *maze, positionRobot *positionZhonx,
 		{
 			HAL_Delay (200);
 			motorsSleepDriver (ON);
-			ssd1306ClearScreen ();
-			ssd1306DrawString (0, 0, "Error way", &Font_5x8);
+			ssd1306DrawString (60, 0, "Error way", &Font_5x8);
 			ssd1306Refresh ();
 			while (1)
 				;
@@ -383,8 +387,7 @@ void moveRealZhonxArc(labyrinthe *maze, positionRobot *positionZhonx, coordinate
 		{
 			HAL_Delay (200);
 			motorsSleepDriver (ON);
-			ssd1306ClearScreen ();
-			ssd1306DrawString (0, 0, "Error way", &Font_5x8);
+			ssd1306DrawString (60, 0, "Error way", &Font_5x8);
 			ssd1306Refresh ();
 			while (1)
 				;
@@ -486,48 +489,48 @@ void move_zhonx_arc (int direction_to_go, positionRobot *positionZhonx, int numb
 void new_cell(walls new_walls, labyrinthe *maze, positionRobot positionZhonx)
 {
 
-//	/*print walls position*/
-//	telemetersStop();
-//		ssd1306ClearScreen();
-//		if (new_walls.front == WALL_PRESENCE)
-//		{
-//			ssd1306FillRect(0,49,54,5);
-//		}
-//		switch (new_walls.next_front)
-//		{
-//			case WALL_PRESENCE:
-//				ssd1306FillRect(0,0,54,5);
-//				break;
-//			case NO_KNOWN :
-//				ssd1306DrawRect(0,0,54,5);
-//				break;
-//			default:
-//				break;
-//		}
-//		switch (new_walls.left)
-//		{
-//			case WALL_PRESENCE:
-//				ssd1306FillRect(0,0,5,54);
-//				break;
-//			case NO_KNOWN :
-//				ssd1306DrawRect(0,0,5,54);
-//				break;
-//			default:
-//				break;
-//		}
-//		switch (new_walls.right)
-//		{
-//			case WALL_PRESENCE:
-//				ssd1306FillRect(49,0,5,54);
-//				break;
-//			case NO_KNOWN :
-//				ssd1306DrawRect(49,0,5,54);
-//				break;
-//			default:
-//				break;
-//		}
-//		ssd1306Refresh();
-//		/*end print wall position*/
+	/*print walls position*/
+	telemetersStop();
+		ssd1306ClearRect(64,0,64,64);
+		if (new_walls.front == WALL_PRESENCE)
+		{
+			ssd1306FillRect(64,49,54,5);
+		}
+		switch (new_walls.next_front)
+		{
+			case WALL_PRESENCE:
+				ssd1306FillRect(64,0,54,5);
+				break;
+			case NO_KNOWN :
+				ssd1306DrawRect(64,0,54,5);
+				break;
+			default:
+				break;
+		}
+		switch (new_walls.left)
+		{
+			case WALL_PRESENCE:
+				ssd1306FillRect(64,0,5,54);
+				break;
+			case NO_KNOWN :
+				ssd1306DrawRect(64,0,5,54);
+				break;
+			default:
+				break;
+		}
+		switch (new_walls.right)
+		{
+			case WALL_PRESENCE:
+				ssd1306FillRect(113,0,5,54);
+				break;
+			case NO_KNOWN :
+				ssd1306DrawRect(113,0,5,54);
+				break;
+			default:
+				break;
+		}
+		ssd1306Refresh();
+		/*end print wall position*/
 
 	switch (positionZhonx.orientation)
 	{
@@ -991,7 +994,7 @@ void maze_init(labyrinthe *maze)
 
 void print_maze(const labyrinthe maze, const int x_robot, const int y_robot)
 {
-	ssd1306ClearScreen ();
+	ssd1306ClearRect(0,0,64,64);
 	int size_cell_on_oled = ((63) / MAZE_SIZE);
 	int x, y;
 	for (y = 0; y < MAZE_SIZE; y++)
@@ -1040,42 +1043,42 @@ void* calloc_s(size_t nombre, size_t taille)
 
 void print_length(const labyrinthe maze)
 {
-	bluetoothPrintf ("  ");
-	for (int i = 0; i < MAZE_SIZE; i++)
-	{
-		bluetoothPrintf ("%4d", i);
-	}
-	bluetoothPrintf ("\n\n");
-	for (int i = 0; i < MAZE_SIZE; i++)
-	{
-		bluetoothPrintf ("%2d ", i);
-		for (int j = 0; j < MAZE_SIZE; j++)
-		{
-			if (maze.cell[j][i].wall_north == NO_KNOWN)
-			{
-				bluetoothPrintf("====*");
-			}
-			else
-			{
-				bluetoothPrintf ("    *");
-			}
-		}
-		bluetoothPrintf ("\n   ");
-		for (int j = 0; j < MAZE_SIZE; j++)
-		{
-			bluetoothPrintf ("%4d", maze.cell[j][i].length);
-			if (maze.cell[j][i].wall_east == NO_KNOWN)
-			{
-				bluetoothPrintf ("|");
-			}
-			else
-			{
-				bluetoothPrintf (" ");
-			}
-		}
-		bluetoothPrintf ("\n");
-	}
-	bluetoothPrintf ("\n");
+//	bluetoothPrintf ("  ");
+//	for (int i = 0; i < MAZE_SIZE; i++)
+//	{
+//		bluetoothPrintf ("%4d", i);
+//	}
+//	bluetoothPrintf ("\n\n");
+//	for (int i = 0; i < MAZE_SIZE; i++)
+//	{
+//		bluetoothPrintf ("%2d ", i);
+//		for (int j = 0; j < MAZE_SIZE; j++)
+//		{
+//			if (maze.cell[j][i].wall_north == NO_KNOWN)
+//			{
+//				bluetoothPrintf("====*");
+//			}
+//			else
+//			{
+//				bluetoothPrintf ("    *");
+//			}
+//		}
+//		bluetoothPrintf ("\n   ");
+//		for (int j = 0; j < MAZE_SIZE; j++)
+//		{
+//			bluetoothPrintf ("%4d", maze.cell[j][i].length);
+//			if (maze.cell[j][i].wall_east == NO_KNOWN)
+//			{
+//				bluetoothPrintf ("|");
+//			}
+//			else
+//			{
+//				bluetoothPrintf (" ");
+//			}
+//		}
+//		bluetoothPrintf ("\n");
+//	}
+//	bluetoothPrintf ("\n");
 }
 
 void clearMazelength(labyrinthe* maze)
