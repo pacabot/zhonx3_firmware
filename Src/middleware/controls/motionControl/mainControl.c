@@ -267,7 +267,6 @@ void rotateTest()
 	while(isEndMove() != TRUE);
 
 	mainControlDisplayTest();
-
 }
 
 void curveRotateTest()
