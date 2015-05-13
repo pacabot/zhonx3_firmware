@@ -736,6 +736,50 @@ void ssd1306DrawRect(unsigned char x, unsigned char y, unsigned char w, unsigned
 		ssd1306DrawPixel(x+w-1, i);
 	}
 }
+
+void ssd1306DrawDashedLine(unsigned char x0, unsigned char y0, unsigned char x1, unsigned char y1)
+{
+  uint8_t steep = abs(y1 - y0) > abs(x1 - x0);
+  if (steep) {
+    swap(x0, y0);
+    swap(x1, y1);
+  }
+
+  if (x0 > x1) {
+    swap(x0, x1);
+    swap(y0, y1);
+  }
+
+  uint8_t dx, dy;
+  dx = x1 - x0;
+  dy = abs(y1 - y0);
+
+  int8_t err = dx / 2;
+  int8_t ystep;
+
+  if (y0 < y1) {
+    ystep = 1;
+  } else {
+    ystep = -1;}
+
+  for (; x0<x1; x0++) {
+    if (steep)
+    {
+    	if ((x0 % 2) == 0)
+    		ssd1306DrawPixel(y0, x0);
+    } else
+    {
+    	if ((x0 % 2) == 0)
+    		ssd1306DrawPixel(x0, y0);
+    }
+    err -= dy;
+    if (err < 0) {
+      y0 += ystep;
+      err += dx;
+    }
+  }
+}
+
 /**************************************************************************/
 // bresenham's algorithm - thx wikpedia
 void ssd1306DrawLine(unsigned char x0, unsigned char y0, unsigned char x1, unsigned char y1)
@@ -802,7 +846,7 @@ void ssd1306Test(void)
 	}
 
 	ssd1306Refresh();
-	HAL_Delay(3500);
+	HAL_Delay(500);
 	ssd1306ClearScreen();
 	ssd1306Refresh();
 	// miniature bitmap display
@@ -811,7 +855,7 @@ void ssd1306Test(void)
 	ssd1306FillCircle(100, 40, 15);
 	ssd1306DrawRect(110, 3, 15, 6);
 	ssd1306FillRect(1, 60, 10, 20);
-	ssd1306DrawLine(5, 45, 70, 60);
+	ssd1306DrawDashedLine(5, 45, 70, 45);
 	ssd1306DrawLine(70, 45, 20, 6);
 	ssd1306Refresh();
 	HAL_Delay(5500);
