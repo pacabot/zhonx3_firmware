@@ -581,7 +581,7 @@ void new_cell(walls new_walls, labyrinthe *maze, positionRobot positionZhonx)
 				if (positionZhonx.x < (MAZE_SIZE - 1))
 					maze->cell[(int) (positionZhonx.x + 1)][(int) (positionZhonx.y)].wall_west = new_walls.left;
 			}
-			if (positionZhonx.y > (MAZE_SIZE - 1))
+			if (positionZhonx.y > 0)
 				maze->cell[(int) (positionZhonx.x)][(int) (positionZhonx.y + 1)].wall_north = new_walls.front;
 			maze->cell[(int) (positionZhonx.x)][(int) (positionZhonx.y)].wall_south =
 					new_walls.front;
@@ -1005,42 +1005,42 @@ void print_maze(const labyrinthe maze, const int x_robot, const int y_robot)
 				ssd1306DrawLine (x * size_cell_on_oled, y * size_cell_on_oled,
 		x * size_cell_on_oled + size_cell_on_oled + 1, y * size_cell_on_oled);
 			}
-//			else if (maze.cell[x][y].wall_north == NO_KNOWN)
-//			{
-//				ssd1306DrawDashedLine (x * size_cell_on_oled, y * size_cell_on_oled,
-//			   x * size_cell_on_oled + size_cell_on_oled + 1, y * size_cell_on_oled);
-//			}
+			else if (maze.cell[x][y].wall_north == NO_KNOWN)
+			{
+				ssd1306DrawDashedLine (x * size_cell_on_oled, y * size_cell_on_oled,
+			   x * size_cell_on_oled + size_cell_on_oled + 1, y * size_cell_on_oled);
+			}
 			if (maze.cell[x][y].wall_west == WALL_PRESENCE)
 			{
 				ssd1306DrawLine (x * size_cell_on_oled, y * size_cell_on_oled,
 								 x * size_cell_on_oled, y * size_cell_on_oled + size_cell_on_oled + 1);
 			}
-//			else if (maze.cell[x][y].wall_west == NO_KNOWN)
-//			{
-//				ssd1306DrawDashedLine (x * size_cell_on_oled, y * size_cell_on_oled,
-//									   x * size_cell_on_oled, y * size_cell_on_oled + size_cell_on_oled + 1);
-//			}
+			else if (maze.cell[x][y].wall_west == NO_KNOWN)
+			{
+				ssd1306DrawDashedLine (x * size_cell_on_oled, y * size_cell_on_oled,
+									   x * size_cell_on_oled, y * size_cell_on_oled + size_cell_on_oled + 1);
+			}
 
 			if (maze.cell[x][y].wall_south == WALL_PRESENCE)
 			{
 				ssd1306DrawLine (x * size_cell_on_oled,(y + 1) * size_cell_on_oled,
 			 size_cell_on_oled + x * size_cell_on_oled,(y + 1) * size_cell_on_oled);
 			}
-//			else if (maze.cell[x][y].wall_south == NO_KNOWN)
-//			{
-//				ssd1306DrawDashedLine (x * size_cell_on_oled,(y + 1) * size_cell_on_oled,
-//				   size_cell_on_oled + x * size_cell_on_oled,(y + 1) * size_cell_on_oled);
-//			}
+			else if (maze.cell[x][y].wall_south == NO_KNOWN)
+			{
+				ssd1306DrawDashedLine (x * size_cell_on_oled,(y + 1) * size_cell_on_oled,
+				   size_cell_on_oled + x * size_cell_on_oled,(y + 1) * size_cell_on_oled);
+			}
 			if (maze.cell[x][y].wall_east == WALL_PRESENCE)
 			{
 				ssd1306DrawLine ((x + 1) * size_cell_on_oled, y * size_cell_on_oled,
 								 (x + 1) * size_cell_on_oled, y * size_cell_on_oled + size_cell_on_oled + 1);
 			}
-//			else if (maze.cell[x][y].wall_east == NO_KNOWN)
-//			{
-//				ssd1306DrawDashedLine  ((x + 1) * size_cell_on_oled, y * size_cell_on_oled,
-//										(x + 1) * size_cell_on_oled, y * size_cell_on_oled + size_cell_on_oled + 1);
-//			}
+			else if (maze.cell[x][y].wall_east == NO_KNOWN)
+			{
+				ssd1306DrawDashedLine  ((x + 1) * size_cell_on_oled, y * size_cell_on_oled,
+										(x + 1) * size_cell_on_oled, y * size_cell_on_oled + size_cell_on_oled + 1);
+			}
 		}
 	}
 	//print_length(maze);
