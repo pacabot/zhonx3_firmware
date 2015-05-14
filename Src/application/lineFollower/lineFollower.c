@@ -58,7 +58,7 @@ ground_sensors_struct min_Floor;
 
 GPIO_InitTypeDef GPIO_InitStruct;
 
-void lineTest(void)
+void lineSensorsCalibration(void)
 {
 	mainControlInit();
 	telemetersStop();
@@ -92,12 +92,24 @@ void lineTest(void)
 		if (lineSensors.left_ext.adc_value > max_Floor.leftExt) max_Floor.leftExt = lineSensors.left_ext.adc_value;
 		if (lineSensors.right_ext.adc_value > max_Floor.rightExt) max_Floor.rightExt = lineSensors.right_ext.adc_value;
 	}
-
 	tone(b, 500);
 	HAL_Delay(2000);
 	tone(c, 500);
 
-	tone(d, 500);
+	// desactivate PID
+	pid_loop.start_state = FALSE;
+	line_follower.active_state = FALSE;
+	telemetersStop();
+	motorsSleepDriver(ON);
+}
+
+void lineFollower(void)
+{
+	mainControlInit();
+	telemetersStop();
+	lineSensorsInit();
+	lineSensorsStart();
+
 	coef_Floor.left=1000.0/(max_Floor.left-min_Floor.left);     //  1000/(max_capteur-min_capteur)
 	coef_Floor.front=1000.0/(max_Floor.front-min_Floor.front);
 	coef_Floor.right=1000.0/(max_Floor.right-min_Floor.right);
@@ -128,7 +140,7 @@ void lineTest(void)
 	follow_control.follow_type = FOLLOW_LINE;
 
 	line_follower.active_state = TRUE;
-	move(0, 10000, 500, 0);
+	move(0, 10000, MAXSPEED, 0);
 //	while(isEndMove() != TRUE);
 	char marche = TRUE;
 	char cpt=0;
@@ -163,13 +175,13 @@ void lineTest(void)
 // -----------------------------------------------------------------------
 // Condition to stop if right priority
 // -----------------------------------------------------------------------
-		if (((double)lineSensors.left_ext.adc_value*1.2) > max_Floor.leftExt )
-		{
-			move(0, 30, 30, 0);
-			tone(c, 500);
-			// capteur telemeter ON
-			move(0, 10000, 250, 0);
-		}
+//		if (((double)lineSensors.left_ext.adc_value*1.2) > max_Floor.leftExt )
+//		{
+//			move(0, 30, 30, 0);
+//			tone(c, 500);
+//			// capteur telemeter ON
+//			move(0, 10000, MAXSPEED, 0);
+//		}
 
 	}
 	pid_loop.start_state = FALSE;
@@ -181,6 +193,7 @@ void lineTest(void)
 // fonction pour asservir zhonx sur la ligne
 // -1 : ralentir
 //  0 : meme vitesse
+//  1 : accelerer
 void asservissement(void)
 {
 	line_follower.position = 0.00;
@@ -207,13 +220,13 @@ void lineFollower_IT(void)
 	if (follow_control.follow_error > 5.0 && vitesse==0)
 	{
 		// deceleration
-		move(0, 200, 500, 250);
+		move(0, 50, MAXSPEED, MINSPEED);
 		vitesse=-1;
 	}
 	else if (follow_control.follow_error < 3.0 && vitesse==0)
 	{
 		// acceleration
-		move(0, 200, 250, 500);
+		move(0, 50, MINSPEED, MAXSPEED);
 		vitesse=1;
 	}
 
@@ -221,11 +234,11 @@ void lineFollower_IT(void)
 	{
 		if (vitesse<0)
 		{
-			move(0, 10000, 250, 250);
+			move(0, 10000, MINSPEED, MINSPEED);
 		}
 		else if (vitesse>0)
 		{
-			move(0, 10000, 500, 500);
+			move(0, 10000, MAXSPEED, MAXSPEED);
 		}
 		vitesse=0;
 	}

@@ -40,9 +40,10 @@ extern void telemetersTest ();
 extern void toneTest ();
 extern void motorsTest ();
 extern void lineSensorsTest ();
-extern void lineTest ();
+extern void lineFollower();
 extern void mainControlTest ();
 extern int 	wallSensorsCalibration (void);
+extern int 	lineSensorsCalibration (void);
 extern void testTelemeterDistance();
 extern void maze();
 extern void testWallsSensors();
@@ -93,6 +94,16 @@ const menuItem maze_menu=
 		}
 
 };
+
+const menuItem follower_menu=
+{
+		"line menu",
+		{
+			{"line follower",'f',	(void*)lineFollower},
+			{"calibration",'f',		(void*)lineSensorsCalibration},
+		}
+};
+
 
 const menuItem parameters_menu=
 {
@@ -149,7 +160,7 @@ const menuItem mainMenu =
 				{"maze menu",'m',			(void*)&maze_menu},
 				{"Test menu",'m',			(void*)&tests_menu},
 				{"Control menu",'m',		(void*)&control_menu},
-				{"test line",'f', 			(void*)lineTest},
+				{"line menu",'m', 			(void*)&follower_menu},
 				{"parameters menu",'m',		(void*)&parameters_menu},
 				{"test graph",'m',			(void*)&testGraphicMenu},
 				{0,0,0}
