@@ -339,7 +339,9 @@ void followWallTest()
 	moveCell(1, 600, 200);
 	mouveRotateCCW90(600, 200);
 	mouveRotateCCW90(600, 200);
+	HAL_Delay(1000);
 	moveCell(4, 1000, 200);
+	HAL_Delay(1000);
 	mouveRotateCW90(600, 200);
 	mouveRotateCCW90(600, 200);
 	mouveRotateCW90(600, 200);

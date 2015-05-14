@@ -19,7 +19,7 @@
 #define MAIN_CONTROL_E_SUCCESS  0
 #define MAIN_CONTROL_E_ERROR    MAKE_ERROR(MAIN_CONTROL_MODULE_ID, 1)
 
-#define STRAIGHT_DIST	10
+#define STRAIGHT_DIST	20
 
 /* Types definitions */
 enum rotation_type_enum {CW, CCW};
