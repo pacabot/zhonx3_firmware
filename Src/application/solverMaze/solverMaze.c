@@ -42,7 +42,7 @@ void test()
 	moveRealZhonxArc(&maze,&position_zhonx,start_way);
 }
 
-extern int maze(void)
+int maze(void)
 {
 	char posXStart, posYStart; // it's the coordinates which Zhonx have at the start
 	labyrinthe maze;
