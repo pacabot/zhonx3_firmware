@@ -42,7 +42,7 @@ void test()
 	moveRealZhonxArc(&maze,&position_zhonx,start_way);
 }
 
-extern int maze(void)
+int maze(void)
 {
 	char posXStart, posYStart; // it's the coordinates which Zhonx have at the start
 	labyrinthe maze;
@@ -217,6 +217,8 @@ void run2(labyrinthe *maze, positionRobot *positionZhonx, char posXStart,
 void moveVirtualZhonx(labyrinthe maze, positionRobot positionZhonxVirtuel,
 		coordinate *way, char xFinish, char yFinish)
 {
+	telemetersStop();
+	motorsSleepDriver(ON);
 	while (positionZhonxVirtuel.x != xFinish
 			|| positionZhonxVirtuel.y != yFinish)
 	{
@@ -257,84 +259,11 @@ void moveVirtualZhonx(labyrinthe maze, positionRobot positionZhonxVirtuel,
 		}
 		new_dot (&way, positionZhonxVirtuel.x, positionZhonxVirtuel.y);
 	}
+	telemetersStart();
+	motorsSleepDriver(OFF);
 	return;
 }
 
-void moveRealZhonx(labyrinthe *maze, positionRobot *positionZhonx,
-		coordinate *way, char *endX, char *endY)
-{
-	coordinate *oldDote;
-	int length;
-	char additionY = 0;
-	char additionX = 0;
-	char orientaionToGo = NORTH;
-	while (way != null)
-	{
-		length = 0;
-		if (way->x == (positionZhonx->x + 1) && way->y == positionZhonx->y)
-		{
-			additionX = 1;
-			additionY = 0;
-			orientaionToGo = EAST;
-		}
-		else if (way->x == (positionZhonx->x - 1) && way->y == positionZhonx->y)
-		{
-			additionX = -1;
-			additionY = 0;
-			orientaionToGo = WEST;
-		}
-		else if (way->y == (positionZhonx->y - 1) && way->x == positionZhonx->x)
-		{
-
-			additionX = 0;
-			additionY = -1;
-			orientaionToGo = NORTH;
-		}
-		else if (way->y == (positionZhonx->y + 1) && way->x == positionZhonx->x)
-		{
-
-			additionX = 0;
-			additionY = 1;
-			orientaionToGo = SOUTH;
-		}
-		else
-		{
-			HAL_Delay (200);
-			motorsSleepDriver (ON);
-			ssd1306DrawString (60, 0, "Error way", &Font_5x8);
-			ssd1306Refresh ();
-			while (1)
-				;
-		}
-
-		while (way->y == (positionZhonx->y + additionY)
-				&& way->x == positionZhonx->x + additionX)
-		{
-			length++;
-			positionZhonx->x = way->x;
-			positionZhonx->y = way->y;
-			oldDote = way;
-			way = way->next;
-			free (oldDote);
-		}
-		move_zhonx (orientaionToGo, &positionZhonx->orientation, length);
-		new_cell (getCellState(), maze, *positionZhonx);
-		telemetersStop();
-		//		if (zhonxSettings.color_sensor_enabled==true) //TODO : implement colors sensor for Nîmes competition
-		//		{
-		//			if ((zhonxSettings.threshold_greater==false && hal_sensor_get_color(app_context.sensors) < zhonxSettings.threshold_color)
-		//					||
-		//					(zhonxSettings.threshold_greater==true && hal_sensor_get_color(app_context.sensors) > zhonxSettings.threshold_color))
-		//			{
-		//					zhonxSettings.x_finish_maze=positionZhonx->x;
-		//					zhonxSettings.y_finish_maze=positionZhonx->y;
-		//					*endX=positionZhonx->x;
-		//					*endY=positionZhonx->y;
-		//					return;
-		//			}
-		//		}
-	}
-}
 
 void moveRealZhonxArc(labyrinthe *maze, positionRobot *positionZhonx, coordinate *way)
 {
@@ -523,7 +452,8 @@ void new_cell(walls new_walls, labyrinthe *maze, positionRobot positionZhonx)
 		}
 		ssd1306Refresh();
 		/*end print wall position*/
-
+		telemetersStop();
+		motorsSleepDriver(ON);
 	switch (positionZhonx.orientation)
 	{
 		case NORTH :
@@ -598,6 +528,8 @@ void new_cell(walls new_walls, labyrinthe *maze, positionRobot positionZhonx)
 			maze->cell[(int) (positionZhonx.x)][(int) (positionZhonx.y)].wall_west = new_walls.front;
 			break;
 	}
+	telemetersStart();
+	motorsSleepDriver(OFF);
 }
 
 void poids(labyrinthe *maze, int xFinish, int yfinish, char wallNoKnow)
