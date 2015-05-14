@@ -32,6 +32,7 @@
 #define WALL_SENSORS_MODULE_ID			106
 #define SETTING_MODULE_ID  				110
 #define RING_BUFFER_MODULE_ID           111
+#define CMDLINE_PARSER_MODULE_ID        112
 
 /* application 2xx*/
 #define MAZE_SOLVER_MODULE_ID			201

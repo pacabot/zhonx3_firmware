@@ -45,6 +45,11 @@
 
 /* USER CODE BEGIN Includes */
 #include "middleware/settings/settings.h"
+#include "peripherals/bluetooth/bluetooth.h"
+#include "middleware/cmdline/cmdline_parser.h"
+#include "middleware/cmdline/commands/commads.h"
+#include "middleware/ring_buffer/ring_buffer.h"
+
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
@@ -71,6 +76,9 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
+    int         rv;
+    CMDLINE_CONTEXT cmd_context;
+
   /* USER CODE END 1 */
 
   /* MCU Configuration----------------------------------------------------------*/
@@ -103,17 +111,23 @@ int main(void)
   MX_USART3_UART_Init();
 
   /* USER CODE BEGIN 2 */
-	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, SET);
+    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, SET);
 
-	HAL_Delay(100);
-	ssd1306Init(0);
-	timesBaseInit();
-	ledPowerBlink(990, 10, 0);
+    HAL_Delay(100);
+    ssd1306Init(0);
+    timesBaseInit();
+    ledPowerBlink(990, 10, 0);
 	settingsInit();
 
-//	lineTest();
-	while (1)
-		menu(mainMenu);
+    // Register Output callback
+    cmd_context.out = bluetoothPrintf;
+    // Initialize Commandline module
+    cmdline_init(&cmd_context);
+
+    while (1)
+    {
+        menu(mainMenu);
+    }
 
   /* USER CODE END 2 */
 

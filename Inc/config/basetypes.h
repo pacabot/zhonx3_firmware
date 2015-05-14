@@ -32,8 +32,6 @@
 #define FALSE	0
 #endif
 
-//typedef unsigned char bool;
-
 /*
  * Utility macros
  */
@@ -52,8 +50,8 @@
 
 #define reverse_bit(val) ((val) ^ 0x00000001)
 #define reverse_bits(val) ((val) ^ 0xffffffff)
-#define check_bit(val, mask) ((((val) & (mask)) == (mask)) ? true : false)
-#define check_bit_key(val, mask, key) ((((val) & (mask)) == (key)) ? true : false)
+#define check_bit(val, mask) ((((val) & (mask)) == (mask)) ? TRUE : FALSE)
+#define check_bit_key(val, mask, key) ((((val) & (mask)) == (key)) ? TRUE : FALSE)
 #define set_bit(val, mask) ((val) |= (mask))
 #define reset_bit(val, mask) ((val) &= (reverse_bits(mask)))
 #define get_bit(val, mask) ((val) & (mask))

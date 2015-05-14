@@ -32,9 +32,9 @@ void bluetoothInit(void);
  *
  * @param format formatted string to output
  *
- * @retval HAL status
+ * @retval none
  */
-int bluetoothPrintf(const char *format, ...);
+void bluetoothPrintf(const char *format, ...);
 
 /**
  * @brief Sends a buffer on Bluetooth peripheral
@@ -49,17 +49,19 @@ int bluetoothSend(unsigned char *data, int length);
 /**
  * @brief Receives data from Bluetooth peripheral
  *
- * @param 	data	Valid pointer toward an external buffer which will contain$$
+ * @param 	data	Valid pointer toward an external buffer which will contain
  * 					the received data
+ * @param   length  Required length
  *
  * @retval			Received data length (in bytes) if successful
  * 					BLUETOOTH_DRIVER_E_ERROR otherwise
  */
-int bluetoothReceive(unsigned char *data);
+int bluetoothReceive(unsigned char *data, int length);
 
-void bluetoothPrintString(const char *text);
-void bluetoothPrintInt( const char *text, unsigned int val);
-void bluetoothNewLine(void);
+
+/*****************************************************************************
+ * TEST FUNCTIONS
+ *****************************************************************************/
 void bluetoothTest(void);
 
 #endif
