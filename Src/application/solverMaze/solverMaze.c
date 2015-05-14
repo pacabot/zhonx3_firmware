@@ -86,9 +86,7 @@ extern int maze(void)
 	{
 		move(90,0,SPEED_ROTATION,0);
 		while(isEndMove() != TRUE);
-		HAL_Delay(1000);
 		positionZhonx.orientation=(positionZhonx.orientation+1)%4;
-		HAL_Delay(500);
 		new_cell (getCellState (), &maze, positionZhonx);
 		print_maze(maze,positionZhonx.x, positionZhonx.y);
 	}
@@ -122,7 +120,6 @@ void exploration(labyrinthe *maze, positionRobot* positionZhonx, char xFinish,
 	telemetersStart();
 	HAL_Delay(500);
 	new_cell (getCellState(), maze, *positionZhonx);
-	telemetersStop();
 
 	while (positionZhonx->x != xFinish || positionZhonx->y != yFinish)
 	{
@@ -400,7 +397,7 @@ void moveRealZhonxArc(labyrinthe *maze, positionRobot *positionZhonx, coordinate
 			way = way->next;
 			free (oldDote);
 		}
-		if (positionZhonx->x != zhonxSettings.x_finish_maze && positionZhonx->x != zhonxSettings.x_finish_maze)
+		if (positionZhonx->x != zhonxSettings.x_finish_maze || positionZhonx->y != zhonxSettings.y_finish_maze)
 			endMidCase = false;
 		else
 			endMidCase = true;
@@ -408,13 +405,14 @@ void moveRealZhonxArc(labyrinthe *maze, positionRobot *positionZhonx, coordinate
 			chain = false;
 		else
 			chain = true;
-		move_zhonx_arc (orientaionToGo, positionZhonx, length, false,false);
+		move_zhonx_arc (orientaionToGo, positionZhonx, length, endMidCase, chain);
 		new_cell (getCellState (), maze, *positionZhonx);
 	}
 }
 
 void move_zhonx_arc (int direction_to_go, positionRobot *positionZhonx, int numberOfCell, char end_mid_of_case, char chain)
 {
+	int speed_end;
 	int distanceToMove = numberOfCell * CELL_LENGTH;
 	int turn = (4 + direction_to_go - positionZhonx->orientation) % 4;
 	positionZhonx->orientation = direction_to_go;
@@ -445,7 +443,6 @@ void move_zhonx_arc (int direction_to_go, positionRobot *positionZhonx, int numb
 			while(isEndMove() != TRUE);
 			break;
 		case LEFT :
-//			ssd1306Printf(0,0,&Font_5x8,"left");
 			if (positionZhonx->midOfCell == true)
 			{
 				move (-90, 0, SPEED_ROTATION, 0);
@@ -460,7 +457,6 @@ void move_zhonx_arc (int direction_to_go, positionRobot *positionZhonx, int numb
 
 			break;
 	}
-	ssd1306Refresh();
 	if (positionZhonx->midOfCell == end_mid_of_case)
 	{
 		/*
@@ -476,7 +472,13 @@ void move_zhonx_arc (int direction_to_go, positionRobot *positionZhonx, int numb
 	{
 		distanceToMove += CELL_LENGTH / 2;
 	}
-	move (0, distanceToMove, SPEED_TRANSLATION, 0);
+	if (chain == true)
+		speed_end = SPEED_ROTATION;
+	else
+	{
+		speed_end = 0;
+	}
+	move (0, distanceToMove, SPEED_TRANSLATION, speed_end);
 	while(speed_control.end_control != 1);
 	positionZhonx->midOfCell = end_mid_of_case;
 	HAL_Delay(500);
