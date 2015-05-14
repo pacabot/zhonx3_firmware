@@ -19,16 +19,16 @@
 #include "middleware/controls/motionControl/speedControl.h"
 
 /* Types definitions */
-#define CENTER_DISTANCE 	19.0
+#define CENTER_DISTANCE 	15.0
 #define SUCCES_GAP_DIST 	3.0
 
 #define MAX_DIST_FOR_ALIGN 	130.00
 #define MIN_DIST_FOR_ALIGN 	3.00
 
-#define MAX_DIST_FOR_FOLLOW 130.00
-#define MIN_DIST_FOR_FOLLOW 50.00
+#define MAX_DIST_FOR_FOLLOW 140.00
+#define MIN_DIST_FOR_FOLLOW 30.00
 
-#define BOTH_WALL_DIST 		160.00
+#define BOTH_WALL_DIST 		250.00
 
 #define DIAG_DIST_FOR_FOLLOW 86.00
 
