@@ -45,7 +45,7 @@
 #define GYRO_T_COEFF_B			(-GYRO_VRATIO/(2.00*GYRO_T_OUT_SENSITIVITY)+25.00)
 
 #define GYRO_BETA				1.2400995740599703 //FORCE COEFF_B
-#define GYRO_GAIN_COMPENSATION	0.95
+#define GYRO_GAIN_COMPENSATION	0.98
 
 /**************************************************************************************/
 /***************                 Temperature STM32                 ********************/
@@ -117,8 +117,8 @@
 /***************                 Physical Constants                ********************/
 /**************************************************************************************/
 #define MAX_SPEED				4000.0	//mm/s
-#define MAX_ACCEL				8000.0	//mm/s²
-#define MAX_DECEL				8000.0	//mm/s²
+#define MAX_ACCEL				4000.0	//mm/s²
+//#define MAX_DECEL				8000.0	//mm/s²
 
 #define MAX_TURN_SPEED			500.0	//mm/s
 #define MAX_TURN_ACCEL			8000.0	//mm/s²
