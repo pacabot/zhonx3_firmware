@@ -428,7 +428,7 @@ void move_zhonx_arc (int direction_to_go, positionRobot *positionZhonx, int numb
 			}
 			else
 			{
-				move (90, CELL_LENGTH / 2, SPEED_TRANSLATION, 0);
+				mouveRotateCW90(SPEED_TRANSLATION, 0);
 				distanceToMove -= CELL_LENGTH;
 				while(isEndMove() != TRUE);
 
@@ -450,7 +450,7 @@ void move_zhonx_arc (int direction_to_go, positionRobot *positionZhonx, int numb
 			}
 			else
 			{
-				move (-90, CELL_LENGTH / 2, SPEED_TRANSLATION, 0);
+				mouveRotateCCW90(SPEED_TRANSLATION, 0);
 				while(isEndMove() != TRUE);
 				distanceToMove -= CELL_LENGTH;
 			}
