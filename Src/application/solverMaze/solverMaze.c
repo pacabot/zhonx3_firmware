@@ -79,7 +79,6 @@ extern int maze(void)
 	print_maze (maze, positionZhonx.x, positionZhonx.y);
 	if (zhonxSettings.calibration_enabled == true)
 	{
-		HAL_Delay (1000);
 		calibrateSimple ();
 	}
 	for (int i = 0; i < 4; ++i)
@@ -185,9 +184,7 @@ void run2(labyrinthe *maze, positionRobot *positionZhonx, char posXStart,
 		moveVirtualZhonx (*maze, *positionZhonx, &way,
 				zhonxSettings.x_finish_maze, zhonxSettings.y_finish_maze);
 		waitStart ();
-		motorsSleepDriver (ON);
 		moveRealZhonxArc (maze, positionZhonx, way.next);
-		motorsSleepDriver (ON);
 		if (zhonxSettings.calibration_enabled == true)
 			calibrateSimple ();
 		HAL_Delay (2000);
@@ -319,8 +316,6 @@ void moveRealZhonx(labyrinthe *maze, positionRobot *positionZhonx,
 			free (oldDote);
 		}
 		move_zhonx (orientaionToGo, &positionZhonx->orientation, length);
-		telemetersStart();
-		HAL_Delay(500);
 		new_cell (getCellState(), maze, *positionZhonx);
 		telemetersStop();
 		//		if (zhonxSettings.color_sensor_enabled==true) //TODO : implement colors sensor for Nîmes competition
@@ -429,15 +424,14 @@ void move_zhonx_arc (int direction_to_go, positionRobot *positionZhonx, int numb
 			else
 			{
 				mouveRotateCW90(SPEED_TRANSLATION, 0);
-				distanceToMove -= CELL_LENGTH;
-				while(isEndMove() != TRUE);
+				numberOfCell --;
 
 			}
 			break;
 		case UTURN :
 			if(positionZhonx->midOfCell==false)
 			{
-				distanceToMove -= CELL_LENGTH;
+				numberOfCell --;
 			}
 			move (180, 0, SPEED_ROTATION, 0);
 			while(isEndMove() != TRUE);
@@ -451,8 +445,7 @@ void move_zhonx_arc (int direction_to_go, positionRobot *positionZhonx, int numb
 			else
 			{
 				mouveRotateCCW90(SPEED_TRANSLATION, 0);
-				while(isEndMove() != TRUE);
-				distanceToMove -= CELL_LENGTH;
+				numberOfCell --;
 			}
 
 			break;
@@ -460,17 +453,19 @@ void move_zhonx_arc (int direction_to_go, positionRobot *positionZhonx, int numb
 	if (positionZhonx->midOfCell == end_mid_of_case)
 	{
 		/*
-		 * distanceToMove-=CELL_LENGTH/2;
-		 * distanceToMove+=CELL_LENGTH/2;
+		 * numberOfCell-=CELL_LENGTH/2;
+		 * numberOfCell+=CELL_LENGTH/2;
 		 */
 	}
 	else if (positionZhonx->midOfCell == true)
 	{
-		distanceToMove -= CELL_LENGTH / 2;
+		moveHalfCell(SPEED_TRANSLATION,SPEED_TRANSLATION);
+		numberOfCell --;
 	}
 	else // so endMidOfCase=true and positionZhonx->midOfCase=false
 	{
-		distanceToMove += CELL_LENGTH / 2;
+		moveHalfCell(SPEED_TRANSLATION,SPEED_TRANSLATION);
+//		distanceToMove ++;
 	}
 	if (chain == true)
 		speed_end = SPEED_ROTATION;
@@ -478,10 +473,8 @@ void move_zhonx_arc (int direction_to_go, positionRobot *positionZhonx, int numb
 	{
 		speed_end = 0;
 	}
-	move (0, distanceToMove, SPEED_TRANSLATION, speed_end);
-	while(speed_control.end_control != 1);
+	move (0, numberOfCell * CELL_LENGTH, SPEED_TRANSLATION, speed_end);
 	positionZhonx->midOfCell = end_mid_of_case;
-	HAL_Delay(500);
 
 }
 
@@ -489,8 +482,6 @@ void new_cell(walls new_walls, labyrinthe *maze, positionRobot positionZhonx)
 {
 
 	/*print walls position*/
-	telemetersStop();
-	motorsSleepDriver(ON);
 		ssd1306ClearRect(64,0,64,64);
 		if (new_walls.front == WALL_PRESENCE)
 		{
@@ -606,8 +597,6 @@ void new_cell(walls new_walls, labyrinthe *maze, positionRobot positionZhonx)
 			maze->cell[(int) (positionZhonx.x)][(int) (positionZhonx.y)].wall_west = new_walls.front;
 			break;
 	}
-	telemetersStart();
-	motorsSleepDriver(ON);
 }
 
 void poids(labyrinthe *maze, int xFinish, int yfinish, char wallNoKnow)
@@ -1235,10 +1224,8 @@ void goOrientation(char *orientationZhonx, char directionToGo)
 
 void doUTurn(positionRobot *positionZhonx)
 {
-	motorsSleepDriver (ON);
 	goOrientation (&positionZhonx->orientation,
 			(positionZhonx->orientation + 2) % 4);
-	motorsSleepDriver (ON);
 }
 
 int sensor_calibrate(void)
