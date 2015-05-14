@@ -157,13 +157,7 @@ void lineTest(void)
 			{
 			    marche = FALSE;
 			    move(0, 100, 50, 0);
-			    tone(c, 200);tone(c, 200);
-			}
-		} else
-		{
-			if (lineSensors.front.adc_value*1.3 > max_Floor.front)
-			{
-				cpt=0;
+			    tone(c, 500);tone(c, 500);
 			}
 		}
 // -----------------------------------------------------------------------
@@ -179,6 +173,7 @@ void lineTest(void)
 
 	}
 	pid_loop.start_state = FALSE;
+	line_follower.active_state = FALSE;
 	telemetersStop();
 	motorsSleepDriver(ON);
 }
@@ -205,25 +200,44 @@ void asservissement(void)
 void lineFollower_IT(void)
 {
 	// Rapide
+	static int vitesse=0;
 
 	asservissement();
 
-//	if (follow_control.follow_error > 4.0)
-//	{
-//		// deceleration
-//		move(0, 100, 500, 250);
-//	}
-//
-//	while(isEndMove() != TRUE)
-//	{
-//		move(0, 10000, 250, 250);
-//	}
-//
-//		move(0, 10000, 250, 250);
-//
-//		{
-//			assert
-//		}
-//	}
+	if (follow_control.follow_error > 5.0 && vitesse==0)
+	{
+		// deceleration
+		move(0, 200, 500, 250);
+		vitesse=-1;
+	}
+	else if (follow_control.follow_error < 3.0 && vitesse==0)
+	{
+		// acceleration
+		move(0, 200, 250, 500);
+		vitesse=1;
+	}
+
+	if (isEndMove() == TRUE)
+	{
+		if (vitesse<0)
+		{
+			move(0, 10000, 250, 250);
+		}
+		else if (vitesse>0)
+		{
+			move(0, 10000, 500, 500);
+		}
+		vitesse=0;
+	}
+	// -----------------------------------------------------------------------
+	// Condition to stop zhonx if no line
+	// -----------------------------------------------------------------------
+	if ((double)lineSensors.front.adc_value < min_Floor.front *1.2 &&
+		(double)lineSensors.left.adc_value < min_Floor.left *1.2 &&
+		(double)lineSensors.right.adc_value < min_Floor.right *1.2)
+	{
+	    move(0, 150, 50, 0);
+	}
+
 }
 
