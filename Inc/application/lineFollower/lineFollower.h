@@ -21,6 +21,8 @@ typedef struct
 	double left;
 	double front;
 	double right;
+	double leftExt;
+	double rightExt
 } ground_sensors_struct;
 
 void lineTest(void);
