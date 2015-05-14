@@ -83,14 +83,14 @@ int maze(void)
 	{
 		calibrateSimple ();
 	}
-	for (int i = 0; i < 4; ++i)
-	{
-		rotate90WithCal(CW, 300, 0);
-		while(isEndMove() != TRUE);
-		positionZhonx.orientation=(positionZhonx.orientation+1)%4;
-		new_cell (getCellState (), &maze, positionZhonx);
-		print_maze(maze,positionZhonx.x, positionZhonx.y);
-	}
+//	for (int i = 0; i < 4; ++i)
+//	{
+//		rotate90WithCal(CW, 300, 0);
+//		while(isEndMove() != TRUE);
+//		positionZhonx.orientation=(positionZhonx.orientation+1)%4;
+//		new_cell (getCellState (), &maze, positionZhonx);
+//		print_maze(maze,positionZhonx.x, positionZhonx.y);
+//	}
 	do
 	{
 		waitStart ();
@@ -634,6 +634,7 @@ void maze_init(labyrinthe *maze)
 		maze->cell[0][i].wall_west = WALL_PRESENCE;
 		maze->cell[MAZE_SIZE - 1][i].wall_east = WALL_PRESENCE;
 	}
+	new_cell((walls){WALL_PRESENCE, WALL_PRESENCE, WALL_PRESENCE},maze, (positionRobot){0,0,SOUTH,FALSE});
 #else
 	labyrinthe maze_initial=
 	{
