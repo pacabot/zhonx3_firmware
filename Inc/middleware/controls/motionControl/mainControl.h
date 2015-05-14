@@ -22,6 +22,8 @@
 /* Types definitions */
 enum rotation_type_enum {CW, CCW};
 
+extern const double ROTATION_DIAMETER;
+
 typedef struct
 {
 	char follow_state;
@@ -50,6 +52,7 @@ int  move(float angle, float radius_or_distance, float max_speed, float end_spee
 char isEndMove(void);
 int  frontCal(float max_speed);
 int  rotate180WithCal(enum rotation_type_enum rotation_type, float max_speed, float end_speed);
+int  rotate90WithCal(enum rotation_type_enum rotation_type, float max_speed, float end_speed);
 void mainControlTest(void);
 void followWallTest(void);
 void followLineTest(void);

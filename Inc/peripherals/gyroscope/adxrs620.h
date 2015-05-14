@@ -25,7 +25,7 @@ typedef struct
     uint16_t calibration_current_cycle;
     uint16_t calibration_nb_cycle;
     uint32_t callback_cnt;
-    volatile float current_angle;
+    volatile double current_angle;
 	char calibration_state;
     volatile double alfa;
     volatile double beta;
@@ -33,10 +33,12 @@ typedef struct
 
 volatile gyro_struct gyro;
 
-void adxrs620Init(void);
-void adxrs620Calibrate(int nb_ech);
-void adxrs620_IT(void);
-void adxrs620_ADC_IT(void);
-void adxrs620Test(void);
+void   	adxrs620Init(void);
+void 	adxrs620Calibrate(int nb_ech);
+void 	adxrs620_IT(void);
+void 	adxrs620_ADC_IT(void);
+double 	GyroGetAngle(void);
+void 	GyroResetAngle(void);
+void 	adxrs620Test(void);
 
 #endif

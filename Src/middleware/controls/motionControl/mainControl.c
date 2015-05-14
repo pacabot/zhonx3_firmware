@@ -23,6 +23,7 @@
 #include <stdint.h>
 
 /* Peripheral declarations */
+#include "peripherals/gyroscope/adxrs620.h"
 #include "peripherals/times_base/times_base.h"
 #include "peripherals/display/ssd1306.h"
 #include "peripherals/display/smallfonts.h"
@@ -46,6 +47,8 @@
 
 control_params_struct control_params;
 
+const double ROTATION_DIAMETER = sqrt(pow(WHEELS_DISTANCE, 2) + pow(WHEELS_SPACING, 2));
+
 int mainControlInit(void)
 {
 	motorsInit();
@@ -56,6 +59,7 @@ int mainControlInit(void)
 	positionControlInit();
 	followControlInit();
 	transfertFunctionInit();
+	adxrs620Init();
 
 	speed_params.initial_speed = 0;
 
@@ -94,11 +98,11 @@ int move(float angle, float radius_or_distance, float max_speed, float end_speed
 
 	encoderResetDistance(&left_encoder);
 	encoderResetDistance(&right_encoder);
+	GyroResetAngle();
 
 	float distance;
 	float slip_compensation;
 	float distance_per_wheel;
-	const float ROTATION_DIAMETER = sqrt(pow(WHEELS_DISTANCE, 2) + pow(WHEELS_SPACING, 2));
 
 	speed_params.sign = SIGN(radius_or_distance);
 	radius_or_distance = fabsf(radius_or_distance);
@@ -107,15 +111,17 @@ int move(float angle, float radius_or_distance, float max_speed, float end_speed
 	angle = fabsf(angle);
 
 	/* Apply the correction factor, delete function with the future gyro compensation */
-	slip_compensation = 1.09;
+	slip_compensation = 1.0;
 
 	speed_params.end_speed  = end_speed;
 	speed_params.max_speed 	= max_speed;
-	speed_params.accel 		= max_speed * 2;//(MAX_ACCEL)
-	speed_params.decel 		= max_speed * 2;//
+	speed_params.accel 		= MAX_ACCEL;
+	speed_params.decel 		= MAX_ACCEL;
 
 	control_params.speed_state = TRUE;
 	control_params.follow_state = TRUE;
+	if (control_params.follow_state == TRUE)
+		telemetersStart();
 
 	if (angle == 0)
 	{
@@ -127,10 +133,11 @@ int move(float angle, float radius_or_distance, float max_speed, float end_speed
 	}
 	else
 	{
+		telemetersStop();
 		control_params.follow_state = NOFOLLOW;
 
-		distance_per_wheel = (2.0 * PI * ROTATION_DIAMETER * (angle / 360.0)) * slip_compensation;
-		distance = fabsf((PI * (2 * radius_or_distance) * (angle / 360.0)));
+		distance_per_wheel = (2.00 * PI * ROTATION_DIAMETER * (angle / 360.00)) * slip_compensation;
+		distance = fabsf((PI * (2.00 * radius_or_distance) * (angle / 360.00)));
 
 		positionProfileCompute(distance_per_wheel, speedProfileCompute(distance));
 	}
@@ -168,11 +175,11 @@ int frontCal(float max_speed)
 
 	getTelemetersDistance(&distances);
 	relative_dist = (distances.distance_front_left + distances.distance_front_right) / 2;
-		if (relative_dist < MAX_DIST_FOR_ALIGN)
-		{
-			move(0, relative_dist - CENTER_DISTANCE, max_speed, 0);
-			while(isEndMove() != TRUE);
-		}
+	if (relative_dist < MAX_DIST_FOR_ALIGN)
+	{
+		move(0, relative_dist - CENTER_DISTANCE, max_speed, 0);
+		while(isEndMove() != TRUE);
+	}
 
 	follow_control.follow_type = save_folow_type;
 
@@ -180,28 +187,43 @@ int frontCal(float max_speed)
 }
 
 int rotate180WithCal(enum rotation_type_enum rotation_type, float max_speed, float end_speed)
-{;
-frontCal(max_speed);
+{
+	frontCal(max_speed);
 
-/***************************************/
-if (rotation_type == CW)
-	move(90, 0, max_speed, 0);
-else
-	move(-90, 0, max_speed, 0);
-while(isEndMove() != TRUE);
-/***************************************/
+	/***************************************/
+	if (rotation_type == CW)
+		move(90, 0, max_speed, 0);
+	else
+		move(-90, 0, max_speed, 0);
+	while(isEndMove() != TRUE);
+	/***************************************/
 
-frontCal(max_speed);
+	frontCal(max_speed);
 
-/***************************************/
-if (rotation_type == CW)
-	move(90, 0, max_speed, end_speed);
-else
-	move(-90, 0, max_speed, end_speed);
-while(isEndMove() != TRUE);
-/***************************************/
+	/***************************************/
+	if (rotation_type == CW)
+		move(90, 0, max_speed, end_speed);
+	else
+		move(-90, 0, max_speed, end_speed);
+	while(isEndMove() != TRUE);
+	/***************************************/
 
-return POSITION_CONTROL_E_SUCCESS;
+	return POSITION_CONTROL_E_SUCCESS;
+}
+
+int rotate90WithCal(enum rotation_type_enum rotation_type, float max_speed, float end_speed)
+{
+	frontCal(max_speed);
+
+	/***************************************/
+	if (rotation_type == CW)
+		move(90, 0, max_speed, 0);
+	else
+		move(-90, 0, max_speed, 0);
+	while(isEndMove() != TRUE);
+	/***************************************/
+
+	return POSITION_CONTROL_E_SUCCESS;
 }
 
 void mainControlDisplayTest(void)
@@ -212,7 +234,7 @@ void mainControlDisplayTest(void)
 		ssd1306PrintInt(10,  5,  "speed dist =  ",(int) (speed_control.current_distance * 100), &Font_5x8);
 		ssd1306PrintInt(10,  15, "follow err =  ",(int) (follow_control.follow_error), &Font_5x8);
 		ssd1306PrintInt(10,  25, "right_dist =  ",(int) (position_control.end_control * 100), &Font_5x8);
-		ssd1306PrintInt(10,  35, "error =  ",(int16_t) speed_control.speed_error, &Font_5x8);
+		ssd1306PrintInt(10,  35, "gyro =  ",(int16_t) GyroGetAngle(), &Font_5x8);
 		ssd1306PrintInt(10,  45, "left PWM =  ",(int16_t) transfert_function.left_motor_pwm, &Font_5x8);
 		ssd1306PrintInt(10,  55, "right PWM =  ",(int16_t) transfert_function.right_motor_pwm, &Font_5x8);
 
@@ -251,15 +273,32 @@ void followWallTest()
 
 	follow_control.follow_type = FOLLOW_WALL;
 
-	move(0, 90, 500, 200);
+	double i = 1;
+	move(0, (CELL_LENGTH/2)*i, 200, 100);
 	while(isEndMove() != TRUE);
-	move(180, 90, 500, 200);
+	move(180, CELL_LENGTH/2, 200, 100);
 	while(isEndMove() != TRUE);
-	move(0, 180, 500, 200);
+	move(0, CELL_LENGTH, 500, 200);
 	while(isEndMove() != TRUE);
-	move(-180, 90, 500, 200);
+	move(-180, (CELL_LENGTH/2)*i, 200, 100);
 	while(isEndMove() != TRUE);
-	move(0, 720, 500, 200);
+	move(0, CELL_LENGTH*4, 1000, 100);
+	while(isEndMove() != TRUE);
+	move(90, (CELL_LENGTH/2)*i, 500, 200);
+	while(isEndMove() != TRUE);
+	move(-90, (CELL_LENGTH/2)*i, 500, 200);
+	while(isEndMove() != TRUE);
+	move(90, (CELL_LENGTH/2)*i, 500, 200);
+	while(isEndMove() != TRUE);
+	move(-90, (CELL_LENGTH/2)*i, 500, 200);
+	while(isEndMove() != TRUE);
+	move(90, (CELL_LENGTH/2)*i, 500, 200);
+	while(isEndMove() != TRUE);
+	move(-90, (CELL_LENGTH/2)*i, 500, 200);
+	while(isEndMove() != TRUE);
+	move(90, (CELL_LENGTH/2)*i, 500, 200);
+	while(isEndMove() != TRUE);
+	move(0, CELL_LENGTH, 500, 0);
 	while(isEndMove() != TRUE);
 
 	telemetersStop();
@@ -278,13 +317,14 @@ void rotateTest()
 	HAL_Delay(500);
 
 	follow_control.follow_type = NOFOLLOW;
+	position_control.position_type = GYRO;
 
-	move(90, 0, 100, 0);
-	while(isEndMove() != TRUE);
-	move(0, 180, 100, 0);
-	while(isEndMove() != TRUE);
-	move(0, 0, 0, 0);
-	while(isEndMove() != TRUE);
+	move(90, 0, 200, 0);
+	//	while(isEndMove() != TRUE);
+	//	move(0, 180, 100, 0);
+	//	while(isEndMove() != TRUE);
+	//	move(0, 0, 0, 0);
+	//	while(isEndMove() != TRUE);
 
 	mainControlDisplayTest();
 }
