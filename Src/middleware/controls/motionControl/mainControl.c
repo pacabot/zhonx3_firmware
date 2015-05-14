@@ -47,7 +47,7 @@
 
 control_params_struct control_params;
 
-const double ROTATION_DIAMETER = sqrt(pow(WHEELS_DISTANCE, 2) + pow(WHEELS_SPACING, 2));
+double ROTATION_DIAMETER = sqrt(pow(WHEELS_DISTANCE, 2) + pow(WHEELS_SPACING, 2));
 
 int mainControlInit(void)
 {
@@ -122,9 +122,12 @@ int move(float angle, float radius_or_distance, float max_speed, float end_speed
 	control_params.follow_state = TRUE;
 	if (control_params.follow_state == TRUE)
 		telemetersStart();
+	else
+		telemetersStop();
 
 	if (angle == 0)
 	{
+		position_control.position_type = ENCODERS;
 		if (follow_control.follow_type == NOFOLLOW)
 			control_params.follow_state = FALSE;
 
@@ -133,7 +136,7 @@ int move(float angle, float radius_or_distance, float max_speed, float end_speed
 	}
 	else
 	{
-		telemetersStop();
+		position_control.position_type = GYRO;
 		control_params.follow_state = NOFOLLOW;
 
 		distance_per_wheel = (2.00 * PI * ROTATION_DIAMETER * (angle / 360.00)) * slip_compensation;
@@ -242,7 +245,7 @@ int moveHalfCell(float max_speed, float end_speed)
 
 int mouveRotateCW90(float max_speed, float end_speed)
 {
-	int staight_dist = 5;
+	int staight_dist = 10;
 	move(0, staight_dist, max_speed, 200);
 	while(isEndMove() != TRUE);
 	move(90, 89 - (staight_dist + 3), 300, 200);
@@ -254,7 +257,7 @@ int mouveRotateCW90(float max_speed, float end_speed)
 
 int mouveRotateCCW90(float max_speed, float end_speed)
 {
-	int staight_dist = 5;
+	int staight_dist = 10;
 	move(0, staight_dist, max_speed, 200);
 	while(isEndMove() != TRUE);
 	move(-90, (CELL_LENGTH/2) - (staight_dist + 2), 300, 200);
@@ -304,7 +307,6 @@ void mainControlTest(void)
 
 void followWallTest()
 {
-	follow_control.follow_type = FOLLOW_WALL;
 	mainControlInit();
 	telemetersStart();
 	HAL_Delay(500);

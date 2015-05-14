@@ -22,7 +22,7 @@
 /* Types definitions */
 enum rotation_type_enum {CW, CCW};
 
-extern const double ROTATION_DIAMETER;
+extern double ROTATION_DIAMETER;
 
 typedef struct
 {
