@@ -27,5 +27,6 @@ typedef struct
 
 void lineTest(void);
 void lineFollower_IT(void);
+double asservissement(void);
 
 #endif /* LINE_FOLLOWER_H_ */

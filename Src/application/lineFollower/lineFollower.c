@@ -185,7 +185,7 @@ void lineTest(void)
 // fonction pour asservir zhonx sur la ligne
 // -1 : ralentir
 //  0 : meme vitesse
-int asservissement(void)
+double asservissement(void)
 {
 	line_follower.position = 0.00;
 	double gauche=(double)lineSensors.left.adc_value * coef_Floor.left - min_Floor.left;
@@ -199,38 +199,25 @@ int asservissement(void)
 	if ((devant*1.2) < gauche || (devant*1.2) < droite)
 	{
 		line_follower.position = (droite-gauche) * 0.01;
-		return 1;
 	}
-	return 0;
+	return line_follower.position;
 }
 void lineFollower_IT(void)
 {
 	// Rapide
-	if asservissement();
 
-	line_follower.position = 0.00;
-	double gauche=(double)lineSensors.left.adc_value * coef_Floor.left - min_Floor.left;
-	double devant=(double)lineSensors.front.adc_value * coef_Floor.front - min_Floor.front;
-	double droite=(double)lineSensors.right.adc_value * coef_Floor.right - min_Floor.right;
-//    double droiteExt=(double)lineSensors.right_ext.adc_value * coef_Floor.rightExt - min_Floor.rightExt;
-//    double gaucheExt=(double)lineSensors.left_ext.adc_value * coef_Floor.leftExt - min_Floor.leftExt;
+	double result = asservissement();
 
 
-	line_follower.position = (droite-gauche) * 0.005;
-
-	if ((devant*1.2) < gauche || (devant*1.2) < droite)
-	{
-		line_follower.position = (droite-gauche) * 0.01;
-		move(0, 50, 1000, 250);
-		while(isEndMove() != TRUE)
-		{
-			assert
-		}
-		move(0, 10000, 250, 250);
-
-		{
-			assert
-		}
-	}
+//		while(isEndMove() != TRUE)
+//		{
+//			assert
+//		}
+//		move(0, 10000, 250, 250);
+//
+//		{
+//			assert
+//		}
+//	}
 }
 
