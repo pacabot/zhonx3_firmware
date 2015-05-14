@@ -229,41 +229,39 @@ int rotate90WithCal(enum rotation_type_enum rotation_type, float max_speed, floa
 	return POSITION_CONTROL_E_SUCCESS;
 }
 
-int moveOneCell(float max_speed, float end_speed)
+int moveCell(unsigned char nb_cell, float max_speed, float end_speed)
 {
-	move(0, CELL_LENGTH, max_speed, end_speed);
+	move(0, ((CELL_LENGTH * nb_cell) - (STRAIGHT_DIST * 2)), max_speed, end_speed);
 	while(isEndMove() != TRUE);
+	move(0, STRAIGHT_DIST, max_speed, end_speed);
+
 	return POSITION_CONTROL_E_SUCCESS;
 }
 
 int moveHalfCell(float max_speed, float end_speed)
 {
-	move(0, CELL_LENGTH/2, max_speed, end_speed);
+	move(0, ((CELL_LENGTH / 2) - STRAIGHT_DIST), max_speed, end_speed);
 	while(isEndMove() != TRUE);
+	move(0, (2 * STRAIGHT_DIST), max_speed, end_speed);
+
 	return POSITION_CONTROL_E_SUCCESS;
 }
 
 int mouveRotateCW90(float max_speed, float end_speed)
 {
-	int staight_dist = 10;
-	move(0, staight_dist, max_speed, 200);
+	move(90, ((CELL_LENGTH / 2) - (STRAIGHT_DIST + 2)), 300, 200);
 	while(isEndMove() != TRUE);
-	move(90, 89 - (staight_dist + 3), 300, 200);
-	while(isEndMove() != TRUE);
-	move(0, staight_dist, max_speed, end_speed);
-	while(isEndMove() != TRUE);
+	move(0, STRAIGHT_DIST * 2, max_speed, end_speed);
+
 	return POSITION_CONTROL_E_SUCCESS;
 }
 
 int mouveRotateCCW90(float max_speed, float end_speed)
 {
-	int staight_dist = 10;
-	move(0, staight_dist, max_speed, 200);
+	move(-90, ((CELL_LENGTH / 2) - (STRAIGHT_DIST + 2)), 300, 200);
 	while(isEndMove() != TRUE);
-	move(-90, (CELL_LENGTH/2) - (staight_dist + 2), 300, 200);
-	while(isEndMove() != TRUE);
-	move(0, staight_dist, max_speed, end_speed);
-	while(isEndMove() != TRUE);
+	move(0, STRAIGHT_DIST * 2, max_speed, end_speed);
+
 	return POSITION_CONTROL_E_SUCCESS;
 }
 
@@ -316,22 +314,33 @@ void followWallTest()
 	moveHalfCell(600, 200);
 	while(isEndMove() != TRUE);
 	mouveRotateCW90(600, 200);
+	while(isEndMove() != TRUE);
 	mouveRotateCW90(600, 200);
-	moveOneCell(600, 200);
+	while(isEndMove() != TRUE);
+	moveCell(1, 600, 200);
+	while(isEndMove() != TRUE);
 	mouveRotateCCW90(600, 200);
+	while(isEndMove() != TRUE);
 	mouveRotateCCW90(600, 200);
-	moveOneCell(1000, 1000);
-	moveOneCell(1000, 1000);
-	moveOneCell(1000, 1000);
-	moveOneCell(1000, 200);
+	while(isEndMove() != TRUE);
+	moveCell(4, 1000, 200);
+	while(isEndMove() != TRUE);
 	mouveRotateCW90(600, 200);
+	while(isEndMove() != TRUE);
 	mouveRotateCCW90(600, 200);
+	while(isEndMove() != TRUE);
 	mouveRotateCW90(600, 200);
+	while(isEndMove() != TRUE);
 	mouveRotateCCW90(600, 200);
+	while(isEndMove() != TRUE);
 	mouveRotateCW90(600, 200);
+	while(isEndMove() != TRUE);
 	mouveRotateCCW90(600, 200);
+	while(isEndMove() != TRUE);
 	mouveRotateCW90(600, 200);
-	moveOneCell(600, 200);
+	while(isEndMove() != TRUE);
+	moveCell(1, 600, 200);
+	while(isEndMove() != TRUE);
 
 	//	double i = 1;
 	//	move(0, (CELL_LENGTH/2)*i, 500, 200);
