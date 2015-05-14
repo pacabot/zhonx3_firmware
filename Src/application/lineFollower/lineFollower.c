@@ -113,7 +113,7 @@ void lineTest(void)
 	ssd1306PrintInt(10, 35, "RIGHT     =  ", (uint16_t) min_Floor.right, &Font_5x8);
 	ssd1306PrintInt(10, 45, "RIGHT_EXT =  ", (uint16_t) min_Floor.rightExt, &Font_5x8);
 	ssd1306Refresh();
-	HAL_Delay(100);
+	HAL_Delay(1000);
 
 	ssd1306ClearScreen();
 	ssd1306PrintInt(10, 5,  "LEFT_EXT  =  ", (uint16_t) max_Floor.leftExt, &Font_5x8);
@@ -128,7 +128,7 @@ void lineTest(void)
 	follow_control.follow_type = FOLLOW_LINE;
 
 	line_follower.active_state = TRUE;
-	move(0, 10000, 1000, 1000);
+	move(0, 10000, 500, 0);
 //	while(isEndMove() != TRUE);
 	char marche = TRUE;
 	char cpt=0;
@@ -156,7 +156,8 @@ void lineTest(void)
 			if (cpt>5)
 			{
 			    marche = FALSE;
-			    move(0, 100, 0, 0);
+			    move(0, 100, 50, 0);
+			    tone(c, 200);tone(c, 200);
 			}
 		} else
 		{
@@ -185,7 +186,7 @@ void lineTest(void)
 // fonction pour asservir zhonx sur la ligne
 // -1 : ralentir
 //  0 : meme vitesse
-double asservissement(void)
+void asservissement(void)
 {
 	line_follower.position = 0.00;
 	double gauche=(double)lineSensors.left.adc_value * coef_Floor.left - min_Floor.left;
@@ -200,19 +201,24 @@ double asservissement(void)
 	{
 		line_follower.position = (droite-gauche) * 0.01;
 	}
-	return line_follower.position;
 }
 void lineFollower_IT(void)
 {
 	// Rapide
 
-	double result = asservissement();
+	asservissement();
 
-
-//		while(isEndMove() != TRUE)
-//		{
-//			assert
-//		}
+//	if (follow_control.follow_error > 4.0)
+//	{
+//		// deceleration
+//		move(0, 100, 500, 250);
+//	}
+//
+//	while(isEndMove() != TRUE)
+//	{
+//		move(0, 10000, 250, 250);
+//	}
+//
 //		move(0, 10000, 250, 250);
 //
 //		{
