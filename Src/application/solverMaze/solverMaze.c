@@ -53,7 +53,9 @@ extern int maze(void)
 	telemetersStart();
 	mainControlInit ();
 	HAL_Delay(500);
-	follow_control.follow_type = FOLLOW_WALL;
+
+	control_params.speed_state = FALSE;
+	follow_control.follow_type = NOFOLLOW;//FOLLOW_WALL;
 
 	/*init for different micromouse competition*/
 
@@ -83,7 +85,7 @@ extern int maze(void)
 	}
 	for (int i = 0; i < 4; ++i)
 	{
-		move(90,0,SPEED_ROTATION,0);
+		rotate90WithCal(CW, 300, 0);
 		while(isEndMove() != TRUE);
 		positionZhonx.orientation=(positionZhonx.orientation+1)%4;
 		new_cell (getCellState (), &maze, positionZhonx);

@@ -119,7 +119,6 @@ int move(float angle, float radius_or_distance, float max_speed, float end_speed
 	speed_params.decel 		= MAX_ACCEL;
 
 	control_params.speed_state = TRUE;
-	control_params.follow_state = TRUE;
 	if (control_params.follow_state == TRUE)
 		telemetersStart();
 	else
@@ -160,19 +159,19 @@ char isEndMove(void)
 
 int frontCal(float max_speed)
 {
-	//	int i = 0;
+	int i = 0;
 	char save_folow_type = follow_control.follow_type;
 	telemetersDistancesTypeDef distances;
 	float relative_dist = 0.0;
 
-	//	follow_control.follow_type = ALIGN_FRONT;
-	//	move(0, 0, 0, 0);
-	//	while (follow_control.succes != TRUE)
-	//	{
-	//		if (timeOut(3, i) == TRUE)
-	//			return POSITION_CONTROL_E_ERROR;
-	//		i++;
-	//	}
+		follow_control.follow_type = ALIGN_FRONT;
+		move(0, 0, 0, 0);
+		while (follow_control.succes != TRUE)
+		{
+			if (timeOut(3, i) == TRUE)
+				return POSITION_CONTROL_E_ERROR;
+			i++;
+		}
 
 	/**************************************************************************/
 
@@ -216,8 +215,6 @@ int rotate180WithCal(enum rotation_type_enum rotation_type, float max_speed, flo
 
 int rotate90WithCal(enum rotation_type_enum rotation_type, float max_speed, float end_speed)
 {
-	frontCal(max_speed);
-
 	/***************************************/
 	if (rotation_type == CW)
 		move(90, 0, max_speed, 0);
@@ -225,6 +222,8 @@ int rotate90WithCal(enum rotation_type_enum rotation_type, float max_speed, floa
 		move(-90, 0, max_speed, 0);
 	while(isEndMove() != TRUE);
 	/***************************************/
+
+	frontCal(max_speed);
 
 	return POSITION_CONTROL_E_SUCCESS;
 }

@@ -112,6 +112,9 @@
 							</tool>
 						</toolChain>
 					</folderInfo>
+					<fileInfo id="ilg.gnuarmeclipse.managedbuild.cross.config.elf.debug.572021291.489728446.1662449982.1209903407" name="lineFollower.c" rcbsApplicability="disable" resourcePath="Src/application/lineFollower/lineFollower.c" toolsToInvoke="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.130775883.608133002">
+						<tool id="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.130775883.608133002" name="Cross ARM C Compiler" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.130775883"/>
+					</fileInfo>
 					<fileInfo id="ilg.gnuarmeclipse.managedbuild.cross.config.elf.debug.572021291.489728446.1662449982.915333139" name="beeper.h" rcbsApplicability="disable" resourcePath="Inc/peripherals/beeper/beeper.h" toolsToInvoke=""/>
 					<fileInfo id="ilg.gnuarmeclipse.managedbuild.cross.config.elf.debug.572021291.489728446.1662449982.967337781" name="solverMaze.h" rcbsApplicability="disable" resourcePath="Inc/application/solverMaze/solverMaze.h" toolsToInvoke=""/>
 					<fileInfo id="ilg.gnuarmeclipse.managedbuild.cross.config.elf.debug.572021291.489728446.1662449982.1306869575" name="stm32f411xe.h" rcbsApplicability="disable" resourcePath="Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f411xe.h" toolsToInvoke=""/>

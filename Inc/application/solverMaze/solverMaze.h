@@ -32,7 +32,7 @@
 #define NO_WALL 2
 
 #define SPEED_ROTATION		300
-#define SPEED_TRANSLATION	50
+#define SPEED_TRANSLATION	400
 
 #include <stdlib.h>
 

@@ -45,7 +45,7 @@
 #define GYRO_T_COEFF_B			(-GYRO_VRATIO/(2.00*GYRO_T_OUT_SENSITIVITY)+25.00)
 
 #define GYRO_BETA				1.2400995740599703 //FORCE COEFF_B
-#define GYRO_GAIN_COMPENSATION	0.98
+#define GYRO_GAIN_COMPENSATION	0.95
 
 /**************************************************************************************/
 /***************                 Temperature STM32                 ********************/
