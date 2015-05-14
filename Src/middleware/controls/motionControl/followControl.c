@@ -58,7 +58,7 @@ arm_pid_instance_f32 telemeters_pid_instance;
 
 int followControlInit(void)
 {
-	telemeters_pid_instance.Kp = 20;
+	telemeters_pid_instance.Kp = 25;
 	telemeters_pid_instance.Ki = 0;
 	telemeters_pid_instance.Kd = 500;
 
@@ -99,18 +99,18 @@ int followControlLoop(void)
 		walls wall_saw;
 		wall_saw = getCellState();
 		getTelemetersDistance(&distances);
-		if (wall_saw.left == WALL_PRESENCE && wall_saw.right == WALL_PRESENCE)
-		{
+//		if (wall_saw.left == WALL_PRESENCE && wall_saw.right == WALL_PRESENCE)
+//		{
 			bothWallFollow(&distances);
-		}
-		else if (wall_saw.left == WALL_PRESENCE)
-		{
-			leftWallFollow(&distances);
-		}
-		else if (wall_saw.right == WALL_PRESENCE)
-		{
-			rightWallFollow(&distances);
-		}
+//		}
+//		else if (wall_saw.left == WALL_PRESENCE)
+//		{
+//			leftWallFollow(&distances);
+//		}
+//		else if (wall_saw.right == WALL_PRESENCE)
+//		{
+//			rightWallFollow(&distances);
+//		}
 //	follow_control.follow_error /= 2.00;
 	}
 	else if (follow_control.follow_type == FOLLOW_LINE)
@@ -125,9 +125,9 @@ int followControlLoop(void)
 
 int bothWallFollow(telemetersDistancesTypeDef *distances)
 {
-	if ((distances->distance_diag_left < MAX_DIST_FOR_FOLLOW && distances->distance_diag_right < MAX_DIST_FOR_FOLLOW) &&
-			(distances->distance_diag_left > MIN_DIST_FOR_FOLLOW && distances->distance_diag_right > MIN_DIST_FOR_FOLLOW) &&
-			((distances->distance_diag_left + distances->distance_diag_right) < BOTH_WALL_DIST))
+//	if ((distances->distance_diag_left < MAX_DIST_FOR_FOLLOW && distances->distance_diag_right < MAX_DIST_FOR_FOLLOW) &&
+//			(distances->distance_diag_left > MIN_DIST_FOR_FOLLOW && distances->distance_diag_right > MIN_DIST_FOR_FOLLOW) &&
+	if 	(((distances->distance_diag_left + distances->distance_diag_right) < BOTH_WALL_DIST))
 	{
 		follow_control.follow_error = distances->distance_diag_right - distances->distance_diag_left;
 		if (fabs(follow_control.follow_error) < SUCCES_GAP_DIST)

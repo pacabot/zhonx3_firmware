@@ -36,9 +36,16 @@
 #include "stm32f4xx.h"
 #include "stm32f4xx_it.h"
 /* USER CODE BEGIN 0 */
+
+#include "config/basetypes.h"
+
 #include "peripherals/lineSensors/lineSensors.h"
 #include "peripherals/multimeter/multimeter.h"
 #include "peripherals/telemeters/telemeters.h"
+#include "middleware/ring_buffer/ring_buffer.h"
+#include "middleware/cmdline/cmdline_parser.h"
+
+char  serial_buffer[100];
 /* USER CODE END 0 */
 /* External variables --------------------------------------------------------*/
 
@@ -154,10 +161,44 @@ void TIM2_IRQHandler(void)
 void USART3_IRQHandler(void)
 {
   /* USER CODE BEGIN USART3_IRQn 0 */
+  uint32_t  uart_status_flag;
+  uint32_t  uart_it_flag;
+  static char *pBuffer = serial_buffer;
 
+#if 0
   /* USER CODE END USART3_IRQn 0 */
   HAL_UART_IRQHandler(&huart3);
   /* USER CODE BEGIN USART3_IRQn 1 */
+#endif
+
+  // Get UART flags
+  uart_status_flag = __HAL_UART_GET_FLAG(&huart3, UART_FLAG_RXNE);
+  uart_it_flag = __HAL_UART_GET_IT_SOURCE(&huart3, UART_IT_RXNE);
+
+  if ((uart_status_flag != RESET) && (uart_it_flag != RESET))
+  {
+      // Clear interrupt flag
+      __HAL_UART_CLEAR_FLAG(&huart3, UART_FLAG_RXNE);
+
+      // Get the character received
+      *pBuffer = (uint16_t)(huart3.Instance->DR & (uint16_t)0x01FF);
+
+      if (*pBuffer == '\r')
+      {
+          if ((pBuffer - serial_buffer) > 1)
+          {
+              // 'ENTER' character received
+              cmdline_ctxt.cmd_len = (pBuffer - serial_buffer);
+              cmdline_ctxt.cmd_received = TRUE;
+          }
+          pBuffer = serial_buffer;
+          return;
+      }
+      if (*pBuffer != '\n')
+      {
+          pBuffer++;
+      }
+  }
 
   /* USER CODE END USART3_IRQn 1 */
 }

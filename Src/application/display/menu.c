@@ -26,6 +26,7 @@
 
 /* Middleware declarations */
 #include "middleware/settings/settings.h"
+#include "middleware/cmdline/cmdline_parser.h"
 
 /* Declarations for this module */
 #include "application/display/menu.h"
@@ -169,98 +170,110 @@ const menuItem mainMenu =
 
 int menu(const menuItem Menu)
 {
-	signed char line_screen=1;
-	signed char line_menu=0;
-	displayMenu(Menu,line_menu);
-	ssd1306InvertArea(0, MARGIN, HIGHLIGHT_LENGHT, HIGHLIGHT_HEIGHT);
-	ssd1306Refresh();
-	while (true)
-	{
-		int joystick = expanderJoyFiltered();
-		// Exit Button JOYSTICK_LEFT
-		switch (joystick)
-		{
-		case JOY_LEFT:
-			return SUCCESS;
-			break;
-			// Joystick down
-		case JOY_DOWN:
-			//beeper
-			if(Menu.line[line_menu+1].name!=null)
-			{
-				line_menu++;
-				line_screen++;
-				if(line_screen>MAX_LINE_SCREEN)
-				{
-					line_screen--;
-					displayMenu(Menu,line_menu-(line_screen-1));
-					ssd1306InvertArea(0, line_screen*MARGIN, HIGHLIGHT_LENGHT, HIGHLIGHT_HEIGHT);
-					ssd1306Refresh();
-				}
-				else
-				{
-					menuHighlightedMove((line_screen-1)*ROW_HEIGHT+1, (line_screen)*ROW_HEIGHT);
-				}
-			}
-			break;
-		case JOY_UP :
-			//beeper
-			if(line_screen==1)
-			{
-				if(line_menu>0)
-				{
-					line_menu--;
-					displayMenu(Menu,line_menu);
-					ssd1306InvertArea(0, MARGIN, HIGHLIGHT_LENGHT, HIGHLIGHT_HEIGHT);
-					ssd1306Refresh();
-				}
-			}
-			else
-			{
-				line_menu--;
-				line_screen--;
-				menuHighlightedMove((line_screen+1)*ROW_HEIGHT-1, (line_screen)*ROW_HEIGHT);
-			}
-			break;
-		case JOY_RIGHT :// Validate button joystick right
-			//hal_beeper_beep(app_context.beeper, 4000, 10);
-			switch(Menu.line[line_menu].type)
-			{
-			case 'b':
-				modifyBoolParam(Menu.line[line_menu].name,(unsigned char*) Menu.line[line_menu].param);
-				break;
-			case 'i':
-				modifyLongParam(Menu.line[line_menu].name,(long*)(int*)Menu.line[line_menu].param);
-				break;
-			case 'l':
-				modifyLongParam(Menu.line[line_menu].name,(long*)Menu.line[line_menu].param);
-				break;
-			case 'm':
-				menu(*(const menuItem*)Menu.line[line_menu].param);
-				break;
-			case 'f':
-				if (Menu.line[line_menu].param!=null)
-				{
-					ssd1306ClearScreen();
-					ssd1306Refresh();
-					Menu.line[line_menu].param();
-				}
-				break;
-			case 'g':
-				graphMotorSettings((float*)Menu.line[line_menu-3].param,(float*)Menu.line[line_menu-2].param,(float*)Menu.line[line_menu-1].param);
-				break;
-			default:
-				break;
-			}
-			displayMenu(Menu,line_menu-(line_screen-1));
-			ssd1306InvertArea(0,MARGIN*line_screen,HIGHLIGHT_LENGHT,HIGHLIGHT_HEIGHT);
-			ssd1306Refresh();
-			break;
-			default:
-				break;
-		}
-	}
-	return -1;
+    signed char line_screen = 1;
+    signed char line_menu = 0;
+    displayMenu(Menu, line_menu);
+    ssd1306InvertArea(0, MARGIN, HIGHLIGHT_LENGHT, HIGHLIGHT_HEIGHT);
+    ssd1306Refresh();
+    while (true)
+    {
+        int joystick = expanderJoyFiltered();
+        // Exit Button JOYSTICK_LEFT
+        switch (joystick)
+        {
+            case JOY_LEFT:
+                return SUCCESS;
+                break;
+                // Joystick down
+            case JOY_DOWN:
+                //beeper
+                if (Menu.line[line_menu + 1].name != null)
+                {
+                    line_menu++;
+                    line_screen++;
+                    if (line_screen > MAX_LINE_SCREEN)
+                    {
+                        line_screen--;
+                        displayMenu(Menu, line_menu - (line_screen - 1));
+                        ssd1306InvertArea(0, line_screen * MARGIN,
+                                HIGHLIGHT_LENGHT, HIGHLIGHT_HEIGHT);
+                        ssd1306Refresh();
+                    }
+                    else
+                    {
+                        menuHighlightedMove((line_screen - 1) * ROW_HEIGHT + 1,
+                                (line_screen) * ROW_HEIGHT);
+                    }
+                }
+                break;
+            case JOY_UP:
+                //beeper
+                if (line_screen == 1)
+                {
+                    if (line_menu > 0)
+                    {
+                        line_menu--;
+                        displayMenu(Menu, line_menu);
+                        ssd1306InvertArea(0, MARGIN, HIGHLIGHT_LENGHT,
+                                HIGHLIGHT_HEIGHT);
+                        ssd1306Refresh();
+                    }
+                }
+                else
+                {
+                    line_menu--;
+                    line_screen--;
+                    menuHighlightedMove((line_screen + 1) * ROW_HEIGHT - 1,
+                            (line_screen) * ROW_HEIGHT);
+                }
+                break;
+            case JOY_RIGHT: // Validate button joystick right
+                //hal_beeper_beep(app_context.beeper, 4000, 10);
+                switch (Menu.line[line_menu].type)
+                {
+                    case 'b':
+                        modifyBoolParam(Menu.line[line_menu].name,
+                                (unsigned char*) Menu.line[line_menu].param);
+                        break;
+                    case 'i':
+                        modifyLongParam(Menu.line[line_menu].name,
+                                (long*) (int*) Menu.line[line_menu].param);
+                        break;
+                    case 'l':
+                        modifyLongParam(Menu.line[line_menu].name,
+                                (long*) Menu.line[line_menu].param);
+                        break;
+                    case 'm':
+                        menu(*(const menuItem*) Menu.line[line_menu].param);
+                        break;
+                    case 'f':
+                        if (Menu.line[line_menu].param != null)
+                        {
+                            ssd1306ClearScreen();
+                            ssd1306Refresh();
+                            Menu.line[line_menu].param();
+                        }
+                        break;
+                    case 'g':
+                        graphMotorSettings(
+                                (float*) Menu.line[line_menu - 3].param,
+                                (float*) Menu.line[line_menu - 2].param,
+                                (float*) Menu.line[line_menu - 1].param);
+                        break;
+                    default:
+                        break;
+                }
+                displayMenu(Menu, line_menu - (line_screen - 1));
+                ssd1306InvertArea(0, MARGIN * line_screen, HIGHLIGHT_LENGHT,
+                        HIGHLIGHT_HEIGHT);
+                ssd1306Refresh();
+                break;
+            default:
+                break;
+        }
+        cmdline_parse();
+    }
+    return -1;
 }
 
 void menuHighlightedMove(unsigned char y, unsigned char max_y)
