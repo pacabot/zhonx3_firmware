@@ -110,13 +110,20 @@ void lineFollower(void)
 	lineSensorsInit();
 	lineSensorsStart();
 
+	if (max_Floor.left-min_Floor.left< 100.0)
+	{
+		tone(a, 3000);
+		return;
+	}
+
+	tone(c, 100);
 	coef_Floor.left=1000.0/(max_Floor.left-min_Floor.left);     //  1000/(max_capteur-min_capteur)
 	coef_Floor.front=1000.0/(max_Floor.front-min_Floor.front);
 	coef_Floor.right=1000.0/(max_Floor.right-min_Floor.right);
 	coef_Floor.leftExt=1000.0/(max_Floor.leftExt-min_Floor.leftExt);
 	coef_Floor.rightExt=1000.0/(max_Floor.rightExt-min_Floor.rightExt);
 
-	HAL_Delay(100);
+
 
 	ssd1306ClearScreen();
 	ssd1306PrintInt(10, 5,  "LEFT_EXT  =  ", (uint16_t) min_Floor.leftExt, &Font_5x8);
@@ -125,7 +132,8 @@ void lineFollower(void)
 	ssd1306PrintInt(10, 35, "RIGHT     =  ", (uint16_t) min_Floor.right, &Font_5x8);
 	ssd1306PrintInt(10, 45, "RIGHT_EXT =  ", (uint16_t) min_Floor.rightExt, &Font_5x8);
 	ssd1306Refresh();
-	HAL_Delay(1000);
+	HAL_Delay(900);
+	tone(c, 100);
 
 	ssd1306ClearScreen();
 	ssd1306PrintInt(10, 5,  "LEFT_EXT  =  ", (uint16_t) max_Floor.leftExt, &Font_5x8);
@@ -134,9 +142,11 @@ void lineFollower(void)
 	ssd1306PrintInt(10, 35, "RIGHT     =  ", (uint16_t) max_Floor.right, &Font_5x8);
 	ssd1306PrintInt(10, 45, "RIGHT_EXT =  ", (uint16_t) max_Floor.rightExt, &Font_5x8);
 	ssd1306Refresh();
-	HAL_Delay(2000);
+	HAL_Delay(900);
+	tone(c, 100);
 
-
+	HAL_Delay(800);
+	tone(a, 200);
 	follow_control.follow_type = FOLLOW_LINE;
 
 	line_follower.active_state = TRUE;
