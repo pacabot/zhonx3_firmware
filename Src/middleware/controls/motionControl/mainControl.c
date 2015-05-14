@@ -226,6 +226,44 @@ int rotate90WithCal(enum rotation_type_enum rotation_type, float max_speed, floa
 	return POSITION_CONTROL_E_SUCCESS;
 }
 
+int moveOneCell(float max_speed, float end_speed)
+{
+	move(0, CELL_LENGTH, max_speed, end_speed);
+	while(isEndMove() != TRUE);
+	return POSITION_CONTROL_E_SUCCESS;
+}
+
+int moveHalfCell(float max_speed, float end_speed)
+{
+	move(0, CELL_LENGTH/2, max_speed, end_speed);
+	while(isEndMove() != TRUE);
+	return POSITION_CONTROL_E_SUCCESS;
+}
+
+int mouveRotateCW90(float max_speed, float end_speed)
+{
+	int staight_dist = 5;
+	move(0, staight_dist, max_speed, 200);
+	while(isEndMove() != TRUE);
+	move(90, 89 - (staight_dist + 3), 300, 200);
+	while(isEndMove() != TRUE);
+	move(0, staight_dist, max_speed, end_speed);
+	while(isEndMove() != TRUE);
+	return POSITION_CONTROL_E_SUCCESS;
+}
+
+int mouveRotateCCW90(float max_speed, float end_speed)
+{
+	int staight_dist = 5;
+	move(0, staight_dist, max_speed, 200);
+	while(isEndMove() != TRUE);
+	move(-90, (CELL_LENGTH/2) - (staight_dist + 2), 300, 200);
+	while(isEndMove() != TRUE);
+	move(0, staight_dist, max_speed, end_speed);
+	while(isEndMove() != TRUE);
+	return POSITION_CONTROL_E_SUCCESS;
+}
+
 void mainControlDisplayTest(void)
 {
 	while(expanderJoyFiltered()!=JOY_LEFT)
@@ -273,33 +311,53 @@ void followWallTest()
 
 	follow_control.follow_type = FOLLOW_WALL;
 
-	double i = 1;
-	move(0, (CELL_LENGTH/2)*i, 200, 100);
+	moveHalfCell(600, 200);
 	while(isEndMove() != TRUE);
-	move(180, CELL_LENGTH/2, 200, 100);
-	while(isEndMove() != TRUE);
-	move(0, CELL_LENGTH, 500, 200);
-	while(isEndMove() != TRUE);
-	move(-180, (CELL_LENGTH/2)*i, 200, 100);
-	while(isEndMove() != TRUE);
-	move(0, CELL_LENGTH*4, 1000, 100);
-	while(isEndMove() != TRUE);
-	move(90, (CELL_LENGTH/2)*i, 500, 200);
-	while(isEndMove() != TRUE);
-	move(-90, (CELL_LENGTH/2)*i, 500, 200);
-	while(isEndMove() != TRUE);
-	move(90, (CELL_LENGTH/2)*i, 500, 200);
-	while(isEndMove() != TRUE);
-	move(-90, (CELL_LENGTH/2)*i, 500, 200);
-	while(isEndMove() != TRUE);
-	move(90, (CELL_LENGTH/2)*i, 500, 200);
-	while(isEndMove() != TRUE);
-	move(-90, (CELL_LENGTH/2)*i, 500, 200);
-	while(isEndMove() != TRUE);
-	move(90, (CELL_LENGTH/2)*i, 500, 200);
-	while(isEndMove() != TRUE);
-	move(0, CELL_LENGTH, 500, 0);
-	while(isEndMove() != TRUE);
+	mouveRotateCW90(600, 200);
+	mouveRotateCW90(600, 200);
+	moveOneCell(600, 200);
+	mouveRotateCCW90(600, 200);
+	mouveRotateCCW90(600, 200);
+	moveOneCell(1000, 1000);
+	moveOneCell(1000, 1000);
+	moveOneCell(1000, 1000);
+	moveOneCell(1000, 200);
+	mouveRotateCW90(600, 200);
+	mouveRotateCCW90(600, 200);
+	mouveRotateCW90(600, 200);
+	mouveRotateCCW90(600, 200);
+	mouveRotateCW90(600, 200);
+	mouveRotateCCW90(600, 200);
+	mouveRotateCW90(600, 200);
+	moveOneCell(600, 200);
+
+	//	double i = 1;
+	//	move(0, (CELL_LENGTH/2)*i, 500, 200);
+	//	while(isEndMove() != TRUE);
+	//	move(180, CELL_LENGTH/2, 500, 200);
+	//	while(isEndMove() != TRUE);
+	//	move(0, CELL_LENGTH, 500, 200);
+	//	while(isEndMove() != TRUE);
+	//	move(-180, (CELL_LENGTH/2)*i, 500, 200);
+	//	while(isEndMove() != TRUE);
+	//	move(0, CELL_LENGTH*4, 1000, 200);
+	//	while(isEndMove() != TRUE);
+	//	move(90, (CELL_LENGTH/2)*i, 500, 200);
+	//	while(isEndMove() != TRUE);
+	//	move(-90, (CELL_LENGTH/2)*i, 500, 200);
+	//	while(isEndMove() != TRUE);
+	//	move(90, (CELL_LENGTH/2)*i, 500, 200);
+	//	while(isEndMove() != TRUE);
+	//	move(-90, (CELL_LENGTH/2)*i, 500, 200);
+	//	while(isEndMove() != TRUE);
+	//	move(90, (CELL_LENGTH/2)*i, 500, 200);
+	//	while(isEndMove() != TRUE);
+	//	move(-90, (CELL_LENGTH/2)*i, 500, 200);
+	//	while(isEndMove() != TRUE);
+	//	move(90, (CELL_LENGTH/2)*i, 500, 200);
+	//	while(isEndMove() != TRUE);
+	//	move(0, CELL_LENGTH, 500, 0);
+	//	while(isEndMove() != TRUE);
 
 	telemetersStop();
 	mainControlDisplayTest();
@@ -319,7 +377,7 @@ void rotateTest()
 	follow_control.follow_type = NOFOLLOW;
 	position_control.position_type = GYRO;
 
-	move(90, 0, 200, 0);
+	move(90, 90, 300, 0);
 	//	while(isEndMove() != TRUE);
 	//	move(0, 180, 100, 0);
 	//	while(isEndMove() != TRUE);

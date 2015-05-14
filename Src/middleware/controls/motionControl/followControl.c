@@ -58,9 +58,9 @@ arm_pid_instance_f32 telemeters_pid_instance;
 
 int followControlInit(void)
 {
-	telemeters_pid_instance.Kp = 25;
+	telemeters_pid_instance.Kp = 20;
 	telemeters_pid_instance.Ki = 0;
-	telemeters_pid_instance.Kd = 400;
+	telemeters_pid_instance.Kd = 500;
 
 	follow_control.follow_pid.instance = &telemeters_pid_instance;
 
