@@ -133,6 +133,9 @@ void lineSensorsInit(void)
 void lineSensorsStart(void)
 {
 	lineSensors.active_state = TRUE;
+	lineSensors.right.average_value = 0;
+	lineSensors.left.average_value = 0;
+	lineSensors.front.average_value = 0;
 	HAL_ADCEx_InjectedStart_IT(&hadc2);
 	HAL_ADCEx_InjectedStart_IT(&hadc3);
 }
@@ -180,6 +183,8 @@ void lineSensors_ADC_IT(ADC_HandleTypeDef *hadc)
 	{
 		lineSensors.right.adc_value 		= HAL_ADCEx_InjectedGetValue(&hadc2, ADC_INJECTED_RANK_1);
 		lineSensors.left.adc_value 			= HAL_ADCEx_InjectedGetValue(&hadc2, ADC_INJECTED_RANK_2);
+		lineSensors.right.average_value = (lineSensors.right.average_value + lineSensors.right.adc_value)/2;
+		lineSensors.left.average_value = (lineSensors.left.average_value + lineSensors.left.adc_value)/2;
 		lineSensors.active_ADC2	= FALSE;
 	}
 	else
@@ -187,6 +192,7 @@ void lineSensors_ADC_IT(ADC_HandleTypeDef *hadc)
 		lineSensors.left_ext.adc_value  	= HAL_ADCEx_InjectedGetValue(&hadc3, ADC_INJECTED_RANK_1);
 		lineSensors.front.adc_value 		= HAL_ADCEx_InjectedGetValue(&hadc3, ADC_INJECTED_RANK_2);
 		lineSensors.right_ext.adc_value 	= HAL_ADCEx_InjectedGetValue(&hadc3, ADC_INJECTED_RANK_3);
+		lineSensors.front.average_value     = (lineSensors.front.average_value + lineSensors.front.adc_value)/2;
 		lineSensors.active_ADC3	= FALSE;
 	}
 	if (lineSensors.active_ADC2 == FALSE && lineSensors.active_ADC3 == FALSE )
