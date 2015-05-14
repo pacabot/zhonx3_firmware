@@ -28,7 +28,7 @@
 #define GYRO_VRATIO				3300.00	//Gyro is running at 3300mV
 #define GYRO_ROUT				90.90  	//90.9Kohm Rout
 #define GYRO_SENSITIVITY		6.00   	//Our example gyro is 6mV/deg/sec @5V
-#define ROTATION_THRESHOLD		1.00   	//Minimum deg/sec to keep track of - helps with gyro drifting
+#define ROTATION_THRESHOLD		3.00   	//Minimum deg/sec to keep track of - helps with gyro drifting
 
 #define GYRO_ZERO_VOLTAGE		(GYRO_VRATIO/2.00) 	//Gyro is zeroed at Vrate/2 (mV)
 #ifdef GYRO_ROUT
@@ -43,6 +43,9 @@
 #define GYRO_T_OUT_SENSITIVITY	(GYRO_T_SENSITIVITY*(GYRO_VRATIO/5000.00)) // ~3,564 mV/°C at 25°C (3.3v)
 #define GYRO_T_COEFF_A			(GYRO_VRATIO/(4095.00*GYRO_T_OUT_SENSITIVITY))
 #define GYRO_T_COEFF_B			(-GYRO_VRATIO/(2.00*GYRO_T_OUT_SENSITIVITY)+25.00)
+
+#define GYRO_BETA				1.2400995740599703 //FORCE COEFF_B
+#define GYRO_GAIN_COMPENSATION	0.98
 
 /**************************************************************************************/
 /***************                 Temperature STM32                 ********************/
@@ -114,8 +117,8 @@
 /***************                 Physical Constants                ********************/
 /**************************************************************************************/
 #define MAX_SPEED				4000.0	//mm/s
-#define MAX_ACCEL				8000.0	//mm/s²
-#define MAX_DECEL				8000.0	//mm/s²
+#define MAX_ACCEL				4000.0	//mm/s²
+//#define MAX_DECEL				8000.0	//mm/s²
 
 #define MAX_TURN_SPEED			500.0	//mm/s
 #define MAX_TURN_ACCEL			8000.0	//mm/s²

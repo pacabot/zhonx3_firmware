@@ -19,6 +19,11 @@
 #include "middleware/controls/motionControl/speedControl.h"
 
 /* Types definitions */
+
+#define GYRO_ENCODER_RATIO 	((1.00/180.00) * PI * ROTATION_DIAMETER)
+
+enum position_type_enum {GYRO, ENCODERS};
+
 typedef struct
 {
 	double distance_consign;			//total distance
@@ -38,7 +43,7 @@ typedef struct
 	double nb_loop_decel;
 	double nb_loop_maint;
 	double maintain_dist;
-	int   sign;
+	int    sign;
 }position_params_struct;
 
 extern position_params_struct position_params;
@@ -52,7 +57,8 @@ typedef struct
 	double current_diff_dist;
 	double current_diff_dist_consign;	//differential distance (mm) since the control start
 	double old_distance;				 	//effective distance at the previous call
-	char  end_control;
+	char   end_control;
+	enum   position_type_enum position_type;
 
     pid_control_struct position_pid;
 }position_control_struct;

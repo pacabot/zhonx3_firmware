@@ -27,6 +27,7 @@
 #include "peripherals/expander/pcf8574.h"
 #include "peripherals/telemeters/telemeters.h"
 #include "peripherals/encoders/ie512.h"
+#include "peripherals/gyroscope/adxrs620.h"
 
 /* Middleware declarations */
 #include "middleware/controls/pidController/pidController.h"
@@ -53,7 +54,7 @@ arm_pid_instance_f32 encoder_or_gyro_pid_instance;
 
 int positionControlInit(void)
 {
-	encoder_or_gyro_pid_instance.Kp = 300;
+	encoder_or_gyro_pid_instance.Kp = 100;
 	encoder_or_gyro_pid_instance.Ki = 0;
 	encoder_or_gyro_pid_instance.Kd = 800;
 
@@ -66,6 +67,7 @@ int positionControlInit(void)
 	position_control.position_pid.instance = &encoder_or_gyro_pid_instance;
 	position_control.end_control = 0;
 
+	position_control.position_type = ENCODERS;
 	position_params.sign = 1;
 
 	pidControllerInit(position_control.position_pid.instance);
@@ -75,10 +77,24 @@ int positionControlInit(void)
 
 int positionControlLoop(void)
 {
-	if (position_params.sign > 0)
-		position_control.current_diff_dist = encoderGetDistance(&left_encoder) - encoderGetDistance(&right_encoder);
+	if (position_control.position_type == ENCODERS)
+	{
+		if (position_params.sign > 0)
+				position_control.current_diff_dist = encoderGetDistance(&left_encoder) - encoderGetDistance(&right_encoder);
+			else
+				position_control.current_diff_dist = encoderGetDistance(&right_encoder) - encoderGetDistance(&left_encoder);
+	}
+	else if (position_control.position_type == GYRO)
+	{
+		if (position_params.sign > 0)
+			position_control.current_diff_dist = (2.00 * PI * ROTATION_DIAMETER * ((GyroGetAngle() * GYRO_GAIN_COMPENSATION) / 360.00));// (GYRO_ENCODER_RATIO * GyroGetAngle());
+		else
+			position_control.current_diff_dist = (-2.00 * PI * ROTATION_DIAMETER * ((GyroGetAngle() * GYRO_GAIN_COMPENSATION) / 360.00));
+	}
 	else
-		position_control.current_diff_dist = encoderGetDistance(&right_encoder) - encoderGetDistance(&left_encoder);
+	{
+		position_control.position_type = ENCODERS;
+	}
 
 	if (position_params.nb_loop_accel > 0)
 	{

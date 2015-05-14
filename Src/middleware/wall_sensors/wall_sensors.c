@@ -48,8 +48,9 @@ int wallSensorsCalibration (void)
 	ssd1306Printf(0,0,&Font_5x8,"Calibrating front sensors");
 	ssd1306Refresh();
 
-	telemetersInit();
 	mainControlInit();
+	telemetersInit();
+	telemetersStart();
 	control_params.speed_state = TRUE;
 	control_params.follow_state = FALSE;
 	control_params.position_state = TRUE;
@@ -70,96 +71,96 @@ int wallSensorsCalibration (void)
 	int distance;
 	length_front_left=0;
 	length_front_right=0;
-	do
-	{
-		while (length_front_right>0 || length_front_left>0)
-		{
-			if(length_front_left>=0 && \
-					((position_zhonx-value_to_retest_front_left[length_front_left]) < (position_zhonx-value_to_retest_front_right[length_front_right])\
-					|| length_front_right<=0))
-			{
-				distance=(position_zhonx-value_to_retest_front_left[length_front_left])*NUMBER_OF_MILLIMETER_BY_LOOP;
-				bluetoothPrintf("position Zhonx=%d,\tvaleur gauche a retester=%d\t diff=%d\n", position_zhonx, value_to_retest_front_left[length_front_left], distance);
-				if (distance!=0)
-				{
-					move(0,(float)distance,10,0);
-					while(speed_control.end_control != 1);
-					position_zhonx=value_to_retest_front_left[length_front_left];
-				}
-
-				telemeter_left_front_voltage[value_to_retest_front_left[length_front_left]]=telemeters.left_front.average_value;
-
-				length_front_left--;
-			}
-			else if (length_front_right>=0)
-			{
-				distance=(position_zhonx-value_to_retest_front_right[length_front_right])*NUMBER_OF_MILLIMETER_BY_LOOP;
-				bluetoothPrintf("position Zhonx=%d,\tvaleur droite a retester=%d\t diff=%d\n", position_zhonx, value_to_retest_front_right[length_front_right],distance);
-				if(distance!=0)
-				{
-					move(0,distance,10,0);
-					while(speed_control.end_control != 1);
-					position_zhonx=value_to_retest_front_right[length_front_right];
-				}
-				telemeter_right_front_voltage[value_to_retest_front_right[length_front_right]]=telemeters.right_front.average_value;
-
-				length_front_right--;
-			}
-		}
-		bluetoothPrintf("\n\n\nfilterd measures :\n");
-		for (int i = 0; i < NUMBER_OF_CELL; ++i)
-		{
-			bluetoothPrintf("%2d|%10d|%d\n",i,telemeter_left_front_voltage[i],telemeter_right_front_voltage[i]);
-		}
-		length_front_left=0;
-		length_front_right=0;
-		for(int i = 1; i<(NUMBER_OF_CELL-1); i++)
-		{
-			if (telemeter_left_front_voltage[i] <= telemeter_left_front_voltage[i+1])
-			{
-				value_to_retest_front_left[length_front_left] = i;
-				length_front_left ++;
-				if( i==(NUMBER_OF_CELL-2) )
-				{
-					value_to_retest_front_left[length_front_left] = i+1;
-					length_front_left ++;
-				}
-			}
-			if (telemeter_right_front_voltage[i] <= telemeter_right_front_voltage[i+1])
-			{
-				value_to_retest_front_right[length_front_right] = i;
-				length_front_right ++;
-				if( i==(NUMBER_OF_CELL-2) )
-				{
-					value_to_retest_front_right[length_front_right] = i+1;
-					length_front_right ++;
-				}
-			}
-			if (telemeter_left_front_voltage[i-1] <= telemeter_left_front_voltage[i])
-			{
-				if ( i==1 )
-				{
-					value_to_retest_front_left[length_front_left] = i-1;
-					length_front_left ++;
-				}
-				value_to_retest_front_left[length_front_left] = i;
-				length_front_left ++;
-			}
-			if (telemeter_right_front_voltage[i-1] <= telemeter_right_front_voltage[i])
-			{
-				if( i==1 )
-				{
-					value_to_retest_front_right[length_front_right] = i-1;
-					length_front_right ++;
-				}
-				value_to_retest_front_right[length_front_right] = i;
-				length_front_right ++;
-			}
-		}
-		length_front_left --;
-		length_front_right --;
-		bluetoothPrintf("nombre de valeur a retester : a gauche : %d, a d)roite %d\n",length_front_left,length_front_right);
-	}while (length_front_right>0 || length_front_left>0);
+//	do
+//	{
+//		while (length_front_right>0 || length_front_left>0)
+//		{
+//			if(length_front_left>=0 && \
+//					((position_zhonx-value_to_retest_front_left[length_front_left]) < (position_zhonx-value_to_retest_front_right[length_front_right])\
+//					|| length_front_right<=0))
+//			{
+//				distance=(position_zhonx-value_to_retest_front_left[length_front_left])*NUMBER_OF_MILLIMETER_BY_LOOP;
+//				bluetoothPrintf("position Zhonx=%d,\tvaleur gauche a retester=%d\t diff=%d\n", position_zhonx, value_to_retest_front_left[length_front_left], distance);
+//				if (distance!=0)
+//				{
+//					move(0,(float)distance,10,0);
+//					while(speed_control.end_control != 1);
+//					position_zhonx=value_to_retest_front_left[length_front_left];
+//				}
+//
+//				telemeter_left_front_voltage[value_to_retest_front_left[length_front_left]]=telemeters.left_front.average_value;
+//
+//				length_front_left--;
+//			}
+//			else if (length_front_right>=0)
+//			{
+//				distance=(position_zhonx-value_to_retest_front_right[length_front_right])*NUMBER_OF_MILLIMETER_BY_LOOP;
+//				bluetoothPrintf("position Zhonx=%d,\tvaleur droite a retester=%d\t diff=%d\n", position_zhonx, value_to_retest_front_right[length_front_right],distance);
+//				if(distance!=0)
+//				{
+//					move(0,distance,10,0);
+//					while(speed_control.end_control != 1);
+//					position_zhonx=value_to_retest_front_right[length_front_right];
+//				}
+//				telemeter_right_front_voltage[value_to_retest_front_right[length_front_right]]=telemeters.right_front.average_value;
+//
+//				length_front_right--;
+//			}
+//		}
+//		bluetoothPrintf("\n\n\nfilterd measures :\n");
+//		for (int i = 0; i < NUMBER_OF_CELL; ++i)
+//		{
+//			bluetoothPrintf("%2d|%10d|%d\n",i,telemeter_left_front_voltage[i],telemeter_right_front_voltage[i]);
+//		}
+//		length_front_left=0;
+//		length_front_right=0;
+//		for(int i = 1; i<(NUMBER_OF_CELL-1); i++)
+//		{
+//			if (telemeter_left_front_voltage[i] <= telemeter_left_front_voltage[i+1])
+//			{
+//				value_to_retest_front_left[length_front_left] = i;
+//				length_front_left ++;
+//				if( i==(NUMBER_OF_CELL-2) )
+//				{
+//					value_to_retest_front_left[length_front_left] = i+1;
+//					length_front_left ++;
+//				}
+//			}
+//			if (telemeter_right_front_voltage[i] <= telemeter_right_front_voltage[i+1])
+//			{
+//				value_to_retest_front_right[length_front_right] = i;
+//				length_front_right ++;
+//				if( i==(NUMBER_OF_CELL-2) )
+//				{
+//					value_to_retest_front_right[length_front_right] = i+1;
+//					length_front_right ++;
+//				}
+//			}
+//			if (telemeter_left_front_voltage[i-1] <= telemeter_left_front_voltage[i])
+//			{
+//				if ( i==1 )
+//				{
+//					value_to_retest_front_left[length_front_left] = i-1;
+//					length_front_left ++;
+//				}
+//				value_to_retest_front_left[length_front_left] = i;
+//				length_front_left ++;
+//			}
+//			if (telemeter_right_front_voltage[i-1] <= telemeter_right_front_voltage[i])
+//			{
+//				if( i==1 )
+//				{
+//					value_to_retest_front_right[length_front_right] = i-1;
+//					length_front_right ++;
+//				}
+//				value_to_retest_front_right[length_front_right] = i;
+//				length_front_right ++;
+//			}
+//		}
+//		length_front_left --;
+//		length_front_right --;
+//		bluetoothPrintf("nombre de valeur a retester : a gauche : %d, a d)roite %d\n",length_front_left,length_front_right);
+//	}while (length_front_right>0 || length_front_left>0);
 
 	bluetoothPrintf("\n\n\nfilterd measures :\n");
 	for (int i = 0; i < NUMBER_OF_CELL; ++i)
