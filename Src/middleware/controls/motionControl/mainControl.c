@@ -260,6 +260,7 @@ int moveCell(unsigned char nb_cell, float max_speed, float end_speed)
 
 int moveHalfCell(float max_speed, float end_speed)
 {
+	while(isEndMove() != TRUE);
 	move(0, ((CELL_LENGTH / 2) - STRAIGHT_DIST), max_speed, end_speed);
 	while(isEndMove() != TRUE);
 	move(0, (2 * STRAIGHT_DIST), max_speed, end_speed);
