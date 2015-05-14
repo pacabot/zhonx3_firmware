@@ -408,7 +408,6 @@ void moveRealZhonxArc(labyrinthe *maze, positionRobot *positionZhonx, coordinate
 void move_zhonx_arc (int direction_to_go, positionRobot *positionZhonx, int numberOfCell, char end_mid_of_case, char chain)
 {
 	int speed_end;
-	int distanceToMove = numberOfCell * CELL_LENGTH;
 	int turn = (4 + direction_to_go - positionZhonx->orientation) % 4;
 	positionZhonx->orientation = direction_to_go;
 	switch (turn)
@@ -473,7 +472,7 @@ void move_zhonx_arc (int direction_to_go, positionRobot *positionZhonx, int numb
 	{
 		speed_end = 0;
 	}
-	move (0, numberOfCell * CELL_LENGTH, SPEED_TRANSLATION, speed_end);
+	moveCell (numberOfCell, SPEED_TRANSLATION, speed_end);
 	positionZhonx->midOfCell = end_mid_of_case;
 
 }
