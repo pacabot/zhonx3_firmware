@@ -231,6 +231,9 @@ int rotate90WithCal(enum rotation_type_enum rotation_type, float max_speed, floa
 
 int moveCell(unsigned char nb_cell, float max_speed, float end_speed)
 {
+	if (nb_cell == 0)
+		return POSITION_CONTROL_E_SUCCESS;
+
 	telemetersDistancesTypeDef distances;
 	float relative_dist = 0.0;
 
