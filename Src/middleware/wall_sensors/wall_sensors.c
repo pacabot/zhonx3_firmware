@@ -368,7 +368,7 @@ walls getCellState()
 	if (telemeters_distances.distance_diag_right < DISTANCE_WALL_DIAG)
 		walls_position.right = WALL_PRESENCE;
 	return walls_position;
-}
+	}
 
 void testTelemeterDistance()
 {

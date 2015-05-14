@@ -54,8 +54,8 @@ int maze(void)
 	mainControlInit ();
 	HAL_Delay(500);
 
-	control_params.speed_state = FALSE;
-	follow_control.follow_type = NOFOLLOW;//FOLLOW_WALL;
+	follow_control.follow_type = FOLLOW_WALL;//NOFOLLOW;//FOLLOW_WALL;
+	position_control.position_type = GYRO;
 
 	/*init for different micromouse competition*/
 
