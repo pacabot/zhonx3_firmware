@@ -26,9 +26,12 @@
 #define RX_RIGHT					ADC_CHANNEL_13 	//ADC2
 #define RX_RIGHT_EXT				ADC_CHANNEL_12	//ADC3
 
+#define SIZE_OF_AVEVAGE_TABLE 10
+
 /* Types definitions */
 typedef struct
 {
+	uint16_t average_value;
     uint16_t adc_value;
     uint16_t offset;
     uint16_t higher_interval;

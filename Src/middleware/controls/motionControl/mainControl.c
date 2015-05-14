@@ -231,6 +231,9 @@ int rotate90WithCal(enum rotation_type_enum rotation_type, float max_speed, floa
 
 int moveCell(unsigned char nb_cell, float max_speed, float end_speed)
 {
+	if (nb_cell == 0)
+		return POSITION_CONTROL_E_SUCCESS;
+
 	telemetersDistancesTypeDef distances;
 	float relative_dist = 0.0;
 
@@ -340,7 +343,9 @@ void followWallTest()
 	moveCell(1, 600, 200);
 	mouveRotateCCW90(600, 200);
 	mouveRotateCCW90(600, 200);
+	HAL_Delay(1000);
 	moveCell(4, 1000, 200);
+	HAL_Delay(1000);
 	mouveRotateCW90(600, 200);
 	mouveRotateCCW90(600, 200);
 	mouveRotateCW90(600, 200);
