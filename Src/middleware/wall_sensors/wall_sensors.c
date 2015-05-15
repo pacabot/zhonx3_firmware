@@ -357,7 +357,7 @@ walls getCellState()
 	walls walls_position = {NO_WALL,NO_WALL,NO_WALL,NO_WALL};
 
 	getTelemetersDistance(&telemeters_distances);
-	if ((telemeters_distances.distance_front_left + telemeters_distances.distance_front_right)/2 < DISTANCE_FIRST_WALL_FRONT)
+	if ((telemeters_distances.distance_front_left < DISTANCE_FIRST_WALL_FRONT) || (telemeters_distances.distance_front_right< DISTANCE_FIRST_WALL_FRONT))
 	{
 		walls_position.front = WALL_PRESENCE;
 	}

@@ -25,18 +25,28 @@
 /*application include */
 #include "application/solverMaze/solverMaze.h"
 
-void test()
+void test_maze()
 {
+	telemetersInit();
+	telemetersStart();
+	mainControlInit ();
+
+	control_params.follow_state = TRUE;
+	follow_control.follow_type = FOLLOW_WALL;//NOFOLLOW
+	//position_control.position_type = GYRO; unused
+	move(0, 0, 0, 0);
+	HAL_Delay(500);
 	positionRobot position_zhonx={8,8,NORTH,true};
 	coordinate *end_way=null;
 	coordinate *start_way;
 	new_dot(&end_way,8,7);
 	start_way=end_way;
 	new_dot(&end_way,8,6);
-	new_dot(&end_way,7,6);
-	new_dot(&end_way,8,6);
-	new_dot(&end_way,8,7);
-	new_dot(&end_way,8,8);
+	new_dot(&end_way,8,5);
+	new_dot(&end_way,8,4);
+	new_dot(&end_way,7,4);
+	new_dot(&end_way,8,4);
+	new_dot(&end_way,8,3);
 	labyrinthe maze;
 	maze_init(&maze);
 	moveRealZhonxArc(&maze,&position_zhonx,start_way);
@@ -53,8 +63,9 @@ int maze(void)
 	telemetersStart();
 	mainControlInit ();
 
+	control_params.follow_state = TRUE;
 	follow_control.follow_type = FOLLOW_WALL;//NOFOLLOW
-	position_control.position_type = GYRO;
+	//position_control.position_type = GYRO; unused
 	move(0, 0, 0, 0);
 	HAL_Delay(500);
 
@@ -65,8 +76,8 @@ int maze(void)
 		positionZhonx.x = MAZE_SIZE / 2;
 		positionZhonx.y = MAZE_SIZE / 2; // the robot start at the middle of the maze
 		positionZhonx.orientation = NORTH; // the robot is pointing the north
-		zhonxSettings.x_finish_maze = 0;
-		zhonxSettings.y_finish_maze = 0; // we want to go to the case how have address (0,0)
+//		zhonxSettings.x_finish_maze = 0;
+//		zhonxSettings.y_finish_maze = 0; // we want to go to the case how have address (0,0)
 	}
 	else // it's the Birmingham competition
 	{

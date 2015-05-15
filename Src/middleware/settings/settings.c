@@ -11,7 +11,7 @@ int settingsInit (void)
 {
 	zhonxSettings.calibration_enabled=false;
 	zhonxSettings.color_sensor_enabled=true;
-	zhonxSettings.x_finish_maze=7;
-	zhonxSettings.y_finish_maze=7;
+	zhonxSettings.x_finish_maze=9;
+	zhonxSettings.y_finish_maze=3;
 	return SETTING_MODULE_E_SUCCESS;
 }

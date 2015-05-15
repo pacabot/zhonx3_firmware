@@ -58,9 +58,9 @@ arm_pid_instance_f32 telemeters_pid_instance;
 
 int followControlInit(void)
 {
-	telemeters_pid_instance.Kp = 20;
+	telemeters_pid_instance.Kp = 12;
 	telemeters_pid_instance.Ki = 0;
-	telemeters_pid_instance.Kd = 500;
+	telemeters_pid_instance.Kd = 200;
 
 	follow_control.follow_pid.instance = &telemeters_pid_instance;
 
@@ -76,57 +76,100 @@ int followControlLoop(void)
 {
 	telemetersDistancesTypeDef distances;
 
-	if (follow_control.follow_type == ALIGN_FRONT)
+	//	if (follow_control.follow_type == ALIGN_FRONT)
+	//	{
+	//		getTelemetersDistance(&distances);
+	//		if ((distances.distance_front_left < MAX_DIST_FOR_ALIGN && distances.distance_front_right < MAX_DIST_FOR_ALIGN) &&
+	//				(distances.distance_front_left > MIN_DIST_FOR_ALIGN && distances.distance_front_right > MIN_DIST_FOR_ALIGN))
+	//		{
+	//			follow_control.follow_error = distances.distance_front_left - distances.distance_front_right;
+	//			if (fabs(follow_control.follow_error) < SUCCES_GAP_DIST)
+	//			{
+	//				follow_control.succes = TRUE;
+	//			}
+	//		}
+	//		else
+	//		{
+	//			follow_control.follow_error = 0;
+	//			follow_control.succes = FALSE;
+	//		}
+	//	}
+	//	if (follow_control.follow_type == FOLLOW_WALL)
+	//	{
+	walls wall_saw;
+	wall_saw = getCellState();
+	getTelemetersDistance(&distances);
+
+	if (wall_saw.front == WALL_PRESENCE)
 	{
-		getTelemetersDistance(&distances);
-		if ((distances.distance_front_left < MAX_DIST_FOR_ALIGN && distances.distance_front_right < MAX_DIST_FOR_ALIGN) &&
-				(distances.distance_front_left > MIN_DIST_FOR_ALIGN && distances.distance_front_right > MIN_DIST_FOR_ALIGN))
+		if (wall_saw.right == WALL_PRESENCE)
 		{
-			follow_control.follow_error = distances.distance_front_left - distances.distance_front_right;
-			if (fabs(follow_control.follow_error) < SUCCES_GAP_DIST)
+			if (distances.distance_diag_right > MIN_DIST_FOR_FOLLOW && distances.distance_diag_right < MAX_DIST_FOR_FOLLOW)
 			{
-				follow_control.succes = TRUE;
+				if ((distances.distance_front_left < MAX_DIST_FOR_ALIGN && distances.distance_front_right < MAX_DIST_FOR_ALIGN) &&
+						(distances.distance_front_left > MIN_DIST_FOR_ALIGN && distances.distance_front_right > MIN_DIST_FOR_ALIGN))
+				{
+					alignFront(&distances);
+				}
 			}
-		}
-		else
-		{
-			follow_control.follow_error = 0;
-			follow_control.succes = FALSE;
-		}
-	}
-	else if (follow_control.follow_type == FOLLOW_WALL)
-	{
-		walls wall_saw;
-		wall_saw = getCellState();
-		getTelemetersDistance(&distances);
-		if (wall_saw.left == WALL_PRESENCE && wall_saw.right == WALL_PRESENCE)
-		{
-			bothWallFollow(&distances);
 		}
 		else if (wall_saw.left == WALL_PRESENCE)
 		{
-			leftWallFollow(&distances);
+			if (distances.distance_diag_left > MIN_DIST_FOR_FOLLOW && distances.distance_diag_left < MAX_DIST_FOR_FOLLOW)
+			{
+				if ((distances.distance_front_left < MAX_DIST_FOR_ALIGN && distances.distance_front_right < MAX_DIST_FOR_ALIGN) &&
+						(distances.distance_front_left > MIN_DIST_FOR_ALIGN && distances.distance_front_right > MIN_DIST_FOR_ALIGN))
+				{
+					alignFront(&distances);
+				}
+			}
 		}
-		else if (wall_saw.right == WALL_PRESENCE)
-		{
-			rightWallFollow(&distances);
-		}
-//	follow_control.follow_error /= 2.00;
 	}
-	else if (follow_control.follow_type == FOLLOW_LINE)
+//	else if (wall_saw.left == WALL_PRESENCE && wall_saw.right == WALL_PRESENCE)
+//	{
+//		bothWallFollow(&distances);
+//	}
+	else if (wall_saw.left == WALL_PRESENCE)
 	{
-		follow_control.follow_error = line_follower.position;
+		leftWallFollow(&distances);
 	}
+	else if (wall_saw.right == WALL_PRESENCE)
+	{
+		rightWallFollow(&distances);
+	}
+	else
+	{
+		follow_control.follow_error = 0;
+	}
+	//	follow_control.follow_error /= 2.00;
+	//	}
+	//	else if (follow_control.follow_type == FOLLOW_LINE)
+	//	{
+	//		follow_control.follow_error = line_follower.position;
+	//	}
 
 	follow_control.follow_command = (pidController(follow_control.follow_pid.instance, follow_control.follow_error));
 
 	return SPEED_CONTROL_E_SUCCESS;
 }
 
+int alignFront(telemetersDistancesTypeDef *distances)
+{
+	//	if ((distances->distance_front_left < MAX_DIST_FOR_ALIGN && distances->distance_front_right < MAX_DIST_FOR_ALIGN) &&
+	//			(distances->distance_front_left > MIN_DIST_FOR_ALIGN && distances->distance_front_right > MIN_DIST_FOR_ALIGN))
+	//	{
+	follow_control.follow_error = distances->distance_front_left - distances->distance_front_right;
+	if (fabs(follow_control.follow_error) < SUCCES_GAP_DIST)
+	{
+		follow_control.succes = TRUE;
+	}
+	return SPEED_CONTROL_E_SUCCESS;
+}
+
 int bothWallFollow(telemetersDistancesTypeDef *distances)
 {
-//	if ((distances->distance_diag_left < MAX_DIST_FOR_FOLLOW && distances->distance_diag_right < MAX_DIST_FOR_FOLLOW) &&
-//			(distances->distance_diag_left > MIN_DIST_FOR_FOLLOW && distances->distance_diag_right > MIN_DIST_FOR_FOLLOW) &&
+	//	if ((distances->distance_diag_left < MAX_DIST_FOR_FOLLOW && distances->distance_diag_right < MAX_DIST_FOR_FOLLOW) &&
+	//			(distances->distance_diag_left > MIN_DIST_FOR_FOLLOW && distances->distance_diag_right > MIN_DIST_FOR_FOLLOW)) // &&
 	if 	(((distances->distance_diag_left + distances->distance_diag_right) < BOTH_WALL_DIST))
 	{
 		follow_control.follow_error = distances->distance_diag_right - distances->distance_diag_left;
@@ -134,11 +177,6 @@ int bothWallFollow(telemetersDistancesTypeDef *distances)
 		{
 			follow_control.succes = TRUE;
 		}
-	}
-	else
-	{
-		follow_control.follow_error = 0;
-		follow_control.succes = FALSE;
 	}
 	return SPEED_CONTROL_E_SUCCESS;
 }
@@ -153,11 +191,6 @@ int rightWallFollow(telemetersDistancesTypeDef *distances)
 			follow_control.succes = TRUE;
 		}
 	}
-	else
-	{
-		follow_control.follow_error = 0;
-		follow_control.succes = FALSE;
-	}
 	return SPEED_CONTROL_E_SUCCESS;
 }
 
@@ -170,11 +203,6 @@ int leftWallFollow(telemetersDistancesTypeDef *distances)
 		{
 			follow_control.succes = TRUE;
 		}
-	}
-	else
-	{
-		follow_control.follow_error = 0;
-		follow_control.succes = FALSE;
 	}
 	return SPEED_CONTROL_E_SUCCESS;
 }
