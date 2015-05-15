@@ -25,23 +25,6 @@
 /*application include */
 #include "application/solverMaze/solverMaze.h"
 
-void test()
-{
-	positionRobot position_zhonx={8,8,NORTH,true};
-	coordinate *end_way=null;
-	coordinate *start_way;
-	new_dot(&end_way,8,7);
-	start_way=end_way;
-	new_dot(&end_way,8,6);
-	new_dot(&end_way,7,6);
-	new_dot(&end_way,8,6);
-	new_dot(&end_way,8,7);
-	new_dot(&end_way,8,8);
-	labyrinthe maze;
-	maze_init(&maze);
-	moveRealZhonxArc(&maze,&position_zhonx,start_way);
-}
-
 int maze(void)
 {
 	char posXStart, posYStart; // it's the coordinates which Zhonx have at the start
@@ -68,13 +51,21 @@ int maze(void)
 		zhonxSettings.x_finish_maze = 0;
 		zhonxSettings.y_finish_maze = 0; // we want to go to the case how have address (0,0)
 	}
-	else // it's the Birmingham competition
+	else
 	{
-		positionZhonx.x = 0;
-		positionZhonx.y = 0; // the robot start in the corner
-		positionZhonx.orientation = EAST;
-		// the position of the finish is defined in the menu
+		positionZhonx.x = MAZE_SIZE / 2;
+		positionZhonx.y = MAZE_SIZE / 2; // the robot start at the middle of the maze
+		positionZhonx.orientation = NORTH; // the robot is pointing the north
+		zhonxSettings.x_finish_maze = positionZhonx.x + zhonxSettings.x_finish_maze;
+		zhonxSettings.y_finish_maze = positionZhonx.y + zhonxSettings.y_finish_maze;
 	}
+//	else // it's the Birmingham competition
+//	{
+//		positionZhonx.x = 0;
+//		positionZhonx.y = 0; // the robot start in the corner
+//		positionZhonx.orientation = EAST;
+//		// the position of the finish is defined in the menu
+//	}
 	/*end of initialization for different micromouse competition*/
 	positionZhonx.midOfCell = true;
 	posXStart = positionZhonx.x;
@@ -100,11 +91,11 @@ int maze(void)
 		if (zhonxSettings.calibration_enabled == true)
 			calibrateSimple ();
 		HAL_Delay (2000);
-		exploration (&maze, &positionZhonx, posXStart, posYStart);
-		if (zhonxSettings.calibration_enabled == true)
-			calibrateSimple ();
-		doUTurn (&positionZhonx);
-		HAL_Delay (2000);
+//		exploration (&maze, &positionZhonx, posXStart, posYStart);
+//		if (zhonxSettings.calibration_enabled == true)
+//			calibrateSimple ();
+//		doUTurn (&positionZhonx);
+//		HAL_Delay (2000);
 	}while (false
 			== mini_way_find (&maze, posXStart, posYStart,
 					zhonxSettings.x_finish_maze, zhonxSettings.y_finish_maze));
@@ -129,9 +120,7 @@ void exploration(labyrinthe *maze, positionRobot* positionZhonx, char xFinish,
 		poids (maze, xFinish, yFinish, true);
 		print_length(*maze);
 		moveVirtualZhonx (*maze, *positionZhonx, &way, xFinish, yFinish);
-		telemetersStart();
 		moveRealZhonxArc (maze, positionZhonx, way.next);//, &xFinish, &yFinish);
-		telemetersStop();
 	}
 	HAL_Delay (200);
 	motorsSleepDriver (ON);
@@ -333,7 +322,17 @@ void moveRealZhonxArc(labyrinthe *maze, positionRobot *positionZhonx, coordinate
 		else
 			chain = true;
 		move_zhonx_arc (orientaionToGo, positionZhonx, length, endMidCase, chain);
-		new_cell (getCellState (), maze, *positionZhonx);
+		walls cell_state = getCellState();
+		new_cell (cell_state, maze, *positionZhonx);
+		if(zhonxSettings.color_sensor_enabled == TRUE)
+		{
+			if (cell_state.front == NO_WALL && cell_state.right == NO_WALL && cell_state.left == NO_WALL)
+			{
+				zhonxSettings.x_finish_maze = positionZhonx->x;
+				zhonxSettings.y_finish_maze = positionZhonx->y;
+			}
+		}
+
 	}
 }
 
@@ -936,43 +935,43 @@ void print_maze(const labyrinthe maze, const int x_robot, const int y_robot)
 			if (maze.cell[x][y].wall_north == WALL_PRESENCE)
 			{
 				//ssd1306DrawLine (x * size_cell_on_oled, y * size_cell_on_oled,
-		x * size_cell_on_oled + size_cell_on_oled + 1, y * size_cell_on_oled);
+//		x * size_cell_on_oled + size_cell_on_oled + 1, y * size_cell_on_oled);
 			}
 			else if (maze.cell[x][y].wall_north == NO_KNOWN)
 			{
 				//ssd1306DrawDashedLine (x * size_cell_on_oled, y * size_cell_on_oled,
-			   x * size_cell_on_oled + size_cell_on_oled + 1, y * size_cell_on_oled);
+//			   x * size_cell_on_oled + size_cell_on_oled + 1, y * size_cell_on_oled);
 			}
 			if (maze.cell[x][y].wall_west == WALL_PRESENCE)
 			{
 				//ssd1306DrawLine (x * size_cell_on_oled, y * size_cell_on_oled,
-								 x * size_cell_on_oled, y * size_cell_on_oled + size_cell_on_oled + 1);
+//								 x * size_cell_on_oled, y * size_cell_on_oled + size_cell_on_oled + 1);
 			}
 			else if (maze.cell[x][y].wall_west == NO_KNOWN)
 			{
 				//ssd1306DrawDashedLine (x * size_cell_on_oled, y * size_cell_on_oled,
-									   x * size_cell_on_oled, y * size_cell_on_oled + size_cell_on_oled + 1);
+//									   x * size_cell_on_oled, y * size_cell_on_oled + size_cell_on_oled + 1);
 			}
 
 			if (maze.cell[x][y].wall_south == WALL_PRESENCE)
 			{
 				//ssd1306DrawLine (x * size_cell_on_oled,(y + 1) * size_cell_on_oled,
-			 size_cell_on_oled + x * size_cell_on_oled,(y + 1) * size_cell_on_oled);
+//			 size_cell_on_oled + x * size_cell_on_oled,(y + 1) * size_cell_on_oled);
 			}
 			else if (maze.cell[x][y].wall_south == NO_KNOWN)
 			{
 				//ssd1306DrawDashedLine (x * size_cell_on_oled,(y + 1) * size_cell_on_oled,
-				   size_cell_on_oled + x * size_cell_on_oled,(y + 1) * size_cell_on_oled);
+//				   size_cell_on_oled + x * size_cell_on_oled,(y + 1) * size_cell_on_oled);
 			}
 			if (maze.cell[x][y].wall_east == WALL_PRESENCE)
 			{
 				//ssd1306DrawLine ((x + 1) * size_cell_on_oled, y * size_cell_on_oled,
-								 (x + 1) * size_cell_on_oled, y * size_cell_on_oled + size_cell_on_oled + 1);
+//								 (x + 1) * size_cell_on_oled, y * size_cell_on_oled + size_cell_on_oled + 1);
 			}
 			else if (maze.cell[x][y].wall_east == NO_KNOWN)
 			{
 				//ssd1306DrawDashedLine  ((x + 1) * size_cell_on_oled, y * size_cell_on_oled,
-										(x + 1) * size_cell_on_oled, y * size_cell_on_oled + size_cell_on_oled + 1);
+//										(x + 1) * size_cell_on_oled, y * size_cell_on_oled + size_cell_on_oled + 1);
 			}
 		}
 	}
@@ -1107,6 +1106,7 @@ void deleteWay(coordinate *way) // TODO: verify the function
 void waitStart()
 {
 //TODO : wait start
+
 //	unsigned char sensors_state = hal_sensor_get_state(app_context.sensors);
 //	while(check_bit(sensors_state, SENSOR_F10_POS)==true)
 //		sensors_state = hal_sensor_get_state(app_context.sensors);
