@@ -1108,7 +1108,7 @@ void waitStart()
 //TODO : wait start
 	walls cell_state;
 	uint32_t old_time = HAL_GetTick();
-	while (uint32_t+200)
+	while (old_time + 200 < HAL_GetTick())
 	{
 		cell_state=getCellState();
 		if (cell_state.front == NO_WALL)
@@ -1116,7 +1116,7 @@ void waitStart()
 			uint32_t old_time = HAL_GetTick();
 		}
 	}
-	while (uint32_t+200)
+	while (old_time + 200 < HAL_GetTick())
 	{
 		cell_state=getCellState();
 		if (cell_state.front == WALL_PRESENCE)
