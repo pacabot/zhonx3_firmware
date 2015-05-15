@@ -31,8 +31,9 @@
 #define WALL_PRESENCE 1
 #define NO_WALL 2
 
-#define SPEED_ROTATION		300
-#define SPEED_TRANSLATION	400
+#define MAX_SPEED_ROTATION		300
+#define MAX_SPEED_TRANSLATION	400
+#define END_SPEED_TRANSLATION	100
 
 #include <stdlib.h>
 
