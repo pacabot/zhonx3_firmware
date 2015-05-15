@@ -52,11 +52,11 @@ int maze(void)
 	telemetersInit();
 	telemetersStart();
 	mainControlInit ();
+	HAL_Delay(500);
 
 	follow_control.follow_type = FOLLOW_WALL;// FOLLOW_WALL;//NOFOLLOW;//FOLLOW_WALL;
 	position_control.position_type = GYRO;
 	move(0, 0, 0, 0);
-	HAL_Delay(500);
 
 	/*init for different micromouse competition*/
 
@@ -68,13 +68,21 @@ int maze(void)
 		zhonxSettings.x_finish_maze = 0;
 		zhonxSettings.y_finish_maze = 0; // we want to go to the case how have address (0,0)
 	}
-	else // it's the Birmingham competition
+	else
 	{
-		positionZhonx.x = 0;
-		positionZhonx.y = 0; // the robot start in the corner
-		positionZhonx.orientation = EAST;
-		// the position of the finish is defined in the menu
+		positionZhonx.x = MAZE_SIZE / 2;
+		positionZhonx.y = MAZE_SIZE / 2; // the robot start at the middle of the maze
+		positionZhonx.orientation = NORTH; // the robot is pointing the north
+		zhonxSettings.x_finish_maze = positionZhonx.x + zhonxSettings.x_finish_maze;
+		zhonxSettings.y_finish_maze = positionZhonx.y + zhonxSettings.y_finish_maze;
 	}
+//	else // it's the Birmingham competition
+//	{
+//		positionZhonx.x = 0;
+//		positionZhonx.y = 0; // the robot start in the corner
+//		positionZhonx.orientation = EAST;
+//		// the position of the finish is defined in the menu
+//	}
 	/*end of initialization for different micromouse competition*/
 	positionZhonx.midOfCell = true;
 	posXStart = positionZhonx.x;
@@ -92,7 +100,6 @@ int maze(void)
 //		new_cell (getCellState (), &maze, positionZhonx);
 //		print_maze(maze,positionZhonx.x, positionZhonx.y);
 //	}
-//	moveStartCell(SPEED_TRANSLATION,SPEED_TRANSLATION);
 	do
 	{
 		waitStart ();
@@ -101,11 +108,11 @@ int maze(void)
 		if (zhonxSettings.calibration_enabled == true)
 			calibrateSimple ();
 		HAL_Delay (2000);
-		exploration (&maze, &positionZhonx, posXStart, posYStart);
-		if (zhonxSettings.calibration_enabled == true)
-			calibrateSimple ();
-		doUTurn (&positionZhonx);
-		HAL_Delay (2000);
+//		exploration (&maze, &positionZhonx, posXStart, posYStart);
+//		if (zhonxSettings.calibration_enabled == true)
+//			calibrateSimple ();
+//		doUTurn (&positionZhonx);
+//		HAL_Delay (2000);
 	}while (false
 			== mini_way_find (&maze, posXStart, posYStart,
 					zhonxSettings.x_finish_maze, zhonxSettings.y_finish_maze));
@@ -130,9 +137,7 @@ void exploration(labyrinthe *maze, positionRobot* positionZhonx, char xFinish,
 		poids (maze, xFinish, yFinish, true);
 		print_length(*maze);
 		moveVirtualZhonx (*maze, *positionZhonx, &way, xFinish, yFinish);
-//		telemetersStart();
 		moveRealZhonxArc (maze, positionZhonx, way.next);//, &xFinish, &yFinish);
-//		telemetersStop();
 	}
 	HAL_Delay (200);
 	motorsSleepDriver (ON);
@@ -219,8 +224,8 @@ void run2(labyrinthe *maze, positionRobot *positionZhonx, char posXStart,
 void moveVirtualZhonx(labyrinthe maze, positionRobot positionZhonxVirtuel,
 		coordinate *way, char xFinish, char yFinish)
 {
-//	telemetersStop();
-//	motorsSleepDriver(ON);
+	telemetersStop();
+	motorsSleepDriver(ON);
 	while (positionZhonxVirtuel.x != xFinish
 			|| positionZhonxVirtuel.y != yFinish)
 	{
@@ -334,7 +339,17 @@ void moveRealZhonxArc(labyrinthe *maze, positionRobot *positionZhonx, coordinate
 		else
 			chain = true;
 		move_zhonx_arc (orientaionToGo, positionZhonx, length, endMidCase, chain);
-		new_cell (getCellState (), maze, *positionZhonx);
+		walls cell_state = getCellState();
+		new_cell (cell_state, maze, *positionZhonx);
+		if(zhonxSettings.color_sensor_enabled == TRUE)
+		{
+			if (cell_state.front == NO_WALL && cell_state.right == NO_WALL && cell_state.left == NO_WALL)
+			{
+				zhonxSettings.x_finish_maze = positionZhonx->x;
+				zhonxSettings.y_finish_maze = positionZhonx->y;
+			}
+		}
+
 	}
 }
 
@@ -356,7 +371,7 @@ void move_zhonx_arc (int direction_to_go, positionRobot *positionZhonx, int numb
 			}
 			else
 			{
-				moveRotateCW90(SPEED_TRANSLATION, SPEED_TRANSLATION);
+				mouveRotateCW90(SPEED_TRANSLATION, 0);
 				numberOfCell --;
 
 			}
@@ -366,7 +381,13 @@ void move_zhonx_arc (int direction_to_go, positionRobot *positionZhonx, int numb
 			{
 				numberOfCell --;
 			}
-			moveUTurn(SPEED_ROTATION, SPEED_TRANSLATION, SPEED_TRANSLATION);
+			follow_control.follow_type = ALIGN_FRONT;
+			moveHalfCell(600, 200);
+			while(isEndMove() != TRUE);
+			move (180, 0, SPEED_ROTATION, 0);
+			follow_control.follow_type = FOLLOW_WALL;
+			moveHalfCell(600, 200);
+			while(isEndMove() != TRUE);
 			break;
 		case LEFT :
 			if (positionZhonx->midOfCell == true)
@@ -377,7 +398,7 @@ void move_zhonx_arc (int direction_to_go, positionRobot *positionZhonx, int numb
 			}
 			else
 			{
-				moveRotateCCW90(SPEED_TRANSLATION, SPEED_TRANSLATION);
+				mouveRotateCCW90(SPEED_TRANSLATION, 0);
 				numberOfCell --;
 			}
 
@@ -392,7 +413,7 @@ void move_zhonx_arc (int direction_to_go, positionRobot *positionZhonx, int numb
 	}
 	else if (positionZhonx->midOfCell == true)
 	{
-		moveStartCell(SPEED_TRANSLATION,SPEED_TRANSLATION);
+		moveHalfCell(SPEED_TRANSLATION,SPEED_TRANSLATION);
 		numberOfCell --;
 	}
 	else // so endMidOfCase=true and positionZhonx->midOfCase=false
@@ -406,7 +427,7 @@ void move_zhonx_arc (int direction_to_go, positionRobot *positionZhonx, int numb
 	{
 		speed_end = 0;
 	}
-	moveCell (numberOfCell, SPEED_TRANSLATION, SPEED_TRANSLATION);
+	moveCell (numberOfCell, SPEED_TRANSLATION, speed_end);
 	positionZhonx->midOfCell = end_mid_of_case;
 
 }
@@ -455,8 +476,8 @@ void new_cell(walls new_walls, labyrinthe *maze, positionRobot positionZhonx)
 		}
 		//ssd1306Refresh();
 		/*end print wall position*/
-//		telemetersStop();
-//		motorsSleepDriver(ON);
+		telemetersStop();
+		motorsSleepDriver(ON);
 	switch (positionZhonx.orientation)
 	{
 		case NORTH :
@@ -1102,6 +1123,24 @@ void deleteWay(coordinate *way) // TODO: verify the function
 void waitStart()
 {
 //TODO : wait start
+	walls cell_state;
+	uint32_t old_time = HAL_GetTick();
+	while (uint32_t+200)
+	{
+		cell_state=getCellState();
+		if (cell_state.front == NO_WALL)
+		{
+			uint32_t old_time = HAL_GetTick();
+		}
+	}
+	while (uint32_t+200)
+	{
+		cell_state=getCellState();
+		if (cell_state.front == WALL_PRESENCE)
+		{
+			uint32_t old_time = HAL_GetTick();
+		}
+	}
 //	unsigned char sensors_state = hal_sensor_get_state(app_context.sensors);
 //	while(check_bit(sensors_state, SENSOR_F10_POS)==true)
 //		sensors_state = hal_sensor_get_state(app_context.sensors);
@@ -1179,15 +1218,15 @@ int sensor_calibrate(void)
 	lineSensorsStart ();
 	while (1)
 	{
-		//ssd1306ClearScreen ();
-		//ssd1306Printf (0, 9, &Font_5x8, "Present arrival color");
-		//ssd1306Printf (0, 64 - 9, &Font_5x8, "'RIGHT' TO VALIDATE");
-		//ssd1306Refresh ();
+		ssd1306ClearScreen ();
+		ssd1306Printf (0, 9, &Font_5x8, "Present arrival color");
+		ssd1306Printf (0, 64 - 9, &Font_5x8, "'RIGHT' TO VALIDATE");
+		ssd1306Refresh ();
 
 		arrival_color = lineSensors.front.adc_value;
-		//ssd1306Printf (10, 18, &Font_5x8, "Color sens: %i", arrival_color);
+		ssd1306Printf (10, 18, &Font_5x8, "Color sens: %i", arrival_color);
 
-		//ssd1306Refresh ();
+		ssd1306Refresh ();
 
 		rv = wait_validation (500);
 		if (rv == JOY_RIGHT)
@@ -1199,19 +1238,19 @@ int sensor_calibrate(void)
 				HAL_Delay (50);
 			}
 			arrival_color /= i;
-			//ssd1306ClearScreen ();
-			//ssd1306Printf (2, 9, &Font_5x8, "Value %i validated",
-			//		arrival_color);
-			//ssd1306Refresh ();
+			ssd1306ClearScreen ();
+			ssd1306Printf (2, 9, &Font_5x8, "Value %i validated",
+					arrival_color);
+			ssd1306Refresh ();
 			HAL_Delay (1000);
 			break;
 		}
 		else if (rv == JOY_LEFT)
 		{
 			// User aborted
-			//ssd1306ClearScreen ();
-			//ssd1306Printf (2, 9, &Font_5x8, "Calibration aborted");
-			//ssd1306Refresh ();
+			ssd1306ClearScreen ();
+			ssd1306Printf (2, 9, &Font_5x8, "Calibration aborted");
+			ssd1306Refresh ();
 			HAL_Delay (1000);
 			return 0;
 		}
@@ -1219,15 +1258,15 @@ int sensor_calibrate(void)
 
 	while (1)
 	{
-		//ssd1306ClearScreen ();
-		//ssd1306Printf (0, 9, &Font_5x8, "Present area color");
-		//ssd1306Printf (0, 64 - 9, &Font_5x8, "'RIGHT' TO VALIDATE");
-		////ssd1306Refresh ();
+		ssd1306ClearScreen ();
+		ssd1306Printf (0, 9, &Font_5x8, "Present area color");
+		ssd1306Printf (0, 64 - 9, &Font_5x8, "'RIGHT' TO VALIDATE");
+		ssd1306Refresh ();
 
 		area_color = lineSensors.front.adc_value;
-		//ssd1306Printf (10, 18, &Font_5x8, "Color sens: %i", area_color);
+		ssd1306Printf (10, 18, &Font_5x8, "Color sens: %i", area_color);
 
-		//ssd1306Refresh ();
+		ssd1306Refresh ();
 
 		rv = wait_validation (500);
 		if (rv == JOY_RIGHT)
@@ -1239,9 +1278,9 @@ int sensor_calibrate(void)
 				HAL_Delay (50);
 			}
 			area_color /= i;
-			//ssd1306ClearScreen ();
-			//ssd1306Printf (2, 9, &Font_5x8, "Value %i validated", area_color);
-			//ssd1306Refresh ();
+			ssd1306ClearScreen ();
+			ssd1306Printf (2, 9, &Font_5x8, "Value %i validated", area_color);
+			ssd1306Refresh ();
 			HAL_Delay (1000);
 			break;
 		}
@@ -1249,10 +1288,10 @@ int sensor_calibrate(void)
 
 	zhonxSettings.threshold_color = (MAX(arrival_color, area_color)
 			- MIN(arrival_color, area_color)) / 2;
-	//ssd1306ClearScreen ();
-	//ssd1306Printf (1, 1, &Font_5x8, "diff col : %d",
-	//		zhonxSettings.threshold_color);
-	//ssd1306Refresh ();
+	ssd1306ClearScreen ();
+	ssd1306Printf (1, 1, &Font_5x8, "diff col : %d",
+			zhonxSettings.threshold_color);
+	ssd1306Refresh ();
 	HAL_Delay (2000);
 	zhonxSettings.threshold_color += MIN(arrival_color, area_color);
 	zhonxSettings.threshold_greater = (arrival_color > area_color);
