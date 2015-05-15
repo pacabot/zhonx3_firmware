@@ -255,7 +255,7 @@ int moveCell(unsigned long nb_cell, float max_speed, float end_speed)
 int moveHalfCell(float max_speed, float end_speed)
 {
 	while(isEndMove() != TRUE);
-	move(0, 60, max_speed, max_speed);
+	move(0, 80, max_speed, max_speed);
 	while(isEndMove() != TRUE);
 	move(0, (1.00 * STRAIGHT_DIST), max_speed, end_speed);
 
@@ -265,9 +265,8 @@ int moveHalfCell(float max_speed, float end_speed)
 int moveEndCell(float max_speed, float end_speed)
 {
 	while(isEndMove() != TRUE);
-	move(0, 60, max_speed, max_speed);
+	move(0, 80, max_speed, max_speed);
 	while(isEndMove() != TRUE);
-//	move(0, (.00 * STRAIGHT_DIST), max_speed, end_speed);
 
 	return POSITION_CONTROL_E_SUCCESS;
 }
@@ -308,8 +307,10 @@ int moveUTurn(float speed_rotation, float max_speed, float end_speed)
 {
 //	char save_folow_type = follow_control.follow_type;
 	while(isEndMove() != TRUE);
+	control_params.follow_state = TRUE;
 //	follow_control.follow_type = ALIGN_FRONT;
 	moveEndCell(max_speed, 0);
+
 	control_params.follow_state = FALSE;
 	while(isEndMove() != TRUE);
 	move (180, 0, speed_rotation, 0);

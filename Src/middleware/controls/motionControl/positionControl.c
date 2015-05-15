@@ -54,7 +54,7 @@ arm_pid_instance_f32 encoder_or_gyro_pid_instance;
 
 int positionControlInit(void)
 {
-	encoder_or_gyro_pid_instance.Kp = 100;
+	encoder_or_gyro_pid_instance.Kp = 80;
 	encoder_or_gyro_pid_instance.Ki = 0;
 	encoder_or_gyro_pid_instance.Kd = 800;
 

@@ -117,7 +117,7 @@
 /***************                 Physical Constants                ********************/
 /**************************************************************************************/
 #define MAX_SPEED				4000.0	//mm/s
-#define MAX_ACCEL				1000.0	//mm/s²
+#define MAX_ACCEL				4000.0	//mm/s²
 //#define MAX_DECEL				8000.0	//mm/s²
 
 #define MAX_TURN_SPEED			500.0	//mm/s

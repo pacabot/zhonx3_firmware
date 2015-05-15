@@ -53,7 +53,7 @@ arm_pid_instance_f32 encoder_pid_instance;
 
 int speedControlInit(void)
 {
-	encoder_pid_instance.Kp = 300;
+	encoder_pid_instance.Kp = 100;
 	encoder_pid_instance.Ki = 0;
 	encoder_pid_instance.Kd = 800;
 
