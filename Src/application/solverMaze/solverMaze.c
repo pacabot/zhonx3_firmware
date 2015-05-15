@@ -25,6 +25,23 @@
 /*application include */
 #include "application/solverMaze/solverMaze.h"
 
+void test()
+{
+	positionRobot position_zhonx={8,8,NORTH,true};
+	coordinate *end_way=null;
+	coordinate *start_way;
+	new_dot(&end_way,8,7);
+	start_way=end_way;
+	new_dot(&end_way,8,6);
+	new_dot(&end_way,7,6);
+	new_dot(&end_way,8,6);
+	new_dot(&end_way,8,7);
+	new_dot(&end_way,8,8);
+	labyrinthe maze;
+	maze_init(&maze);
+	moveRealZhonxArc(&maze,&position_zhonx,start_way);
+}
+
 int maze(void)
 {
 	char posXStart, posYStart; // it's the coordinates which Zhonx have at the start
