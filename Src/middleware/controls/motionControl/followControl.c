@@ -125,10 +125,10 @@ int followControlLoop(void)
 			}
 		}
 	}
-//	else if (wall_saw.left == WALL_PRESENCE && wall_saw.right == WALL_PRESENCE)
-//	{
-//		bothWallFollow(&distances);
-//	}
+	else if (wall_saw.left == WALL_PRESENCE && wall_saw.right == WALL_PRESENCE)
+	{
+		bothWallFollow(&distances);
+	}
 	else if (wall_saw.left == WALL_PRESENCE)
 	{
 		leftWallFollow(&distances);

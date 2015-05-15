@@ -121,7 +121,6 @@ int move(float angle, float radius_or_distance, float max_speed, float end_speed
 
 	if (angle == 0)
 	{
-		control_params.follow_state = TRUE;
 		position_control.position_type = ENCODERS;
 //		if (follow_control.follow_type != NOFOLLOW)
 //			control_params.follow_state = TRUE;
@@ -311,10 +310,11 @@ int moveUTurn(float speed_rotation, float max_speed, float end_speed)
 	while(isEndMove() != TRUE);
 //	follow_control.follow_type = ALIGN_FRONT;
 	moveEndCell(max_speed, 0);
+	control_params.follow_state = FALSE;
 	while(isEndMove() != TRUE);
 	move (180, 0, speed_rotation, 0);
 	while(isEndMove() != TRUE);
-//	control_params.follow_state = TRUE;
+	control_params.follow_state = TRUE;
 //	follow_control.follow_type = save_folow_type;
 	moveHalfCell(max_speed, end_speed);
 
