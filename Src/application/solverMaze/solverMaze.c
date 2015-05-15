@@ -1106,6 +1106,24 @@ void deleteWay(coordinate *way) // TODO: verify the function
 void waitStart()
 {
 //TODO : wait start
+	walls cell_state;
+	uint32_t old_time = HAL_GetTick();
+	while (uint32_t+200)
+	{
+		cell_state=getCellState();
+		if (cell_state.front == NO_WALL)
+		{
+			uint32_t old_time = HAL_GetTick();
+		}
+	}
+	while (uint32_t+200)
+	{
+		cell_state=getCellState();
+		if (cell_state.front == WALL_PRESENCE)
+		{
+			uint32_t old_time = HAL_GetTick();
+		}
+	}
 //	unsigned char sensors_state = hal_sensor_get_state(app_context.sensors);
 //	while(check_bit(sensors_state, SENSOR_F10_POS)==true)
 //		sensors_state = hal_sensor_get_state(app_context.sensors);
