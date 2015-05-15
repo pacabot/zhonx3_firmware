@@ -52,11 +52,11 @@ int maze(void)
 	telemetersInit();
 	telemetersStart();
 	mainControlInit ();
-	HAL_Delay(500);
 
 	follow_control.follow_type = FOLLOW_WALL;// FOLLOW_WALL;//NOFOLLOW;//FOLLOW_WALL;
 	position_control.position_type = GYRO;
 	move(0, 0, 0, 0);
+	HAL_Delay(500);
 
 	/*init for different micromouse competition*/
 
@@ -92,6 +92,7 @@ int maze(void)
 //		new_cell (getCellState (), &maze, positionZhonx);
 //		print_maze(maze,positionZhonx.x, positionZhonx.y);
 //	}
+//	moveStartCell(SPEED_TRANSLATION,SPEED_TRANSLATION);
 	do
 	{
 		waitStart ();
@@ -129,9 +130,9 @@ void exploration(labyrinthe *maze, positionRobot* positionZhonx, char xFinish,
 		poids (maze, xFinish, yFinish, true);
 		print_length(*maze);
 		moveVirtualZhonx (*maze, *positionZhonx, &way, xFinish, yFinish);
-		telemetersStart();
+//		telemetersStart();
 		moveRealZhonxArc (maze, positionZhonx, way.next);//, &xFinish, &yFinish);
-		telemetersStop();
+//		telemetersStop();
 	}
 	HAL_Delay (200);
 	motorsSleepDriver (ON);
@@ -218,8 +219,8 @@ void run2(labyrinthe *maze, positionRobot *positionZhonx, char posXStart,
 void moveVirtualZhonx(labyrinthe maze, positionRobot positionZhonxVirtuel,
 		coordinate *way, char xFinish, char yFinish)
 {
-	telemetersStop();
-	motorsSleepDriver(ON);
+//	telemetersStop();
+//	motorsSleepDriver(ON);
 	while (positionZhonxVirtuel.x != xFinish
 			|| positionZhonxVirtuel.y != yFinish)
 	{
@@ -355,7 +356,7 @@ void move_zhonx_arc (int direction_to_go, positionRobot *positionZhonx, int numb
 			}
 			else
 			{
-				mouveRotateCW90(SPEED_TRANSLATION, 0);
+				moveRotateCW90(SPEED_TRANSLATION, SPEED_TRANSLATION);
 				numberOfCell --;
 
 			}
@@ -365,13 +366,7 @@ void move_zhonx_arc (int direction_to_go, positionRobot *positionZhonx, int numb
 			{
 				numberOfCell --;
 			}
-			follow_control.follow_type = ALIGN_FRONT;
-			moveHalfCell(600, 200);
-			while(isEndMove() != TRUE);
-			move (180, 0, SPEED_ROTATION, 0);
-			follow_control.follow_type = FOLLOW_WALL;
-			moveHalfCell(600, 200);
-			while(isEndMove() != TRUE);
+			moveUTurn(SPEED_ROTATION, SPEED_TRANSLATION, SPEED_TRANSLATION);
 			break;
 		case LEFT :
 			if (positionZhonx->midOfCell == true)
@@ -382,7 +377,7 @@ void move_zhonx_arc (int direction_to_go, positionRobot *positionZhonx, int numb
 			}
 			else
 			{
-				mouveRotateCCW90(SPEED_TRANSLATION, 0);
+				moveRotateCCW90(SPEED_TRANSLATION, SPEED_TRANSLATION);
 				numberOfCell --;
 			}
 
@@ -397,7 +392,7 @@ void move_zhonx_arc (int direction_to_go, positionRobot *positionZhonx, int numb
 	}
 	else if (positionZhonx->midOfCell == true)
 	{
-		moveHalfCell(SPEED_TRANSLATION,SPEED_TRANSLATION);
+		moveStartCell(SPEED_TRANSLATION,SPEED_TRANSLATION);
 		numberOfCell --;
 	}
 	else // so endMidOfCase=true and positionZhonx->midOfCase=false
@@ -411,7 +406,7 @@ void move_zhonx_arc (int direction_to_go, positionRobot *positionZhonx, int numb
 	{
 		speed_end = 0;
 	}
-	moveCell (numberOfCell, SPEED_TRANSLATION, speed_end);
+	moveCell (numberOfCell, SPEED_TRANSLATION, SPEED_TRANSLATION);
 	positionZhonx->midOfCell = end_mid_of_case;
 
 }
@@ -460,8 +455,8 @@ void new_cell(walls new_walls, labyrinthe *maze, positionRobot positionZhonx)
 		}
 		//ssd1306Refresh();
 		/*end print wall position*/
-		telemetersStop();
-		motorsSleepDriver(ON);
+//		telemetersStop();
+//		motorsSleepDriver(ON);
 	switch (positionZhonx.orientation)
 	{
 		case NORTH :

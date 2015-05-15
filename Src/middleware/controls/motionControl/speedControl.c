@@ -67,6 +67,8 @@ int speedControlInit(void)
 	speed_control.speed_command = 0;
 	speed_control.speed_consign = 0;
 
+	speed_params.initial_speed = 0;
+
 	speed_control.speed_pid.instance = &encoder_pid_instance;
 
 	pidControllerInit(speed_control.speed_pid.instance);
@@ -93,7 +95,7 @@ int speedControlLoop(void)
 		speed_control.speed_consign += speed_params.accel_dist_per_loop;
 		speed_control.current_distance_consign += speed_control.speed_consign;
 	}
-	else if ((speed_params.nb_loop_maint > 0))//speed_control.current_distance < (speed_params.accel_dist + speed_params.maintain_dist)))
+	else if ((speed_control.current_distance < (speed_params.accel_dist + speed_params.maintain_dist)))//speed_params.nb_loop_maint > 0))//speed_control.current_distance < (speed_params.accel_dist + speed_params.maintain_dist)))
 	{
 		speed_params.nb_loop_maint--;
 		speed_control.current_distance_consign += speed_control.speed_consign;
@@ -197,6 +199,7 @@ float speedProfileCompute(float distance)
 
 	if (distance == 0)
 	{
+		speed_params.initial_speed = 0;
 		speed_control.end_control = 1;
 		speed_params.nb_loop_accel = 0;
 		speed_params.nb_loop_decel = 0;
