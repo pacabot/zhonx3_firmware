@@ -94,7 +94,6 @@ int mainControlLoop(void)
 int move(float angle, float radius_or_distance, float max_speed, float end_speed)
 {
 	pid_loop.start_state = FALSE;
-	motorsSleepDriver(ON);
 
 	encoderResetDistance(&left_encoder);
 	encoderResetDistance(&right_encoder);
@@ -123,10 +122,10 @@ int move(float angle, float radius_or_distance, float max_speed, float end_speed
 	if (angle == 0)
 	{
 		position_control.position_type = ENCODERS;
-		if (follow_control.follow_type == NOFOLLOW)
-			control_params.follow_state = FALSE;
-		else
+		if (follow_control.follow_type != NOFOLLOW)
 			control_params.follow_state = TRUE;
+		else
+			control_params.follow_state = FALSE;
 
 
 		speedProfileCompute(radius_or_distance);
@@ -142,7 +141,6 @@ int move(float angle, float radius_or_distance, float max_speed, float end_speed
 		{
 			position_control.position_type = ENCODERS;
 		}
-
 		control_params.follow_state = FALSE;
 
 		distance_per_wheel = (2.00 * PI * ROTATION_DIAMETER * (angle / 360.00)) * slip_compensation;
@@ -151,7 +149,6 @@ int move(float angle, float radius_or_distance, float max_speed, float end_speed
 		positionProfileCompute(distance_per_wheel, speedProfileCompute(distance));
 	}
 
-	motorsSleepDriver(OFF);
 	pid_loop.start_state = TRUE;
 	return POSITION_CONTROL_E_SUCCESS;
 }
@@ -244,7 +241,7 @@ int moveCell(unsigned long nb_cell, float max_speed, float end_speed)
 	float relative_dist = 0.0;
 
 	while(isEndMove() != TRUE);
-	move(0, ((CELL_LENGTH * nb_cell) - (STRAIGHT_DIST * 2.00)), max_speed, end_speed);
+	move(0, ((CELL_LENGTH * nb_cell) - (STRAIGHT_DIST * 2.00)), max_speed, max_speed);
 	while(isEndMove() != TRUE);
 	move(0, 2.00 * STRAIGHT_DIST, max_speed, end_speed);
 
@@ -254,7 +251,7 @@ int moveCell(unsigned long nb_cell, float max_speed, float end_speed)
 int moveHalfCell(float max_speed, float end_speed)
 {
 	while(isEndMove() != TRUE);
-	move(0, ((CELL_LENGTH / 2.00) - STRAIGHT_DIST), max_speed, end_speed);
+	move(0, ((CELL_LENGTH / 2.00) - STRAIGHT_DIST), max_speed, max_speed);
 	while(isEndMove() != TRUE);
 	move(0, (2.00 * STRAIGHT_DIST), max_speed, end_speed);
 
@@ -264,7 +261,7 @@ int moveHalfCell(float max_speed, float end_speed)
 int moveStartCell(float max_speed, float end_speed)
 {
 	while(isEndMove() != TRUE);
-	move(0, ((CELL_LENGTH) - ((STRAIGHT_DIST) + 39.00)), max_speed, end_speed);
+	move(0, ((CELL_LENGTH) - ((STRAIGHT_DIST) + 39.00)), max_speed, max_speed);
 	while(isEndMove() != TRUE);
 	move(0, (2.00 * STRAIGHT_DIST), max_speed, end_speed);
 
@@ -298,7 +295,11 @@ int moveUTurn(float speed_rotation, float max_speed, float end_speed)
 	moveHalfCell(max_speed, 0);
 	while(isEndMove() != TRUE);
 	move (180, 0, speed_rotation, 0);
-	follow_control.follow_type = FOLLOW_WALL;
+	while(isEndMove() != TRUE);
+	if (follow_control.follow_type != NOFOLLOW)
+		control_params.follow_state = TRUE;
+	else
+		control_params.follow_state = FALSE;
 	moveHalfCell(max_speed, end_speed);
 
 	return POSITION_CONTROL_E_SUCCESS;
@@ -346,16 +347,19 @@ void followWallTest()
 {
 	mainControlInit();
 	telemetersStart();
+	motorsSleepDriver(OFF);
 	HAL_Delay(500);
+	move(0, 0, 0, 0);
 
 	position_control.position_type = GYRO;
 	follow_control.follow_type = NOFOLLOW;//FOLLOW_WALL;
-//	move(90, ((CELL_LENGTH / 2.00) - (STRAIGHT_DIST + 10.00)), 50, 10);
-//	while(1);
+	moveUTurn(200, 50, 0);
+while(1);
 	move(0, 0, 0, 0);
 	moveStartCell(50, 10);
+	moveRotateCW90(50, 10);
+	moveRotateCW90(50, 10);
 	moveRotateCCW90(50, 10);
-	moveCell(1, 50, 10);
 	moveRotateCCW90(50, 10);
 
 	while(1);
