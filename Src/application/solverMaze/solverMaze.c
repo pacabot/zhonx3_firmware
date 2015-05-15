@@ -53,7 +53,7 @@ int maze(void)
 	telemetersStart();
 	mainControlInit ();
 
-	follow_control.follow_type = NOFOLLOW;//FOLLOW_WALL//NOFOLLOW
+	follow_control.follow_type = FOLLOW_WALL;//NOFOLLOW
 	position_control.position_type = GYRO;
 	move(0, 0, 0, 0);
 	HAL_Delay(500);

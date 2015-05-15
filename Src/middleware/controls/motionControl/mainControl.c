@@ -290,16 +290,14 @@ int moveRotateCCW90(float max_speed, float end_speed)
 
 int moveUTurn(float speed_rotation, float max_speed, float end_speed)
 {
+	char save_folow_type = follow_control.follow_type;
 	while(isEndMove() != TRUE);
 	follow_control.follow_type = ALIGN_FRONT;
 	moveHalfCell(max_speed, 0);
 	while(isEndMove() != TRUE);
 	move (180, 0, speed_rotation, 0);
 	while(isEndMove() != TRUE);
-	if (follow_control.follow_type != NOFOLLOW)
-		control_params.follow_state = TRUE;
-	else
-		control_params.follow_state = FALSE;
+	follow_control.follow_type = save_folow_type;
 	moveHalfCell(max_speed, end_speed);
 
 	return POSITION_CONTROL_E_SUCCESS;
