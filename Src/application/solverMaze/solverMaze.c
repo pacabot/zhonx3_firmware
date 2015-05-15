@@ -935,43 +935,43 @@ void print_maze(const labyrinthe maze, const int x_robot, const int y_robot)
 			if (maze.cell[x][y].wall_north == WALL_PRESENCE)
 			{
 				//ssd1306DrawLine (x * size_cell_on_oled, y * size_cell_on_oled,
-//		x * size_cell_on_oled + size_cell_on_oled + 1, y * size_cell_on_oled);
+		//x * size_cell_on_oled + size_cell_on_oled + 1, y * size_cell_on_oled);
 			}
 			else if (maze.cell[x][y].wall_north == NO_KNOWN)
 			{
 				//ssd1306DrawDashedLine (x * size_cell_on_oled, y * size_cell_on_oled,
-//			   x * size_cell_on_oled + size_cell_on_oled + 1, y * size_cell_on_oled);
+		//	   x * size_cell_on_oled + size_cell_on_oled + 1, y * size_cell_on_oled);
 			}
 			if (maze.cell[x][y].wall_west == WALL_PRESENCE)
 			{
 				//ssd1306DrawLine (x * size_cell_on_oled, y * size_cell_on_oled,
-//								 x * size_cell_on_oled, y * size_cell_on_oled + size_cell_on_oled + 1);
+			//					 x * size_cell_on_oled, y * size_cell_on_oled + size_cell_on_oled + 1);
 			}
 			else if (maze.cell[x][y].wall_west == NO_KNOWN)
 			{
 				//ssd1306DrawDashedLine (x * size_cell_on_oled, y * size_cell_on_oled,
-//									   x * size_cell_on_oled, y * size_cell_on_oled + size_cell_on_oled + 1);
+		//							   x * size_cell_on_oled, y * size_cell_on_oled + size_cell_on_oled + 1);
 			}
 
 			if (maze.cell[x][y].wall_south == WALL_PRESENCE)
 			{
 				//ssd1306DrawLine (x * size_cell_on_oled,(y + 1) * size_cell_on_oled,
-//			 size_cell_on_oled + x * size_cell_on_oled,(y + 1) * size_cell_on_oled);
+		//	 size_cell_on_oled + x * size_cell_on_oled,(y + 1) * size_cell_on_oled);
 			}
 			else if (maze.cell[x][y].wall_south == NO_KNOWN)
 			{
 				//ssd1306DrawDashedLine (x * size_cell_on_oled,(y + 1) * size_cell_on_oled,
-//				   size_cell_on_oled + x * size_cell_on_oled,(y + 1) * size_cell_on_oled);
+		//		   size_cell_on_oled + x * size_cell_on_oled,(y + 1) * size_cell_on_oled);
 			}
 			if (maze.cell[x][y].wall_east == WALL_PRESENCE)
 			{
 				//ssd1306DrawLine ((x + 1) * size_cell_on_oled, y * size_cell_on_oled,
-//								 (x + 1) * size_cell_on_oled, y * size_cell_on_oled + size_cell_on_oled + 1);
+		//						 (x + 1) * size_cell_on_oled, y * size_cell_on_oled + size_cell_on_oled + 1);
 			}
 			else if (maze.cell[x][y].wall_east == NO_KNOWN)
 			{
 				//ssd1306DrawDashedLine  ((x + 1) * size_cell_on_oled, y * size_cell_on_oled,
-//										(x + 1) * size_cell_on_oled, y * size_cell_on_oled + size_cell_on_oled + 1);
+			//							(x + 1) * size_cell_on_oled, y * size_cell_on_oled + size_cell_on_oled + 1);
 			}
 		}
 	}
@@ -1106,7 +1106,6 @@ void deleteWay(coordinate *way) // TODO: verify the function
 void waitStart()
 {
 //TODO : wait start
-
 //	unsigned char sensors_state = hal_sensor_get_state(app_context.sensors);
 //	while(check_bit(sensors_state, SENSOR_F10_POS)==true)
 //		sensors_state = hal_sensor_get_state(app_context.sensors);
@@ -1184,15 +1183,15 @@ int sensor_calibrate(void)
 	lineSensorsStart ();
 	while (1)
 	{
-		//ssd1306ClearScreen ();
-		//ssd1306Printf (0, 9, &Font_5x8, "Present arrival color");
-		//ssd1306Printf (0, 64 - 9, &Font_5x8, "'RIGHT' TO VALIDATE");
-		//ssd1306Refresh ();
+		ssd1306ClearScreen ();
+		ssd1306Printf (0, 9, &Font_5x8, "Present arrival color");
+		ssd1306Printf (0, 64 - 9, &Font_5x8, "'RIGHT' TO VALIDATE");
+		ssd1306Refresh ();
 
 		arrival_color = lineSensors.front.adc_value;
-		//ssd1306Printf (10, 18, &Font_5x8, "Color sens: %i", arrival_color);
+		ssd1306Printf (10, 18, &Font_5x8, "Color sens: %i", arrival_color);
 
-		//ssd1306Refresh ();
+		ssd1306Refresh ();
 
 		rv = wait_validation (500);
 		if (rv == JOY_RIGHT)
@@ -1204,19 +1203,19 @@ int sensor_calibrate(void)
 				HAL_Delay (50);
 			}
 			arrival_color /= i;
-			//ssd1306ClearScreen ();
-			//ssd1306Printf (2, 9, &Font_5x8, "Value %i validated",
+			ssd1306ClearScreen ();
+			ssd1306Printf (2, 9, &Font_5x8, "Value %i validated",
 					arrival_color);
-			//ssd1306Refresh ();
+			ssd1306Refresh ();
 			HAL_Delay (1000);
 			break;
 		}
 		else if (rv == JOY_LEFT)
 		{
 			// User aborted
-			//ssd1306ClearScreen ();
-			//ssd1306Printf (2, 9, &Font_5x8, "Calibration aborted");
-			//ssd1306Refresh ();
+			ssd1306ClearScreen ();
+			ssd1306Printf (2, 9, &Font_5x8, "Calibration aborted");
+			ssd1306Refresh ();
 			HAL_Delay (1000);
 			return 0;
 		}
@@ -1224,15 +1223,15 @@ int sensor_calibrate(void)
 
 	while (1)
 	{
-		//ssd1306ClearScreen ();
-		//ssd1306Printf (0, 9, &Font_5x8, "Present area color");
-		//ssd1306Printf (0, 64 - 9, &Font_5x8, "'RIGHT' TO VALIDATE");
-		////ssd1306Refresh ();
+		ssd1306ClearScreen ();
+		ssd1306Printf (0, 9, &Font_5x8, "Present area color");
+		ssd1306Printf (0, 64 - 9, &Font_5x8, "'RIGHT' TO VALIDATE");
+		ssd1306Refresh ();
 
 		area_color = lineSensors.front.adc_value;
-		//ssd1306Printf (10, 18, &Font_5x8, "Color sens: %i", area_color);
+		ssd1306Printf (10, 18, &Font_5x8, "Color sens: %i", area_color);
 
-		//ssd1306Refresh ();
+		ssd1306Refresh ();
 
 		rv = wait_validation (500);
 		if (rv == JOY_RIGHT)
@@ -1244,9 +1243,9 @@ int sensor_calibrate(void)
 				HAL_Delay (50);
 			}
 			area_color /= i;
-			//ssd1306ClearScreen ();
-			//ssd1306Printf (2, 9, &Font_5x8, "Value %i validated", area_color);
-			//ssd1306Refresh ();
+			ssd1306ClearScreen ();
+			ssd1306Printf (2, 9, &Font_5x8, "Value %i validated", area_color);
+			ssd1306Refresh ();
 			HAL_Delay (1000);
 			break;
 		}
@@ -1254,10 +1253,10 @@ int sensor_calibrate(void)
 
 	zhonxSettings.threshold_color = (MAX(arrival_color, area_color)
 			- MIN(arrival_color, area_color)) / 2;
-	//ssd1306ClearScreen ();
-	//ssd1306Printf (1, 1, &Font_5x8, "diff col : %d",
+	ssd1306ClearScreen ();
+	ssd1306Printf (1, 1, &Font_5x8, "diff col : %d",
 			zhonxSettings.threshold_color);
-	//ssd1306Refresh ();
+	ssd1306Refresh ();
 	HAL_Delay (2000);
 	zhonxSettings.threshold_color += MIN(arrival_color, area_color);
 	zhonxSettings.threshold_greater = (arrival_color > area_color);
