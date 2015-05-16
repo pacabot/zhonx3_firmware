@@ -210,6 +210,10 @@ void telemeters_ADC2_IT(void)
 		telemeters.right_front.telemeter_values[(telemeters.end_of_conversion / 8) % SIZE_OF_AVEVAGE_TABLE] = telemeters.right_front.adc_value - telemeters.right_front.offset - telemeters.ref_right_front.adc_value;
 		telemeters.right_front.average_value=cAverage((int*)telemeters.right_front.telemeter_values,SIZE_OF_AVEVAGE_TABLE);
 		telemeters.right_front.sensor_state = 0;
+		if (telemeters.right_front.average_value < 0)
+		{
+			telemeters.right_front.average_value = 0;
+		}
 		return;
 	}
 	if (telemeters.left_front.sensor_state == 1)
@@ -219,6 +223,10 @@ void telemeters_ADC2_IT(void)
 		telemeters.left_front.telemeter_values[(telemeters.end_of_conversion / 8) % SIZE_OF_AVEVAGE_TABLE] = telemeters.left_front.adc_value - telemeters.left_front.offset - telemeters.ref_left_front.adc_value;
 		telemeters.left_front.average_value=cAverage((int*)telemeters.left_front.telemeter_values,SIZE_OF_AVEVAGE_TABLE);
 		telemeters.left_front.sensor_state = 0;
+		if (telemeters.left_front.average_value < 0)
+		{
+			telemeters.left_front.average_value = 0;
+		}
 		return;
 	}
 	if (telemeters.left_diag.sensor_state == 1)
@@ -228,6 +236,10 @@ void telemeters_ADC2_IT(void)
 		telemeters.left_diag.telemeter_values[(telemeters.end_of_conversion / 8) % SIZE_OF_AVEVAGE_TABLE] = telemeters.left_diag.adc_value - telemeters.left_diag.offset - telemeters.ref_left_diag.adc_value;
 		telemeters.left_diag.average_value=cAverage((int*)telemeters.left_diag.telemeter_values,SIZE_OF_AVEVAGE_TABLE);
 		telemeters.left_diag.sensor_state = 0;
+		if (telemeters.left_diag.average_value < 0)
+		{
+			telemeters.left_diag.average_value = 0;
+		}
 		return;
 	}
 	if (telemeters.ref_left_diag.sensor_state == 1)
@@ -259,6 +271,10 @@ void telemeters_ADC3_IT(void)
 		telemeters.right_diag.telemeter_values[(telemeters.end_of_conversion/8) % SIZE_OF_AVEVAGE_TABLE] = telemeters.right_diag.adc_value - telemeters.right_diag.offset - telemeters.ref_right_diag.adc_value;
 		telemeters.right_diag.average_value=cAverage((int*)telemeters.right_diag.telemeter_values,SIZE_OF_AVEVAGE_TABLE);
 		telemeters.right_diag.sensor_state = 0;
+		if (telemeters.right_diag.average_value < 0)
+		{
+			telemeters.right_diag.average_value = 0;
+		}
 	}
 	if (telemeters.ref_right_diag.sensor_state == 1)
 	{

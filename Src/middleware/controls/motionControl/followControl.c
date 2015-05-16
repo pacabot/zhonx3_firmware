@@ -60,7 +60,7 @@ int followControlInit(void)
 {
 	telemeters_pid_instance.Kp = 10;
 	telemeters_pid_instance.Ki = 0;
-	telemeters_pid_instance.Kd = 100;
+	telemeters_pid_instance.Kd = 200;
 
 	follow_control.follow_pid.instance = &telemeters_pid_instance;
 
