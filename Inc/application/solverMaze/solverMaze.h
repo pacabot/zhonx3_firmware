@@ -32,7 +32,6 @@
 #define NO_WALL 2
 
 #define MAX_SPEED_ROTATION		300
-#define MAX_SPEED_TRANSLATION	400
 #define END_SPEED_TRANSLATION	400
 
 #include <stdlib.h>
