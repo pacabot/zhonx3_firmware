@@ -64,6 +64,8 @@ void lineSensorsCalibration(void)
 	telemetersStop();
 	lineSensorsInit();
 	lineSensorsStart();
+	motorsInit();
+	motorsSleepDriver(OFF);
 
 	tone(a, 500);
 //	HAL_Delay(1000);
@@ -108,6 +110,8 @@ void lineFollower(void)
 	telemetersStop();
 	lineSensorsInit();
 	lineSensorsStart();
+	motorsInit();
+	motorsSleepDriver(OFF);
 
 	if (max_Floor.left-min_Floor.left< 100.0)
 	{
