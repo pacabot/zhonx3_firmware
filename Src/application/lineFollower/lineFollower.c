@@ -3,7 +3,7 @@
     @file    line_follower.c
     @author   BM Pacabot.com
     @date     05 May 2015
-    @version  0.00
+    @version  0.01
  */
 /**************************************************************************/
 /* STM32 hal library declarations */
@@ -49,15 +49,17 @@
 #include "application/statistiques/statistiques.h"
 
 line_follower_struct line_follower;
-ground_sensors_struct max_Floor;
-ground_sensors_struct coef_Floor;
-ground_sensors_struct min_Floor;
+ground_sensors_struct max_Floor;	//global data to memorize maximum value of sensors
+ground_sensors_struct coef_Floor;	//global data to memorize coeff value (0..1000]
+ground_sensors_struct min_Floor;	//global data to memorize minimum value of sensors
 
 //__IO uint16_t ADC1ConvertedValues[2] = {0};
 //__IO uint16_t ADC3ConvertedValues[3] = {0};
 
 GPIO_InitTypeDef GPIO_InitStruct;
 
+//----------------------------------------------------------------
+// Initialize data sensor to memorize the max and min value for each 5 sensors
 void lineSensorsCalibration(void)
 {
 	mainControlInit();
@@ -104,6 +106,8 @@ void lineSensorsCalibration(void)
 	motorsSleepDriver(ON);
 }
 
+//---------------------------------------------------------------------
+// Intelligent function to manage zhonx on the line path
 void lineFollower(void)
 {
 	mainControlInit();
@@ -187,7 +191,9 @@ void lineFollower(void)
 // -----------------------------------------------------------------------
 		if ((double)lineSensors.front.adc_value < min_Floor.front *1.2 &&
 			(double)lineSensors.left.adc_value < min_Floor.left *1.2 &&
-			(double)lineSensors.right.adc_value < min_Floor.right *1.2)
+			(double)lineSensors.right.adc_value < min_Floor.right *1.2 &&
+			(double)lineSensors.left_ext.adc_value < min_Floor.leftExt *1.2 &&
+			(double)lineSensors.right_ext.adc_value < min_Floor.rightExt *1.2)
 		{
 			cpt++;
 			if (cpt>5)
@@ -215,36 +221,42 @@ void lineFollower(void)
 	motorsSleepDriver(ON);
 }
 
+//----------------------------------------------------------------------
 // fonction pour asservir zhonx sur la ligne
-// -1 : ralentir
-//  0 : meme vitesse
-//  1 : accelerer
+//
 void asservissement(void)
 {
-	static maxdevant=0.0;
-	line_follower.position = 0.00;
+	static int maxdevant=0;  // memorize the max level of front sensors line
+
 	int gauche=(lineSensors.left.adc_value - min_Floor.left) * coef_Floor.left ;
 	int devant=(lineSensors.front.adc_value- min_Floor.front) * coef_Floor.front ;
 	int droite=(lineSensors.right.adc_value- min_Floor.right) * coef_Floor.right ;
     int droiteExt=(lineSensors.right_ext.adc_value - min_Floor.rightExt) * coef_Floor.rightExt;
     int gaucheExt=(lineSensors.left_ext.adc_value  - min_Floor.leftExt)* coef_Floor.leftExt;
 
-    int milieu=0.0;
+    int milieu=0;		// take account if the center sensor line is out the line
+    int interieur=droite-gauche; //take account the sensor just right and left of front
+    int	exterieur=0;	// take account the external sensor line
 
-	if (droite-gauche>20)
+
+	if (interieur>20)
 	{
 		milieu=(maxdevant-devant);
 	}
-	else if (droite-gauche<-20)
+	else if (interieur<-20)
 	{
 		milieu=-(maxdevant-devant);
 	}else
 	{
 		maxdevant=devant;
 	}
+	// check if we are for the center out of the line to take account the gaucheExt and droiteExt
+    if (devant<100)
+    {
+    	exterieur = droiteExt - gaucheExt;
+    }
 
-
-	line_follower.position = (double)(droite-gauche+milieu) * 0.004;
+	line_follower.position = (double)(droite - gauche + milieu + exterieur) * 0.004;
 
 }
 void lineFollower_IT(void)
@@ -284,10 +296,11 @@ void lineFollower_IT(void)
 	// -----------------------------------------------------------------------
 	if ((double)lineSensors.front.adc_value < min_Floor.front *1.2 &&
 		(double)lineSensors.left.adc_value < min_Floor.left *1.2 &&
-		(double)lineSensors.right.adc_value < min_Floor.right *1.2)
+		(double)lineSensors.right.adc_value < min_Floor.right *1.2 &&
+		(double)lineSensors.left_ext.adc_value < min_Floor.leftExt *1.2 &&
+		(double)lineSensors.right_ext.adc_value < min_Floor.rightExt *1.2)
 	{
 	    move(0, 150, 250, 0);
 	}
-
 }
 
