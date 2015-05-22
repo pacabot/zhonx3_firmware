@@ -100,53 +100,54 @@ int followControlLoop(void)
 	wall_saw = getCellState();
 	getTelemetersDistance(&distances);
 
-	if (wall_saw.front == WALL_PRESENCE)
+	if (follow_control.follow_type == FOLLOW_WALL)
 	{
-		if (wall_saw.right == WALL_PRESENCE)
+		if (wall_saw.front == WALL_PRESENCE)
 		{
-			if (distances.distance_diag_right > MIN_DIST_FOR_FOLLOW && distances.distance_diag_right < MAX_DIST_FOR_FOLLOW)
+			if (wall_saw.right == WALL_PRESENCE)
 			{
-				if ((distances.distance_front_left < MAX_DIST_FOR_ALIGN && distances.distance_front_right < MAX_DIST_FOR_ALIGN) &&
-						(distances.distance_front_left > MIN_DIST_FOR_ALIGN && distances.distance_front_right > MIN_DIST_FOR_ALIGN))
+				if (distances.distance_diag_right > MIN_DIST_FOR_FOLLOW && distances.distance_diag_right < MAX_DIST_FOR_FOLLOW)
 				{
-					alignFront(&distances);
+					if ((distances.distance_front_left < MAX_DIST_FOR_ALIGN && distances.distance_front_right < MAX_DIST_FOR_ALIGN) &&
+							(distances.distance_front_left > MIN_DIST_FOR_ALIGN && distances.distance_front_right > MIN_DIST_FOR_ALIGN))
+					{
+						alignFront(&distances);
+					}
 				}
 			}
+			else if (wall_saw.left == WALL_PRESENCE)
+			{
+				if (distances.distance_diag_left > MIN_DIST_FOR_FOLLOW && distances.distance_diag_left < MAX_DIST_FOR_FOLLOW)
+				{
+					if ((distances.distance_front_left < MAX_DIST_FOR_ALIGN && distances.distance_front_right < MAX_DIST_FOR_ALIGN) &&
+							(distances.distance_front_left > MIN_DIST_FOR_ALIGN && distances.distance_front_right > MIN_DIST_FOR_ALIGN))
+					{
+						alignFront(&distances);
+					}
+				}
+			}
+		}
+		else if (wall_saw.left == WALL_PRESENCE && wall_saw.right == WALL_PRESENCE)
+		{
+			bothWallFollow(&distances);
 		}
 		else if (wall_saw.left == WALL_PRESENCE)
 		{
-			if (distances.distance_diag_left > MIN_DIST_FOR_FOLLOW && distances.distance_diag_left < MAX_DIST_FOR_FOLLOW)
-			{
-				if ((distances.distance_front_left < MAX_DIST_FOR_ALIGN && distances.distance_front_right < MAX_DIST_FOR_ALIGN) &&
-						(distances.distance_front_left > MIN_DIST_FOR_ALIGN && distances.distance_front_right > MIN_DIST_FOR_ALIGN))
-				{
-					alignFront(&distances);
-				}
-			}
+			leftWallFollow(&distances);
+		}
+		else if (wall_saw.right == WALL_PRESENCE)
+		{
+			rightWallFollow(&distances);
 		}
 	}
-	else if (wall_saw.left == WALL_PRESENCE && wall_saw.right == WALL_PRESENCE)
+	else if (follow_control.follow_type == FOLLOW_LINE)
 	{
-		bothWallFollow(&distances);
-	}
-	else if (wall_saw.left == WALL_PRESENCE)
-	{
-		leftWallFollow(&distances);
-	}
-	else if (wall_saw.right == WALL_PRESENCE)
-	{
-		rightWallFollow(&distances);
+		follow_control.follow_error = line_follower.position;
 	}
 	else
 	{
 		follow_control.follow_error = 0;
 	}
-	//	follow_control.follow_error /= 2.00;
-	//	}
-	//	else if (follow_control.follow_type == FOLLOW_LINE)
-	//	{
-	//		follow_control.follow_error = line_follower.position;
-	//	}
 
 	follow_control.follow_command = (pidController(follow_control.follow_pid.instance, follow_control.follow_error));
 
