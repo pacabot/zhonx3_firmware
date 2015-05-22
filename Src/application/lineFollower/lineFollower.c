@@ -66,8 +66,8 @@ void lineSensorsCalibration(void)
 	lineSensorsStart();
 
 	tone(a, 500);
-	HAL_Delay(1000);
-	move(0, 100, 50, 0);
+//	HAL_Delay(1000);
+	move(0, 100, 200, 0);
 
 // -------------------------------------------------------------
 // Init line Sensor
@@ -93,7 +93,6 @@ void lineSensorsCalibration(void)
 		if (lineSensors.right_ext.adc_value > max_Floor.rightExt) max_Floor.rightExt = lineSensors.right_ext.adc_value;
 	}
 	tone(b, 500);
-	HAL_Delay(2000);
 	tone(c, 500);
 
 	// desactivate PID
@@ -132,7 +131,7 @@ void lineFollower(void)
 	ssd1306PrintInt(10, 35, "RIGHT     =  ", (uint16_t) min_Floor.right, &Font_5x8);
 	ssd1306PrintInt(10, 45, "RIGHT_EXT =  ", (uint16_t) min_Floor.rightExt, &Font_5x8);
 	ssd1306Refresh();
-	HAL_Delay(900);
+//	HAL_Delay(900);
 	tone(c, 100);
 
 	ssd1306ClearScreen();
@@ -142,11 +141,11 @@ void lineFollower(void)
 	ssd1306PrintInt(10, 35, "RIGHT     =  ", (uint16_t) max_Floor.right, &Font_5x8);
 	ssd1306PrintInt(10, 45, "RIGHT_EXT =  ", (uint16_t) max_Floor.rightExt, &Font_5x8);
 	ssd1306Refresh();
-	HAL_Delay(900);
-	tone(c, 100);
+//	HAL_Delay(900);
 
-	HAL_Delay(800);
-	tone(a, 200);
+
+//	HAL_Delay(500);
+
 	follow_control.follow_type = FOLLOW_LINE;
 
 	line_follower.active_state = TRUE;
@@ -154,16 +153,26 @@ void lineFollower(void)
 //	while(isEndMove() != TRUE);
 	char marche = TRUE;
 	char cpt=0;
-
+	int  error;
 	while(expanderJoyFiltered()!=JOY_LEFT && marche)
 	{
+		//error=follow_control.follow_error*10;
+		int gauche=((double)lineSensors.left.adc_value - min_Floor.left) * coef_Floor.left ;
+		int devant=((double)lineSensors.front.adc_value- min_Floor.front) * coef_Floor.front ;
+		int droite=((double)lineSensors.right.adc_value- min_Floor.right) * coef_Floor.right ;
+		error=line_follower.position*200;
 		ssd1306ClearScreen();
-		ssd1306PrintInt(10, 5,  "LEFT_EXT  =  ", (uint16_t) lineSensors.left_ext.adc_value, &Font_5x8);
-		ssd1306PrintInt(10, 15, "LEFT      =  ", (uint16_t) lineSensors.left.adc_value, &Font_5x8);
-		ssd1306PrintInt(10, 25, "FRONT --  =  ", (uint16_t) lineSensors.front.adc_value, &Font_5x8);
-		ssd1306PrintInt(10, 35, "RIGHT     =  ", (uint16_t) lineSensors.right.adc_value, &Font_5x8);
-		ssd1306PrintInt(10, 45, "RIGHT_EXT =  ", (uint16_t) lineSensors.right_ext.adc_value, &Font_5x8);
-		ssd1306PrintInt(10, 54, "Error =  ", (int32_t) follow_control.follow_error, &Font_5x8);
+//		ssd1306PrintInt(10, 5,  "LEFT_EXT  =  ", (uint16_t) lineSensors.left_ext.adc_value, &Font_5x8);
+//		ssd1306PrintInt(10, 15, "LEFT      =  ", (uint16_t) lineSensors.left.adc_value, &Font_5x8);
+//		ssd1306PrintInt(10, 25, "FRONT --  =  ", (uint16_t) lineSensors.front.adc_value, &Font_5x8);
+//		ssd1306PrintInt(10, 35, "RIGHT     =  ", (uint16_t) lineSensors.right.adc_value, &Font_5x8);
+//		ssd1306PrintInt(10, 45, "RIGHT_EXT =  ", (uint16_t) lineSensors.right_ext.adc_value, &Font_5x8);
+
+		ssd1306PrintInt(10, 15, "LEFT      =  ", gauche, &Font_5x8);
+		ssd1306PrintInt(10, 25, "FRONT --  =  ", devant, &Font_5x8);
+		ssd1306PrintInt(10, 35, "RIGHT     =  ", droite, &Font_5x8);
+
+		ssd1306PrintInt(10, 54, "Error =  ", error, &Font_5x8);
 		ssd1306Refresh();
 
 
@@ -178,8 +187,8 @@ void lineFollower(void)
 			if (cpt>5)
 			{
 			    marche = FALSE;
-			    move(0, 100, 50, 0);
-			    tone(c, 500);tone(c, 500);
+			    move(0, 150, 250, 0);
+			    tone(c, 500);tone(d, 500);
 			}
 		}
 // -----------------------------------------------------------------------
@@ -206,19 +215,30 @@ void lineFollower(void)
 //  1 : accelerer
 void asservissement(void)
 {
+	static maxdevant=0.0;
 	line_follower.position = 0.00;
-	double gauche=(double)lineSensors.left.adc_value * coef_Floor.left - min_Floor.left;
-	double devant=(double)lineSensors.front.adc_value * coef_Floor.front - min_Floor.front;
-	double droite=(double)lineSensors.right.adc_value * coef_Floor.right - min_Floor.right;
+	int gauche=(lineSensors.left.adc_value - min_Floor.left) * coef_Floor.left ;
+	int devant=(lineSensors.front.adc_value- min_Floor.front) * coef_Floor.front ;
+	int droite=(lineSensors.right.adc_value- min_Floor.right) * coef_Floor.right ;
 //    double droiteExt=(double)lineSensors.right_ext.adc_value * coef_Floor.rightExt - min_Floor.rightExt;
 //    double gaucheExt=(double)lineSensors.left_ext.adc_value * coef_Floor.leftExt - min_Floor.leftExt;
 
-	line_follower.position = (droite-gauche) * 0.005;
+    int milieu=0.0;
 
-	if ((devant*1.2) < gauche || (devant*1.2) < droite)
+	if (droite-gauche>20)
 	{
-		line_follower.position = (droite-gauche) * 0.01;
+		milieu=(maxdevant-devant);
 	}
+	else if (droite-gauche<-20)
+	{
+		milieu=-(maxdevant-devant);
+	}else
+	{
+		maxdevant=devant;
+	}
+
+	line_follower.position = (double)(droite-gauche+milieu) * 0.004;
+
 }
 void lineFollower_IT(void)
 {
@@ -227,31 +247,31 @@ void lineFollower_IT(void)
 
 	asservissement();
 
-	if (follow_control.follow_error > 5.0 && vitesse==0)
-	{
-		// deceleration
-		move(0, 50, MAXSPEED, MINSPEED);
-		vitesse=-1;
-	}
-	else if (follow_control.follow_error < 3.0 && vitesse==0)
-	{
-		// acceleration
-		move(0, 50, MINSPEED, MAXSPEED);
-		vitesse=1;
-	}
-
-	if (isEndMove() == TRUE)
-	{
-		if (vitesse<0)
-		{
-			move(0, 10000, MINSPEED, MINSPEED);
-		}
-		else if (vitesse>0)
-		{
-			move(0, 10000, MAXSPEED, MAXSPEED);
-		}
-		vitesse=0;
-	}
+//	if (follow_control.follow_error > 3.0 && vitesse==0)
+//	{
+//		// deceleration
+//		move(0, 30, MAXSPEED, MINSPEED);
+//		vitesse=-1;
+//	}
+//	else if (follow_control.follow_error < 3.0 && vitesse==0)
+//	{
+//		// acceleration
+//		move(0, 30, MINSPEED, MAXSPEED);
+//		vitesse=1;
+//	}
+//
+//	if (isEndMove() == TRUE)
+//	{
+//		if (vitesse<0)
+//		{
+//			move(0, 10000, MINSPEED, MINSPEED);
+//		}
+//		else if (vitesse>0)
+//		{
+//			move(0, 10000, MAXSPEED, MAXSPEED);
+//		}
+//		vitesse=0;
+//	}
 	// -----------------------------------------------------------------------
 	// Condition to stop zhonx if no line
 	// -----------------------------------------------------------------------
@@ -259,7 +279,7 @@ void lineFollower_IT(void)
 		(double)lineSensors.left.adc_value < min_Floor.left *1.2 &&
 		(double)lineSensors.right.adc_value < min_Floor.right *1.2)
 	{
-	    move(0, 150, 50, 0);
+	    move(0, 150, 250, 0);
 	}
 
 }
