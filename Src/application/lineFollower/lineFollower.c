@@ -111,7 +111,9 @@ void lineFollower(void)
 	lineSensorsInit();
 	lineSensorsStart();
 	motorsInit();
+	follow_control.follow_type = FOLLOW_LINE;
 	motorsSleepDriver(OFF);
+
 
 	if (max_Floor.left-min_Floor.left< 100.0)
 	{
@@ -224,8 +226,8 @@ void asservissement(void)
 	int gauche=(lineSensors.left.adc_value - min_Floor.left) * coef_Floor.left ;
 	int devant=(lineSensors.front.adc_value- min_Floor.front) * coef_Floor.front ;
 	int droite=(lineSensors.right.adc_value- min_Floor.right) * coef_Floor.right ;
-//    double droiteExt=(double)lineSensors.right_ext.adc_value * coef_Floor.rightExt - min_Floor.rightExt;
-//    double gaucheExt=(double)lineSensors.left_ext.adc_value * coef_Floor.leftExt - min_Floor.leftExt;
+    int droiteExt=(lineSensors.right_ext.adc_value - min_Floor.rightExt) * coef_Floor.rightExt;
+    int gaucheExt=(lineSensors.left_ext.adc_value  - min_Floor.leftExt)* coef_Floor.leftExt;
 
     int milieu=0.0;
 
@@ -240,6 +242,7 @@ void asservissement(void)
 	{
 		maxdevant=devant;
 	}
+
 
 	line_follower.position = (double)(droite-gauche+milieu) * 0.004;
 
