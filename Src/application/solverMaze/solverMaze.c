@@ -65,8 +65,7 @@ int maze(void)
 	mainControlInit ();
 
 	control_params.follow_state = TRUE;
-	follow_control.follow_type = FOLLOW_WALL;//NOFOLLOW
-	//position_control.position_type = GYRO; unused
+	follow_control.follow_type = NOFOLLOW;//FOLLOW_WALL;
 	move(0, 0, 0, 0);
 	HAL_Delay(500);
 
@@ -111,9 +110,8 @@ int maze(void)
 //		while(isEndMove() != TRUE);
 //		positionZhonx.orientation=(positionZhonx.orientation+1)%4;
 //		new_cell (getCellState (), &maze, positionZhonx);
-//		print_maze(maze,positionZhonx.x, positionZhonx.y);
+		print_maze(maze,positionZhonx.x, positionZhonx.y);
 //	}
-//	moveStartCell(SPEED_TRANSLATION,SPEED_TRANSLATION);
 	do
 	{
 		waitStart ();
@@ -436,20 +434,20 @@ void move_zhonx_arc (int direction_to_go, positionRobot *positionZhonx, int numb
 
 void new_cell(walls new_walls, labyrinthe *maze, positionRobot positionZhonx)
 {
-
+#ifdef debug
 	/*print walls position*/
-		//ssd1306ClearRect(64,0,64,64);
+		ssd1306ClearRect(64,0,64,64);
 		if (new_walls.front == WALL_PRESENCE)
 		{
-			//ssd1306FillRect(64,49,54,5);
+			ssd1306FillRect(64,49,54,5);
 		}
 		switch (new_walls.next_front)
 		{
 			case WALL_PRESENCE:
-				//ssd1306FillRect(64,0,54,5);
+				ssd1306FillRect(64,0,54,5);
 				break;
 			case NO_KNOWN :
-				//ssd1306DrawRect(64,0,54,5);
+				ssd1306DrawRect(64,0,54,5);
 				break;
 			default:
 				break;
@@ -457,10 +455,10 @@ void new_cell(walls new_walls, labyrinthe *maze, positionRobot positionZhonx)
 		switch (new_walls.left)
 		{
 			case WALL_PRESENCE:
-				//ssd1306FillRect(64,0,5,54);
+				ssd1306FillRect(64,0,5,54);
 				break;
 			case NO_KNOWN :
-				//ssd1306DrawRect(64,0,5,54);
+				ssd1306DrawRect(64,0,5,54);
 				break;
 			default:
 				break;
@@ -468,16 +466,17 @@ void new_cell(walls new_walls, labyrinthe *maze, positionRobot positionZhonx)
 		switch (new_walls.right)
 		{
 			case WALL_PRESENCE:
-				//ssd1306FillRect(113,0,5,54);
+				ssd1306FillRect(113,0,5,54);
 				break;
 			case NO_KNOWN :
-				//ssd1306DrawRect(113,0,5,54);
+				ssd1306DrawRect(113,0,5,54);
 				break;
 			default:
 				break;
 		}
-		//ssd1306Refresh();
+		ssd1306Refresh();
 		/*end print wall position*/
+#endif
 //		telemetersStop();
 //		motorsSleepDriver(ON);
 	switch (positionZhonx.orientation)
@@ -944,7 +943,8 @@ void maze_init(labyrinthe *maze)
 
 void print_maze(const labyrinthe maze, const int x_robot, const int y_robot)
 {
-	//ssd1306ClearRect(0,0,64,64);
+#ifdef debug
+	ssd1306ClearRect(0,0,64,64);
 	int size_cell_on_oled = ((63) / MAZE_SIZE);
 	int x, y;
 	for (y = 0; y < MAZE_SIZE; y++)
@@ -953,50 +953,51 @@ void print_maze(const labyrinthe maze, const int x_robot, const int y_robot)
 		{
 			if (maze.cell[x][y].wall_north == WALL_PRESENCE)
 			{
-				//ssd1306DrawLine (x * size_cell_on_oled, y * size_cell_on_oled,
-		//x * size_cell_on_oled + size_cell_on_oled + 1, y * size_cell_on_oled);
+				ssd1306DrawLine (x * size_cell_on_oled, y * size_cell_on_oled,
+		x * size_cell_on_oled + size_cell_on_oled + 1, y * size_cell_on_oled);
 			}
 			else if (maze.cell[x][y].wall_north == NO_KNOWN)
 			{
-				//ssd1306DrawDashedLine (x * size_cell_on_oled, y * size_cell_on_oled,
-		//	   x * size_cell_on_oled + size_cell_on_oled + 1, y * size_cell_on_oled);
+				ssd1306DrawDashedLine (x * size_cell_on_oled, y * size_cell_on_oled,
+			   x * size_cell_on_oled + size_cell_on_oled + 1, y * size_cell_on_oled);
 			}
 			if (maze.cell[x][y].wall_west == WALL_PRESENCE)
 			{
-				//ssd1306DrawLine (x * size_cell_on_oled, y * size_cell_on_oled,
-			//					 x * size_cell_on_oled, y * size_cell_on_oled + size_cell_on_oled + 1);
+				ssd1306DrawLine (x * size_cell_on_oled, y * size_cell_on_oled,
+								 x * size_cell_on_oled, y * size_cell_on_oled + size_cell_on_oled + 1);
 			}
 			else if (maze.cell[x][y].wall_west == NO_KNOWN)
 			{
-				//ssd1306DrawDashedLine (x * size_cell_on_oled, y * size_cell_on_oled,
-		//							   x * size_cell_on_oled, y * size_cell_on_oled + size_cell_on_oled + 1);
+				ssd1306DrawDashedLine (x * size_cell_on_oled, y * size_cell_on_oled,
+									   x * size_cell_on_oled, y * size_cell_on_oled + size_cell_on_oled + 1);
 			}
 
 			if (maze.cell[x][y].wall_south == WALL_PRESENCE)
 			{
-				//ssd1306DrawLine (x * size_cell_on_oled,(y + 1) * size_cell_on_oled,
-		//	 size_cell_on_oled + x * size_cell_on_oled,(y + 1) * size_cell_on_oled);
+				ssd1306DrawLine (x * size_cell_on_oled,(y + 1) * size_cell_on_oled,
+			 size_cell_on_oled + x * size_cell_on_oled,(y + 1) * size_cell_on_oled);
 			}
 			else if (maze.cell[x][y].wall_south == NO_KNOWN)
 			{
-				//ssd1306DrawDashedLine (x * size_cell_on_oled,(y + 1) * size_cell_on_oled,
-		//		   size_cell_on_oled + x * size_cell_on_oled,(y + 1) * size_cell_on_oled);
+				ssd1306DrawDashedLine (x * size_cell_on_oled,(y + 1) * size_cell_on_oled,
+				   size_cell_on_oled + x * size_cell_on_oled,(y + 1) * size_cell_on_oled);
 			}
 			if (maze.cell[x][y].wall_east == WALL_PRESENCE)
 			{
-				//ssd1306DrawLine ((x + 1) * size_cell_on_oled, y * size_cell_on_oled,
-		//						 (x + 1) * size_cell_on_oled, y * size_cell_on_oled + size_cell_on_oled + 1);
+				ssd1306DrawLine ((x + 1) * size_cell_on_oled, y * size_cell_on_oled,
+								 (x + 1) * size_cell_on_oled, y * size_cell_on_oled + size_cell_on_oled + 1);
 			}
 			else if (maze.cell[x][y].wall_east == NO_KNOWN)
 			{
-				//ssd1306DrawDashedLine  ((x + 1) * size_cell_on_oled, y * size_cell_on_oled,
-			//							(x + 1) * size_cell_on_oled, y * size_cell_on_oled + size_cell_on_oled + 1);
+				ssd1306DrawDashedLine  ((x + 1) * size_cell_on_oled, y * size_cell_on_oled,
+										(x + 1) * size_cell_on_oled, y * size_cell_on_oled + size_cell_on_oled + 1);
 			}
 		}
 	}
 	//print_length(maze);
-	//ssd1306DrawPixel(x_robot * size_cell_on_oled+1, y_robot * size_cell_on_oled+1);
-	//ssd1306Refresh ();
+	ssd1306DrawPixel(x_robot * size_cell_on_oled+1, y_robot * size_cell_on_oled+1);
+	ssd1306Refresh ();
+#endif
 }
 
 void* calloc_s(size_t nombre, size_t taille)
