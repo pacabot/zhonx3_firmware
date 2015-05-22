@@ -53,7 +53,7 @@ arm_pid_instance_f32 encoder_pid_instance;
 
 int speedControlInit(void)
 {
-	encoder_pid_instance.Kp = 300;
+	encoder_pid_instance.Kp = 800;
 	encoder_pid_instance.Ki = 0;
 	encoder_pid_instance.Kd = 800;
 
@@ -66,6 +66,8 @@ int speedControlInit(void)
 	speed_control.speed_error = 0;
 	speed_control.speed_command = 0;
 	speed_control.speed_consign = 0;
+
+	speed_params.initial_speed = 0;
 
 	speed_control.speed_pid.instance = &encoder_pid_instance;
 
@@ -93,7 +95,7 @@ int speedControlLoop(void)
 		speed_control.speed_consign += speed_params.accel_dist_per_loop;
 		speed_control.current_distance_consign += speed_control.speed_consign;
 	}
-	else if ((speed_params.nb_loop_maint > 0))//speed_control.current_distance < (speed_params.accel_dist + speed_params.maintain_dist)))
+	else if (speed_params.nb_loop_maint > 0)//(speed_control.current_distance < (speed_params.accel_dist + speed_params.maintain_dist)))//speed_params.nb_loop_maint > 0))//speed_control.current_distance < (speed_params.accel_dist + speed_params.maintain_dist)))
 	{
 		speed_params.nb_loop_maint--;
 		speed_control.current_distance_consign += speed_control.speed_consign;
@@ -197,6 +199,7 @@ float speedProfileCompute(float distance)
 
 	if (distance == 0)
 	{
+		speed_params.initial_speed = 0;
 		speed_control.end_control = 1;
 		speed_params.nb_loop_accel = 0;
 		speed_params.nb_loop_decel = 0;

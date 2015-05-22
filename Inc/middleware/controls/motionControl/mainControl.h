@@ -19,7 +19,8 @@
 #define MAIN_CONTROL_E_SUCCESS  0
 #define MAIN_CONTROL_E_ERROR    MAKE_ERROR(MAIN_CONTROL_MODULE_ID, 1)
 
-#define STRAIGHT_DIST	20
+#define STRAIGHT_DIST	10.00
+#define NO_FOLLOW_DIST	60.00
 
 /* Types definitions */
 enum rotation_type_enum {CW, CCW};
@@ -55,10 +56,13 @@ char isEndMove(void);
 int  frontCal(float max_speed);
 int  rotate180WithCal(enum rotation_type_enum rotation_type, float max_speed, float end_speed);
 int  rotate90WithCal(enum rotation_type_enum rotation_type, float max_speed, float end_speed);
-int  moveCell(unsigned char nb_cell, float max_speed, float end_speed);
+int  moveCell(unsigned long nb_cell, float max_speed, float end_speed);
 int  moveHalfCell(float max_speed, float end_speed);
-int  mouveRotateCW90(float max_speed, float end_speed);
-int  mouveRotateCCW90(float max_speed, float end_speed);
+int  moveEndCell(float max_speed, float end_speed);
+int  moveStartCell(float max_speed, float end_speed);
+int  moveRotateCW90(float max_speed, float end_speed);
+int  moveRotateCCW90(float max_speed, float end_speed);
+int  moveUTurn(float speed_rotation, float max_speed, float end_speed);
 void mainControlTest(void);
 void followWallTest(void);
 void followLineTest(void);

@@ -52,6 +52,7 @@ extern void followWallTest(void);
 extern void followLineTest(void);
 extern void rotateTest(void);
 extern void curveRotateTest(void);
+extern void test_maze(void);
 
 /*
  * to create a new menu you have to create a new variable of type "const menuItem" like this :
@@ -88,6 +89,7 @@ const menuItem maze_menu=
 		"maze menu",
 		{
 			{"new maze",'f',		(void*)maze},
+			{"test maze",'f',		(void*)test_maze},
 			{"calibration",'b',		(void*)&zhonxSettings.calibration_enabled},
 			{"color finish",'b',	(void*)&zhonxSettings.color_sensor_enabled},
 			{"x finish",'i',		(void*)&zhonxSettings.x_finish_maze},
