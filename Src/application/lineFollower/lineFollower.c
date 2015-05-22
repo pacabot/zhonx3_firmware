@@ -66,6 +66,7 @@ void lineSensorsCalibration(void)
 	lineSensorsStart();
 	motorsInit();
 	motorsSleepDriver(OFF);
+	control_params.line_follow_state = TRUE;
 
 	tone(a, 500);
 //	HAL_Delay(1000);
@@ -99,7 +100,6 @@ void lineSensorsCalibration(void)
 
 	// desactivate PID
 	pid_loop.start_state = FALSE;
-	line_follower.active_state = FALSE;
 	telemetersStop();
 	motorsSleepDriver(ON);
 }
@@ -244,7 +244,7 @@ void asservissement(void)
 	}
 
 
-	line_follower.position = (double)(droite-gauche+milieu) * 0.004;
+	line_follower.position = (double)(droite-gauche+milieu) * 0.02;
 
 }
 void lineFollower_IT(void)
