@@ -70,5 +70,6 @@ void cmd_displayPrompt(void);
  */
 int cmd_help(const char *args);
 int cmd_maze(const char *args);
+int cmd_halt(const char *args);
 
 #endif // __COMMANDS_H__

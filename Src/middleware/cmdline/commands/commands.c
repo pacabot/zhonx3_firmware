@@ -40,6 +40,7 @@ const CMD_HANDLER cmd_handlers[] =
     {"test_beeper", NULL, "Tests beeper"},
     {"test_motors", NULL, "Tests robot motors"},
     {"test_line_sensors", NULL, "Tests line sensors"},
+    {"halt", cmd_halt, "Shutdown Zhonx III"},
 
     {NULL, NULL, NULL}  // This element is mandatory. It indicates the end of the array
 };
