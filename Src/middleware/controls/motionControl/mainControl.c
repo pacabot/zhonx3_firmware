@@ -41,16 +41,20 @@
 #include "middleware/controls/motionControl/speedControl.h"
 #include "middleware/controls/motionControl/transfertFunction.h"
 #include "middleware/controls/motionControl/followControl.h"
+#include "middleware/controls/motionControl/lineFollowControl.h"
 
 /* Declarations for this module */
 #include "middleware/controls/motionControl/mainControl.h"
 
 control_params_struct control_params;
 
-double ROTATION_DIAMETER = sqrt(pow(WHEELS_DISTANCE, 2) + pow(WHEELS_SPACING, 2));
+double ROTATION_DIAMETER;
 
 int mainControlInit(void)
 {
+
+    ROTATION_DIAMETER = sqrt(pow(WHEELS_DISTANCE, 2) + pow(WHEELS_SPACING, 2));
+
 	motorsInit();
 	encodersInit();
 	mulimeterInit();
@@ -58,6 +62,7 @@ int mainControlInit(void)
 	speedControlInit();
 	positionControlInit();
 	followControlInit();
+	lineFollowControlInit();
 	transfertFunctionInit();
 	adxrs620Init();
 
@@ -66,12 +71,17 @@ int mainControlInit(void)
 	control_params.follow_state = 0;
 	control_params.position_state = 0;
 	control_params.speed_state = 0;
+	control_params.line_follow_state = 0;
 
 	return MAIN_CONTROL_E_SUCCESS;
 }
 
 int mainControlLoop(void)
 {
+	if (control_params.line_follow_state == TRUE)
+	{
+		lineFollowControlLoop();
+	}
 	if (control_params.follow_state == TRUE)
 	{
 		followControlLoop();

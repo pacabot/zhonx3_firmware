@@ -30,6 +30,7 @@ extern double ROTATION_DIAMETER;
 typedef struct
 {
 	char follow_state;
+	char line_follow_state;
 	char position_state;
 	char speed_state;
 }control_params_struct;
