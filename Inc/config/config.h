@@ -17,7 +17,7 @@
 #define LOW_TIME_FREQ			100
 #define HI_TIME_FREQ			1000.0 //use for pids inner loop
 #define TELEMETERS_TIME_FREQ	9000  	//each telemeter use 4/9 of TELEMETERS_TIME_FREQ
-#define GYRO_TIME_FREQ			5000
+#define GYRO_TIME_FREQ			1000
 #define LINESENSORS_TIME_FREQ	GYRO_TIME_FREQ //same timer
 #define MULTIMMETER_TIME_FREQ	0.1f
 #define MOTORS_FREQ				20000	//motor pwm freq

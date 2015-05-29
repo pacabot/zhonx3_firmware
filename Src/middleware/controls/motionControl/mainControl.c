@@ -48,10 +48,13 @@
 
 control_params_struct control_params;
 
-double ROTATION_DIAMETER = sqrt(pow(WHEELS_DISTANCE, 2) + pow(WHEELS_SPACING, 2));
+double ROTATION_DIAMETER;
 
 int mainControlInit(void)
 {
+
+    ROTATION_DIAMETER = sqrt(pow(WHEELS_DISTANCE, 2) + pow(WHEELS_SPACING, 2));
+
 	motorsInit();
 	encodersInit();
 	mulimeterInit();
@@ -59,6 +62,7 @@ int mainControlInit(void)
 	speedControlInit();
 	positionControlInit();
 	followControlInit();
+	lineFollowControlInit();
 	transfertFunctionInit();
 	adxrs620Init();
 

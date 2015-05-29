@@ -68,6 +68,7 @@ void lineSensorsCalibration(void)
 	lineSensorsStart();
 	motorsInit();
 	motorsSleepDriver(OFF);
+	control_params.line_follow_state = TRUE;
 
 	tone(a, 500);
 //	HAL_Delay(1000);
@@ -251,12 +252,12 @@ void asservissement(void)
 		maxdevant=devant;
 	}
 	// check if we are for the center out of the line to take account the gaucheExt and droiteExt
-    if (devant<100)
-    {
-    	exterieur = droiteExt - gaucheExt;
-    }
+//    if (devant<100)
+//    {
+//    	exterieur = droiteExt - gaucheExt;
+//    }
 
-	line_follower.position = (double)(droite - gauche + milieu + exterieur) * 0.004;
+    line_follower.position = (double)(droite - gauche + milieu + exterieur) * 0.004;
 
 }
 void lineFollower_IT(void)
