@@ -41,9 +41,10 @@ extern void telemetersTest ();
 extern void toneTest ();
 extern void motorsTest ();
 extern void lineSensorsTest ();
-extern void lineTest ();
+extern void lineFollower();
 extern void mainControlTest ();
 extern int 	wallSensorsCalibration (void);
+extern int 	lineSensorsCalibration (void);
 extern void testTelemeterDistance();
 extern void maze();
 extern void testWallsSensors();
@@ -51,6 +52,7 @@ extern void followWallTest(void);
 extern void followLineTest(void);
 extern void rotateTest(void);
 extern void curveRotateTest(void);
+extern void test_maze(void);
 
 /*
  * to create a new menu you have to create a new variable of type "const menuItem" like this :
@@ -87,6 +89,7 @@ const menuItem maze_menu=
 		"maze menu",
 		{
 			{"new maze",'f',		(void*)maze},
+			{"test maze",'f',		(void*)test_maze},
 			{"calibration",'b',		(void*)&zhonxSettings.calibration_enabled},
 			{"color finish",'b',	(void*)&zhonxSettings.color_sensor_enabled},
 			{"x finish",'i',		(void*)&zhonxSettings.x_finish_maze},
@@ -94,6 +97,16 @@ const menuItem maze_menu=
 		}
 
 };
+
+const menuItem follower_menu=
+{
+		"line menu",
+		{
+			{"line follower",'f',	(void*)lineFollower},
+			{"calibration",'f',		(void*)lineSensorsCalibration},
+		}
+};
+
 
 const menuItem parameters_menu=
 {
@@ -150,7 +163,7 @@ const menuItem mainMenu =
 				{"maze menu",'m',			(void*)&maze_menu},
 				{"Test menu",'m',			(void*)&tests_menu},
 				{"Control menu",'m',		(void*)&control_menu},
-				{"test line",'f', 			(void*)lineTest},
+				{"line menu",'m', 			(void*)&follower_menu},
 				{"parameters menu",'m',		(void*)&parameters_menu},
 				{"test graph",'m',			(void*)&testGraphicMenu},
 				{0,0,0}

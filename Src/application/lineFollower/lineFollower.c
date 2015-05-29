@@ -3,7 +3,7 @@
     @file    line_follower.c
     @author   BM Pacabot.com
     @date     05 May 2015
-    @version  0.00
+    @version  0.01
  */
 /**************************************************************************/
 /* STM32 hal library declarations */
@@ -49,25 +49,30 @@
 #include "application/statistiques/statistiques.h"
 
 line_follower_struct line_follower;
-ground_sensors_struct max_Floor;
-ground_sensors_struct coef_Floor;
-ground_sensors_struct min_Floor;
+ground_sensors_struct max_Floor;	//global data to memorize maximum value of sensors
+ground_sensors_struct coef_Floor;	//global data to memorize coeff value (0..1000]
+ground_sensors_struct min_Floor;	//global data to memorize minimum value of sensors
 
 //__IO uint16_t ADC1ConvertedValues[2] = {0};
 //__IO uint16_t ADC3ConvertedValues[3] = {0};
 
 GPIO_InitTypeDef GPIO_InitStruct;
 
-void lineTest(void)
+//----------------------------------------------------------------
+// Initialize data sensor to memorize the max and min value for each 5 sensors
+void lineSensorsCalibration(void)
 {
 	mainControlInit();
 	telemetersStop();
 	lineSensorsInit();
 	lineSensorsStart();
+	motorsInit();
+	motorsSleepDriver(OFF);
+	control_params.line_follow_state = TRUE;
 
 	tone(a, 500);
-	HAL_Delay(1000);
-	move(0, 100, 50, 0);
+//	HAL_Delay(1000);
+	move(0, 100, 200, 0);
 
 // -------------------------------------------------------------
 // Init line Sensor
@@ -92,19 +97,43 @@ void lineTest(void)
 		if (lineSensors.left_ext.adc_value > max_Floor.leftExt) max_Floor.leftExt = lineSensors.left_ext.adc_value;
 		if (lineSensors.right_ext.adc_value > max_Floor.rightExt) max_Floor.rightExt = lineSensors.right_ext.adc_value;
 	}
-
 	tone(b, 500);
-	HAL_Delay(2000);
 	tone(c, 500);
 
-	tone(d, 500);
+	// desactivate PID
+	pid_loop.start_state = FALSE;
+	line_follower.active_state = FALSE;
+	telemetersStop();
+	motorsSleepDriver(ON);
+}
+
+//---------------------------------------------------------------------
+// Intelligent function to manage zhonx on the line path
+void lineFollower(void)
+{
+	mainControlInit();
+	telemetersStop();
+	lineSensorsInit();
+	lineSensorsStart();
+	motorsInit();
+	follow_control.follow_type = FOLLOW_LINE;
+	motorsSleepDriver(OFF);
+
+
+	if (max_Floor.left-min_Floor.left< 100.0)
+	{
+		tone(a, 3000);
+		return;
+	}
+
+	tone(c, 100);
 	coef_Floor.left=1000.0/(max_Floor.left-min_Floor.left);     //  1000/(max_capteur-min_capteur)
 	coef_Floor.front=1000.0/(max_Floor.front-min_Floor.front);
 	coef_Floor.right=1000.0/(max_Floor.right-min_Floor.right);
 	coef_Floor.leftExt=1000.0/(max_Floor.leftExt-min_Floor.leftExt);
 	coef_Floor.rightExt=1000.0/(max_Floor.rightExt-min_Floor.rightExt);
 
-	HAL_Delay(100);
+
 
 	ssd1306ClearScreen();
 	ssd1306PrintInt(10, 5,  "LEFT_EXT  =  ", (uint16_t) min_Floor.leftExt, &Font_5x8);
@@ -113,7 +142,8 @@ void lineTest(void)
 	ssd1306PrintInt(10, 35, "RIGHT     =  ", (uint16_t) min_Floor.right, &Font_5x8);
 	ssd1306PrintInt(10, 45, "RIGHT_EXT =  ", (uint16_t) min_Floor.rightExt, &Font_5x8);
 	ssd1306Refresh();
-	HAL_Delay(100);
+//	HAL_Delay(900);
+	tone(c, 100);
 
 	ssd1306ClearScreen();
 	ssd1306PrintInt(10, 5,  "LEFT_EXT  =  ", (uint16_t) max_Floor.leftExt, &Font_5x8);
@@ -122,26 +152,38 @@ void lineTest(void)
 	ssd1306PrintInt(10, 35, "RIGHT     =  ", (uint16_t) max_Floor.right, &Font_5x8);
 	ssd1306PrintInt(10, 45, "RIGHT_EXT =  ", (uint16_t) max_Floor.rightExt, &Font_5x8);
 	ssd1306Refresh();
-	HAL_Delay(2000);
+//	HAL_Delay(900);
 
+
+//	HAL_Delay(500);
 
 	follow_control.follow_type = FOLLOW_LINE;
 
 	line_follower.active_state = TRUE;
-	move(0, 10000, 1000, 1000);
+	move(0, 10000, MAXSPEED, 0);
 //	while(isEndMove() != TRUE);
 	char marche = TRUE;
 	char cpt=0;
-
+	int  error;
 	while(expanderJoyFiltered()!=JOY_LEFT && marche)
 	{
+		//error=follow_control.follow_error*10;
+		int gauche=((double)lineSensors.left.adc_value - min_Floor.left) * coef_Floor.left ;
+		int devant=((double)lineSensors.front.adc_value- min_Floor.front) * coef_Floor.front ;
+		int droite=((double)lineSensors.right.adc_value- min_Floor.right) * coef_Floor.right ;
+		error=line_follower.position*200;
 		ssd1306ClearScreen();
-		ssd1306PrintInt(10, 5,  "LEFT_EXT  =  ", (uint16_t) lineSensors.left_ext.adc_value, &Font_5x8);
-		ssd1306PrintInt(10, 15, "LEFT      =  ", (uint16_t) lineSensors.left.adc_value, &Font_5x8);
-		ssd1306PrintInt(10, 25, "FRONT --  =  ", (uint16_t) lineSensors.front.adc_value, &Font_5x8);
-		ssd1306PrintInt(10, 35, "RIGHT     =  ", (uint16_t) lineSensors.right.adc_value, &Font_5x8);
-		ssd1306PrintInt(10, 45, "RIGHT_EXT =  ", (uint16_t) lineSensors.right_ext.adc_value, &Font_5x8);
-		ssd1306PrintInt(10, 54, "Error =  ", (int32_t) follow_control.follow_error, &Font_5x8);
+//		ssd1306PrintInt(10, 5,  "LEFT_EXT  =  ", (uint16_t) lineSensors.left_ext.adc_value, &Font_5x8);
+//		ssd1306PrintInt(10, 15, "LEFT      =  ", (uint16_t) lineSensors.left.adc_value, &Font_5x8);
+//		ssd1306PrintInt(10, 25, "FRONT --  =  ", (uint16_t) lineSensors.front.adc_value, &Font_5x8);
+//		ssd1306PrintInt(10, 35, "RIGHT     =  ", (uint16_t) lineSensors.right.adc_value, &Font_5x8);
+//		ssd1306PrintInt(10, 45, "RIGHT_EXT =  ", (uint16_t) lineSensors.right_ext.adc_value, &Font_5x8);
+
+		ssd1306PrintInt(10, 15, "LEFT      =  ", gauche, &Font_5x8);
+		ssd1306PrintInt(10, 25, "FRONT --  =  ", devant, &Font_5x8);
+		ssd1306PrintInt(10, 35, "RIGHT     =  ", droite, &Font_5x8);
+
+		ssd1306PrintInt(10, 54, "Error =  ", error, &Font_5x8);
 		ssd1306Refresh();
 
 
@@ -150,74 +192,116 @@ void lineTest(void)
 // -----------------------------------------------------------------------
 		if ((double)lineSensors.front.adc_value < min_Floor.front *1.2 &&
 			(double)lineSensors.left.adc_value < min_Floor.left *1.2 &&
-			(double)lineSensors.right.adc_value < min_Floor.right *1.2)
+			(double)lineSensors.right.adc_value < min_Floor.right *1.2 &&
+			(double)lineSensors.left_ext.adc_value < min_Floor.leftExt *1.2 &&
+			(double)lineSensors.right_ext.adc_value < min_Floor.rightExt *1.2)
 		{
 			cpt++;
 			if (cpt>5)
 			{
 			    marche = FALSE;
-			    move(0, 100, 0, 0);
-			}
-		} else
-		{
-			if (lineSensors.front.adc_value*1.3 > max_Floor.front)
-			{
-				cpt=0;
+			    move(0, 150, 250, 0);
+			    tone(c, 500);tone(d, 500);
 			}
 		}
 // -----------------------------------------------------------------------
 // Condition to stop if right priority
 // -----------------------------------------------------------------------
-		if (((double)lineSensors.left_ext.adc_value*1.2) > max_Floor.leftExt )
-		{
-			move(0, 30, 30, 0);
-			tone(c, 500);
-			// capteur telemeter ON
-			move(0, 10000, 250, 0);
-		}
+//		if (((double)lineSensors.left_ext.adc_value*1.2) > max_Floor.leftExt )
+//		{
+//			move(0, 30, 30, 0);
+//			tone(c, 500);
+//			// capteur telemeter ON
+//			move(0, 10000, MAXSPEED, 0);
+//		}
 
 	}
 	pid_loop.start_state = FALSE;
+	line_follower.active_state = FALSE;
 	telemetersStop();
 	motorsSleepDriver(ON);
 }
 
+//----------------------------------------------------------------------
 // fonction pour asservir zhonx sur la ligne
-// -1 : ralentir
-//  0 : meme vitesse
-double asservissement(void)
+//
+void asservissement(void)
 {
-	line_follower.position = 0.00;
-	double gauche=(double)lineSensors.left.adc_value * coef_Floor.left - min_Floor.left;
-	double devant=(double)lineSensors.front.adc_value * coef_Floor.front - min_Floor.front;
-	double droite=(double)lineSensors.right.adc_value * coef_Floor.right - min_Floor.right;
-//    double droiteExt=(double)lineSensors.right_ext.adc_value * coef_Floor.rightExt - min_Floor.rightExt;
-//    double gaucheExt=(double)lineSensors.left_ext.adc_value * coef_Floor.leftExt - min_Floor.leftExt;
+	static int maxdevant=0;  // memorize the max level of front sensors line
 
-	line_follower.position = (droite-gauche) * 0.005;
+	int gauche=(lineSensors.left.adc_value - min_Floor.left) * coef_Floor.left ;
+	int devant=(lineSensors.front.adc_value- min_Floor.front) * coef_Floor.front ;
+	int droite=(lineSensors.right.adc_value- min_Floor.right) * coef_Floor.right ;
+    int droiteExt=(lineSensors.right_ext.adc_value - min_Floor.rightExt) * coef_Floor.rightExt;
+    int gaucheExt=(lineSensors.left_ext.adc_value  - min_Floor.leftExt)* coef_Floor.leftExt;
 
-	if ((devant*1.2) < gauche || (devant*1.2) < droite)
+    int milieu=0;		// take account if the center sensor line is out the line
+    int interieur=droite-gauche; //take account the sensor just right and left of front
+    int	exterieur=0;	// take account the external sensor line
+
+
+	if (interieur>20)
 	{
-		line_follower.position = (droite-gauche) * 0.01;
+		milieu=(maxdevant-devant);
 	}
-	return line_follower.position;
+	else if (interieur<-20)
+	{
+		milieu=-(maxdevant-devant);
+	}else
+	{
+		maxdevant=devant;
+	}
+	// check if we are for the center out of the line to take account the gaucheExt and droiteExt
+//    if (devant<100)
+//    {
+//    	exterieur = droiteExt - gaucheExt;
+//    }
+
+    line_follower.position = (double)(droite - gauche + milieu + exterieur) * 0.004;
+
 }
 void lineFollower_IT(void)
 {
 	// Rapide
+	static int vitesse=0;
 
-	double result = asservissement();
+	asservissement();
 
-
-//		while(isEndMove() != TRUE)
-//		{
-//			assert
-//		}
-//		move(0, 10000, 250, 250);
-//
-//		{
-//			assert
-//		}
+//	if (follow_control.follow_error > 3.0 && vitesse==0)
+//	{
+//		// deceleration
+//		move(0, 30, MAXSPEED, MINSPEED);
+//		vitesse=-1;
 //	}
+//	else if (follow_control.follow_error < 3.0 && vitesse==0)
+//	{
+//		// acceleration
+//		move(0, 30, MINSPEED, MAXSPEED);
+//		vitesse=1;
+//	}
+//
+//	if (isEndMove() == TRUE)
+//	{
+//		if (vitesse<0)
+//		{
+//			move(0, 10000, MINSPEED, MINSPEED);
+//		}
+//		else if (vitesse>0)
+//		{
+//			move(0, 10000, MAXSPEED, MAXSPEED);
+//		}
+//		vitesse=0;
+//	}
+	// -----------------------------------------------------------------------
+	// Condition to stop zhonx if no line
+	// -----------------------------------------------------------------------
+	if ((double)lineSensors.front.adc_value < min_Floor.front *1.2 &&
+		(double)lineSensors.left.adc_value < min_Floor.left *1.2 &&
+		(double)lineSensors.right.adc_value < min_Floor.right *1.2 &&
+		(double)lineSensors.left_ext.adc_value < min_Floor.leftExt *1.2 &&
+		(double)lineSensors.right_ext.adc_value < min_Floor.rightExt *1.2)
+	{
+	    move(0, 150, 250, 0);
+	}
 }
 

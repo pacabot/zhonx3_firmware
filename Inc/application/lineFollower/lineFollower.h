@@ -16,17 +16,22 @@ typedef struct
 }line_follower_struct;
 extern line_follower_struct line_follower;
 
+#define MAXSPEED 1000
+#define MINSPEED 400
+#define SPEED_COEFF 1.00
+
 typedef struct
 {
 	double left;
 	double front;
 	double right;
 	double leftExt;
-	double rightExt
+	double rightExt;
 } ground_sensors_struct;
 
-void lineTest(void);
+void lineSensorsCalibration(void);
+void lineFollower(void);
 void lineFollower_IT(void);
-double asservissement(void);
+void asservissement(void);
 
 #endif /* LINE_FOLLOWER_H_ */
