@@ -161,9 +161,10 @@ void TIM2_IRQHandler(void)
 void USART3_IRQHandler(void)
 {
   /* USER CODE BEGIN USART3_IRQn 0 */
-  uint32_t  uart_status_flag;
-  uint32_t  uart_it_flag;
-  static char *pBuffer = serial_buffer;
+  uint32_t      uart_status_flag;
+  uint32_t      uart_it_flag;
+  static char   *pBuffer = serial_buffer;
+  unsigned char c;
 
 #if 0
   /* USER CODE END USART3_IRQn 0 */
@@ -181,22 +182,42 @@ void USART3_IRQHandler(void)
       __HAL_UART_CLEAR_FLAG(&huart3, UART_FLAG_RXNE);
 
       // Get the character received
-      *pBuffer = (uint16_t)(huart3.Instance->DR & (uint16_t)0x01FF);
+      c = (uint16_t)(huart3.Instance->DR & (uint16_t)0x01FF);
 
-      if (*pBuffer == '\r')
+      switch (c)
       {
-          if ((pBuffer - serial_buffer) > 1)
-          {
-              // 'ENTER' character received
-              cmdline_ctxt.cmd_len = (pBuffer - serial_buffer);
+          case CMDLINE_CR:
+              // Carriage Return
+              cmdline_ctxt.cmd_len = (pBuffer - serial_buffer) + 1;
               cmdline_ctxt.cmd_received = TRUE;
-          }
-          pBuffer = serial_buffer;
-          return;
-      }
-      if (*pBuffer != '\n')
-      {
-          pBuffer++;
+              *pBuffer = c;
+              pBuffer = serial_buffer;
+              return;
+
+          case CMDLINE_LF:
+              // Line Feed
+              pBuffer = serial_buffer;
+              break;
+
+          case CMDLINE_BS:
+              // Backspace
+              if (pBuffer == serial_buffer)
+              {
+                  HAL_UART_Transmit(&huart3, (unsigned char *)"\x07", 1, 100);
+              }
+              else
+              {
+                  HAL_UART_Transmit(&huart3, (unsigned char *)"\x08\x7F", 2, 100);
+                  pBuffer--;
+              }
+              break;
+
+          default:
+              /* Echo received character */
+              HAL_UART_Transmit(&huart3, &c, 1, 100);
+              *pBuffer = c;
+              pBuffer++;
+              break;
       }
   }
 

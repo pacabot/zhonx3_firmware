@@ -25,10 +25,23 @@
 /* Array of registered commands */
 const CMD_HANDLER cmd_handlers[] =
 {
-        {"help", cmd_help, "Displays the available commands"},
-        {"maze", cmd_maze, "Solve maze"},
+    {"help", cmd_help, "Displays the available commands"},
+    {"maze", cmd_maze, "Solve maze"},
+    {"test_distantce", NULL, "Gets front distance in millimeters"},
+    {"test_wall_sensor", NULL, "Tests wall sensors"},
+    {"test_bluetooth", NULL, "Tests Bluetooth connection"},
+    {"test_multimeter", NULL, "Tests Battery level"},
+    {"test_display", NULL, "Tests the SSD1306"},
+    {"test_eeprom", NULL, "Tests the EEPROM"},
+    {"test_encoders", NULL, "Tests motor encoders"},
+    {"test_joystick", NULL, "Tests User Interface Joystick"},
+    {"test_gyroscope", NULL, "Tests Gyroscope"},
+    {"test_telemeters", NULL, "Gets Telemeters ADC values"},
+    {"test_beeper", NULL, "Tests beeper"},
+    {"test_motors", NULL, "Tests robot motors"},
+    {"test_line_sensors", NULL, "Tests line sensors"},
 
-        {NULL, NULL, NULL}  // This element is mandatory. It indicates the end of the array
+    {NULL, NULL, NULL}  // This element is mandatory. It indicates the end of the array
 };
 
 void cmd_output(const char *format, ...)
@@ -38,5 +51,5 @@ void cmd_output(const char *format, ...)
 
 void cmd_displayPrompt(void)
 {
-    cmdline_ctxt.out("\n> ");
+    cmdline_ctxt.out("\rZhonxIII> ");
 }
