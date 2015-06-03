@@ -29,10 +29,10 @@ int telemeter_left_diag_voltage[NUMBER_OF_CELL]={4996,3915,3911,3903,3895,3887,3
 //int telemetersWithOutNoise//todo
 int wallSensorsCalibration (void)
 {
-	int value_to_retest_front_right [NUMBER_OF_CELL+1];
-	int length_front_right;
-	int value_to_retest_front_left [NUMBER_OF_CELL+1];
-	int length_front_left;
+//	int value_to_retest_front_right [NUMBER_OF_CELL+1];
+//	int length_front_right;
+//	int value_to_retest_front_left [NUMBER_OF_CELL+1];
+//	int length_front_left;
 //	int value_to_retest_diag_right [NUMBER_OF_CELL+1];
 //	int length_diag_right;
 //	int value_to_retest_diag_left [NUMBER_OF_CELL+1];
@@ -67,18 +67,18 @@ int wallSensorsCalibration (void)
 		move(0,-NUMBER_OF_MILLIMETER_BY_LOOP,50,0);
 		while(speed_control.end_control != 1);
 	}
-	int position_zhonx=NUMBER_OF_CELL;
-	int distance;
-	length_front_left=0;
-	length_front_right=0;
+//	int position_zhonx=NUMBER_OF_CELL;
+//	int distance;
+//	length_front_left=0;
+//	length_front_right=0;
 //	do
 //	{
 //		while (length_front_right>0 || length_front_left>0)
 //		{
-//			if(length_front_left>=0 && \
+/*			if(length_front_left>=0 && \
 //					((position_zhonx-value_to_retest_front_left[length_front_left]) < (position_zhonx-value_to_retest_front_right[length_front_right])\
 //					|| length_front_right<=0))
-//			{
+*///			{
 //				distance=(position_zhonx-value_to_retest_front_left[length_front_left])*NUMBER_OF_MILLIMETER_BY_LOOP;
 //				bluetoothPrintf("position Zhonx=%d,\tvaleur gauche a retester=%d\t diff=%d\n", position_zhonx, value_to_retest_front_left[length_front_left], distance);
 //				if (distance!=0)

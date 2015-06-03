@@ -11,6 +11,8 @@
 #include "peripherals/expander/pcf8574.h"
 #include "peripherals/motors/motors.h"
 #include "peripherals/lineSensors/lineSensors.h"
+#include "peripherals/telemeters/telemeters.h"
+#include "peripherals/bluetooth/bluetooth.h"
 
 /* meddleware include */
 #include "middleware/settings/settings.h"
@@ -1301,7 +1303,7 @@ int sensor_calibrate(void)
 //	zhonxSettings.threshold_color += MIN(arrival_color, area_color);
 //	zhonxSettings.threshold_greater = (arrival_color > area_color);
 //
-//	return 0;
+	return 0;
 }
 
 int wait_validation(unsigned long timeout)
