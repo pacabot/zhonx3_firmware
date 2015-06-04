@@ -28,4 +28,5 @@ typedef struct
 }settings;
 settings zhonxSettings;
 int settingsInit (void);
+void halt(void);
 #endif /* SETTING_H_ */
