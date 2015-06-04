@@ -133,8 +133,8 @@ int move(float angle, float radius_or_distance, float max_speed, float end_speed
 	}
 	else
 	{
-//		position_control.position_type = GYRO;
-		position_control.position_type = ENCODERS;
+		position_control.position_type = GYRO;
+//		position_control.position_type = ENCODERS;
 		control_params.follow_state = FALSE;
 
 		distance_per_wheel = (2.00 * PI * ROTATION_DIAMETER * (angle / 360.00)) * slip_compensation;

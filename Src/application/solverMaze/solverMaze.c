@@ -68,7 +68,7 @@ int maze(void)
 	mainControlInit ();
 
 	control_params.follow_state = TRUE;
-	follow_control.follow_type = NOFOLLOW;//FOLLOW_WALL;
+	follow_control.follow_type = FOLLOW_WALL;//NOFOLLOW;
 	move(0, 0, 0, 0);
 	HAL_Delay(500);
 
@@ -107,14 +107,19 @@ int maze(void)
 	{
 		calibrateSimple ();
 	}
-//	for (int i = 0; i < 4; ++i)
-//	{
-//		rotate90WithCal(CW, 300, 0);
-//		while(isEndMove() != TRUE);
-//		positionZhonx.orientation=(positionZhonx.orientation+1)%4;
-//		new_cell (getCellState (), &maze, positionZhonx);
-		print_maze(maze,positionZhonx.x, positionZhonx.y);
-//	}
+	motorsSleepDriver(OFF);
+	for (int i = 0; i < 4; ++i)
+	{
+		rotate90WithCal(CW, 300, 0);
+		while(isEndMove() != TRUE);
+		positionZhonx.orientation=(positionZhonx.orientation+1)%4;
+		new_cell (getCellState (), &maze, positionZhonx);
+	}
+	move (0, -CELL_LENGTH/2, 50, 0);
+	while(isEndMove() != TRUE);
+	motorsSleepDriver(ON);
+
+	print_maze(maze,positionZhonx.x, positionZhonx.y);
 	do
 	{
 		waitStart ();
@@ -143,16 +148,20 @@ void exploration(labyrinthe *maze, positionRobot* positionZhonx, char xFinish,
 	coordinate way = { 0, 0, 0, 0};
 	motorsSleepDriver (OFF);
 	telemetersStart();
-	HAL_Delay(500);
+	HAL_Delay(1000);
 	new_cell (getCellState(), maze, *positionZhonx);
 	telemetersStart();
 
 	while (positionZhonx->x != xFinish || positionZhonx->y != yFinish)
 	{
+//		motorsSleepDriver(ON);
+//		telemetersStop();
 		clearMazelength (maze);
 		poids (maze, xFinish, yFinish, true);
 		print_length(*maze);
 		moveVirtualZhonx (*maze, *positionZhonx, &way, xFinish, yFinish);
+//		motorsSleepDriver(OFF);
+//		telemetersStart();
 		moveRealZhonxArc (maze, positionZhonx, way.next);//, &xFinish, &yFinish);
 	}
 	telemetersStop();
