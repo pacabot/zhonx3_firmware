@@ -25,7 +25,7 @@ typedef struct
 	double front;
 	double right;
 	double leftExt;
-	double rightExt
+	double rightExt;
 } ground_sensors_struct;
 
 void lineSensorsCalibration(void);
