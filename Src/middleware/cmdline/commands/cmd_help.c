@@ -26,14 +26,14 @@ int cmd_help(const char *args)
         return COMMAND_E_NO_OUTPUT;
     }
 
-    cmdline_ctxt.out("\nAvailable commands:\n");
+    cmdline_ctxt.out("\rAvailable commands:\r\r");
 
     while(hcmd->command != NULL)
     {
-        cmdline_ctxt.out("%s\t", hcmd->command);
+        cmdline_ctxt.out("%s        ", hcmd->command);
         if (hcmd->description != NULL)
         {
-            cmdline_ctxt.out("%s\n", hcmd->description);
+            cmdline_ctxt.out("%s\r", hcmd->description);
         }
         hcmd++;
     }

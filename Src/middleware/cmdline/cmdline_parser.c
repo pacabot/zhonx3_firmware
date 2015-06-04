@@ -24,7 +24,7 @@
 #include "middleware/cmdline/cmdline_parser.h"
 #include "middleware/cmdline/commands/commads.h"
 
-#define MAX_COMMAND_LEN 20 + 1
+#define MAX_COMMAND_LEN 100 + 1
 
 /* Context of this module */
 CMDLINE_CONTEXT cmdline_ctxt;
@@ -64,6 +64,7 @@ int cmdline_parse(void)
     CMD_HANDLER *hcmd = NULL;
     char        command[MAX_COMMAND_LEN];
     char        *cmd_end;
+    int         cmd_len = 0;
     int         rv;
 
     if (cmdline_ctxt.cmd_received == FALSE)
@@ -71,6 +72,7 @@ int cmdline_parse(void)
         return CMDLINE_PARSER_E_SUCCESS;
     }
 
+    // Reset fields
     cmdline_ctxt.cmd_received = FALSE;
 
     // Search SPACE character
@@ -78,10 +80,10 @@ int cmdline_parse(void)
     if (cmd_end == NULL)
     {
         // SPACE character not found. Search Carriage Return
-        cmd_end = strchr(cmdline_ctxt.cmdline, '\r');
+        cmd_end = strchr(cmdline_ctxt.cmdline, CMDLINE_CR);
         if (cmd_end == NULL)
         {
-            cmdline_ctxt.out("Bad format\n");
+            cmdline_ctxt.out("\rBad format");
             rv = CMDLINE_PARSER_E_CMD_NOT_FOUND;
             goto out;
         }
@@ -92,8 +94,18 @@ int cmdline_parse(void)
         params = cmd_end + 1;
     }
 
-    memcpy(command, cmdline_ctxt.cmdline, cmd_end - cmdline_ctxt.cmdline);
-    command[cmd_end - cmdline_ctxt.cmdline] = '\0';
+    // Compute actual command length
+    cmd_len = cmd_end - cmdline_ctxt.cmdline;
+
+    // Do not return error if only Carriage Return has been received
+    if ((cmd_len == 0) || cmdline_ctxt.cmdline[0] == ' ')
+    {
+        rv = CMDLINE_PARSER_E_SUCCESS;
+        goto out;
+    }
+
+    memcpy(command, cmdline_ctxt.cmdline, cmd_len);
+    command[cmd_len] = '\0';
 
     /****************
      * Parse command
@@ -102,7 +114,7 @@ int cmdline_parse(void)
     hcmd = cmdline_check_cmd(command);
     if ((hcmd == NULL) || (hcmd->pCmdCallback == NULL))
     {
-        cmdline_ctxt.out("Command '%s' does not exist\n", command);
+        cmdline_ctxt.out("\rCommand '%s' does not exist", command);
         /* Command does not exist */
         rv = CMDLINE_PARSER_E_UNKNOWN_CMD;
         goto out;
@@ -114,6 +126,8 @@ int cmdline_parse(void)
     rv = hcmd->pCmdCallback(params);
 
 out:
+    // Reset Command line buffer
+    memset(cmdline_ctxt.cmdline, 0x00, cmdline_ctxt.cmd_len);
     // Display back prompt message
     cmd_displayPrompt();
     return rv;

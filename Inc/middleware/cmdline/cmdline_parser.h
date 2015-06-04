@@ -23,6 +23,21 @@
 /* No command found into command line */
 #define CMDLINE_PARSER_E_CMD_NOT_FOUND  MAKE_ERROR(CMDLINE_PARSER_MODULE_ID, 4)
 
+/* Control keys */
+
+/* CTRL+C */
+#define CMDLINE_CTRL_C  0x03
+/* CTRL+D */
+#define CMDLINE_CTRL_D  0x04
+/* Backspace */
+#define CMDLINE_BS      0x08
+/* TAB */
+#define CMDLINE_TAB     0x09
+/* Line feed */
+#define CMDLINE_LF      0x0A
+/* Carriage return */
+#define CMDLINE_CR      0x0D
+
 /* Commandline context */
 typedef struct
 {
