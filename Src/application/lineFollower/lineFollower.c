@@ -123,7 +123,19 @@ void lineFollower(void)
 	if (max_Floor.left-min_Floor.left< 100.0)
 	{
 		tone(a, 3000);
-		return;
+		max_Floor.left=2000.0;
+		max_Floor.front=2000.0;
+		max_Floor.right=2000.0;
+		max_Floor.leftExt=2000.0;
+		max_Floor.rightExt=2000.0;
+		min_Floor.left=150.0;
+		min_Floor.front=150.0;
+		min_Floor.right=150.0;
+		min_Floor.leftExt=150.0;
+		min_Floor.rightExt=150.0;
+		tone(b, 3000);
+
+	//	return;
 	}
 
 	tone(c, 100);
@@ -263,7 +275,7 @@ void asservissement(void)
 void lineFollower_IT(void)
 {
 	// Rapide
-	static int vitesse=0;
+//	static int vitesse=0;
 
 	asservissement();
 
