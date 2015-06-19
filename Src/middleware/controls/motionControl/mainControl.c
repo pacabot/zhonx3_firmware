@@ -81,6 +81,8 @@ int mainControlLoop(void)
 	if (control_params.line_follow_state == TRUE)
 	{
 		lineFollowControlLoop();
+		control_params.follow_state = FALSE;
+		control_params.position_state = FALSE;
 	}
 	if (control_params.follow_state == TRUE)
 	{
