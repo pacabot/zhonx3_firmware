@@ -40,6 +40,8 @@
 
 #include <stdlib.h>
 
+extern int MAX_SPEED_TRANSLATION;
+
 //Structures typedef
 typedef struct
 {

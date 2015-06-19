@@ -83,7 +83,7 @@ int maze(void)
 	printMaze (maze, positionZhonx.x, positionZhonx.y);
 	if (zhonxSettings.calibration_enabled == true)
 	{
-		calibrateSimple ();
+//		calibrateSimple ();
 	}
 	motorsSleepDriver(OFF);
 	for (int i = 0; i < 4; ++i)
@@ -104,11 +104,11 @@ int maze(void)
 		exploration (&maze, &positionZhonx, zhonxSettings.x_finish_maze,
 				zhonxSettings.y_finish_maze);
 		if (zhonxSettings.calibration_enabled == true)
-			calibrateSimple ();
+//			calibrateSimple ();
 		HAL_Delay (2000);
 		exploration (&maze, &positionZhonx, posXStart, posYStart);
 		if (zhonxSettings.calibration_enabled == true)
-			calibrateSimple ();
+//			calibrateSimple ();
 		doUTurn (&positionZhonx);
 		HAL_Delay (2000);
 	}while (false

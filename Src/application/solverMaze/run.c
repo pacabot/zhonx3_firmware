@@ -24,11 +24,11 @@ void run1(labyrinthe *maze, positionRobot *positionZhonx, char posXStart,
 		exploration (maze, positionZhonx, zhonxSettings.x_finish_maze,
 				zhonxSettings.y_finish_maze);
 		if (zhonxSettings.calibration_enabled == true)
-			calibrateSimple ();
+//			calibrateSimple ();
 		HAL_Delay (2000);
 		exploration (maze, positionZhonx, posXStart, posYStart);
 		if (zhonxSettings.calibration_enabled == true)
-			calibrateSimple ();
+//			calibrateSimple ();
 		doUTurn (positionZhonx);
 
 		ssd1306ClearScreen ();
@@ -64,11 +64,11 @@ void run2(labyrinthe *maze, positionRobot *positionZhonx, char posXStart,
 		waitStart ();
 		moveRealZhonxArc (maze, positionZhonx, way.next);
 		if (zhonxSettings.calibration_enabled == true)
-			calibrateSimple ();
+//			calibrateSimple ();
 		HAL_Delay (2000);
 		exploration (maze, positionZhonx, posXStart, posYStart);
 		if (zhonxSettings.calibration_enabled == true)
-			calibrateSimple ();
+//			calibrateSimple ();
 		doUTurn (positionZhonx);
 		ssd1306ClearScreen ();
 		ssd1306DrawString (10, 10, "presse \"RIGHT\" to ", &Font_5x8);
