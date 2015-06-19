@@ -74,10 +74,8 @@ extern menuItem mainMenu;
 
 int main(void)
 {
-
   /* USER CODE BEGIN 1 */
-    int         rv;
-    CMDLINE_CONTEXT cmd_context;
+	CMDLINE_CONTEXT cmd_context;
 
   /* USER CODE END 1 */
 

@@ -165,12 +165,9 @@ void USART3_IRQHandler(void)
   uint32_t      uart_it_flag;
   static char   *pBuffer = serial_buffer;
   unsigned char c;
-
-#if 0
   /* USER CODE END USART3_IRQn 0 */
   HAL_UART_IRQHandler(&huart3);
   /* USER CODE BEGIN USART3_IRQn 1 */
-#endif
 
   // Get UART flags
   uart_status_flag = __HAL_UART_GET_FLAG(&huart3, UART_FLAG_RXNE);
