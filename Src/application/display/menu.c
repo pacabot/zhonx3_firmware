@@ -89,7 +89,7 @@ const menuItem maze_menu=
 		"maze menu",
 		{
 			{"new maze",'f',		(void*)maze},
-			{"test maze",'f',		(void*)test_maze},
+//			{"test maze",'f',		(void*)test_maze},
 			{"calibration",'b',		(void*)&zhonxSettings.calibration_enabled},
 			{"color finish",'b',	(void*)&zhonxSettings.color_sensor_enabled},
 			{"x finish",'i',		(void*)&zhonxSettings.x_finish_maze},
