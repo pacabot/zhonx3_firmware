@@ -51,7 +51,6 @@ DMA_HandleTypeDef hdma_usart3_tx;
 
 void MX_USART3_UART_Init(void)
 {
-
   huart3.Instance = USART3;
   huart3.Init.BaudRate = 115200;
   huart3.Init.WordLength = UART_WORDLENGTH_8B;
@@ -61,7 +60,6 @@ void MX_USART3_UART_Init(void)
   huart3.Init.HwFlowCtl = UART_HWCONTROL_NONE;
   huart3.Init.OverSampling = UART_OVERSAMPLING_16;
   HAL_UART_Init(&huart3);
-
 }
 
 void HAL_UART_MspInit(UART_HandleTypeDef* huart)
