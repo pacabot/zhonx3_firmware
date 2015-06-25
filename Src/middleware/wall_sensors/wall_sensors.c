@@ -26,7 +26,7 @@ int telemeter_left_front_voltage[NUMBER_OF_CELL]={4996,3824,3818,3811,3806,3800,
 int telemeter_right_diag_voltage[NUMBER_OF_CELL]={4996,3909,3903,3894,3886,3878,3870,3862,3854,3848,3840,3831,3823,3814,3808,3797,3789,3776,3764,3743,3727,3701,3671,3637,3601,3558,3513,3462,3404,3331,3196,3032,2876,2739,2616,2495,2377,2264,2156,2054,1964,1881,1799,1727,1657,1594,1534,1479,1427,1377,1329,1274,1227,1183,1140,1100,1062,1029,997,970,942,918,891,867,844,819,794,770,748,726,706,690,671,654,640,623,610,596,580,564,545,531,517,505,493,482,472,462,453,446,438,430,420,409,397,385,379,370,362,0};
 int telemeter_left_diag_voltage[NUMBER_OF_CELL]={4996,3915,3911,3903,3895,3887,3879,3872,3863,3858,3851,3846,3839,3831,3827,3819,3812,3806,3796,3790,3780,3773,3757,3745,3726,3704,3678,3648,3612,3577,3540,3504,3442,3369,3262,3114,2963,2824,2691,2578,2456,2355,2250,2158,2073,1998,1927,1859,1781,1709,1649,1621,1538,1470,1417,1370,1321,1271,1230,1195,1167,1133,1104,1077,1042,1009,977,950,924,894,867,849,830,800,780,763,748,732,710,689,667,656,630,614,597,582,568,558,551,544,535,528,516,502,490,480,474,465,456,0};
 #endif
-//int telemetersWithOutNoise//todo
+//int telemetersWithOutNoise//TODO this function
 int wallSensorsCalibration (void)
 {
 //	int value_to_retest_front_right [NUMBER_OF_CELL+1];
@@ -328,12 +328,12 @@ int getTelemetersDistance (telemetersDistancesTypeDef *telemeters_distances)
  * xb <- distance in millimeters measured in the calibrate function, it's the distance xa+DISTANCE_BY_LOOP
  * yb <- voltage measure in the calibrate function, the voltage correspond to the distance of xb
  *
- * XXX is the capteur reference : front_left , front_right , diag_right , diag_left
+ * XXXX is the sensor reference : front_left , front_right , diag_right , diag_left
  *
  *
- * 		telemeter_XXX_voltage[cell_XXX] (cell_XXX+1)*NUMBER_OF_MILLIMETER_BY_LOOP - cell_XXX*NUMBER_OF_MILLIMETER_BY_LOOP telemeter_XXX_voltage[cell_XXX + 1] - value_XXX (cell_XXX+1)*NUMBER_OF_MILLIMETER_BY_LOOP + value_XXX cell_XXX*NUMBER_OF_MILLIMETER_BY_LOOP
- * xc= ________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
- * 																		-telemeter_XXX_voltage[cell_XXX + 1] + telemeter_XXX_voltage[cell_XXX]
+ * 		telemeter_XXXX_voltage[cell_XXXX] (cell_XXXX+1)*NUMBER_OF_MILLIMETER_BY_LOOP - cell_XXXX*NUMBER_OF_MILLIMETER_BY_LOOP telemeter_XXXX_voltage[cell_XXXX + 1] - value_XXX (cell_XXXX+1)*NUMBER_OF_MILLIMETER_BY_LOOP + value_XXXX cell_XXXX*NUMBER_OF_MILLIMETER_BY_LOOP
+ * xc= _______________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
+ * 																		-telemeter_XXX_voltage[cell_XXXX + 1] + telemeter_XXX_voltage[cell_XXXX]
  *
  */
 
@@ -392,7 +392,6 @@ void testTelemeterDistance()
 
 
 		ssd1306Refresh();
-		//bluetoothPrintf("distance left :%d\tright : %d\n",(int)telemeters_distances.distance_front_left,(int)telemeters_distances.distance_front_right);
 	}
 	telemetersStop();
 }
