@@ -32,6 +32,6 @@ typedef struct
 void lineSensorsCalibration(void);
 void lineFollower(void);
 void lineFollower_IT(void);
-void asservissement(void);
+void controlLoop(void);
 
 #endif /* LINE_FOLLOWER_H_ */
