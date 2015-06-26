@@ -40,7 +40,7 @@ int maze(void)
 	telemetersStart();
 	mainControlInit ();
 
-	control_params.follow_state = TRUE;
+	control_params.follow_state = true;
 	wall_follow_control.follow_type = FOLLOW_WALL;//NOFOLLOW;
 	move(0, 0, 0, 0);
 	HAL_Delay(500);
@@ -75,12 +75,12 @@ int maze(void)
 	for (int i = 0; i < 4; ++i)
 	{
 		rotate90WithCal(CW, 300, 0);
-		while(isEndMove() != TRUE);
+		while(isEndMove() != true);
 		positionZhonx.orientation=(positionZhonx.orientation+1)%4;
 		newCell (getCellState (), &maze, positionZhonx);
 	}
 	move (0, -CELL_LENGTH/2, 50, 0);
-	while(isEndMove() != TRUE);
+	while(isEndMove() != true);
 	motorsSleepDriver(ON);
 
 	printMaze(maze,positionZhonx.x, positionZhonx.y);
@@ -100,7 +100,6 @@ int maze(void)
 	}while (false
 			== miniWayFind (&maze, posXStart, posYStart,
 					zhonxSettings.x_finish_maze, zhonxSettings.y_finish_maze));
-	waitStart ();
 	run1 (&maze, &positionZhonx, posXStart, posYStart);
 	run2 (&maze, &positionZhonx, posXStart, posYStart);
 	return MAZE_SOLVER_E_SUCCESS;
@@ -120,7 +119,7 @@ void exploration(labyrinthe *maze, positionRobot* positionZhonx, char xFinish,
 	{
 		clearMazelength (maze);
 		poids (maze, xFinish, yFinish, true);
-		printLength(*maze);
+		printLength(*maze, positionZhonx->x, positionZhonx->y);
 		moveVirtualZhonx (*maze, *positionZhonx, &way, xFinish, yFinish);
 		moveRealZhonxArc (maze, positionZhonx, way.next);//, &xFinish, &yFinish);
 	}
@@ -157,7 +156,7 @@ void moveVirtualZhonx(labyrinthe maze, positionRobot positionZhonxVirtuel,
 		}
 		else
 		{
-			if (way->previous != null)
+			if (way!=NULL && way->previous != NULL)
 				return;
 			else
 			{
@@ -167,6 +166,7 @@ void moveVirtualZhonx(labyrinthe maze, positionRobot positionZhonxVirtuel,
 				motorsSleepDriver (ON);
 				while (true)
 				{
+					HAL_Delay (200);
 				}
 			}
 		}
@@ -186,7 +186,7 @@ void moveRealZhonxArc(labyrinthe *maze, positionRobot *positionZhonx, coordinate
 	char additionY = 0;
 	char additionX = 0;
 	char orientaionToGo = NORTH;
-	while (way != null)
+	while (way != NULL)
 	{
 		length = 0;
 		if (way->x == (positionZhonx->x + 1) && way->y == positionZhonx->y)
@@ -223,10 +223,12 @@ void moveRealZhonxArc(labyrinthe *maze, positionRobot *positionZhonx, coordinate
 			ssd1306DrawString (60, 0, "Error way", &Font_5x8);
 			ssd1306Refresh ();
 			while (1)
-				;
+			{
+				HAL_Delay (500);
+			}
 		}
 
-		while (way->y == (positionZhonx->y + additionY)
+		while ((way != NULL) && way->y == (positionZhonx->y + additionY)
 				&& way->x == positionZhonx->x + additionX)
 		{
 			length++;
@@ -235,12 +237,16 @@ void moveRealZhonxArc(labyrinthe *maze, positionRobot *positionZhonx, coordinate
 			oldDote = way;
 			way = way->next;
 			free (oldDote);
+			if(way == NULL)
+			{
+				break;
+			}
 		}
 		if ((positionZhonx->x != 8 || positionZhonx->y != 8) )
 			endMidCase = false;
 		else
 			endMidCase = true;
-		if (way == null)
+		if (way == NULL)
 			chain = false;
 		else
 			chain = true;
@@ -316,7 +322,7 @@ void newDot(coordinate **old_dot, int x, int y)
 {
 	if (*old_dot != NULL)
 	{
-		(*old_dot)->next = calloc_s (1, sizeof(coordinate));
+		(*old_dot)->next = (coordinate*)calloc_s (1, sizeof(coordinate));
 		coordinate *pt = *old_dot;
 		*old_dot = (*old_dot)->next;
 		(*old_dot)->previous = pt;
@@ -349,7 +355,7 @@ void mazeInit(labyrinthe *maze)
 		maze->cell[0][i].wall_west = WALL_PRESENCE;
 		maze->cell[MAZE_SIZE - 1][i].wall_east = WALL_PRESENCE;
 	}
-	newCell((walls){WALL_PRESENCE, WALL_PRESENCE, WALL_PRESENCE},maze, (positionRobot){8,8,SOUTH,FALSE});
+	newCell((walls){WALL_PRESENCE, WALL_PRESENCE, WALL_PRESENCE},maze, (positionRobot){8,8,SOUTH,false});
 #else
 	labyrinthe maze_initial=
 	{
@@ -684,8 +690,8 @@ void printMaze(const labyrinthe maze, const int x_robot, const int y_robot)
 			}
 		}
 	}
-	printLength(maze);
-	ssd1306DrawPixel(x_robot * size_cell_on_oled+1, y_robot * size_cell_on_oled+1);
+	printLength(maze, x_robot, y_robot);
+	ssd1306DrawRect((x_robot * size_cell_on_oled) +1, (y_robot * size_cell_on_oled)+1, 2, 2);
 	ssd1306Refresh ();
 #endif
 }
@@ -697,18 +703,21 @@ void* calloc_s(size_t nombre, size_t taille)
 	{
 		printf ("null pointer exception, full memory");
 		while (1)
-			;
+		{
+			HAL_Delay(500);
+		}
 	}
 	return pt;
 }
 
-void printLength(const labyrinthe maze)
+void printLength(const labyrinthe maze,const int x_robot, const int y_robot)
 {
 #if DEBUG > 2
+    bluetoothPrintf ("zhonx : %d; %d\n", x_robot, y_robot);
 	bluetoothPrintf ("  ");
 	for (int i = 0; i < MAZE_SIZE; i++)
 	{
-		bluetoothPrintf ("%4d", i);
+		bluetoothPrintf ("%5d", i);
 	}
 	bluetoothPrintf ("\n\n");
 	for (int i = 0; i < MAZE_SIZE; i++)
@@ -760,16 +769,19 @@ char miniWayFind(labyrinthe *maze, char xStart, char yStart, char xFinish,
 		char yFinish)
 {
 	// TODO not find the shorter in distance way but the faster
-	coordinate *way1 = null;
-	coordinate *way2 = null;
+	coordinate *way1 = NULL;
+	coordinate *way2 = NULL;
 	clearMazelength (maze);
 	poids (maze, xFinish, yFinish, true);
-	moveVirtualZhonx (*maze, (positionRobot ) { true, xStart, yStart, NORTH },
-			way1, xFinish, yFinish);
+	positionRobot position;
+	position.midOfCell = true;
+	position.x = xStart;
+	position.y = yStart;
+	position.orientation = NORTH;
+	moveVirtualZhonx (*maze, position, way1, xFinish, yFinish);
 	clearMazelength (maze);
 	poids (maze, xFinish, yFinish, false);
-	moveVirtualZhonx (*maze, (positionRobot ) { true, xStart, yStart, NORTH },
-			way2, xFinish, yFinish);
+	moveVirtualZhonx (*maze, position, way2, xFinish, yFinish);
 	ssd1306ClearScreen ();
 	char waySame = diffWay (way1, way2);
 	switch (waySame)
@@ -790,7 +802,7 @@ char miniWayFind(labyrinthe *maze, char xStart, char yStart, char xFinish,
 
 char diffWay(coordinate *way1, coordinate *way2)
 {
-	while (way1 != null && way2 != null)
+	while (way1 != NULL && way2 != NULL)
 	{
 		if (way1->x != way2->x || way1->y != way2->y)
 		{
@@ -799,7 +811,7 @@ char diffWay(coordinate *way1, coordinate *way2)
 		way1 = way1->next;
 		way2 = way2->next;
 	}
-	if (way1 != null || way2 != null)
+	if (way1 != NULL || way2 != NULL)
 	{
 		return false;
 	}
@@ -808,7 +820,7 @@ char diffWay(coordinate *way1, coordinate *way2)
 
 void deleteWay(coordinate *way) // TODO: verify the function
 {
-	while (way != null)
+	while (way != NULL)
 	{
 		way = way->next;
 		free (way->previous);
@@ -817,18 +829,14 @@ void deleteWay(coordinate *way) // TODO: verify the function
 
 void waitStart()
 {
-	ssd1306ClearScreen();
-	ssd1306Printf(0,0,&Font_5x8,"wait start");
+	ssd1306ClearRect(SSD1306_LCDWIDTH/2,0,SSD1306_LCDWIDTH/2,SSD1306_LCDHEIGHT);
+	ssd1306Printf(SSD1306_LCDWIDTH/2,0,&Font_5x8,"wait start");
 	ssd1306Refresh();
 	while (expanderJoyFiltered() != JOY_RIGHT)
-		{
-		;
-		}
-//	while (expanderJoyFiltered() != JOY_SEVERAL)
-//		{
-//		;
-//		}
-	ssd1306ClearScreen();
+	{
+		HAL_Delay (20);
+	}
+	ssd1306ClearRect(SSD1306_LCDWIDTH/2,0,SSD1306_LCDWIDTH/2,SSD1306_LCDHEIGHT);
 	ssd1306Refresh();
 //TODO : wait start with front sensors
 //	unsigned char sensors_state = hal_sensor_get_state(app_context.sensors);
