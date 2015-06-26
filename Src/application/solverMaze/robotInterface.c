@@ -1,10 +1,16 @@
-#include "application/solverMaze/solverMaze.h"
 #include "config/basetypes.h"
 #include "config/config.h"
-#include "middleware/controls/motionControl/mainControl.h"
+#include "stm32f4xx_hal.h"
+/* peripherale inlcudes*/
 #include "peripherals/expander/pcf8574.h"
 #include "peripherals/motors/motors.h"
-#include "stm32f4xx_hal.h"
+#include "peripherals/telemeters/telemeters.h"
+
+/* meddleware include */
+#include "middleware/controls/motionControl/mainControl.h"
+
+/*application include */
+#include "application/solverMaze/solverMaze.h"
 
 void goOrientation(char *orientationZhonx, char directionToGo)
 {
@@ -34,7 +40,6 @@ void goOrientation(char *orientationZhonx, char directionToGo)
 
 void move_zhonx_arc (int direction_to_go, positionRobot *positionZhonx, int numberOfCell, char end_mid_of_case, char chain)
 {
-	int speed_end;
 	int turn = (4 + direction_to_go - positionZhonx->orientation) % 4;
 	positionZhonx->orientation = direction_to_go;
 	switch (turn)
@@ -90,12 +95,6 @@ void move_zhonx_arc (int direction_to_go, positionRobot *positionZhonx, int numb
 	else // so endMidOfCase=true and positionZhonx->midOfCase=false
 	{
 		moveHalfCell(MAX_SPEED_TRANSLATION, END_SPEED_TRANSLATION);
-	}
-	if (chain == true)
-		speed_end = MAX_SPEED_ROTATION;
-	else
-	{
-		speed_end = 0;
 	}
 	moveCell (numberOfCell, MAX_SPEED_TRANSLATION, END_SPEED_TRANSLATION);
 	positionZhonx->midOfCell = end_mid_of_case;
@@ -274,15 +273,13 @@ void newCell(walls new_walls, labyrinthe *maze, positionRobot positionZhonx)
 	switch (positionZhonx.orientation)
 	{
 		case NORTH :
-//				maze->cell[(int)(positionZhonx.x)][(int)(positionZhonx.y-1)].wall_north=new_walls.next_front;
-//					maze->cell[(int) (positionZhonx.x)][(int) (positionZhonx.y- 2)].wall_south = new_walls.next_front;
 			if(positionZhonx.midOfCell == false)
 			{
 				maze->cell[(int) (positionZhonx.x)][(int) (positionZhonx.y)].wall_east = new_walls.right;
 				maze->cell[(int) (positionZhonx.x)][(int) (positionZhonx.y)].wall_west = new_walls.left;
 
 				if (positionZhonx.x < (MAZE_SIZE - 1))
-					maze->cell[(int) (positionZhonx.x + 1)][(int) (positionZhonx.y)].wall_west = new_walls.right; // TODO : verify the "y-1"
+					maze->cell[(int) (positionZhonx.x + 1)][(int) (positionZhonx.y)].wall_west = new_walls.right;
 				if (positionZhonx.x > 0)
 					maze->cell[(int) (positionZhonx.x - 1)][(int) (positionZhonx.y)].wall_east = new_walls.left;
 			}

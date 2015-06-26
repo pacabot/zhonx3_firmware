@@ -121,7 +121,19 @@ void lineFollower(void)
 	if (max_Floor.left-min_Floor.left< 100.0)
 	{
 		tone(a, 3000);
-		return;
+		max_Floor.left=2000.0;
+		max_Floor.front=2000.0;
+		max_Floor.right=2000.0;
+		max_Floor.leftExt=2000.0;
+		max_Floor.rightExt=2000.0;
+		min_Floor.left=150.0;
+		min_Floor.front=150.0;
+		min_Floor.right=150.0;
+		min_Floor.leftExt=150.0;
+		min_Floor.rightExt=150.0;
+		tone(b, 3000);
+
+	//	return;
 	}
 
 	tone(c, 100);
@@ -160,15 +172,15 @@ void lineFollower(void)
 	line_follower.active_state = TRUE;
 	move(0, 10000, MAXSPEED, 0);
 //	while(isEndMove() != TRUE);
-	char marche = TRUE;
+	char foreward = TRUE;
 	char cpt=0;
 	int  error;
-	while(expanderJoyFiltered()!=JOY_LEFT && marche)
+	while(expanderJoyFiltered()!=JOY_LEFT && foreward)
 	{
 		//error=follow_control.follow_error*10;
-		int gauche=((double)lineSensors.left.adc_value - min_Floor.left) * coef_Floor.left ;
-		int devant=((double)lineSensors.front.adc_value- min_Floor.front) * coef_Floor.front ;
-		int droite=((double)lineSensors.right.adc_value- min_Floor.right) * coef_Floor.right ;
+		int left=((double)lineSensors.left.adc_value - min_Floor.left) * coef_Floor.left ;
+		int front=((double)lineSensors.front.adc_value- min_Floor.front) * coef_Floor.front ;
+		int right=((double)lineSensors.right.adc_value- min_Floor.right) * coef_Floor.right ;
 		error=line_follower.position*200;
 		ssd1306ClearScreen();
 //		ssd1306PrintInt(10, 5,  "LEFT_EXT  =  ", (uint16_t) lineSensors.left_ext.adc_value, &Font_5x8);
@@ -177,9 +189,9 @@ void lineFollower(void)
 //		ssd1306PrintInt(10, 35, "RIGHT     =  ", (uint16_t) lineSensors.right.adc_value, &Font_5x8);
 //		ssd1306PrintInt(10, 45, "RIGHT_EXT =  ", (uint16_t) lineSensors.right_ext.adc_value, &Font_5x8);
 
-		ssd1306PrintInt(10, 15, "LEFT      =  ", gauche, &Font_5x8);
-		ssd1306PrintInt(10, 25, "FRONT --  =  ", devant, &Font_5x8);
-		ssd1306PrintInt(10, 35, "RIGHT     =  ", droite, &Font_5x8);
+		ssd1306PrintInt(10, 15, "LEFT      =  ", left, &Font_5x8);
+		ssd1306PrintInt(10, 25, "FRONT --  =  ", front, &Font_5x8);
+		ssd1306PrintInt(10, 35, "RIGHT     =  ", right, &Font_5x8);
 
 		ssd1306PrintInt(10, 54, "Error =  ", error, &Font_5x8);
 		ssd1306Refresh();
@@ -197,7 +209,7 @@ void lineFollower(void)
 			cpt++;
 			if (cpt>5)
 			{
-			    marche = FALSE;
+			    foreward = FALSE;
 			    move(0, 150, 250, 0);
 			    tone(c, 500);tone(d, 500);
 			}
@@ -223,31 +235,31 @@ void lineFollower(void)
 //----------------------------------------------------------------------
 // fonction pour asservir zhonx sur la ligne
 //
-void asservissement(void)
+void controlLoop(void)
 {
-	static int maxdevant=0;  // memorize the max level of front sensors line
+	static int maxfront=0;  // memorize the max level of front sensors line
 
-	int gauche=(lineSensors.left.adc_value - min_Floor.left) * coef_Floor.left ;
-	int devant=(lineSensors.front.adc_value- min_Floor.front) * coef_Floor.front ;
-	int droite=(lineSensors.right.adc_value- min_Floor.right) * coef_Floor.right ;
-    int droiteExt=(lineSensors.right_ext.adc_value - min_Floor.rightExt) * coef_Floor.rightExt;
-    int gaucheExt=(lineSensors.left_ext.adc_value  - min_Floor.leftExt)* coef_Floor.leftExt;
+	int left=(lineSensors.left.adc_value - min_Floor.left) * coef_Floor.left ;
+	int front=(lineSensors.front.adc_value- min_Floor.front) * coef_Floor.front ;
+	int right=(lineSensors.right.adc_value- min_Floor.right) * coef_Floor.right ;
+    int rightExt=(lineSensors.right_ext.adc_value - min_Floor.rightExt) * coef_Floor.rightExt;
+    int leftExt=(lineSensors.left_ext.adc_value  - min_Floor.leftExt)* coef_Floor.leftExt;
 
-    int milieu=0;		// take account if the center sensor line is out the line
-    int interieur=droite-gauche; //take account the sensor just right and left of front
-    int	exterieur=0;	// take account the external sensor line
+    int midle=0;		// take account if the center sensor line is out the line
+    int inside=right-left; //take account the sensor just right and left of front
+    int	outside=0;	// take account the external sensor line
 
 
-	if (interieur>20)
+	if (inside>20)
 	{
-		milieu=(maxdevant-devant);
+		midle=(maxfront-front);
 	}
-	else if (interieur<-20)
+	else if (inside<-20)
 	{
-		milieu=-(maxdevant-devant);
+		midle=-(maxfront-front);
 	}else
 	{
-		maxdevant=devant;
+		maxfront=front;
 	}
 	// check if we are for the center out of the line to take account the gaucheExt and droiteExt
 //    if (devant<100)
@@ -255,15 +267,15 @@ void asservissement(void)
 //    	exterieur = droiteExt - gaucheExt;
 //    }
 
-    line_follower.position = (double)(droite - gauche + milieu + exterieur) * 0.004;
+    line_follower.position = (double)(right - left + midle + outside) * 0.004;
 
 }
 void lineFollower_IT(void)
 {
 	// Rapide
-	static int vitesse=0;
+//	static int vitesse=0;
 
-	asservissement();
+	controlLoop();
 
 //	if (follow_control.follow_error > 3.0 && vitesse==0)
 //	{

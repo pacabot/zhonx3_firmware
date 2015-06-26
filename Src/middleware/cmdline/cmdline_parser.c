@@ -51,8 +51,19 @@ int cmdline_init(CMDLINE_CONTEXT *context)
         cmdline_ctxt.out = cmd_output;
     }
     cmd_displayPrompt();
-
+    __HAL_LOCK(&huart3);
     // Enable interrupts on UART3
+    while (huart3.State != HAL_UART_STATE_READY);
+    huart3.ErrorCode = HAL_UART_ERROR_NONE;
+
+    /* Enable the UART Parity Error Interrupt */
+//	__HAL_UART_ENABLE_IT(&huart3, UART_IT_PE);
+
+	/* Enable the UART Error Interrupt: (Frame error, noise error, overrun error) */
+	__HAL_UART_ENABLE_IT(&huart3, UART_IT_ERR);
+
+    __HAL_UNLOCK(&huart3);
+
     __HAL_UART_ENABLE_IT(&huart3, UART_IT_RXNE);
 
     return CMDLINE_PARSER_E_SUCCESS;

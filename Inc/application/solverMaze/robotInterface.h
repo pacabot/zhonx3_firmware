@@ -14,6 +14,7 @@ void moveZhonxArc (int direction_to_go, positionRobot *positionZhonx, int number
 int floorSensorCalibrate(void);
 int waitValidation(unsigned long timeout);
 void newCell(walls new_walls, labyrinthe *maze, positionRobot positionZhonx);
+void move_zhonx_arc (int direction_to_go, positionRobot *positionZhonx, int numberOfCell, char end_mid_of_case, char chain);
 
 
 #endif /* ROBOTINTERFACE_H_ */

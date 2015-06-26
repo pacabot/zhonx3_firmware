@@ -34,13 +34,18 @@
 #define WALL_PRESENCE 1
 #define NO_WALL 2
 
-#define MAX_SPEED_ROTATION		300
-//#define MAX_SPEED_TRANSLATION   400
-#define END_SPEED_TRANSLATION	400
+#define MAX_SPEED_ROTATION		(300)
+#define MAX_SPEED_TRANSLATION   (400)
+#define END_SPEED_TRANSLATION	(400)
+
+#define DEBUG 0
+
+#ifdef DEBUG
+#undef END_SPEED_TRANSLATION
+#define END_SPEED_TRANSLATION 0
+#endif
 
 #include <stdlib.h>
-
-extern int MAX_SPEED_TRANSLATION;
 
 //Structures typedef
 typedef struct
