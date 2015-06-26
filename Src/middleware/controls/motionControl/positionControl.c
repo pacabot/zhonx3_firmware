@@ -54,9 +54,9 @@ arm_pid_instance_f32 encoder_or_gyro_pid_instance;
 
 int positionControlInit(void)
 {
-	encoder_or_gyro_pid_instance.Kp = 100;
+	encoder_or_gyro_pid_instance.Kp = 40;
 	encoder_or_gyro_pid_instance.Ki = 0;
-	encoder_or_gyro_pid_instance.Kd = 800;
+	encoder_or_gyro_pid_instance.Kd = 1000;
 
 	position_control.current_angle = 0;
 	position_control.position_command = 0;

@@ -52,7 +52,6 @@ extern void followWallTest(void);
 extern void followLineTest(void);
 extern void rotateTest(void);
 extern void curveRotateTest(void);
-extern void test_maze(void);
 
 /*
  * to create a new menu you have to create a new variable of type "const menuItem" like this :

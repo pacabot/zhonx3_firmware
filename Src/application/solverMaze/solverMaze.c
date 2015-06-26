@@ -21,7 +21,7 @@
 #include "middleware/controls/motionControl/positionControl.h"
 #include "middleware/controls/motionControl/speedControl.h"
 #include "middleware/controls/motionControl/transfertFunction.h"
-#include "middleware/controls/motionControl/followControl.h"
+#include "middleware/controls/motionControl/wallFollowControl.h"
 #include "middleware/controls/motionControl/mainControl.h"
 
 /*application include */

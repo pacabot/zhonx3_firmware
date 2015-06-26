@@ -67,7 +67,6 @@ void SystemClock_Config(void);
 
 /* USER CODE BEGIN 0 */
 #include "main.h"
-void lineTest(void);
 extern menuItem mainMenu;
 
 /* USER CODE END 0 */

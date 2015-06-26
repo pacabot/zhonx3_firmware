@@ -6,15 +6,15 @@
     @version  0.0
  */
 /**************************************************************************/
-#ifndef __FOLLOWCONTROL_H__
-#define __FOLLOWCONTROL_H__
+#ifndef __WALLFOLLOWCONTROL_H__
+#define __WALLFOLLOWCONTROL_H__
 
 /* Module Identifier */
 #include "config/module_id.h"
 
 /* Error codes */
-#define FOLLOW_CONTROL_E_SUCCESS  0
-#define FOLLOW_CONTROL_E_ERROR    MAKE_ERROR(FOLLOW_CONTROL_MODULE_ID, 1)
+#define WALL_FOLLOW_CONTROL_E_SUCCESS  0
+#define WALL_FOLLOW_CONTROL_E_ERROR    MAKE_ERROR(WALL_FOLLOW_CONTROL_MODULE_ID, 1)
 
 #include "middleware/controls/motionControl/speedControl.h"
 
@@ -32,26 +32,26 @@
 
 #define DIAG_DIST_FOR_FOLLOW 86.00
 
-enum follow_type_enum {NOFOLLOW, ALIGN_FRONT, FOLLOW_WALL, FOLLOW_LINE};
+enum wall_follow_type_enum {NOFOLLOW, ALIGN_FRONT, FOLLOW_WALL};
 
 typedef struct
 {
 	int sign;
 	int active_state;
-}follow_params_struct;
+}wall_follow_params_struct;
 
-extern follow_params_struct follow_params;
+extern wall_follow_params_struct wall_follow_params;
 
 typedef struct
 {
 	double follow_error;
 	double follow_command;
 	char succes;
-	enum follow_type_enum follow_type;
+	enum wall_follow_type_enum follow_type;
     pid_control_struct follow_pid;
-}follow_control_struct;
+}wall_follow_control_struct;
 
-extern follow_control_struct follow_control;
+extern wall_follow_control_struct wall_follow_control;
 
 int followControlInit(void);
 int followControlLoop(void);

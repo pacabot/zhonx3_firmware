@@ -33,16 +33,14 @@
 #include "peripherals/telemeters/telemeters.h"
 #include "peripherals/bluetooth/bluetooth.h"
 
-
-
 /* Middleware declarations */
 #include "middleware/wall_sensors/wall_sensors.h"
 #include "middleware/controls/pidController/pidController.h"
 #include "middleware/controls/motionControl/positionControl.h"
 #include "middleware/controls/motionControl/speedControl.h"
 #include "middleware/controls/motionControl/transfertFunction.h"
-#include "middleware/controls/motionControl/followControl.h"
 #include "middleware/controls/motionControl/mainControl.h"
+#include "middleware/controls/motionControl/wallFollowControl.h"
 
 /* Declarations for this module */
 #include "application/lineFollower/lineFollower.h"
@@ -116,7 +114,7 @@ void lineFollower(void)
 	lineSensorsInit();
 	lineSensorsStart();
 	motorsInit();
-	follow_control.follow_type = FOLLOW_LINE;
+//	follow_control.follow_type = FOLLOW_LINE;
 	motorsSleepDriver(OFF);
 
 
@@ -169,7 +167,7 @@ void lineFollower(void)
 
 //	HAL_Delay(500);
 
-	follow_control.follow_type = FOLLOW_LINE;
+//	follow_control.follow_type = FOLLOW_LINE;
 
 	line_follower.active_state = TRUE;
 	move(0, 10000, MAXSPEED, 0);
