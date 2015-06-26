@@ -41,7 +41,7 @@
 #include "application/lineFollower/lineFollower.h"
 
 /* Declarations for this module */
-#include "middleware/controls/motionControl/followControl.h"
+#include "middleware/controls/motionControl/wallFollowControl.h"
 
 /* App definitions */
 
@@ -52,22 +52,22 @@
 /* extern variables */
 
 /* global variables */
-follow_control_struct follow_control;
-follow_params_struct follow_params;
+wall_follow_control_struct wall_follow_control;
+wall_follow_params_struct wall_follow_params;
 arm_pid_instance_f32 telemeters_pid_instance;
 
 int followControlInit(void)
 {
-	telemeters_pid_instance.Kp = 10;
+	telemeters_pid_instance.Kp = 8;
 	telemeters_pid_instance.Ki = 0;
-	telemeters_pid_instance.Kd = 200;
+	telemeters_pid_instance.Kd = 1000;
 
-	follow_control.follow_pid.instance = &telemeters_pid_instance;
+	wall_follow_control.follow_pid.instance = &telemeters_pid_instance;
 
-	follow_control.follow_type = 0;
-	follow_control.succes = FALSE;
+	wall_follow_control.follow_type = 0;
+	wall_follow_control.succes = FALSE;
 
-	pidControllerInit(follow_control.follow_pid.instance);
+	pidControllerInit(wall_follow_control.follow_pid.instance);
 
 	return POSITION_CONTROL_E_SUCCESS;
 }
@@ -76,31 +76,31 @@ int followControlLoop(void)
 {
 	telemetersDistancesTypeDef distances;
 
-	//	if (follow_control.follow_type == ALIGN_FRONT)
+	//	if (wall_follow_control.follow_type == ALIGN_FRONT)
 	//	{
 	//		getTelemetersDistance(&distances);
 	//		if ((distances.distance_front_left < MAX_DIST_FOR_ALIGN && distances.distance_front_right < MAX_DIST_FOR_ALIGN) &&
 	//				(distances.distance_front_left > MIN_DIST_FOR_ALIGN && distances.distance_front_right > MIN_DIST_FOR_ALIGN))
 	//		{
-	//			follow_control.follow_error = distances.distance_front_left - distances.distance_front_right;
-	//			if (fabs(follow_control.follow_error) < SUCCES_GAP_DIST)
+	//			wall_follow_control.follow_error = distances.distance_front_left - distances.distance_front_right;
+	//			if (fabs(wall_follow_control.follow_error) < SUCCES_GAP_DIST)
 	//			{
-	//				follow_control.succes = TRUE;
+	//				wall_follow_control.succes = TRUE;
 	//			}
 	//		}
 	//		else
 	//		{
-	//			follow_control.follow_error = 0;
-	//			follow_control.succes = FALSE;
+	//			wall_follow_control.follow_error = 0;
+	//			wall_follow_control.succes = FALSE;
 	//		}
 	//	}
-	//	if (follow_control.follow_type == FOLLOW_WALL)
+	//	if (wall_follow_control.follow_type == FOLLOW_WALL)
 	//	{
 	walls wall_saw;
 	wall_saw = getCellState();
 	getTelemetersDistance(&distances);
 
-	if (follow_control.follow_type == FOLLOW_WALL)
+	if (wall_follow_control.follow_type == FOLLOW_WALL)
 	{
 		if (wall_saw.front == WALL_PRESENCE)
 		{
@@ -140,16 +140,18 @@ int followControlLoop(void)
 			rightWallFollow(&distances);
 		}
 	}
-	else if (follow_control.follow_type == FOLLOW_LINE)
-	{
-		follow_control.follow_error = line_follower.position;
-	}
+//	else if (wall_follow_control.follow_type == FOLLOW_LINE)
+//	{
+//		wall_follow_control.follow_error = line_follower.position;
+//	}
 	else
 	{
-		follow_control.follow_error = 0;
+		wall_follow_control.follow_error = 0;
 	}
 
-	follow_control.follow_command = (pidController(follow_control.follow_pid.instance, follow_control.follow_error));
+	telemetersStop();
+	wall_follow_control.follow_command = (pidController(wall_follow_control.follow_pid.instance, wall_follow_control.follow_error));
+	telemetersStart();
 
 	return SPEED_CONTROL_E_SUCCESS;
 }
@@ -159,10 +161,10 @@ int alignFront(telemetersDistancesTypeDef *distances)
 	//	if ((distances->distance_front_left < MAX_DIST_FOR_ALIGN && distances->distance_front_right < MAX_DIST_FOR_ALIGN) &&
 	//			(distances->distance_front_left > MIN_DIST_FOR_ALIGN && distances->distance_front_right > MIN_DIST_FOR_ALIGN))
 	//	{
-	follow_control.follow_error = distances->distance_front_left - distances->distance_front_right;
-	if (fabs(follow_control.follow_error) < SUCCES_GAP_DIST)
+	wall_follow_control.follow_error = distances->distance_front_left - distances->distance_front_right;
+	if (fabs(wall_follow_control.follow_error) < SUCCES_GAP_DIST)
 	{
-		follow_control.succes = TRUE;
+		wall_follow_control.succes = TRUE;
 	}
 	return SPEED_CONTROL_E_SUCCESS;
 }
@@ -173,10 +175,10 @@ int bothWallFollow(telemetersDistancesTypeDef *distances)
 	//			(distances->distance_diag_left > MIN_DIST_FOR_FOLLOW && distances->distance_diag_right > MIN_DIST_FOR_FOLLOW)) // &&
 	if 	(((distances->distance_diag_left + distances->distance_diag_right) < BOTH_WALL_DIST))
 	{
-		follow_control.follow_error = distances->distance_diag_right - distances->distance_diag_left;
-		if (fabs(follow_control.follow_error) < SUCCES_GAP_DIST)
+		wall_follow_control.follow_error = distances->distance_diag_right - distances->distance_diag_left;
+		if (fabs(wall_follow_control.follow_error) < SUCCES_GAP_DIST)
 		{
-			follow_control.succes = TRUE;
+			wall_follow_control.succes = TRUE;
 		}
 	}
 	return SPEED_CONTROL_E_SUCCESS;
@@ -186,10 +188,10 @@ int rightWallFollow(telemetersDistancesTypeDef *distances)
 {
 	if (distances->distance_diag_right < MAX_DIST_FOR_FOLLOW && distances->distance_diag_right > MIN_DIST_FOR_FOLLOW)
 	{
-		follow_control.follow_error = (double)distances->distance_diag_right - DIAG_DIST_FOR_FOLLOW;
-		if (fabs(follow_control.follow_error) < SUCCES_GAP_DIST)
+		wall_follow_control.follow_error = (double)distances->distance_diag_right - DIAG_DIST_FOR_FOLLOW;
+		if (fabs(wall_follow_control.follow_error) < SUCCES_GAP_DIST)
 		{
-			follow_control.succes = TRUE;
+			wall_follow_control.succes = TRUE;
 		}
 	}
 	return SPEED_CONTROL_E_SUCCESS;
@@ -199,10 +201,10 @@ int leftWallFollow(telemetersDistancesTypeDef *distances)
 {
 	if (distances->distance_diag_left < MAX_DIST_FOR_FOLLOW && distances->distance_diag_left > MIN_DIST_FOR_FOLLOW)
 	{
-		follow_control.follow_error = DIAG_DIST_FOR_FOLLOW - (double)distances->distance_diag_left;
-		if (fabs(follow_control.follow_error) < SUCCES_GAP_DIST)
+		wall_follow_control.follow_error = DIAG_DIST_FOR_FOLLOW - (double)distances->distance_diag_left;
+		if (fabs(wall_follow_control.follow_error) < SUCCES_GAP_DIST)
 		{
-			follow_control.succes = TRUE;
+			wall_follow_control.succes = TRUE;
 		}
 	}
 	return SPEED_CONTROL_E_SUCCESS;

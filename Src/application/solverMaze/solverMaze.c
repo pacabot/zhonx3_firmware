@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
-
 #include "stm32f4xx_hal.h"
 #include "stm32f4xx.h"
 #include "config/basetypes.h"
@@ -21,12 +20,12 @@
 #include "middleware/controls/motionControl/positionControl.h"
 #include "middleware/controls/motionControl/speedControl.h"
 #include "middleware/controls/motionControl/transfertFunction.h"
-#include "middleware/controls/motionControl/followControl.h"
 #include "middleware/controls/motionControl/mainControl.h"
+#include "middleware/controls/motionControl/wallFollowControl.h"
 
 /*application include */
 #include "application/solverMaze/solverMaze.h"
-#define debug
+//#define debug
 #ifdef debug
 #undef END_SPEED_TRANSLATION
 #define END_SPEED_TRANSLATION 0
@@ -46,7 +45,7 @@ int maze(void)
 	mainControlInit ();
 
 	control_params.follow_state = TRUE;
-	follow_control.follow_type = FOLLOW_WALL;//NOFOLLOW;
+	wall_follow_control.follow_type = FOLLOW_WALL;//NOFOLLOW;
 	move(0, 0, 0, 0);
 	HAL_Delay(500);
 

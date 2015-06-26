@@ -17,7 +17,6 @@
 #include "stdbool.h"
 #include <arm_math.h>
 #include <math.h>
-#include <middleware/controls/motionControl/transfertFunction.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdint.h>
@@ -40,8 +39,8 @@
 #include "middleware/controls/motionControl/positionControl.h"
 #include "middleware/controls/motionControl/speedControl.h"
 #include "middleware/controls/motionControl/transfertFunction.h"
-#include "middleware/controls/motionControl/followControl.h"
 #include "middleware/controls/motionControl/lineFollowControl.h"
+#include <middleware/controls/motionControl/wallFollowControl.h>
 
 /* Declarations for this module */
 #include "middleware/controls/motionControl/mainControl.h"
@@ -86,8 +85,9 @@ int mainControlLoop(void)
 	}
 	if (control_params.follow_state == TRUE)
 	{
-		followControlLoop();
+//		followControlLoop();
 //		control_params.position_state = FALSE;
+		control_params.position_state = TRUE;
 	}
 	else
 	{
@@ -133,18 +133,17 @@ int move(float angle, float radius_or_distance, float max_speed, float end_speed
 
 	if (angle == 0)
 	{
-		position_control.position_type = ENCODERS;
-//		if (follow_control.follow_type != NOFOLLOW)
-//			control_params.follow_state = TRUE;
-//		else
-//			control_params.follow_state = FALSE;
-
+		control_params.position_state = TRUE;
+//		position_control.position_type = ENCODERS;
+		position_control.position_type = GYRO;
+		control_params.follow_state = TRUE;
 
 		speedProfileCompute(radius_or_distance);
 		positionProfileCompute(0,0);
 	}
 	else
 	{
+		control_params.position_state = FALSE;
 		position_control.position_type = GYRO;
 //		position_control.position_type = ENCODERS;
 		control_params.follow_state = FALSE;
@@ -170,13 +169,13 @@ char isEndMove(void)
 int frontCal(float max_speed)
 {
 	int i = 0;
-	char save_folow_type = follow_control.follow_type;
+	char save_folow_type = wall_follow_control.follow_type;
 	telemetersDistancesTypeDef distances;
 	float relative_dist = 0.0;
 
-		follow_control.follow_type = ALIGN_FRONT;
+		wall_follow_control.follow_type = ALIGN_FRONT;
 		move(0, 0, 0, 0);
-		while (follow_control.succes != TRUE)
+		while (wall_follow_control.succes != TRUE)
 		{
 			if (timeOut(1, i) == TRUE)
 				return POSITION_CONTROL_E_ERROR;
@@ -193,7 +192,7 @@ int frontCal(float max_speed)
 		while(isEndMove() != TRUE);
 	}
 
-	follow_control.follow_type = save_folow_type;
+	wall_follow_control.follow_type = save_folow_type;
 
 	return POSITION_CONTROL_E_SUCCESS;
 }
@@ -341,7 +340,7 @@ void mainControlDisplayTest(void)
 	{
 		ssd1306ClearScreen();
 		ssd1306PrintInt(10,  5,  "speed dist =  ",(int) (speed_control.current_distance * 100), &Font_5x8);
-		ssd1306PrintInt(10,  15, "follow err =  ",(int) (follow_control.follow_error), &Font_5x8);
+		ssd1306PrintInt(10,  15, "follow err =  ",(int) (wall_follow_control.follow_error), &Font_5x8);
 		ssd1306PrintInt(10,  25, "right_dist =  ",(int) (position_control.end_control * 100), &Font_5x8);
 		ssd1306PrintInt(10,  35, "gyro =  ",(int16_t) GyroGetAngle(), &Font_5x8);
 		ssd1306PrintInt(10,  45, "left PWM =  ",(int16_t) transfert_function.left_motor_pwm, &Font_5x8);
@@ -365,7 +364,7 @@ void mainControlTest(void)
 	telemetersStart();
 	HAL_Delay(500);
 
-	follow_control.follow_type = NOFOLLOW;
+	wall_follow_control.follow_type = NOFOLLOW;
 
 	rotate180WithCal(CCW, 400, 0);
 
@@ -379,19 +378,27 @@ void followWallTest()
 	telemetersStart();
 	motorsSleepDriver(OFF);
 	HAL_Delay(500);
-	move(0, 0, 0, 0);
 
-	control_params.follow_state = TRUE;
-	follow_control.follow_type = FOLLOW_WALL;//NOFOLLOW
+//	control_params.follow_state = TRUE;
+	wall_follow_control.follow_type = FOLLOW_WALL;//NOFOLLOW
 
-	moveUTurn(300, 300, 0);
-while(1);
+//	moveUTurn(300, 300, 0);
+//while(1);
 	move(0, 0, 0, 0);
-	moveStartCell(50, 10);
-	moveRotateCW90(50, 10);
-	moveRotateCW90(50, 10);
-	moveRotateCCW90(50, 10);
-	moveRotateCCW90(50, 10);
+	moveStartCell(500, 500);
+	moveCell(5, 500, 300);
+	moveRotateCW90(300, 300);
+	moveCell(3, 500, 300);
+	moveRotateCW90(300, 300);
+	moveCell(2, 500, 300);
+	moveRotateCW90(300, 300);
+	moveCell(2, 500, 300);
+	moveRotateCCW90(300, 300);
+	moveCell(1, 500, 300);
+	moveRotateCW90(300, 0);
+//	moveRotateCW90(50, 10);
+//	moveRotateCCW90(50, 10);
+//	moveRotateCCW90(50, 10);
 
 	while(1);
 
@@ -427,7 +434,7 @@ void rotateTest()
 	mainControlInit();
 	HAL_Delay(500);
 
-	follow_control.follow_type = NOFOLLOW;
+	wall_follow_control.follow_type = NOFOLLOW;
 	position_control.position_type = GYRO;
 
 	move(90, 90, 300, 0);
