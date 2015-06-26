@@ -56,11 +56,11 @@ wall_follow_control_struct wall_follow_control;
 wall_follow_params_struct wall_follow_params;
 arm_pid_instance_f32 telemeters_pid_instance;
 
-int followControlInit(void)
+int wallFollowControlInit(void)
 {
 	telemeters_pid_instance.Kp = 8;
 	telemeters_pid_instance.Ki = 0;
-	telemeters_pid_instance.Kd = 1000;
+	telemeters_pid_instance.Kd = 800;
 
 	wall_follow_control.follow_pid.instance = &telemeters_pid_instance;
 
@@ -72,7 +72,7 @@ int followControlInit(void)
 	return POSITION_CONTROL_E_SUCCESS;
 }
 
-int followControlLoop(void)
+int wallFollowControlLoop(void)
 {
 	telemetersDistancesTypeDef distances;
 
@@ -140,10 +140,6 @@ int followControlLoop(void)
 			rightWallFollow(&distances);
 		}
 	}
-//	else if (wall_follow_control.follow_type == FOLLOW_LINE)
-//	{
-//		wall_follow_control.follow_error = line_follower.position;
-//	}
 	else
 	{
 		wall_follow_control.follow_error = 0;

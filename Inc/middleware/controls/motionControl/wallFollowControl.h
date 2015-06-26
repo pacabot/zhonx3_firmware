@@ -53,8 +53,8 @@ typedef struct
 
 extern wall_follow_control_struct wall_follow_control;
 
-int followControlInit(void);
-int followControlLoop(void);
+int wallFollowControlInit(void);
+int wallFollowControlLoop(void);
 int alignFront(telemetersDistancesTypeDef *distances);
 int bothWallFollow(telemetersDistancesTypeDef *distances);
 int rightWallFollow(telemetersDistancesTypeDef *distances);

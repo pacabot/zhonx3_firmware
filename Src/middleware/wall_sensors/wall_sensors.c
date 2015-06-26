@@ -52,7 +52,7 @@ int wallSensorsCalibration (void)
 	telemetersInit();
 	telemetersStart();
 	control_params.speed_state = TRUE;
-	control_params.follow_state = FALSE;
+	control_params.wall_follow_state = FALSE;
 	control_params.position_state = TRUE;
 	HAL_Delay(1000);
 	for(int i = 0; i < NUMBER_OF_CELL; i++)

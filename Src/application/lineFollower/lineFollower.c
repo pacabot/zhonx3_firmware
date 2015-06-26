@@ -66,7 +66,6 @@ void lineSensorsCalibration(void)
 	lineSensorsStart();
 	motorsInit();
 	motorsSleepDriver(OFF);
-	control_params.line_follow_state = TRUE;
 
 	tone(a, 500);
 //	HAL_Delay(1000);
@@ -114,7 +113,7 @@ void lineFollower(void)
 	lineSensorsInit();
 	lineSensorsStart();
 	motorsInit();
-//	follow_control.follow_type = FOLLOW_LINE;
+	control_params.line_follow_state = TRUE;
 	motorsSleepDriver(OFF);
 
 
@@ -166,8 +165,6 @@ void lineFollower(void)
 
 
 //	HAL_Delay(500);
-
-//	follow_control.follow_type = FOLLOW_LINE;
 
 	line_follower.active_state = TRUE;
 	move(0, 10000, MAXSPEED, 0);
