@@ -23,7 +23,7 @@
 #define NO_FOLLOW_DIST	60.00
 
 /* Types definitions */
-enum rotation_type_enum {CW, CCW};
+enum rotationTypeEnum {CW, CCW};
 
 extern double ROTATION_DIAMETER;
 
@@ -55,8 +55,8 @@ int mainControlLoop(void);
 int  move(float angle, float radius_or_distance, float max_speed, float end_speed);
 char isEndMove(void);
 int  frontCal(float max_speed);
-int  rotate180WithCal(enum rotation_type_enum rotation_type, float max_speed, float end_speed);
-int  rotate90WithCal(enum rotation_type_enum rotation_type, float max_speed, float end_speed);
+int  rotate180WithCal(enum rotationTypeEnum rotation_type, float max_speed, float end_speed);
+int  rotate90WithCal(enum rotationTypeEnum rotation_type, float max_speed, float end_speed);
 int  moveCell(unsigned long nb_cell, float max_speed, float end_speed);
 int  moveHalfCell(float max_speed, float end_speed);
 int  moveEndCell(float max_speed, float end_speed);

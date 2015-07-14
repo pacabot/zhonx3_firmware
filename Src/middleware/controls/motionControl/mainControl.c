@@ -63,6 +63,7 @@ int mainControlInit(void)
 	wallFollowControlInit();
 	lineFollowControlInit();
 	transfertFunctionInit();
+	wallSensorInit();
 	adxrs620Init();
 
 	speed_params.initial_speed = 0;
@@ -170,8 +171,9 @@ int frontCal(float max_speed)
 {
 	int i = 0;
 	char save_folow_type = wall_follow_control.follow_type;
-	telemetersDistancesTypeDef distances;
 	float relative_dist = 0.0;
+	telemetersStruct*ptr_distances;
+	ptr_distances = getDistance_ptr();
 
 		wall_follow_control.follow_type = ALIGN_FRONT;
 		move(0, 0, 0, 0);
@@ -184,8 +186,8 @@ int frontCal(float max_speed)
 
 	/**************************************************************************/
 
-	getTelemetersDistance(&distances);
-	relative_dist = (distances.distance_front_left + distances.distance_front_right) / 2;
+	//getTelemetersDistance(ptr_distances);
+	//relative_dist = (ptr_distances->FL.dist_mm + ptr_distances->FR.dist_mm) / 2; //todo uncomment PLF
 	if (relative_dist < MAX_DIST_FOR_ALIGN)
 	{
 		move(0, relative_dist - CENTER_DISTANCE, max_speed, 0);
@@ -197,7 +199,7 @@ int frontCal(float max_speed)
 	return POSITION_CONTROL_E_SUCCESS;
 }
 
-int rotate180WithCal(enum rotation_type_enum rotation_type, float max_speed, float end_speed)
+int rotate180WithCal(enum rotationTypeEnum rotation_type, float max_speed, float end_speed)
 {
 	frontCal(max_speed);
 
@@ -222,7 +224,7 @@ int rotate180WithCal(enum rotation_type_enum rotation_type, float max_speed, flo
 	return POSITION_CONTROL_E_SUCCESS;
 }
 
-int rotate90WithCal(enum rotation_type_enum rotation_type, float max_speed, float end_speed)
+int rotate90WithCal(enum rotationTypeEnum rotation_type, float max_speed, float end_speed)
 {
 	/***************************************/
 	if (rotation_type == CW)
@@ -241,9 +243,6 @@ int moveCell(unsigned long nb_cell, float max_speed, float end_speed)
 {
 	if (nb_cell == 0)
 		return POSITION_CONTROL_E_SUCCESS;
-
-	telemetersDistancesTypeDef distances;
-	float relative_dist = 0.0;
 
 	while(isEndMove() != TRUE);
 

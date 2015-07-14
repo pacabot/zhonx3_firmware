@@ -17,6 +17,7 @@
 #define WALL_FOLLOW_CONTROL_E_ERROR    MAKE_ERROR(WALL_FOLLOW_CONTROL_MODULE_ID, 1)
 
 #include "middleware/controls/motionControl/speedControl.h"
+#include "peripherals/telemeters/telemeters.h"
 
 /* Types definitions */
 #define CENTER_DISTANCE 	15.0
@@ -55,9 +56,9 @@ extern wall_follow_control_struct wall_follow_control;
 
 int wallFollowControlInit(void);
 int wallFollowControlLoop(void);
-int alignFront(telemetersDistancesTypeDef *distances);
-int bothWallFollow(telemetersDistancesTypeDef *distances);
-int rightWallFollow(telemetersDistancesTypeDef *distances);
-int leftWallFollow(telemetersDistancesTypeDef *distances);
+int alignFront(telemetersStruct *distances);
+int bothWallFollow(telemetersStruct *distances);
+int rightWallFollow(telemetersStruct *distances);
+int leftWallFollow(telemetersStruct *distances);
 
 #endif

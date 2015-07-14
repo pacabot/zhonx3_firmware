@@ -124,9 +124,9 @@ char expanderJoyState(void)
 }
 char expanderJoyFiltered(void)
 {
-	char joystck=expanderJoyState();
-	if (antiBounceJoystick2(joystck)==DONE)
-		return joystck;
+	char joystick=expanderJoyState();
+	if (antiBounceJoystick2(joystick)==DONE)
+		return joystick;
 	return 0;
 }
 void joystickTest(void)
@@ -166,6 +166,7 @@ void joystickTest(void)
 	HAL_Delay(1000);
 	antiBounceJoystick();
 }
+
 void antiBounceJoystick(void)
 {
 	unsigned long int time_base = HAL_GetTick();
@@ -175,6 +176,7 @@ void antiBounceJoystick(void)
 			time_base = HAL_GetTick();
 	}while (time_base!=(HAL_GetTick()-20));
 }
+
 char antiBounceJoystick2(char arrow_type)
 {
 	static long time_base = 0;
