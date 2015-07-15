@@ -73,26 +73,26 @@ float tata=4.0;
 
 const menuItem testGraphicMenu =
 {
-	"test graphic menu",
-	{
-		{"Default accel :",'a',			(void*)&toto},
-		{"Max speed dist:",'a',			(void*)&titi},
-		{"Default accel :",'a',			(void*)&tata},
-		{"graphique",'g',null},
-		{(char*)NULL,	0,				NULL}
-	}
+		"test graphic menu",
+		{
+				{"Default accel :",'a',			(void*)&toto},
+				{"Max speed dist:",'a',			(void*)&titi},
+				{"Default accel :",'a',			(void*)&tata},
+				{"graphique",'g',null},
+				{(char*)NULL,	0,				NULL}
+		}
 };
 
 const menuItem maze_menu=
 {
 		"maze menu",
 		{
-			{"new maze",'f',		(void*)maze},
-//			{"test maze",'f',		(void*)test_maze},
-			{"calibration",'b',		(void*)&zhonxSettings.calibration_enabled},
-			{"color finish",'b',	(void*)&zhonxSettings.color_sensor_enabled},
-			{"x finish",'i',		(void*)&zhonxSettings.x_finish_maze},
-			{"y finish",'i',		(void*)&zhonxSettings.y_finish_maze}
+				{"new maze",'f',		(void*)maze},
+				//			{"test maze",'f',		(void*)test_maze},
+				{"calibration",'b',		(void*)&zhonxSettings.calibration_enabled},
+				{"color finish",'b',	(void*)&zhonxSettings.color_sensor_enabled},
+				{"x finish",'i',		(void*)&zhonxSettings.x_finish_maze},
+				{"y finish",'i',		(void*)&zhonxSettings.y_finish_maze}
 		}
 
 };
@@ -101,8 +101,8 @@ const menuItem follower_menu=
 {
 		"line menu",
 		{
-			{"line follower",'f',	(void*)lineFollower},
-			{"calibration",'f',		(void*)lineSensorsCalibration},
+				{"line follower",'f',	(void*)lineFollower},
+				{"calibration",'f',		(void*)lineSensorsCalibration},
 		}
 };
 
@@ -120,21 +120,21 @@ const menuItem peripheral_test_menu=
 };
 const menuItem tests_menu=
 {
-		"TEST MENU",
+		"UNIT TEST",
 		{
-				{"test distantce",		'f', (void*)testTelemeterDistance},
-				{"test wall sensor",	'f', (void*)testWallsSensors},
-				{"test bluetooth",		'f', (void*)bluetoothTest},
-				{"test multimeter",		'f', (void*)mulimeterTest},
-				{"test display",		'f', (void*)ssd1306Test},
-				{"test eeprom",			'f', (void*)eepromTest},
-				{"test encoders",		'f', (void*)encoderTest},
-				{"test joystick",		'f', (void*)joystickTest},
-				{"test gyroscope",		'f', (void*)adxrs620Test},
-				{"test telemeters",		'f', (void*)telemetersTest},
-				{"test beeper",			'f', (void*)toneTest},
-				{"test motors",			'f', (void*)motorsTest},
-				{"test line sensors",	'f', (void*)lineSensorsTest},
+				{"distantce",		'f', (void*)testTelemeterDistance},
+				{"wall sensor",		'f', (void*)testWallsSensors},
+				{"bluetooth",		'f', (void*)bluetoothTest},
+				{"multimeter",		'f', (void*)mulimeterTest},
+				{"display",			'f', (void*)ssd1306Test},
+				{"eeprom",			'f', (void*)eepromTest},
+				{"encoders",		'f', (void*)encoderTest},
+				{"joystick",		'f', (void*)joystickTest},
+				{"gyroscope",		'f', (void*)adxrs620Test},
+				{"telemeters",		'f', (void*)telemetersTest},
+				{"beeper",			'f', (void*)toneTest},
+				{"motors",			'f', (void*)motorsTest},
+				{"line sensors",	'f', (void*)lineSensorsTest},
 				{0,0,0}
 		}
 };
@@ -143,11 +143,11 @@ const menuItem control_menu=
 {
 		"control menu",
 		{
-			{"control test",'f',		(void*)mainControlTest},
-			{"follow the wall",'f',		(void*)followWallTest},
-			{"follow the line",'f',		(void*)followLineTest},
-			{"rotate",'f',				(void*)rotateTest},
-			{"curve rotate",'f',		(void*)curveRotateTest},
+				{"control test",'f',		(void*)mainControlTest},
+				{"follow the wall",'f',		(void*)followWallTest},
+				{"follow the line",'f',		(void*)followLineTest},
+				{"rotate",'f',				(void*)rotateTest},
+				{"curve rotate",'f',		(void*)curveRotateTest},
 		}
 };
 
@@ -159,144 +159,144 @@ const menuItem mainMenu =
 		"ZHONX III dark   V0.2",
 #endif
 		{
-				{"maze menu",'m',			(void*)&maze_menu},
-				{"Test menu",'m',			(void*)&tests_menu},
+				{"Maze menu",'m',			(void*)&maze_menu},
+				{"Unit tests",'m',			(void*)&tests_menu},
 				{"Control menu",'m',		(void*)&control_menu},
-				{"line menu",'m', 			(void*)&follower_menu},
-				{"parameters menu",'m',		(void*)&parameters_menu},
-				{"test graph",'m',			(void*)&testGraphicMenu},
+				{"Line menu",'m', 			(void*)&follower_menu},
+				{"Parameters menu",'m',		(void*)&parameters_menu},
+				{"Test graph",'m',			(void*)&testGraphicMenu},
 				{0,0,0}
 		}
 };
 
 int menu(const menuItem Menu)
 {
-    signed char line_screen = 1;
-    signed char line_menu = 0;
-    displayMenu(Menu, line_menu);
-    ssd1306InvertArea(0, MARGIN, HIGHLIGHT_LENGHT, HIGHLIGHT_HEIGHT);
-    ssd1306Refresh();
-    while (true)
-    {
-        int joystick = expanderJoyFiltered();
-        // Exit Button JOYSTICK_LEFT
-        switch (joystick)
-        {
-            case JOY_LEFT:
-                return SUCCESS;
-                break;
-                // Joystick down
-            case JOY_DOWN:
-                //beeper
-                if (Menu.line[line_menu + 1].name != null)
-                {
-                    line_menu++;
-                    line_screen++;
-                    if (line_screen > MAX_LINE_SCREEN)
-                    {
-                        line_screen--;
-                        displayMenu(Menu, line_menu - (line_screen - 1));
-                        ssd1306InvertArea(0, line_screen * MARGIN,
-                                HIGHLIGHT_LENGHT, HIGHLIGHT_HEIGHT);
-                        ssd1306Refresh();
-                    }
-                    else
-                    {
-                        menuHighlightedMove((line_screen - 1) * ROW_HEIGHT + 1,
-                                (line_screen) * ROW_HEIGHT);
-                    }
-                }
-                break;
-            case JOY_UP:
-                //beeper
-                if (line_screen == 1)
-                {
-                    if (line_menu > 0)
-                    {
-                        line_menu--;
-                        displayMenu(Menu, line_menu);
-                        ssd1306InvertArea(0, MARGIN, HIGHLIGHT_LENGHT,
-                                HIGHLIGHT_HEIGHT);
-                        ssd1306Refresh();
-                    }
-                }
-                else
-                {
-                    line_menu--;
-                    line_screen--;
-                    menuHighlightedMove((line_screen + 1) * ROW_HEIGHT - 1,
-                            (line_screen) * ROW_HEIGHT);
-                }
-                break;
-            case JOY_RIGHT: // Validate button joystick right
-                //hal_beeper_beep(app_context.beeper, 4000, 10);
-                switch (Menu.line[line_menu].type)
-                {
-                    case 'b':
-                        modifyBoolParam(Menu.line[line_menu].name,
-                                (unsigned char*) Menu.line[line_menu].param);
-                        break;
-                    case 'i':
-                        modifyLongParam(Menu.line[line_menu].name,
-                                (long*) (int*) Menu.line[line_menu].param);
-                        break;
-                    case 'l':
-                        modifyLongParam(Menu.line[line_menu].name,
-                                (long*) Menu.line[line_menu].param);
-                        break;
-                    case 'm':
-                        menu(*(const menuItem*) Menu.line[line_menu].param);
-                        break;
-                    case 'f':
-                        if (Menu.line[line_menu].param != null)
-                        {
-                            ssd1306ClearScreen();
-                            ssd1306Refresh();
-                            Menu.line[line_menu].param();
-                        }
-                        break;
-                    case 'g':
-                        graphMotorSettings(
-                                (float*) Menu.line[line_menu - 3].param,
-                                (float*) Menu.line[line_menu - 2].param,
-                                (float*) Menu.line[line_menu - 1].param);
-                        break;
-                    default:
-                        break;
-                }
-                displayMenu(Menu, line_menu - (line_screen - 1));
-                ssd1306InvertArea(0, MARGIN * line_screen, HIGHLIGHT_LENGHT,
-                        HIGHLIGHT_HEIGHT);
-                ssd1306Refresh();
-                break;
-            default:
-                break;
-        }
-        cmdline_parse();
-    }
-    return -1;
+	signed char line_screen = 1;
+	signed char line_menu = 0;
+	displayMenu(Menu, line_menu);
+	ssd1306InvertArea(0, MARGIN, HIGHLIGHT_LENGHT, HIGHLIGHT_HEIGHT);
+	ssd1306Refresh();
+	while (true)
+	{
+		int joystick = expanderJoyFiltered();
+		// Exit Button JOYSTICK_LEFT
+		switch (joystick)
+		{
+		case JOY_LEFT:
+			return SUCCESS;
+			break;
+			// Joystick down
+		case JOY_DOWN:
+			//beeper
+			if (Menu.line[line_menu + 1].name != null)
+			{
+				line_menu++;
+				line_screen++;
+				if (line_screen > MAX_LINE_SCREEN)
+				{
+					line_screen--;
+					displayMenu(Menu, line_menu - (line_screen - 1));
+					ssd1306InvertArea(0, line_screen * MARGIN,
+							HIGHLIGHT_LENGHT, HIGHLIGHT_HEIGHT);
+					ssd1306Refresh();
+				}
+				else
+				{
+					menuHighlightedMove((line_screen - 1) * ROW_HEIGHT + 1,
+							(line_screen) * ROW_HEIGHT);
+				}
+			}
+			break;
+		case JOY_UP:
+			//beeper
+			if (line_screen == 1)
+			{
+				if (line_menu > 0)
+				{
+					line_menu--;
+					displayMenu(Menu, line_menu);
+					ssd1306InvertArea(0, MARGIN, HIGHLIGHT_LENGHT,
+							HIGHLIGHT_HEIGHT);
+					ssd1306Refresh();
+				}
+			}
+			else
+			{
+				line_menu--;
+				line_screen--;
+				menuHighlightedMove((line_screen + 1) * ROW_HEIGHT - 1,
+						(line_screen) * ROW_HEIGHT);
+			}
+			break;
+		case JOY_RIGHT: // Validate button joystick right
+			//hal_beeper_beep(app_context.beeper, 4000, 10);
+			switch (Menu.line[line_menu].type)
+			{
+			case 'b':
+				modifyBoolParam(Menu.line[line_menu].name,
+						(unsigned char*) Menu.line[line_menu].param);
+				break;
+			case 'i':
+				modifyLongParam(Menu.line[line_menu].name,
+						(long*) (int*) Menu.line[line_menu].param);
+				break;
+			case 'l':
+				modifyLongParam(Menu.line[line_menu].name,
+						(long*) Menu.line[line_menu].param);
+				break;
+			case 'm':
+				menu(*(const menuItem*) Menu.line[line_menu].param);
+				break;
+			case 'f':
+				if (Menu.line[line_menu].param != null)
+				{
+					ssd1306ClearScreen();
+					ssd1306Refresh();
+					Menu.line[line_menu].param();
+				}
+				break;
+			case 'g':
+				graphMotorSettings(
+						(float*) Menu.line[line_menu - 3].param,
+						(float*) Menu.line[line_menu - 2].param,
+						(float*) Menu.line[line_menu - 1].param);
+				break;
+			default:
+				break;
+			}
+			displayMenu(Menu, line_menu - (line_screen - 1));
+			ssd1306InvertArea(0, MARGIN * line_screen, HIGHLIGHT_LENGHT,
+					HIGHLIGHT_HEIGHT);
+			ssd1306Refresh();
+			break;
+			default:
+				break;
+		}
+		cmdline_parse();
+	}
+	return -1;
 }
 
 void menuHighlightedMove(unsigned char y, unsigned char max_y)
 {
 	if (max_y > y)
 	{
-//		ssd1306InvertArea(0, y-1, HIGHLIGHT_LENGHT, HIGHLIGHT_HEIGHT*2);
+		//		ssd1306InvertArea(0, y-1, HIGHLIGHT_LENGHT, HIGHLIGHT_HEIGHT*2);
 		for ( ; y <= max_y; y++)
 		{
 			ssd1306InvertArea(0, y - 1, HIGHLIGHT_LENGHT, HIGHLIGHT_HEIGHT);
 			ssd1306InvertArea(0, y, HIGHLIGHT_LENGHT, HIGHLIGHT_HEIGHT);
-//				ssd1306Refresh();
+			//				ssd1306Refresh();
 		}
 	}
 	else
 	{
-//		ssd1306InvertArea(0, y-HIGHLIGHT_HEIGHT+1, HIGHLIGHT_LENGHT, HIGHLIGHT_HEIGHT*2);
+		//		ssd1306InvertArea(0, y-HIGHLIGHT_HEIGHT+1, HIGHLIGHT_LENGHT, HIGHLIGHT_HEIGHT*2);
 		for ( ; y >= max_y; y--)
 		{
 			ssd1306InvertArea(0, y + 1, HIGHLIGHT_LENGHT, HIGHLIGHT_HEIGHT);
 			ssd1306InvertArea(0, y, HIGHLIGHT_LENGHT, HIGHLIGHT_HEIGHT);
-//				ssd1306Refresh();
+			//				ssd1306Refresh();
 		}
 	}
 	ssd1306Refresh();
@@ -332,9 +332,9 @@ void displayMenu(const menuItem menu,int line)
 		case 'm':
 			ssd1306DrawString(115,i*MARGIN+MARGIN+1,">",&Font_3x6);
 			break;
-//		case 'a':
-//			sprintf(str,"%f.2",*(float*)menu.line[i+line].param);
-//			ssd1306DrawString(110,i*MARGIN+MARGIN+1,str,&Font_3x6);
+			//		case 'a':
+			//			sprintf(str,"%f.2",*(float*)menu.line[i+line].param);
+			//			ssd1306DrawString(110,i*MARGIN+MARGIN+1,str,&Font_3x6);
 		}
 	}
 	uint8_t nmbr_item = 0;
@@ -503,34 +503,34 @@ void graphMotorSettings (float *acceleration, float *maxSpeed, float *decelerati
 		printGraphMotor ( *acceleration, *maxSpeed, *deceleration);
 		switch (expanderJoyFiltered())
 		{
-			case JOY_LEFT:
-				if (number_value <= 0)
-				{
-					return;
-				}
-				else
-				{
-					number_value--;
-				}
-				break;
-			case JOY_DOWN:
-				*(values[number_value])-=0.1;
-				break;
-			case JOY_UP:
-				*(values[number_value])+=0.1;
-				break;
-			case JOY_RIGHT:
-				if (number_value >= 2)
-				{
-					return;
-				}
-				else
-				{
-					number_value++;
-				}
-				break;
-			default:
-				break;
+		case JOY_LEFT:
+			if (number_value <= 0)
+			{
+				return;
+			}
+			else
+			{
+				number_value--;
+			}
+			break;
+		case JOY_DOWN:
+			*(values[number_value])-=0.1;
+			break;
+		case JOY_UP:
+			*(values[number_value])+=0.1;
+			break;
+		case JOY_RIGHT:
+			if (number_value >= 2)
+			{
+				return;
+			}
+			else
+			{
+				number_value++;
+			}
+			break;
+		default:
+			break;
 		}
 	}
 }

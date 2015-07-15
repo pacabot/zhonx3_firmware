@@ -42,7 +42,7 @@ enum telemeterType {FL, DL, DR, FR};
 
 typedef struct
 {
-    float dist_mm;
+    double dist_mm;
 	int old_avrg;
 	int cell_idx;
 	int	*profile;
@@ -53,10 +53,11 @@ typedef struct
 	telemeterConvStruct mm_conv;
     int adc;
     int adc_ref;
-    mobileAvrgStruct mAvrgTypeDef;
-    mobileAvrgStruct mAvrgTypeDef_ref;
+    mobileAvrgStruct mAvrgStruct;
+    mobileAvrgStruct mAvrgStruct_ref;
     int avrg;
     int avrg_ref;
+	int delta;
     char isActivated;
     uint16_t led_gpio;
 } telemeterStruct;
@@ -76,18 +77,20 @@ typedef struct
 
 extern telemetersStruct telemeters;
 
-void telemetersInit(void);
-void telemetersStart(void);
-void telemetersStop(void);
-void telemeters_IT(void);
-void telemeters_DMA_IT(void);
-void telemetersAdc2Start(void);
-void telemetersAdc3Start(void);
-void telemeters_ADC2_IT(void);
-void telemeters_ADC3_IT(void);
-void setTelemetersADC(telemeterStruct *tel, ADC_HandleTypeDef *hadc);
-float getTelemeterDist (enum telemeterType what_telemeter);
-float getTelemetersDistance (telemeterStruct *tel);
-void telemetersTest(void);
+void   telemetersInit(void);
+void   telemetersStart(void);
+void   telemetersStop(void);
+void   telemeters_IT(void);
+void   telemeters_DMA_IT(void);
+void   telemetersAdc2Start(void);
+void   telemetersAdc3Start(void);
+void   telemeters_ADC2_IT(void);
+void   telemeters_ADC3_IT(void);
+void   setTelemetersADC(telemeterStruct *tel, ADC_HandleTypeDef *hadc);
+double getTelemeterDist (enum telemeterType what_telemeter);
+int    getTelemetersVar(enum telemeterType tel_type);
+double getTelemetersDistance (telemeterStruct *tel);
+int	   getTelemetersVariation(telemeterStruct *tel);
+void   telemetersTest(void);
 
 #endif

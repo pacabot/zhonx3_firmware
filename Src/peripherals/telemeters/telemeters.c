@@ -71,7 +71,7 @@ void telemetersInit(void)
 	/**Configure the global features of the ADC (Clock, Resolution, Data Alignment and number of conversion)
 	 */
 	hadc2.Instance = ADC2;
-	hadc2.Init.ClockPrescaler = ADC_CLOCKPRESCALER_PCLK_DIV4;
+	hadc2.Init.ClockPrescaler = ADC_CLOCKPRESCALER_PCLK_DIV8;
 	hadc2.Init.Resolution = ADC_RESOLUTION12b;
 	hadc2.Init.ScanConvMode = DISABLE;
 	hadc2.Init.ContinuousConvMode = DISABLE;
@@ -84,7 +84,7 @@ void telemetersInit(void)
 	HAL_ADC_Init(&hadc2);
 
 	hadc3.Instance = ADC3;
-	hadc3.Init.ClockPrescaler = ADC_CLOCKPRESCALER_PCLK_DIV4;
+	hadc3.Init.ClockPrescaler = ADC_CLOCKPRESCALER_PCLK_DIV8;
 	hadc3.Init.Resolution = ADC_RESOLUTION12b;
 	hadc3.Init.ScanConvMode = DISABLE;
 	hadc3.Init.ContinuousConvMode = DISABLE;
@@ -96,10 +96,10 @@ void telemetersInit(void)
 	hadc3.Init.EOCSelection = EOC_SINGLE_CONV;
 	HAL_ADC_Init(&hadc3);
 
-	memset(&telemeters.FR.mAvrgTypeDef, 0, sizeof(mobileAvrgStruct));
-	memset(&telemeters.FL.mAvrgTypeDef, 0, sizeof(mobileAvrgStruct));
-	memset(&telemeters.DR.mAvrgTypeDef, 0, sizeof(mobileAvrgStruct));
-	memset(&telemeters.DL.mAvrgTypeDef, 0, sizeof(mobileAvrgStruct));
+	memset(&telemeters.FR.mAvrgStruct, 0, sizeof(mobileAvrgStruct));
+	memset(&telemeters.FL.mAvrgStruct, 0, sizeof(mobileAvrgStruct));
+	memset(&telemeters.DR.mAvrgStruct, 0, sizeof(mobileAvrgStruct));
+	memset(&telemeters.DL.mAvrgStruct, 0, sizeof(mobileAvrgStruct));
 	memset(&telemeters, 0, sizeof(telemetersStruct));
 
 	telemeters.FL.mm_conv.old_avrg = 0;
@@ -225,14 +225,14 @@ void telemeters_IT(void)
 void telemeters_ADC2_IT(void)
 {
 	telemeters.end_of_conversion++;
-	if (telemeters.FR.isActivated != FALSE)
-	{
-		setTelemetersADC(&telemeters.FR, &hadc2);
-		return;
-	}
 	if (telemeters.FL.isActivated != FALSE)
 	{
 		setTelemetersADC(&telemeters.FL, &hadc2);
+		return;
+	}
+	if (telemeters.FR.isActivated != FALSE)
+	{
+		setTelemetersADC(&telemeters.FR, &hadc2);
 		return;
 	}
 	if (telemeters.DL.isActivated != FALSE)
@@ -258,7 +258,7 @@ void setTelemetersADC(telemeterStruct *tel, ADC_HandleTypeDef *hadc)
 		HAL_GPIO_WritePin(GPIOB, tel->led_gpio, RESET);
 
 		if (tel->adc - tel->avrg_ref > 0)
-			tel->avrg = mobileAvrgInt(&tel->mAvrgTypeDef, (tel->adc - tel->avrg_ref));
+			tel->avrg = mobileAvrgInt(&tel->mAvrgStruct, (tel->adc - tel->avrg_ref));
 		else
 			tel->avrg = 0;
 
@@ -267,13 +267,13 @@ void setTelemetersADC(telemeterStruct *tel, ADC_HandleTypeDef *hadc)
 	if (tel->isActivated == TX_OFF)
 	{
 		tel->adc_ref = HAL_ADC_GetValue(hadc);
-		tel->avrg_ref = mobileAvrgInt(&tel->mAvrgTypeDef_ref, tel->adc_ref);
+		tel->avrg_ref = mobileAvrgInt(&tel->mAvrgStruct_ref, tel->adc_ref);
 
 		tel->isActivated = FALSE;
 	}
 }
 
-float getTelemeterDist(enum telemeterType tel_type)
+double getTelemeterDist(enum telemeterType tel_type)
 {
 	switch (tel_type)
 	{
@@ -288,6 +288,30 @@ float getTelemeterDist(enum telemeterType tel_type)
 		break;
 	case FR:
 		return getTelemetersDistance(&telemeters.FR);
+		break;
+
+	default:
+		break;
+	}
+
+	return TELEMETERS_DRIVER_E_ERROR;
+}
+
+int getTelemetersVar(enum telemeterType tel_type)
+{
+	switch (tel_type)
+	{
+	case FL:
+		return getTelemetersVariation(&telemeters.FL);
+		break;
+	case DL:
+		return getTelemetersVariation(&telemeters.DL);
+		break;
+	case DR:
+		return getTelemetersVariation(&telemeters.DR);
+		break;
+	case FR:
+		return getTelemetersVariation(&telemeters.FR);
 		break;
 
 	default:
@@ -312,13 +336,17 @@ float getTelemeterDist(enum telemeterType tel_type)
  * 		  xb-xa
  */
 
-float getTelemetersDistance(telemeterStruct *tel)
+double getTelemetersDistance(telemeterStruct *tel)
 {
 	char sens = 1;
 
 	if(tel->avrg > tel->mm_conv.old_avrg)
 	{
 		sens = -1;
+	}
+	else if(tel->avrg == tel->mm_conv.old_avrg)	//for optimize redundant call
+	{
+		return tel->mm_conv.dist_mm;
 	}
 
 	while ((tel->avrg > tel->mm_conv.profile[tel->mm_conv.cell_idx]) || (tel->avrg < tel->mm_conv.profile[tel->mm_conv.cell_idx + 1]))
@@ -358,23 +386,30 @@ float getTelemetersDistance(telemeterStruct *tel)
 	 *
 	 */
 	tel->mm_conv.dist_mm =
-			(tel->mm_conv.profile[tel->mm_conv.cell_idx] * (tel->mm_conv.cell_idx + 1) * NUMBER_OF_MILLIMETER_BY_LOOP -
-					tel->mm_conv.cell_idx * NUMBER_OF_MILLIMETER_BY_LOOP * tel->mm_conv.profile[tel->mm_conv.cell_idx + 1] -
-					(float)tel->avrg * (tel->mm_conv.cell_idx + 1) * NUMBER_OF_MILLIMETER_BY_LOOP + (float)tel->avrg * tel->mm_conv.cell_idx *
-					NUMBER_OF_MILLIMETER_BY_LOOP) /
-					(- tel->mm_conv.profile[tel->mm_conv.cell_idx + 1] + tel->mm_conv.profile[tel->mm_conv.cell_idx]);
+			((double)(tel->mm_conv.profile[tel->mm_conv.cell_idx] * (tel->mm_conv.cell_idx + 1) * NUMBER_OF_MILLIMETER_BY_LOOP) -
+					(double)(tel->mm_conv.cell_idx * NUMBER_OF_MILLIMETER_BY_LOOP * tel->mm_conv.profile[tel->mm_conv.cell_idx + 1]) -
+					(double)(tel->avrg * (tel->mm_conv.cell_idx + 1) * NUMBER_OF_MILLIMETER_BY_LOOP) + (double)(tel->avrg * tel->mm_conv.cell_idx *
+					NUMBER_OF_MILLIMETER_BY_LOOP)) /
+					(double)((-tel->mm_conv.profile[tel->mm_conv.cell_idx + 1] + tel->mm_conv.profile[tel->mm_conv.cell_idx]));
+	tel->delta = tel->avrg - tel->mm_conv.old_avrg;
 	tel->mm_conv.old_avrg = tel->avrg;
 
 	return tel->mm_conv.dist_mm;
+}
+
+int getTelemetersVariation(telemeterStruct *tel)
+{
+	getTelemetersDistance(tel);
+	return tel->delta;
 }
 
 void telemetersTest(void)
 {
 	char joy;
 	telemetersInit();
-	telemetersStop();
+	telemetersStart();
 
-	while (joy != JOY_LEFT)
+	while (joy != JOY_LEFT)	//todo make a generic test menu (unit test)
 	{
 		joy = expanderJoyFiltered();
 		ssd1306ClearScreen();
@@ -401,8 +436,7 @@ void telemetersTest(void)
 			{
 				joy = expanderJoyFiltered();
 				ssd1306ClearScreen();
-
-				ssd1306DrawString(1,0, "   ADC  REF", &Font_5x8);
+				ssd1306DrawString(1,0, "   ADC  REF  VAR", &Font_5x8);
 
 				ssd1306PrintInt(1, 9 , "FL ", (int32_t) telemeters.FL.adc, &Font_5x8);
 				ssd1306PrintInt(1, 18, "DL ", (int32_t) telemeters.DL.adc, &Font_5x8);
@@ -414,6 +448,10 @@ void telemetersTest(void)
 				ssd1306PrintInt(45, 27, "", (int32_t) telemeters.DR.avrg_ref, &Font_5x8);
 				ssd1306PrintInt(45, 36, "", (int32_t) telemeters.FR.avrg_ref, &Font_5x8);
 
+				ssd1306PrintInt(75, 9 , "", (int32_t) getTelemetersVar(FL), &Font_5x8);
+				ssd1306PrintInt(75, 18, "", (int32_t) getTelemetersVar(DL), &Font_5x8);
+				ssd1306PrintInt(75, 27, "", (int32_t) getTelemetersVar(DR), &Font_5x8);
+				ssd1306PrintInt(75, 36, "", (int32_t) getTelemetersVar(FR), &Font_5x8);
 				ssd1306Refresh();
 			}
 			while (joy == JOY_LEFT)
