@@ -2,13 +2,13 @@
   ******************************************************************************
   * @file    stm32f4xx_hal_dma.h
   * @author  MCD Application Team
-  * @version V1.2.0
-  * @date    26-December-2014
+  * @version V1.3.2
+  * @date    26-June-2015
   * @brief   Header file of DMA HAL module.
   ******************************************************************************
   * @attention
   *
-  * <h2><center>&copy; COPYRIGHT(c) 2014 STMicroelectronics</center></h2>
+  * <h2><center>&copy; COPYRIGHT(c) 2015 STMicroelectronics</center></h2>
   *
   * Redistribution and use in source and binary forms, with or without modification,
   * are permitted provided that the following conditions are met:
@@ -580,7 +580,7 @@ typedef struct __DMA_HandleTypeDef
 ((__HANDLE__)->Instance->CR &= ~(__INTERRUPT__)) : ((__HANDLE__)->Instance->FCR &= ~(__INTERRUPT__)))
 
 /**
-  * @brief  Check whether the specified DMA Stream interrupt has occurred or not.
+  * @brief  Check whether the specified DMA Stream interrupt is enabled or disabled.
   * @param  __HANDLE__: DMA handle
   * @param  __INTERRUPT__: specifies the DMA interrupt source to check.
   *         This parameter can be one of the following values:

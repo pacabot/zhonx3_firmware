@@ -1,14 +1,14 @@
 /**
   ******************************************************************************
-  * @file    stm32f4xx_hal_adc.h
+  * @file    stm32f4xx_hal_adc_ex.h
   * @author  MCD Application Team
-  * @version V1.2.0
-  * @date    26-December-2014
+  * @version V1.3.2
+  * @date    26-June-2015
   * @brief   Header file of ADC HAL module.
   ******************************************************************************
   * @attention
   *
-  * <h2><center>&copy; COPYRIGHT(c) 2014 STMicroelectronics</center></h2>
+  * <h2><center>&copy; COPYRIGHT(c) 2015 STMicroelectronics</center></h2>
   *
   * Redistribution and use in source and binary forms, with or without modification,
   * are permitted provided that the following conditions are met:
@@ -168,6 +168,7 @@ typedef struct
 #define ADC_EXTERNALTRIGINJECCONV_T8_CC3           ((uint32_t)(ADC_CR2_JEXTSEL_3 | ADC_CR2_JEXTSEL_2 | ADC_CR2_JEXTSEL_0))
 #define ADC_EXTERNALTRIGINJECCONV_T8_CC4           ((uint32_t)(ADC_CR2_JEXTSEL_3 | ADC_CR2_JEXTSEL_2 | ADC_CR2_JEXTSEL_1))
 #define ADC_EXTERNALTRIGINJECCONV_EXT_IT15         ((uint32_t)ADC_CR2_JEXTSEL)
+#define ADC_INJECTED_SOFTWARE_START                ((uint32_t)ADC_CR2_JEXTSEL + 1)
 /**
   * @}
   */ 
@@ -189,12 +190,12 @@ typedef struct
 #if defined(STM32F405xx) || defined(STM32F415xx) || defined(STM32F407xx) || defined(STM32F417xx) || \
     defined(STM32F401xC) || defined(STM32F401xE) || defined(STM32F411xE)
 #define ADC_CHANNEL_TEMPSENSOR  ((uint32_t)ADC_CHANNEL_16)
-#endif /* STM32F405xx || STM32F415xx || STM32F407xx || STM32F417xx */
+#endif /* STM32F405xx || STM32F415xx || STM32F407xx || STM32F417xx || STM32F401xC || STM32F401xE || STM32F411xE */
 
-#if defined(STM32F427xx) || defined(STM32F437xx) || defined(STM32F429xx) || defined(STM32F439xx)
+#if defined(STM32F427xx) || defined(STM32F437xx) || defined(STM32F429xx) || defined(STM32F439xx) || defined(STM32F446xx)
 #define ADC_CHANNEL_DIFFERENCIATION_TEMPSENSOR_VBAT ((uint32_t)0x10000000) /* Dummy bit for driver internal usage, not used in ADC channel setting registers CR1 or SQRx */
 #define ADC_CHANNEL_TEMPSENSOR  ((uint32_t)ADC_CHANNEL_18 | ADC_CHANNEL_DIFFERENCIATION_TEMPSENSOR_VBAT)
-#endif /* STM32F427xx || STM32F437xx || STM32F429xx || STM32F439xx || STM32F401xC || STM32F401xE || STM32F411xE */      
+#endif /* STM32F427xx || STM32F437xx || STM32F429xx || STM32F439xx || STM32F446xx */      
 /**
   * @}
   */ 
@@ -223,11 +224,11 @@ typedef struct
   */
 
 /* I/O operation functions ******************************************************/
+HAL_StatusTypeDef HAL_ADCEx_InjectedStart(ADC_HandleTypeDef* hadc);
 HAL_StatusTypeDef HAL_ADCEx_InjectedStop(ADC_HandleTypeDef* hadc);
 HAL_StatusTypeDef HAL_ADCEx_InjectedPollForConversion(ADC_HandleTypeDef* hadc, uint32_t Timeout);
-HAL_StatusTypeDef HAL_ADCEx_InjectedStop_IT(ADC_HandleTypeDef* hadc);
-HAL_StatusTypeDef HAL_ADCEx_InjectedStart(ADC_HandleTypeDef* hadc);
 HAL_StatusTypeDef HAL_ADCEx_InjectedStart_IT(ADC_HandleTypeDef* hadc);
+HAL_StatusTypeDef HAL_ADCEx_InjectedStop_IT(ADC_HandleTypeDef* hadc);
 uint32_t HAL_ADCEx_InjectedGetValue(ADC_HandleTypeDef* hadc, uint32_t InjectedRank);
 HAL_StatusTypeDef HAL_ADCEx_MultiModeStart_DMA(ADC_HandleTypeDef* hadc, uint32_t* pData, uint32_t Length);
 HAL_StatusTypeDef HAL_ADCEx_MultiModeStop_DMA(ADC_HandleTypeDef* hadc);
@@ -260,6 +261,16 @@ HAL_StatusTypeDef HAL_ADCEx_MultiModeConfigChannel(ADC_HandleTypeDef* hadc, ADC_
 /** @defgroup ADCEx_Private_Macros ADC Private Macros
   * @{
   */
+#if defined(STM32F405xx) || defined(STM32F415xx) || defined(STM32F407xx) || defined(STM32F417xx) || \
+    defined(STM32F401xC) || defined(STM32F401xE) || defined(STM32F411xE)
+#define IS_ADC_CHANNEL(CHANNEL) ((CHANNEL) <= ADC_CHANNEL_18)
+#endif /* STM32F405xx || STM32F415xx || STM32F407xx || STM32F417xx || STM32F401xC || STM32F401xE || STM32F411xE */
+
+#if defined(STM32F427xx) || defined(STM32F437xx) || defined(STM32F429xx) || defined(STM32F439xx) || defined(STM32F446xx)
+#define IS_ADC_CHANNEL(CHANNEL) (((CHANNEL) <= ADC_CHANNEL_18)  || \
+                                 ((CHANNEL) == ADC_CHANNEL_TEMPSENSOR))
+#endif /* STM32F427xx || STM32F437xx || STM32F429xx || STM32F439xx || STM32F446xx */      
+
 #define IS_ADC_MODE(MODE) (((MODE) == ADC_MODE_INDEPENDENT)                 || \
                            ((MODE) == ADC_DUALMODE_REGSIMULT_INJECSIMULT)   || \
                            ((MODE) == ADC_DUALMODE_REGSIMULT_ALTERTRIG)     || \
@@ -296,7 +307,8 @@ HAL_StatusTypeDef HAL_ADCEx_MultiModeConfigChannel(ADC_HandleTypeDef* hadc, ADC_
                                         ((INJTRIG) == ADC_EXTERNALTRIGINJECCONV_T8_CC2)  || \
                                         ((INJTRIG) == ADC_EXTERNALTRIGINJECCONV_T8_CC3)  || \
                                         ((INJTRIG) == ADC_EXTERNALTRIGINJECCONV_T8_CC4)  || \
-                                        ((INJTRIG) == ADC_EXTERNALTRIGINJECCONV_EXT_IT15))
+                                        ((INJTRIG) == ADC_EXTERNALTRIGINJECCONV_EXT_IT15)|| \
+                                        ((INJTRIG) == ADC_INJECTED_SOFTWARE_START))
 #define IS_ADC_INJECTED_LENGTH(LENGTH) (((LENGTH) >= ((uint32_t)1)) && ((LENGTH) <= ((uint32_t)4)))
 #define IS_ADC_INJECTED_RANK(RANK) (((RANK) >= ((uint32_t)1)) && ((RANK) <= ((uint32_t)4)))
 

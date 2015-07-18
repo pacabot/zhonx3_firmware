@@ -1,7 +1,6 @@
 /**
   ******************************************************************************
   * File Name          : ADC.c
-  * Date               : 09/05/2015 00:03:35
   * Description        : This file provides code for the configuration
   *                      of the ADC instances.
   ******************************************************************************
@@ -138,14 +137,13 @@ void MX_ADC2_Init(void)
 
     /**Configures for the selected ADC injected channel its corresponding rank in the sequencer and its sample time 
     */
-  sConfigInjected.InjectedChannel = ADC_CHANNEL_4;
-  sConfigInjected.InjectedRank = 1;
+  sConfigInjected.InjectedChannel = ADC_CHANNEL_11;
   HAL_ADCEx_InjectedConfigChannel(&hadc2, &sConfigInjected);
 
     /**Configures for the selected ADC injected channel its corresponding rank in the sequencer and its sample time 
     */
-  sConfigInjected.InjectedChannel = ADC_CHANNEL_11;
-  sConfigInjected.InjectedRank = 2;
+  sConfigInjected.InjectedChannel = ADC_CHANNEL_4;
+  sConfigInjected.InjectedRank = 1;
   HAL_ADCEx_InjectedConfigChannel(&hadc2, &sConfigInjected);
 
     /**Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time. 
@@ -202,13 +200,6 @@ void MX_ADC3_Init(void)
 
     /**Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time. 
     */
-  sConfig.Channel = ADC_CHANNEL_3;
-  sConfig.Rank = 1;
-  sConfig.SamplingTime = ADC_SAMPLETIME_15CYCLES;
-  HAL_ADC_ConfigChannel(&hadc3, &sConfig);
-
-    /**Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time. 
-    */
   sConfig.Channel = ADC_CHANNEL_10;
   sConfig.Rank = 3;
   sConfig.SamplingTime = ADC_SAMPLETIME_28CYCLES;
@@ -219,6 +210,12 @@ void MX_ADC3_Init(void)
   sConfig.Channel = ADC_CHANNEL_1;
   sConfig.Rank = 2;
   sConfig.SamplingTime = ADC_SAMPLETIME_15CYCLES;
+  HAL_ADC_ConfigChannel(&hadc3, &sConfig);
+
+    /**Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time. 
+    */
+  sConfig.Channel = ADC_CHANNEL_3;
+  sConfig.Rank = 1;
   HAL_ADC_ConfigChannel(&hadc3, &sConfig);
 
 }

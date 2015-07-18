@@ -1,7 +1,6 @@
 /**
   ******************************************************************************
   * File Name          : dma.c
-  * Date               : 09/05/2015 00:03:35
   * Description        : This file provides code for the configuration
   *                      of all the requested memory to memory DMA transfers.
   ******************************************************************************
@@ -53,16 +52,20 @@
 void MX_DMA_Init(void) 
 {
   /* DMA controller clock enable */
-  __DMA2_CLK_ENABLE();
   __DMA1_CLK_ENABLE();
+  __DMA2_CLK_ENABLE();
 
   /* DMA interrupt init */
+  HAL_NVIC_SetPriority(DMA1_Stream1_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(DMA1_Stream1_IRQn);
+  HAL_NVIC_SetPriority(DMA1_Stream3_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(DMA1_Stream3_IRQn);
+  HAL_NVIC_SetPriority(DMA1_Stream5_IRQn, 0, 7);
+  HAL_NVIC_EnableIRQ(DMA1_Stream5_IRQn);
   HAL_NVIC_SetPriority(DMA1_Stream6_IRQn, 0, 7);
   HAL_NVIC_EnableIRQ(DMA1_Stream6_IRQn);
   HAL_NVIC_SetPriority(DMA2_Stream0_IRQn, 0, 7);
   HAL_NVIC_EnableIRQ(DMA2_Stream0_IRQn);
-  HAL_NVIC_SetPriority(DMA1_Stream5_IRQn, 0, 7);
-  HAL_NVIC_EnableIRQ(DMA1_Stream5_IRQn);
 
 }
 

@@ -393,7 +393,6 @@ double getTelemetersDistance(telemeterStruct *tel)
 					(double)((-tel->mm_conv.profile[tel->mm_conv.cell_idx + 1] + tel->mm_conv.profile[tel->mm_conv.cell_idx]));
 	tel->delta = tel->avrg - tel->mm_conv.old_avrg;
 	tel->mm_conv.old_avrg = tel->avrg;
-
 	return tel->mm_conv.dist_mm;
 }
 
@@ -417,12 +416,12 @@ void telemetersTest(void)
 		ssd1306DrawString(1,0, "   AVRG 1/10mm", &Font_5x8);
 
 		ssd1306PrintInt(1, 9 , "FL ", (int32_t) telemeters.FL.avrg, &Font_5x8);
-		ssd1306PrintInt(1, 18 , "DL ", (int32_t) telemeters.DL.avrg, &Font_5x8);
+		ssd1306PrintInt(1, 18, "DL ", (int32_t) telemeters.DL.avrg, &Font_5x8);
 		ssd1306PrintInt(1, 27, "DR ", (int32_t) telemeters.DR.avrg, &Font_5x8);
 		ssd1306PrintInt(1, 36, "FR ", (int32_t) telemeters.FR.avrg, &Font_5x8);
 
 		ssd1306PrintInt(45, 9 ,"", (int32_t) (getTelemeterDist(FL) * 10), &Font_5x8);
-		ssd1306PrintInt(45, 18 ,"", (int32_t) (getTelemeterDist(DL) * 10), &Font_5x8);
+		ssd1306PrintInt(45, 18,"", (int32_t) (getTelemeterDist(DL) * 10), &Font_5x8);
 		ssd1306PrintInt(45, 27,"", (int32_t) (getTelemeterDist(DR) * 10), &Font_5x8);
 		ssd1306PrintInt(45, 36,"", (int32_t) (getTelemeterDist(FR) * 10), &Font_5x8);
 

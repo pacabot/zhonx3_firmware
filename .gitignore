@@ -1,8 +1,10 @@
 # Les ligne commençant par '#' sont des commentaires.
 .cproject
+/.cproject
 cproject
 .project
-/.settings
+/.project
+/.settings/
 /.settings/*
 *.xml
 *.elf

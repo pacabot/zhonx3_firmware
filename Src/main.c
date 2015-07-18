@@ -1,7 +1,6 @@
 /**
   ******************************************************************************
   * File Name          : main.c
-  * Date               : 09/05/2015 00:03:38
   * Description        : Main program body
   ******************************************************************************
   *
@@ -31,7 +30,6 @@
   *
   ******************************************************************************
   */
-
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx_hal.h"
 #include "adc.h"
@@ -73,6 +71,7 @@ extern menuItem mainMenu;
 
 int main(void)
 {
+
   /* USER CODE BEGIN 1 */
 	CMDLINE_CONTEXT cmd_context;
 
@@ -128,6 +127,11 @@ int main(void)
 
   /* USER CODE END 2 */
 
+  /* Infinite loop */
+  /* USER CODE BEGIN WHILE */
+  while (1);
+  /* USER CODE END WHILE */
+
   /* USER CODE BEGIN 3 */
 
   /* USER CODE END 3 */
@@ -169,6 +173,10 @@ void SystemClock_Config(void)
   PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_RTC;
   PeriphClkInitStruct.RTCClockSelection = RCC_RTCCLKSOURCE_LSI;
   HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct);
+
+  HAL_SYSTICK_Config(HAL_RCC_GetHCLKFreq()/1000);
+
+  HAL_SYSTICK_CLKSourceConfig(SYSTICK_CLKSOURCE_HCLK);
 
 }
 

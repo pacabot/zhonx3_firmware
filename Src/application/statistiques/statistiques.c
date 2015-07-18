@@ -18,7 +18,7 @@ float cVariance (int statistical_series[], int statistical_serial_length)
 	//float variance=0;
 	double variance=0;// TODO test if in double the precision is better
 	int average =cAverage(statistical_series,statistical_serial_length);
-	for (int i = 0; i<statistical_serial_length; i++)
+	for (int i = 0; i < statistical_serial_length; i++)
 	{
 		variance+=powf((statistical_series[i]-average),2);
 	}
