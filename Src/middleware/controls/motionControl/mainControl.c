@@ -186,8 +186,7 @@ int frontCal(float max_speed)
 
 	/**************************************************************************/
 
-	//getTelemetersDistance(ptr_distances);
-	//relative_dist = (ptr_distances->FL.dist_mm + ptr_distances->FR.dist_mm) / 2; //todo uncomment PLF
+	relative_dist = (telemeters.FL.dist_mm + telemeters.FR.dist_mm) / 2;
 	if (relative_dist < MAX_DIST_FOR_ALIGN)
 	{
 		move(0, relative_dist - CENTER_DISTANCE, max_speed, 0);

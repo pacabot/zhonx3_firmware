@@ -56,9 +56,9 @@ extern wall_follow_control_struct wall_follow_control;
 
 int wallFollowControlInit(void);
 int wallFollowControlLoop(void);
-int alignFront(telemetersStruct *distances);
-int bothWallFollow(telemetersStruct *distances);
-int rightWallFollow(telemetersStruct *distances);
-int leftWallFollow(telemetersStruct *distances);
+int alignFront(void);
+int bothWallFollow(void);
+int rightWallFollow(void);
+int leftWallFollow(void);
 
 #endif

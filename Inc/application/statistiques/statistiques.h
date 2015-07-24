@@ -26,7 +26,7 @@ typedef struct
 {
 	unsigned int hist_series[MAVRG_BUFF_SIZE];
 	unsigned int old_index;
-	unsigned int hist_sum;
+	int hist_sum;
 }mobileAvrgStruct;
 
 /* Functions definitions */

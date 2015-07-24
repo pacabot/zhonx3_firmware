@@ -224,33 +224,39 @@ void telemeters_IT(void)
 
 void telemeters_ADC2_IT(void)
 {
-	telemeters.end_of_conversion++;
 	if (telemeters.FL.isActivated != FALSE)
 	{
-		setTelemetersADC(&telemeters.FL, &hadc2);
-		return;
+		getTelemetersADC(&telemeters.FL, &hadc2);
+		getTelemetersDistance(&telemeters.FL);
+		goto end;
 	}
 	if (telemeters.FR.isActivated != FALSE)
 	{
-		setTelemetersADC(&telemeters.FR, &hadc2);
-		return;
+		getTelemetersADC(&telemeters.FR, &hadc2);
+		getTelemetersDistance(&telemeters.FR);
+		goto end;
 	}
 	if (telemeters.DL.isActivated != FALSE)
 	{
-		setTelemetersADC(&telemeters.DL, &hadc2);
-		return;
+		getTelemetersADC(&telemeters.DL, &hadc2);
+		getTelemetersDistance(&telemeters.DL);
+		goto end;
 	}
+
+end :
+	telemeters.end_of_conversion++;
 }
 
 void telemeters_ADC3_IT(void)
 {
 	if (telemeters.DR.isActivated != FALSE)
 	{
-		setTelemetersADC(&telemeters.DR, &hadc3);
+		getTelemetersADC(&telemeters.DR, &hadc3);
+		getTelemetersDistance(&telemeters.DR);
 	}
 }
 
-void setTelemetersADC(telemeterStruct *tel, ADC_HandleTypeDef *hadc)
+void getTelemetersADC(telemeterStruct *tel, ADC_HandleTypeDef *hadc)
 {
 	if (tel->isActivated == TX_ON)
 	{
@@ -273,54 +279,6 @@ void setTelemetersADC(telemeterStruct *tel, ADC_HandleTypeDef *hadc)
 	}
 }
 
-double getTelemeterDist(enum telemeterType tel_type)
-{
-	switch (tel_type)
-	{
-	case FL:
-		return getTelemetersDistance(&telemeters.FL);
-		break;
-	case DL:
-		return getTelemetersDistance(&telemeters.DL);
-		break;
-	case DR:
-		return getTelemetersDistance(&telemeters.DR);
-		break;
-	case FR:
-		return getTelemetersDistance(&telemeters.FR);
-		break;
-
-	default:
-		break;
-	}
-
-	return TELEMETERS_DRIVER_E_ERROR;
-}
-
-int getTelemetersVar(enum telemeterType tel_type)
-{
-	switch (tel_type)
-	{
-	case FL:
-		return getTelemetersVariation(&telemeters.FL);
-		break;
-	case DL:
-		return getTelemetersVariation(&telemeters.DL);
-		break;
-	case DR:
-		return getTelemetersVariation(&telemeters.DR);
-		break;
-	case FR:
-		return getTelemetersVariation(&telemeters.FR);
-		break;
-
-	default:
-		break;
-	}
-
-	return TELEMETERS_DRIVER_E_ERROR;
-}
-
 /*
  * Formulas
  * y=ax+b
@@ -336,7 +294,7 @@ int getTelemetersVar(enum telemeterType tel_type)
  * 		  xb-xa
  */
 
-double getTelemetersDistance(telemeterStruct *tel)
+void getTelemetersDistance(telemeterStruct *tel)
 {
 	char sens = 1;
 
@@ -346,7 +304,7 @@ double getTelemetersDistance(telemeterStruct *tel)
 	}
 	else if(tel->avrg == tel->mm_conv.old_avrg)	//for optimize redundant call
 	{
-		return tel->mm_conv.dist_mm;
+		return;
 	}
 
 	while ((tel->avrg > tel->mm_conv.profile[tel->mm_conv.cell_idx]) || (tel->avrg < tel->mm_conv.profile[tel->mm_conv.cell_idx + 1]))
@@ -385,21 +343,26 @@ double getTelemetersDistance(telemeterStruct *tel)
 	 * 																		-telemeter_XXX_voltage[cell_XXXX + 1] + telemeter_XXX_voltage[cell_XXXX]
 	 *
 	 */
-	tel->mm_conv.dist_mm =
-			((double)(tel->mm_conv.profile[tel->mm_conv.cell_idx] * (tel->mm_conv.cell_idx + 1) * NUMBER_OF_MILLIMETER_BY_LOOP) -
-					(double)(tel->mm_conv.cell_idx * NUMBER_OF_MILLIMETER_BY_LOOP * tel->mm_conv.profile[tel->mm_conv.cell_idx + 1]) -
-					(double)(tel->avrg * (tel->mm_conv.cell_idx + 1) * NUMBER_OF_MILLIMETER_BY_LOOP) + (double)(tel->avrg * tel->mm_conv.cell_idx *
-					NUMBER_OF_MILLIMETER_BY_LOOP)) /
-					(double)((-tel->mm_conv.profile[tel->mm_conv.cell_idx + 1] + tel->mm_conv.profile[tel->mm_conv.cell_idx]));
-	tel->delta = tel->avrg - tel->mm_conv.old_avrg;
+	telemetersStop();
+	tel->dist_mm =
+			((double)((tel->mm_conv.profile[tel->mm_conv.cell_idx] * (tel->mm_conv.cell_idx + 1) * NUMBER_OF_MILLIMETER_BY_LOOP) -
+					(tel->mm_conv.cell_idx * NUMBER_OF_MILLIMETER_BY_LOOP * tel->mm_conv.profile[tel->mm_conv.cell_idx + 1]) -
+					(tel->avrg * (tel->mm_conv.cell_idx + 1) * NUMBER_OF_MILLIMETER_BY_LOOP) +
+					(tel->avrg * tel->mm_conv.cell_idx * NUMBER_OF_MILLIMETER_BY_LOOP))) /
+							((double)(-tel->mm_conv.profile[tel->mm_conv.cell_idx + 1] + (double)tel->mm_conv.profile[tel->mm_conv.cell_idx]));
+
+	tel->delta_avrg = mobileAvrgInt(&tel->sAvrgStruct, (int)((tel->mm_conv.old_dist_mm - tel->dist_mm) * 1000)) / 1000.00;
+	tel->speed_mms = tel->delta_avrg * (double)(TELEMETERS_TIME_FREQ / 10);
+
 	tel->mm_conv.old_avrg = tel->avrg;
-	return tel->mm_conv.dist_mm;
+	tel->mm_conv.old_dist_mm = tel->dist_mm;
+	telemetersStart();
 }
 
 int getTelemetersVariation(telemeterStruct *tel)
 {
 	getTelemetersDistance(tel);
-	return tel->delta;
+	return tel->delta_mm;
 }
 
 void telemetersTest(void)
@@ -420,13 +383,13 @@ void telemetersTest(void)
 		ssd1306PrintInt(1, 27, "DR ", (int32_t) telemeters.DR.avrg, &Font_5x8);
 		ssd1306PrintInt(1, 36, "FR ", (int32_t) telemeters.FR.avrg, &Font_5x8);
 
-		ssd1306PrintInt(45, 9 ,"", (int32_t) (getTelemeterDist(FL) * 10), &Font_5x8);
-		ssd1306PrintInt(45, 18,"", (int32_t) (getTelemeterDist(DL) * 10), &Font_5x8);
-		ssd1306PrintInt(45, 27,"", (int32_t) (getTelemeterDist(DR) * 10), &Font_5x8);
-		ssd1306PrintInt(45, 36,"", (int32_t) (getTelemeterDist(FR) * 10), &Font_5x8);
+		ssd1306PrintInt(45, 9 ,"", (int32_t) (telemeters.FL.dist_mm * 10), &Font_5x8);
+		ssd1306PrintInt(45, 18,"", (int32_t) (telemeters.DL.dist_mm * 10), &Font_5x8);
+		ssd1306PrintInt(45, 27,"", (int32_t) (telemeters.DR.dist_mm * 10), &Font_5x8);
+		ssd1306PrintInt(45, 36,"", (int32_t) (telemeters.FR.dist_mm * 10), &Font_5x8);
 
-		ssd1306PrintInt(1, 45, "INT CNT  =  ", (int32_t) telemeters.it_cnt/1000, &Font_5x8);
-		ssd1306PrintInt(1, 54, "CONV CNT =  ", (int32_t) telemeters.end_of_conversion/1000, &Font_5x8);
+//		ssd1306PrintInt(1, 45, "IT TIME  =  ", (int32_t) telemeters.it_time, &Font_5x8);
+		ssd1306PrintInt(1, 54, "IT ERROR =  ", (telemeters.end_of_conversion - telemeters.it_cnt), &Font_5x8);
 		ssd1306Refresh();
 
 		if (joy == JOY_RIGHT)
@@ -447,10 +410,16 @@ void telemetersTest(void)
 				ssd1306PrintInt(45, 27, "", (int32_t) telemeters.DR.avrg_ref, &Font_5x8);
 				ssd1306PrintInt(45, 36, "", (int32_t) telemeters.FR.avrg_ref, &Font_5x8);
 
-				ssd1306PrintInt(75, 9 , "", (int32_t) getTelemetersVar(FL), &Font_5x8);
-				ssd1306PrintInt(75, 18, "", (int32_t) getTelemetersVar(DL), &Font_5x8);
-				ssd1306PrintInt(75, 27, "", (int32_t) getTelemetersVar(DR), &Font_5x8);
-				ssd1306PrintInt(75, 36, "", (int32_t) getTelemetersVar(FR), &Font_5x8);
+//				ssd1306PrintInt(75, 9 , "", (int32_t) (telemeters.FL.delta_avrg), &Font_5x8);
+//				ssd1306PrintInt(75, 18, "", (int32_t) (telemeters.DL.delta_avrg), &Font_5x8);
+//				ssd1306PrintInt(75, 27, "", (int32_t) telemeters.DR.delta_mm_avrg, &Font_5x8);
+//				ssd1306PrintInt(75, 36, "", (int32_t) telemeters.FR.delta_mm_avrg, &Font_5x8);
+
+				ssd1306PrintInt(75, 9 , "", (int32_t) telemeters.FL.speed_mms, &Font_5x8);
+				ssd1306PrintInt(75, 18, "", (int32_t) telemeters.DL.speed_mms, &Font_5x8);
+				ssd1306PrintInt(75, 27, "", (int32_t) telemeters.DR.speed_mms, &Font_5x8);
+				ssd1306PrintInt(75, 36, "", (int32_t) telemeters.FR.speed_mms, &Font_5x8);
+
 				ssd1306Refresh();
 			}
 			while (joy == JOY_LEFT)
