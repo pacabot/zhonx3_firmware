@@ -343,7 +343,6 @@ void getTelemetersDistance(telemeterStruct *tel)
 	 * 																		-telemeter_XXX_voltage[cell_XXXX + 1] + telemeter_XXX_voltage[cell_XXXX]
 	 *
 	 */
-	telemetersStop();
 	tel->dist_mm =
 			((double)((tel->mm_conv.profile[tel->mm_conv.cell_idx] * (tel->mm_conv.cell_idx + 1) * NUMBER_OF_MILLIMETER_BY_LOOP) -
 					(tel->mm_conv.cell_idx * NUMBER_OF_MILLIMETER_BY_LOOP * tel->mm_conv.profile[tel->mm_conv.cell_idx + 1]) -
@@ -356,7 +355,6 @@ void getTelemetersDistance(telemeterStruct *tel)
 
 	tel->mm_conv.old_avrg = tel->avrg;
 	tel->mm_conv.old_dist_mm = tel->dist_mm;
-	telemetersStart();
 }
 
 int getTelemetersVariation(telemeterStruct *tel)

@@ -77,6 +77,14 @@ int positionControlInit(void)
 
 int positionControlLoop(void)
 {
+	if (move_params.moveType == CURVE)
+		position_control.position_type = GYRO;
+
+	if (position_control.position_type == NO_POSITION_CTRL)
+		return SPEED_CONTROL_E_SUCCESS;
+
+//	return SPEED_CONTROL_E_SUCCESS;
+
 	if (position_control.position_type == ENCODERS)
 	{
 		if (position_params.sign > 0)

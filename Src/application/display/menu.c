@@ -52,6 +52,7 @@ extern void followWallTest(void);
 extern void followLineTest(void);
 extern void rotateTest(void);
 extern void curveRotateTest(void);
+extern void testPostSensors(void);
 
 /*
  * to create a new menu you have to create a new variable of type "const menuItem" like this :
@@ -123,6 +124,7 @@ const menuItem tests_menu=
 		"UNIT TEST",
 		{
 				{"distantce",		'f', (void*)testTelemeterDistance},
+				{"post sensor",		'f', (void*)testPostSensors},
 				{"wall sensor",		'f', (void*)testWallsSensors},
 				{"bluetooth",		'f', (void*)bluetoothTest},
 				{"multimeter",		'f', (void*)mulimeterTest},

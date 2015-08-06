@@ -41,7 +41,6 @@ int maze(void)
 	mainControlInit ();
 
 	control_params.wall_follow_state = true;
-	wall_follow_control.follow_type = FOLLOW_WALL;//NOFOLLOW;
 	move(0, 0, 0, 0);
 	HAL_Delay(500);
 

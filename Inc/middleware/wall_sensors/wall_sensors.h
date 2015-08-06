@@ -20,7 +20,7 @@
 
 //#define NUMBER_OF_MEASURE_BY_STEP 5000
 
-#define DISTANCE_FIRST_WALL_FRONT	190.00
+#define DISTANCE_FIRST_WALL_FRONT	150.00
 #define DISTANCE_SEGOND_WALL_FRONT	200.00
 #define DISTANCE_WALL_DIAG			160.00
 
@@ -29,6 +29,7 @@ int wallSensorsCalibration();
 //int getTelemetersDistance ( telemetersStruct *telemeters);
 walls getCellState();
 void testWallsSensors();
+void testPostSensors();
 
 telemetersStruct * getDistance_ptr(void);
 

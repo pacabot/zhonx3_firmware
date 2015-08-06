@@ -38,37 +38,17 @@
 /* Declarations for this module */
 #include "middleware/wall_sensors/wall_sensors.h"
 
-void wallSensorInit(void)
-{
-	memset(&telemeters, 0, sizeof(telemetersStruct));
-//	static int old_value_DR	= 0;
-//	static int old_value_DL	= 0;
-//	static int old_value_FR	= 0;
-//	static int old_value_FL	= 0;
-//
-//	static int cell_DR		= NUMBER_OF_CELL - 1;
-//	static int cell_DL		= NUMBER_OF_CELL - 1;
-//	static int cell_FR		= NUMBER_OF_CELL - 1;
-//	static int cell_FL		= NUMBER_OF_CELL - 1;
-//
-//	char sens_DR	= 1;
-//	char sens_DL	= 1;
-//	char sens_FR	= 1;
-//	char sens_FL	= 1;
-//	resetTrendDist(&telemeters);
-}
-
 //int telemetersWithOutNoise//TODO this function
 int wallSensorsCalibration (void)
 {
-//	int value_to_retest_front_right [NUMBER_OF_CELL+1];
-//	int length_front_right;
-//	int value_to_retest_front_left [NUMBER_OF_CELL+1];
-//	int length_front_left;
-//	int value_to_retest_diag_right [NUMBER_OF_CELL+1];
-//	int length_diag_right;
-//	int value_to_retest_diag_left [NUMBER_OF_CELL+1];
-//	int length_diag_left;
+	//	int value_to_retest_front_right [NUMBER_OF_CELL+1];
+	//	int length_front_right;
+	//	int value_to_retest_front_left [NUMBER_OF_CELL+1];
+	//	int length_front_left;
+	//	int value_to_retest_diag_right [NUMBER_OF_CELL+1];
+	//	int length_diag_right;
+	//	int value_to_retest_diag_left [NUMBER_OF_CELL+1];
+	//	int length_diag_left;
 
 	ssd1306ClearScreen();
 	ssd1306DrawString(0,0,"Place the robot front",&Font_5x8);
@@ -83,9 +63,7 @@ int wallSensorsCalibration (void)
 	mainControlInit();
 	telemetersInit();
 	telemetersStart();
-	control_params.speed_state = TRUE;
 	control_params.wall_follow_state = FALSE;
-	control_params.position_state = TRUE;
 	HAL_Delay(1000);
 	for(int i = 0; i < NUMBER_OF_CELL; i++)
 	{
@@ -100,100 +78,100 @@ int wallSensorsCalibration (void)
 		move(0,-NUMBER_OF_MILLIMETER_BY_LOOP,50,0);
 		while(speed_control.end_control != 1);
 	}
-//	int position_zhonx=NUMBER_OF_CELL;
-//	int distance;
-//	length_front_left=0;
-//	length_front_right=0;
-//	do
-//	{
-//		while (length_front_right>0 || length_front_left>0)
-//		{
-/*			if(length_front_left>=0 && \
+	//	int position_zhonx=NUMBER_OF_CELL;
+	//	int distance;
+	//	length_front_left=0;
+	//	length_front_right=0;
+	//	do
+	//	{
+	//		while (length_front_right>0 || length_front_left>0)
+	//		{
+	/*			if(length_front_left>=0 && \
 //					((position_zhonx-value_to_retest_front_left[length_front_left]) < (position_zhonx-value_to_retest_front_right[length_front_right])\
 //					|| length_front_right<=0))
-*///			{
-//				distance=(position_zhonx-value_to_retest_front_left[length_front_left])*NUMBER_OF_MILLIMETER_BY_LOOP;
-//				bluetoothPrintf("position Zhonx=%d,\tvaleur gauche a retester=%d\t diff=%d\n", position_zhonx, value_to_retest_front_left[length_front_left], distance);
-//				if (distance!=0)
-//				{
-//					move(0,(float)distance,10,0);
-//					while(speed_control.end_control != 1);
-//					position_zhonx=value_to_retest_front_left[length_front_left];
-//				}
-//
-//				telemeter_left_front_voltage[value_to_retest_front_left[length_front_left]]=telemeters.left_front.average_value;
-//
-//				length_front_left--;
-//			}
-//			else if (length_front_right>=0)
-//			{
-//				distance=(position_zhonx-value_to_retest_front_right[length_front_right])*NUMBER_OF_MILLIMETER_BY_LOOP;
-//				bluetoothPrintf("position Zhonx=%d,\tvaleur droite a retester=%d\t diff=%d\n", position_zhonx, value_to_retest_front_right[length_front_right],distance);
-//				if(distance!=0)
-//				{
-//					move(0,distance,10,0);
-//					while(speed_control.end_control != 1);
-//					position_zhonx=value_to_retest_front_right[length_front_right];
-//				}
-//				telemeter_right_front_voltage[value_to_retest_front_right[length_front_right]]=telemeters.right_front.average_value;
-//
-//				length_front_right--;
-//			}
-//		}
-//		bluetoothPrintf("\n\n\nfilterd measures :\n");
-//		for (int i = 0; i < NUMBER_OF_CELL; ++i)
-//		{
-//			bluetoothPrintf("%2d|%10d|%d\n",i,telemeter_left_front_voltage[i],telemeter_right_front_voltage[i]);
-//		}
-//		length_front_left=0;
-//		length_front_right=0;
-//		for(int i = 1; i<(NUMBER_OF_CELL-1); i++)
-//		{
-//			if (telemeter_left_front_voltage[i] <= telemeter_left_front_voltage[i+1])
-//			{
-//				value_to_retest_front_left[length_front_left] = i;
-//				length_front_left ++;
-//				if( i==(NUMBER_OF_CELL-2) )
-//				{
-//					value_to_retest_front_left[length_front_left] = i+1;
-//					length_front_left ++;
-//				}
-//			}
-//			if (telemeter_right_front_voltage[i] <= telemeter_right_front_voltage[i+1])
-//			{
-//				value_to_retest_front_right[length_front_right] = i;
-//				length_front_right ++;
-//				if( i==(NUMBER_OF_CELL-2) )
-//				{
-//					value_to_retest_front_right[length_front_right] = i+1;
-//					length_front_right ++;
-//				}
-//			}
-//			if (telemeter_left_front_voltage[i-1] <= telemeter_left_front_voltage[i])
-//			{
-//				if ( i==1 )
-//				{
-//					value_to_retest_front_left[length_front_left] = i-1;
-//					length_front_left ++;
-//				}
-//				value_to_retest_front_left[length_front_left] = i;
-//				length_front_left ++;
-//			}
-//			if (telemeter_right_front_voltage[i-1] <= telemeter_right_front_voltage[i])
-//			{
-//				if( i==1 )
-//				{
-//					value_to_retest_front_right[length_front_right] = i-1;
-//					length_front_right ++;
-//				}
-//				value_to_retest_front_right[length_front_right] = i;
-//				length_front_right ++;
-//			}
-//		}
-//		length_front_left --;
-//		length_front_right --;
-//		bluetoothPrintf("nombre de valeur a retester : a gauche : %d, a d)roite %d\n",length_front_left,length_front_right);
-//	}while (length_front_right>0 || length_front_left>0);
+	 *///			{
+	//				distance=(position_zhonx-value_to_retest_front_left[length_front_left])*NUMBER_OF_MILLIMETER_BY_LOOP;
+	//				bluetoothPrintf("position Zhonx=%d,\tvaleur gauche a retester=%d\t diff=%d\n", position_zhonx, value_to_retest_front_left[length_front_left], distance);
+	//				if (distance!=0)
+	//				{
+	//					move(0,(float)distance,10,0);
+	//					while(speed_control.end_control != 1);
+	//					position_zhonx=value_to_retest_front_left[length_front_left];
+	//				}
+	//
+	//				telemeter_left_front_voltage[value_to_retest_front_left[length_front_left]]=telemeters.left_front.average_value;
+	//
+	//				length_front_left--;
+	//			}
+	//			else if (length_front_right>=0)
+	//			{
+	//				distance=(position_zhonx-value_to_retest_front_right[length_front_right])*NUMBER_OF_MILLIMETER_BY_LOOP;
+	//				bluetoothPrintf("position Zhonx=%d,\tvaleur droite a retester=%d\t diff=%d\n", position_zhonx, value_to_retest_front_right[length_front_right],distance);
+	//				if(distance!=0)
+	//				{
+	//					move(0,distance,10,0);
+	//					while(speed_control.end_control != 1);
+	//					position_zhonx=value_to_retest_front_right[length_front_right];
+	//				}
+	//				telemeter_right_front_voltage[value_to_retest_front_right[length_front_right]]=telemeters.right_front.average_value;
+	//
+	//				length_front_right--;
+	//			}
+	//		}
+	//		bluetoothPrintf("\n\n\nfilterd measures :\n");
+	//		for (int i = 0; i < NUMBER_OF_CELL; ++i)
+	//		{
+	//			bluetoothPrintf("%2d|%10d|%d\n",i,telemeter_left_front_voltage[i],telemeter_right_front_voltage[i]);
+	//		}
+	//		length_front_left=0;
+	//		length_front_right=0;
+	//		for(int i = 1; i<(NUMBER_OF_CELL-1); i++)
+	//		{
+	//			if (telemeter_left_front_voltage[i] <= telemeter_left_front_voltage[i+1])
+	//			{
+	//				value_to_retest_front_left[length_front_left] = i;
+	//				length_front_left ++;
+	//				if( i==(NUMBER_OF_CELL-2) )
+	//				{
+	//					value_to_retest_front_left[length_front_left] = i+1;
+	//					length_front_left ++;
+	//				}
+	//			}
+	//			if (telemeter_right_front_voltage[i] <= telemeter_right_front_voltage[i+1])
+	//			{
+	//				value_to_retest_front_right[length_front_right] = i;
+	//				length_front_right ++;
+	//				if( i==(NUMBER_OF_CELL-2) )
+	//				{
+	//					value_to_retest_front_right[length_front_right] = i+1;
+	//					length_front_right ++;
+	//				}
+	//			}
+	//			if (telemeter_left_front_voltage[i-1] <= telemeter_left_front_voltage[i])
+	//			{
+	//				if ( i==1 )
+	//				{
+	//					value_to_retest_front_left[length_front_left] = i-1;
+	//					length_front_left ++;
+	//				}
+	//				value_to_retest_front_left[length_front_left] = i;
+	//				length_front_left ++;
+	//			}
+	//			if (telemeter_right_front_voltage[i-1] <= telemeter_right_front_voltage[i])
+	//			{
+	//				if( i==1 )
+	//				{
+	//					value_to_retest_front_right[length_front_right] = i-1;
+	//					length_front_right ++;
+	//				}
+	//				value_to_retest_front_right[length_front_right] = i;
+	//				length_front_right ++;
+	//			}
+	//		}
+	//		length_front_left --;
+	//		length_front_right --;
+	//		bluetoothPrintf("nombre de valeur a retester : a gauche : %d, a d)roite %d\n",length_front_left,length_front_right);
+	//	}while (length_front_right>0 || length_front_left>0);
 
 	bluetoothPrintf("\n\n\nfilterd measures :\n");
 	for (int i = 0; i < NUMBER_OF_CELL; ++i)
@@ -243,7 +221,7 @@ walls getCellState()
 	if (telemeters.DR.dist_mm < DISTANCE_WALL_DIAG)
 		walls_position.right = WALL_PRESENCE;
 	return walls_position;
-	}
+}
 
 void testTelemeterDistance()
 {
@@ -274,7 +252,6 @@ void testWallsSensors()
 {
 	telemetersInit();
 	telemetersStart();
-	wallSensorInit();
 	walls wall_saw;
 
 	while(expanderJoyFiltered()!=JOY_LEFT)
@@ -291,41 +268,91 @@ void testWallsSensors()
 		}
 		switch (wall_saw.next_front)
 		{
-			case WALL_PRESENCE:
-				ssd1306FillRect(0,0,54,5);
-				break;
-			case NO_KNOWN :
-				ssd1306DrawRect(0,0,54,5);
-				break;
-			default:
-				break;
+		case WALL_PRESENCE:
+			ssd1306FillRect(0,0,54,5);
+			break;
+		case NO_KNOWN :
+			ssd1306DrawRect(0,0,54,5);
+			break;
+		default:
+			break;
 		}
 		switch (wall_saw.left)
 		{
-			case WALL_PRESENCE:
-				ssd1306FillRect(0,0,5,54);
-				break;
-			case NO_KNOWN :
-				ssd1306DrawRect(0,0,5,54);
-				break;
-			default:
-				break;
+		case WALL_PRESENCE:
+			ssd1306FillRect(0,0,5,54);
+			break;
+		case NO_KNOWN :
+			ssd1306DrawRect(0,0,5,54);
+			break;
+		default:
+			break;
 		}
 		switch (wall_saw.right)
 		{
-			case WALL_PRESENCE:
-				ssd1306FillRect(49,0,5,54);
-				break;
-			case NO_KNOWN :
-				ssd1306DrawRect(49,0,5,54);
-				break;
-			default:
-				break;
+		case WALL_PRESENCE:
+			ssd1306FillRect(49,0,5,54);
+			break;
+		case NO_KNOWN :
+			ssd1306DrawRect(49,0,5,54);
+			break;
+		default:
+			break;
 		}
 		ssd1306Printf(55, 0 ,&Font_5x8,"F L :%d",(int)(telemeters.FL.dist_mm*10));
 		ssd1306Printf(55, 10,&Font_5x8,"F R :%d",(int)(telemeters.FR.dist_mm*10));
 		ssd1306Printf(55, 20,&Font_5x8,"D L :%d",(int)(telemeters.DL.dist_mm*10));
 		ssd1306Printf(55, 30,&Font_5x8,"D R :%d",(int)(telemeters.DR.dist_mm*10));
+		ssd1306Refresh();
+	}
+	telemetersStop();
+}
+
+void testPostSensors()
+{
+	telemetersInit();
+	telemetersStart();
+	walls wall_saw;
+
+	while(expanderJoyFiltered()!=JOY_LEFT)
+	{
+		wall_saw=getCellState();
+		ssd1306ClearScreen();
+
+		if (fabs(telemeters.DL.speed_mms) > 500)
+		{
+		ssd1306FillRect(0,49,5,5);
+		}
+//		else
+//		{
+//		ssd1306DrawRect(0,49,5,5);
+//		}
+
+//		ssd1306FillRect(0,0,5,5);
+//		ssd1306DrawRect(0,0,5,5);
+
+		if (fabs(telemeters.DR.speed_mms) > 500)
+		{
+		ssd1306FillRect(49,49,5,5);
+		}
+//		else
+//		{
+//		ssd1306DrawRect(49,49,5,5);
+//		}
+
+//		ssd1306FillRect(49,49,5,5);
+//
+//		ssd1306DrawRect(49,49,5,5);
+//
+//		ssd1306FillRect(49,0,5,5);
+//
+//		ssd1306DrawRect(49,0,5,5);
+
+
+		ssd1306PrintInt(55, 0 , "", (int32_t) telemeters.FL.speed_mms, &Font_5x8);
+		ssd1306PrintInt(55, 10, "", (int32_t) telemeters.DL.speed_mms, &Font_5x8);
+		ssd1306PrintInt(55, 20, "", (int32_t) telemeters.DR.speed_mms, &Font_5x8);
+		ssd1306PrintInt(55, 30, "", (int32_t) telemeters.FR.speed_mms, &Font_5x8);
 		ssd1306Refresh();
 	}
 	telemetersStop();

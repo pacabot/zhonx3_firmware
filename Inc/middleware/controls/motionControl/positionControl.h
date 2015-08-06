@@ -22,7 +22,7 @@
 
 #define GYRO_ENCODER_RATIO 	((1.00/180.00) * PI * ROTATION_DIAMETER)
 
-enum position_type_enum {GYRO, ENCODERS};
+enum position_type_enum {GYRO, ENCODERS, NO_POSITION_CTRL};
 
 typedef struct
 {
