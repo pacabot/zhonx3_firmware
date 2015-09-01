@@ -11,6 +11,10 @@
 
 /* Module Identifier */
 #include "config/module_id.h"
+
+/*dependences*/
+#include "stm32f4xx.h"
+#include "peripherals/telemeters/calibation.h"
 #include "application/statistiques/statistiques.h"
 
 /* Error codes */
@@ -20,9 +24,6 @@
 #define TX_ON			1
 #define TX_OFF			2
 
-#define DISTANCE_MEASURED	200
-#define NUMBER_OF_CELL 		100
-#define NUMBER_OF_MILLIMETER_BY_LOOP DISTANCE_MEASURED/NUMBER_OF_CELL
 #define MIN_TELEMETERS_SPEED 20
 
 /* Definition for ADCx Channel Pin */
@@ -35,11 +36,6 @@
 #define RX_DL				ADC_CHANNEL_5
 #define RX_DR				ADC_CHANNEL_10
 #define RX_FR				ADC_CHANNEL_11
-
-extern int telemeter_FR_profile[NUMBER_OF_CELL + 1];
-extern int telemeter_FL_profile[NUMBER_OF_CELL + 1];
-extern int telemeter_DR_profile[NUMBER_OF_CELL + 1];
-extern int telemeter_DL_profile[NUMBER_OF_CELL + 1];
 
 /* Types definitions */
 
@@ -97,7 +93,7 @@ void   telemetersAdc3Start(void);
 void   telemeters_ADC2_IT(void);
 void   telemeters_ADC3_IT(void);
 void   getTelemetersADC(telemeterStruct *tel, ADC_HandleTypeDef *hadc);
-void getTelemetersDistance (telemeterStruct *tel);
+void   getTelemetersDistance (telemeterStruct *tel);
 int	   getTelemetersVariation(telemeterStruct *tel);
 void   telemetersTest(void);
 

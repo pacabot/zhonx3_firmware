@@ -11,6 +11,10 @@
 
 #include "config/config.h"
 #include "middleware/controls/motionControl/speedControl.h"
+#include "middleware/controls/motionControl/lineFollowControl.h"
+#include "middleware/controls/motionControl/positionControl.h"
+#include "middleware/controls/motionControl/transfertFunction.h"
+#include "middleware/controls/motionControl/wallFollowControl.h"
 
 /* Module Identifier */
 #include "config/module_id.h"
