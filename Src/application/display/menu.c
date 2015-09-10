@@ -43,7 +43,6 @@ extern void motorsTest ();
 extern void lineSensorsTest ();
 extern void lineFollower();
 extern void mainControlTest ();
-extern int 	wallSensorsCalibration (void);
 extern int 	lineSensorsCalibration (void);
 extern void testTelemeterDistance();
 extern void maze();
@@ -52,8 +51,7 @@ extern void followWallTest(void);
 extern void followLineTest(void);
 extern void rotateTest(void);
 extern void curveRotateTest(void);
-extern void testPostSensors(void);
-extern void adxrs620Cal(void);
+extern void telemeterFrontCalibration(void);
 
 /*
  * to create a new menu you have to create a new variable of type "const menuItem" like this :
@@ -113,7 +111,7 @@ const menuItem parameters_menu=
 {
 		"Parameters menu",
 		{
-				{"calibration",'f',(void*)wallSensorsCalibration}
+//				{"calibration",'f',(void*)wallSensorsCalibration}
 		}
 };
 const menuItem peripheral_test_menu=
@@ -125,7 +123,6 @@ const menuItem tests_menu=
 		"UNIT TEST",
 		{
 				{"distantce",		'f', (void*)testTelemeterDistance},
-				{"post sensor",		'f', (void*)testPostSensors},
 				{"wall sensor",		'f', (void*)testWallsSensors},
 				{"bluetooth",		'f', (void*)bluetoothTest},
 				{"multimeter",		'f', (void*)mulimeterTest},
@@ -134,7 +131,6 @@ const menuItem tests_menu=
 				{"encoders",		'f', (void*)encoderTest},
 				{"joystick",		'f', (void*)joystickTest},
 				{"gyroscope",		'f', (void*)adxrs620Test},
-				{"gyroscope cal",	'f', (void*)adxrs620Cal},
 				{"telemeters",		'f', (void*)telemetersTest},
 				{"beeper",			'f', (void*)toneTest},
 				{"motors",			'f', (void*)motorsTest},
@@ -163,6 +159,7 @@ const menuItem mainMenu =
 		"ZHONX III dark   V0.2",
 #endif
 		{
+				{"telemeters calibration",'f',		(void*)telemeterFrontCalibration},
 				{"Maze menu",'m',			(void*)&maze_menu},
 				{"Unit tests",'m',			(void*)&tests_menu},
 				{"Control menu",'m',		(void*)&control_menu},
