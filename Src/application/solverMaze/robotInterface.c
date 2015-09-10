@@ -12,6 +12,9 @@
 /*application include */
 #include "application/solverMaze/solverMaze.h"
 
+/* Middleware declarations */
+#include "application/solverMaze/robotInterface.h"
+
 void goOrientation(char *orientationZhonx, char directionToGo)
 {
 	int turn = (4 + directionToGo - *orientationZhonx) % 4;

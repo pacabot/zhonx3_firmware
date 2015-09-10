@@ -53,6 +53,7 @@ extern void followLineTest(void);
 extern void rotateTest(void);
 extern void curveRotateTest(void);
 extern void testPostSensors(void);
+extern void adxrs620Cal(void);
 
 /*
  * to create a new menu you have to create a new variable of type "const menuItem" like this :
@@ -133,6 +134,7 @@ const menuItem tests_menu=
 				{"encoders",		'f', (void*)encoderTest},
 				{"joystick",		'f', (void*)joystickTest},
 				{"gyroscope",		'f', (void*)adxrs620Test},
+				{"gyroscope cal",	'f', (void*)adxrs620Cal},
 				{"telemeters",		'f', (void*)telemetersTest},
 				{"beeper",			'f', (void*)toneTest},
 				{"motors",			'f', (void*)motorsTest},

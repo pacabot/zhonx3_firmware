@@ -71,7 +71,7 @@ void telemetersInit(void)
 	/**Configure the global features of the ADC (Clock, Resolution, Data Alignment and number of conversion)
 	 */
 	hadc2.Instance = ADC2;
-	hadc2.Init.ClockPrescaler = ADC_CLOCKPRESCALER_PCLK_DIV8;
+	hadc2.Init.ClockPrescaler = ADC_CLOCKPRESCALER_PCLK_DIV2;
 	hadc2.Init.Resolution = ADC_RESOLUTION12b;
 	hadc2.Init.ScanConvMode = DISABLE;
 	hadc2.Init.ContinuousConvMode = DISABLE;
@@ -84,7 +84,7 @@ void telemetersInit(void)
 	HAL_ADC_Init(&hadc2);
 
 	hadc3.Instance = ADC3;
-	hadc3.Init.ClockPrescaler = ADC_CLOCKPRESCALER_PCLK_DIV8;
+	hadc3.Init.ClockPrescaler = ADC_CLOCKPRESCALER_PCLK_DIV2;
 	hadc3.Init.Resolution = ADC_RESOLUTION12b;
 	hadc3.Init.ScanConvMode = DISABLE;
 	hadc3.Init.ContinuousConvMode = DISABLE;
@@ -139,7 +139,7 @@ void telemetersStop(void)
 void telemetersAdc2Start(void)
 {
 	sConfig.Rank = 1;
-	sConfig.SamplingTime = ADC_SAMPLETIME_15CYCLES;
+	sConfig.SamplingTime = ADC_SAMPLETIME_3CYCLES;
 	HAL_ADC_ConfigChannel(&hadc2, &sConfig);
 	HAL_ADC_Start_IT(&hadc2);
 	telemeters.it_cnt++;
@@ -148,7 +148,7 @@ void telemetersAdc2Start(void)
 void telemetersAdc3Start(void)
 {
 	sConfig.Rank = 1;
-	sConfig.SamplingTime = ADC_SAMPLETIME_15CYCLES;
+	sConfig.SamplingTime = ADC_SAMPLETIME_3CYCLES;
 	HAL_ADC_ConfigChannel(&hadc3, &sConfig);
 	HAL_ADC_Start_IT(&hadc3);
 }
@@ -219,6 +219,7 @@ void telemeters_IT(void)
 		sConfig.Channel = RX_DR;
 		telemetersAdc3Start();
 		return;
+
 	}
 }
 
@@ -351,7 +352,7 @@ void getTelemetersDistance(telemeterStruct *tel)
 							((double)(-tel->mm_conv.profile[tel->mm_conv.cell_idx + 1] + (double)tel->mm_conv.profile[tel->mm_conv.cell_idx]));
 
 	tel->delta_avrg = mobileAvrgInt(&tel->sAvrgStruct, (int)((tel->mm_conv.old_dist_mm - tel->dist_mm) * 1000)) / 1000.00;
-	tel->speed_mms = tel->delta_avrg * (double)(TELEMETERS_TIME_FREQ / 10);
+	tel->speed_mms = tel->delta_avrg * (double)(TELEMETERS_TIME_FREQ / 10.00);
 
 	tel->mm_conv.old_avrg = tel->avrg;
 	tel->mm_conv.old_dist_mm = tel->dist_mm;
@@ -387,7 +388,7 @@ void telemetersTest(void)
 		ssd1306PrintInt(45, 36,"", (int32_t) (telemeters.FR.dist_mm * 10), &Font_5x8);
 
 //		ssd1306PrintInt(1, 45, "IT TIME  =  ", (int32_t) telemeters.it_time, &Font_5x8);
-		ssd1306PrintInt(1, 54, "IT ERROR =  ", (telemeters.end_of_conversion - telemeters.it_cnt), &Font_5x8);
+		ssd1306PrintInt(1, 54, "IT ERROR =  ", (telemeters.it_cnt - telemeters.end_of_conversion), &Font_5x8);
 		ssd1306Refresh();
 
 		if (joy == JOY_RIGHT)

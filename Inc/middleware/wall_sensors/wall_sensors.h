@@ -24,12 +24,24 @@
 #define DISTANCE_SEGOND_WALL_FRONT	200.00
 #define DISTANCE_WALL_DIAG			160.00
 
-void wallSensorInit(void);
-int wallSensorsCalibration();
+/* Types definitions */
+
+typedef struct
+{
+	char next_front;
+	char front;
+	char left;
+	char right;
+}walls;
+
+extern walls cell_state;
+
+void  wallSensorInit(void);
+int   wallSensorsCalibration();
 //int getTelemetersDistance ( telemetersStruct *telemeters);
-walls getCellState();
-void testWallsSensors();
-void testPostSensors();
+void  setCellState();
+void  testWallsSensors();
+void  testPostSensors();
 
 telemetersStruct * getDistance_ptr(void);
 

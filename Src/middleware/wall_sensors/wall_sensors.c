@@ -38,6 +38,8 @@
 /* Declarations for this module */
 #include "middleware/wall_sensors/wall_sensors.h"
 
+walls cell_state = {NO_WALL,NO_WALL,NO_WALL,NO_WALL};
+
 //int telemetersWithOutNoise//TODO this function
 int wallSensorsCalibration (void)
 {
@@ -206,21 +208,17 @@ int wallSensorsCalibration (void)
 	return WALL_SENSORS_E_SUCCESS;
 }
 
-walls getCellState()
+void setCellState()
 {
-	walls walls_position = {NO_WALL,NO_WALL,NO_WALL,NO_WALL};
-
+	memset(&cell_state, 0, sizeof(walls));
 	if (telemeters.FL.dist_mm < DISTANCE_FIRST_WALL_FRONT)
-	{
-		walls_position.front = WALL_PRESENCE;
-	}
+		cell_state.front = WALL_PRESENCE;
 	if (telemeters.FL.dist_mm < DISTANCE_SEGOND_WALL_FRONT)
-		walls_position.next_front = WALL_PRESENCE;
+		cell_state.next_front = WALL_PRESENCE;
 	if (telemeters.DL.dist_mm < DISTANCE_WALL_DIAG)
-		walls_position.left = WALL_PRESENCE;
+		cell_state.left = WALL_PRESENCE;
 	if (telemeters.DR.dist_mm < DISTANCE_WALL_DIAG)
-		walls_position.right = WALL_PRESENCE;
-	return walls_position;
+		cell_state.right = WALL_PRESENCE;
 }
 
 void testTelemeterDistance()
@@ -252,13 +250,12 @@ void testWallsSensors()
 {
 	telemetersInit();
 	telemetersStart();
-	walls wall_saw;
 
 	while(expanderJoyFiltered()!=JOY_LEFT)
 	{
-		wall_saw=getCellState();
+		setCellState();;
 		ssd1306ClearScreen();
-		if (wall_saw.front == WALL_PRESENCE)
+		if (cell_state.front == WALL_PRESENCE)
 		{
 			ssd1306FillRect(0,49,54,5);
 		}
@@ -266,7 +263,7 @@ void testWallsSensors()
 		{
 			ssd1306DrawRect(0,49,54,5);
 		}
-		switch (wall_saw.next_front)
+		switch (cell_state.next_front)
 		{
 		case WALL_PRESENCE:
 			ssd1306FillRect(0,0,54,5);
@@ -277,7 +274,7 @@ void testWallsSensors()
 		default:
 			break;
 		}
-		switch (wall_saw.left)
+		switch (cell_state.left)
 		{
 		case WALL_PRESENCE:
 			ssd1306FillRect(0,0,5,54);
@@ -288,7 +285,7 @@ void testWallsSensors()
 		default:
 			break;
 		}
-		switch (wall_saw.right)
+		switch (cell_state.right)
 		{
 		case WALL_PRESENCE:
 			ssd1306FillRect(49,0,5,54);
@@ -316,7 +313,7 @@ void testPostSensors()
 
 	while(expanderJoyFiltered()!=JOY_LEFT)
 	{
-		wall_saw=getCellState();
+//plf		wall_saw=getCellState();
 		ssd1306ClearScreen();
 
 		if (fabs(telemeters.DL.speed_mms) > 500)

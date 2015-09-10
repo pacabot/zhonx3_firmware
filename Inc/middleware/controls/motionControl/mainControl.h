@@ -24,7 +24,7 @@
 
 /* Types definitions */
 enum rotationTypeEnum {CW, CCW};
-enum moveTypeEnum {STRAIGHT, CURVE};
+enum moveTypeEnum {STRAIGHT, CURVE, STOP};
 
 extern double ROTATION_DIAMETER;
 

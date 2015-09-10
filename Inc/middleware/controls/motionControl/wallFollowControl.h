@@ -35,6 +35,9 @@
 
 #define SLIP_TRANSLATION	100
 
+#define MAX_ANGLE_ERROR		30.00	//Degres
+#define MAX_FOLLOW_ERROR	50.00	//Millimeter
+
 typedef struct
 {
 	int sign;
@@ -56,6 +59,7 @@ extern wall_follow_params_struct  wall_follow_params;
 
 int wallFollowControlInit(void);
 int wallFollowControlLoop(void);
+double Gyro_error (void);
 int alignFront(void);
 int bothWallFollow(void);
 int rightWallFollow(void);

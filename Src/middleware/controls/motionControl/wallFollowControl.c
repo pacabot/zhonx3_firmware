@@ -27,6 +27,7 @@
 #include "peripherals/expander/pcf8574.h"
 #include "peripherals/telemeters/telemeters.h"
 #include "peripherals/encoders/ie512.h"
+#include "peripherals/gyroscope/adxrs620.h"
 
 /* Middleware declarations */
 #include "middleware/wall_sensors/wall_sensors.h"
@@ -52,15 +53,16 @@
 /* extern variables */
 
 /* global variables */
+extern int debug_1;
 wall_follow_control_struct wall_follow_control;
 wall_follow_params_struct wall_follow_params;
 arm_pid_instance_f32 telemeters_pid_instance;
 
 int wallFollowControlInit(void)
 {
-	telemeters_pid_instance.Kp = 15;
+	telemeters_pid_instance.Kp = 6;
 	telemeters_pid_instance.Ki = 0;
-	telemeters_pid_instance.Kd = 800;
+	telemeters_pid_instance.Kd = 300;
 
 	wall_follow_control.follow_pid.instance = &telemeters_pid_instance;
 
@@ -76,34 +78,49 @@ int wallFollowControlLoop(void)
 	if (move_params.moveType != STRAIGHT)
 		return WALL_FOLLOW_CONTROL_E_SUCCESS;
 
-	walls wall_saw;
-	wall_saw = getCellState();
-
-	if (wall_saw.left == WALL_PRESENCE && fabs(telemeters.DL.speed_mms) < 200)
+	if (cell_state.left == WALL_PRESENCE)// && fabs(telemeters.DL.speed_mms) < 200)
 	{
-		position_control.position_type = NO_POSITION_CTRL;
-		wall_follow_control.follow_error = DIAG_DIST_FOR_FOLLOW - (double)telemeters.DL.dist_mm;
-		if (fabs(wall_follow_control.follow_error) < SUCCES_GAP_DIST)
+		if (GyroGetAngle() < 10 && fabs(telemeters.DL.speed_mms) > 400)
 		{
-			wall_follow_control.succes = TRUE;
+			debug_1 = 1;
+			wall_follow_control.follow_error = 0;
+			pidControllerReset(wall_follow_control.follow_pid.instance);
+			telemetersStop();
+			move_params.moveType = CURVE;
+		}
+		else
+		{
+	//		debug_1	 = 2;
+			//setCellState();
+			wall_follow_control.follow_error = DIAG_DIST_FOR_FOLLOW - (double)telemeters.DL.dist_mm;
+			if (fabs(wall_follow_control.follow_error) < SUCCES_GAP_DIST)
+			{
+				wall_follow_control.succes = TRUE;
+				GyroResetAngle();
+			}
 		}
 	}
 	else
 	{
-		position_control.position_type = GYRO;
 		wall_follow_control.follow_error = 0;
 	}
 
+	if (fabs(wall_follow_control.follow_error) > MAX_FOLLOW_ERROR)
+	{
+		int sign = SIGN(wall_follow_control.follow_error);
+		wall_follow_control.follow_error = MAX_FOLLOW_ERROR * sign;
+	}
+
+
+	//wall_follow_control.follow_error -= -GyroGetAngle() * (((encoderGetDistance(&left_encoder) + encoderGetDistance(&right_encoder) / 2.00)/500.00)) ;
+
+
 	wall_follow_control.follow_command = (pidController(wall_follow_control.follow_pid.instance, wall_follow_control.follow_error));
+
+//	volatile int telemeters_measure_error = (telemeters.it_cnt - telemeters.end_of_conversion);
 
 	return WALL_FOLLOW_CONTROL_E_SUCCESS;
 }
-
-
-
-
-
-
 
 
 

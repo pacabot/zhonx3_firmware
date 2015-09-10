@@ -62,14 +62,6 @@ typedef struct
   one_cell cell[MAZE_SIZE][MAZE_SIZE];
 }labyrinthe;
 
-typedef struct
-{
-	char next_front;
-	char front;
-	char left;
-	char right;
-}walls;
-
 typedef struct coordinate
 {
   int x;
