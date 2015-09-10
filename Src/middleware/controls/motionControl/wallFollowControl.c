@@ -80,19 +80,17 @@ int wallFollowControlLoop(void)
 
 	if (cell_state.left == WALL_PRESENCE)// && fabs(telemeters.DL.speed_mms) < 200)
 	{
-		if (GyroGetAngle() < 5 && fabs(telemeters.DL.speed_mms) > 400)
+		if (GyroGetAngle() < 3 && fabs(telemeters.DL.speed_mms) > 200)
 		{
-			debug_1 = 1;
 			wall_follow_control.follow_error = 0;
 			pidControllerReset(wall_follow_control.follow_pid.instance);
 
 			position_control.position_type = POSITION_CTRL;
+			setCellState();
 		}
 		else
 		{
 			position_control.position_type = NO_POSITION_CTRL;
-	//		debug_1	 = 2;
-			//setCellState();
 			wall_follow_control.follow_error = DIAG_DIST_FOR_FOLLOW - (double)telemeters.DL.dist_mm;
 			if (fabs(wall_follow_control.follow_error) < SUCCES_GAP_DIST)
 			{
@@ -103,6 +101,7 @@ int wallFollowControlLoop(void)
 	}
 	else
 	{
+		position_control.position_type = NO_POSITION_CTRL;
 		wall_follow_control.follow_error = 0;
 		pidControllerReset(wall_follow_control.follow_pid.instance);
 	}
