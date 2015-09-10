@@ -71,7 +71,7 @@ void expanderSetbit(char pin, char val)
 
 char expanderGetbit(char pin)
 {
-	return getData();
+	return getData(); //todo return bit
 }
 
 void expanderReset(void)

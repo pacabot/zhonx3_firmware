@@ -19,18 +19,6 @@
 #include "middleware/controls/motionControl/speedControl.h"
 
 /* Types definitions */
-#define CENTER_DISTANCE 	15.0
-#define SUCCES_GAP_DIST 	3.0
-
-#define MAX_DIST_FOR_ALIGN 	160.00
-#define MIN_DIST_FOR_ALIGN 	3.00
-
-#define MAX_DIST_FOR_FOLLOW 120.00
-#define MIN_DIST_FOR_FOLLOW 30.00
-
-#define BOTH_WALL_DIST 		180.00
-
-#define DIAG_DIST_FOR_FOLLOW 86.00
 
 typedef struct
 {

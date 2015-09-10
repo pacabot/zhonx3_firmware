@@ -38,7 +38,7 @@
 #define MAX_SPEED_TRANSLATION   (400)
 #define END_SPEED_TRANSLATION	(400)
 
-#define DEBUG 0
+//#define DEBUG 0
 
 #ifdef DEBUG
 #undef END_SPEED_TRANSLATION
@@ -61,14 +61,6 @@ typedef struct
 {
   one_cell cell[MAZE_SIZE][MAZE_SIZE];
 }labyrinthe;
-
-typedef struct
-{
-	char next_front;
-	char front;
-	char left;
-	char right;
-}walls;
 
 typedef struct coordinate
 {

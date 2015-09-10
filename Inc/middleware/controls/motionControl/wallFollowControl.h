@@ -31,9 +31,12 @@
 
 #define BOTH_WALL_DIST 		180.00
 
-#define DIAG_DIST_FOR_FOLLOW 86.00
+#define DIAG_DIST_FOR_FOLLOW 87.00
 
-enum wall_follow_type_enum {NOFOLLOW, ALIGN_FRONT, FOLLOW_WALL};
+#define SLIP_TRANSLATION	100
+
+#define MAX_ANGLE_ERROR		30.00	//Degres
+#define MAX_FOLLOW_ERROR	50.00	//Millimeter
 
 typedef struct
 {
@@ -48,14 +51,15 @@ typedef struct
 	double follow_error;
 	double follow_command;
 	char succes;
-	enum wall_follow_type_enum follow_type;
     pid_control_struct follow_pid;
 }wall_follow_control_struct;
 
 extern wall_follow_control_struct wall_follow_control;
+extern wall_follow_params_struct  wall_follow_params;
 
 int wallFollowControlInit(void);
 int wallFollowControlLoop(void);
+double Gyro_error (void);
 int alignFront(void);
 int bothWallFollow(void);
 int rightWallFollow(void);

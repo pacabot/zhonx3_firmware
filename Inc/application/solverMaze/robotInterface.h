@@ -8,6 +8,8 @@
 #ifndef ROBOTINTERFACE_H_
 #define ROBOTINTERFACE_H_
 
+#include "middleware/wall_sensors/wall_sensors.h"
+
 void goOrientation(char *orientationZhonx, char directionToGo);
 void doUTurn(positionRobot *positionZhonx);
 void moveZhonxArc (int direction_to_go, positionRobot *positionZhonx, int numberOfCase, char end_mid_of_case, char chain);

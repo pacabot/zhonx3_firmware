@@ -83,9 +83,11 @@ int speedControlInit(void)
 int speedControlLoop(void)
 {
 	if (speed_params.sign > 0)
-		speed_control.current_distance = (encoderGetDistance(&left_encoder) + encoderGetDistance(&right_encoder)) / 2;
+		speed_control.current_distance = (encoderGetDistance(&left_encoder) + encoderGetDistance(&right_encoder)) / 2.00;
 	else
-		speed_control.current_distance = -1.0 * (encoderGetDistance(&left_encoder) + encoderGetDistance(&right_encoder)) / 2;
+		speed_control.current_distance = -1.00 * (encoderGetDistance(&left_encoder) + encoderGetDistance(&right_encoder)) / 2.00;
+
+
 
 	//	speedCompute();
 

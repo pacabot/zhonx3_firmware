@@ -15,9 +15,9 @@
 /***************                 Times definitions                 ********************/
 /**************************************************************************************/
 #define LOW_TIME_FREQ			100
-#define HI_TIME_FREQ			1000.0 	//use for pids inner loop
-#define TELEMETERS_TIME_FREQ	1000 * 10  		//each telemeter use 1/10 of TELEMETERS_TIME_FREQ
-#define GYRO_TIME_FREQ			1000
+#define HI_TIME_FREQ			1000.00 	//use for pids inner loop
+#define TELEMETERS_TIME_FREQ	1600 * 10  		//each telemeter use 1/10 of TELEMETERS_TIME_FREQ
+#define GYRO_TIME_FREQ			4000.00
 #define LINESENSORS_TIME_FREQ	GYRO_TIME_FREQ 	//same timer
 #define MULTIMMETER_TIME_FREQ	0.1f
 #define MOTORS_FREQ				20000	//motor pwm freq
@@ -37,14 +37,15 @@
 #define GYRO_OUTPUT_RATIO	    1 	//output resistor ratio (low-pass filter)
 #endif
 #define GYRO_OUT_SENSITIVITY	(GYRO_OUTPUT_RATIO*(GYRO_VRATIO/5000.00)*GYRO_SENSITIVITY) 	//1,32mV/deg/sec (3.3v Req 60K)
-#define GYRO_COEFF		        (GYRO_VRATIO/(4095.00*GYRO_OUT_SENSITIVITY*GYRO_TIME_FREQ)) //integration multiplier coeff
+#define GYRO_A_COEFF		    (GYRO_VRATIO/(4095.00*GYRO_OUT_SENSITIVITY*GYRO_TIME_FREQ)) //integration multiplier coeff
 
 #define GYRO_T_SENSITIVITY 		9.00   //The temperature coefficient is ~9 mV/°C at 25°C
 #define GYRO_T_OUT_SENSITIVITY	(GYRO_T_SENSITIVITY*(GYRO_VRATIO/5000.00)) // ~3,564 mV/°C at 25°C (3.3v)
 #define GYRO_T_COEFF_A			(GYRO_VRATIO/(4095.00*GYRO_T_OUT_SENSITIVITY))
 #define GYRO_T_COEFF_B			(-GYRO_VRATIO/(2.00*GYRO_T_OUT_SENSITIVITY)+25.00)
 
-#define GYRO_BETA				1.2400995740599703 //FORCE COEFF_B
+#define GYRO_B_COEFF			(1237.5938788750565 / GYRO_TIME_FREQ)
+//#define GYRO_B_COEFF			1.2400995740599703// / GYRO_TIME_FREQ)//FORCE COEFF_B
 #define GYRO_GAIN_COMPENSATION	0.95
 
 /**************************************************************************************/
@@ -107,10 +108,22 @@
 #endif
 
 /**************************************************************************************/
+/***************                  Robot Dimensions                 ********************/
+/******** you can see also Inc/application/solverMaze.h for more properties ***********/
+/**************************************************************************************/
+#define Z3_CENTER_BACK_DIST	    34.00
+#define Z3_WIDTH				72.50
+#define Z3_LENGHT				98.40
+#define Z3_HEIGHT				23.70
+
+/**************************************************************************************/
 /***************                   Maze Properties                 ********************/
 /******** you can see also Inc/application/solverMaze.h for more properties ***********/
 /**************************************************************************************/
-#define CELL_LENGTH				178
+#define WALL_THICKNESS			12.00
+#define HALF_WALL_THICKNESS		WALL_THICKNESS / 2.00
+#define CELL_LENGTH				178.00
+#define HALF_CELL_LENGTH		CELL_LENGTH / 2.00
 #define MAZE_SIZE				16
 
 /**************************************************************************************/
