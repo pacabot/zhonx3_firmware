@@ -88,15 +88,6 @@ int positionControlLoop(void)
 		return SPEED_CONTROL_E_SUCCESS;
 	}
 
-	if (move_params.moveType == STRAIGHT)
-	{
-		position_control.position_command = 0;
-		pidControllerReset(position_control.position_pid.instance);
-		return SPEED_CONTROL_E_SUCCESS;
-	}
-
-	debug_1	 = 3;
-
 	if (position_control.position_type == ENCODERS)
 	{
 		if (position_params.sign > 0)

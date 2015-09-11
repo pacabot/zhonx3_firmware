@@ -89,7 +89,7 @@ int mainControlLoop(void)
 	}
 
 	positionControlLoop();
-//	speedControlLoop();
+	speedControlLoop();
 	transfertFunctionLoop();
 
 	return MAIN_CONTROL_E_SUCCESS;
@@ -171,16 +171,10 @@ int moveCell(unsigned long nb_cell, float max_speed, float end_speed)
 	for(int i = 0; i < (nb_cell - 1); i++)
 	{
 		while(isEndMove() != TRUE);
-		move(0, (CELL_LENGTH - (3 * OFFSET_DIST)), max_speed, max_speed);
-		while(isEndMove() != TRUE);
-		setCellState();
-		move(0, (2 * OFFSET_DIST), max_speed, max_speed);
+		move(0, (CELL_LENGTH), max_speed, max_speed);
 	}
 	while(isEndMove() != TRUE);
-	move(0, (CELL_LENGTH - (3 * OFFSET_DIST)), max_speed, max_speed);
-	while(isEndMove() != TRUE);
-	setCellState();
-	move(0, (2 * OFFSET_DIST), max_speed, end_speed);
+	move(0, (CELL_LENGTH), max_speed, end_speed);
 
 	return POSITION_CONTROL_E_SUCCESS;
 }
@@ -214,10 +208,7 @@ int moveHalfCell_OUT(float max_speed, float end_speed)
 	move_params.initial_position = HALF_CELL_LENGTH;
 
 	while(isEndMove() != TRUE);
-	move(0, (HALF_CELL_LENGTH - (2 * OFFSET_DIST)), max_speed, max_speed);
-	while(isEndMove() != TRUE);
-	setCellState();
-	move(0, (2 * OFFSET_DIST), max_speed, end_speed);
+	move(0, HALF_CELL_LENGTH + OFFSET_DIST, max_speed, end_speed);
 
 	return POSITION_CONTROL_E_SUCCESS;
 }
@@ -234,14 +225,7 @@ int moveStartCell(float max_speed, float end_speed)
 	move_params.initial_position = Z3_CENTER_BACK_DIST;
 
 	while(isEndMove() != TRUE);
-	setCellState();
-
-	move(0, (HALF_CELL_LENGTH  - (Z3_CENTER_BACK_DIST + HALF_WALL_THICKNESS)), max_speed, max_speed);
-	move(0, (HALF_CELL_LENGTH - (2 * OFFSET_DIST)), max_speed, end_speed);
-
-	while(isEndMove() != TRUE);
-	setCellState();
-	move(0, (2 * OFFSET_DIST), max_speed, end_speed);
+	move(0, ((CELL_LENGTH - (Z3_CENTER_BACK_DIST + HALF_WALL_THICKNESS)) + OFFSET_DIST), max_speed, end_speed);;
 
 	return POSITION_CONTROL_E_SUCCESS;
 }
@@ -260,7 +244,6 @@ int moveRotateCW90(float max_speed, float end_speed)
 	while(isEndMove() != TRUE);
 	move(90, (HALF_CELL_LENGTH - OFFSET_DIST), max_speed, max_speed);
 	while(isEndMove() != TRUE);
-	setCellState();
 	move(0, (OFFSET_DIST * 2.00), max_speed, end_speed);
 
 	return POSITION_CONTROL_E_SUCCESS;
@@ -280,7 +263,6 @@ int moveRotateCCW90(float max_speed, float end_speed)
 	while(isEndMove() != TRUE);
 	move(-90, (HALF_CELL_LENGTH - OFFSET_DIST), max_speed, max_speed);
 	while(isEndMove() != TRUE);
-	setCellState();
 	move(0, (OFFSET_DIST * 2.00), max_speed, end_speed);
 
 	return POSITION_CONTROL_E_SUCCESS;
@@ -424,15 +406,14 @@ void followWallTest()
 	control_params.wall_follow_state = TRUE;
 
 	setCellState();
-	HAL_Delay(100);
+	HAL_Delay(2000);
 	move(0, 0, 0, 0);
-	setCellState();
 
 	expanderLedState(1,0);
 	expanderLedState(2,0);
 	expanderLedState(3,0);
 
-	while(1);
+//	while(1);
 //	{
 //		expanderLedState(1,0);
 //		expanderLedState(2,0);
@@ -440,34 +421,44 @@ void followWallTest()
 //		expanderLedState(debug_1,1);
 //		HAL_Delay(100);
 //	}
+//
+//	//	while(1);
+//	HAL_Delay(2000);
+//	moveStartCell(100, 100);
+//	moveCell(4, 100, 100);
+//	while(1);
+//	moveRotateCW90(100, 100);
+//	while(1);
+//	moveStartCell(500, 500);
+//	moveRotateCCW90(300, 300);
+//	moveRotateCCW90(300, 300);
+//	moveRotateCW90(300, 300);
+//	moveCell(1, 500, 300);
+//	moveRotateCW90(300, 300);
+//	moveRotateCCW90(300, 300);
 
-	//	while(1);
-	HAL_Delay(2000);
-	//	moveStartCell(100, 100);
-	//	moveCell(4, 100, 100);
-	//	while(1);
-	//	moveRotateCW90(100, 100);
-	//	while(1);
-	//	moveStartCell(500, 500);
-	//	moveRotateCCW90(300, 300);
-	//	moveRotateCCW90(300, 300);
-	//	moveRotateCW90(300, 300);
-	//	moveCell(1, 500, 300);
-	//	moveRotateCW90(300, 300);
-	//	moveRotateCCW90(300, 300);
-	//
-	//	while(1);
+//	while(1);
 
 	moveStartCell(500, 500);
+	setCellState();
 	moveCell(4, 500, 300);
+	setCellState();
 	moveRotateCW90(300, 300);
+	setCellState();
 	moveCell(3, 500, 300);
+	setCellState();
 	moveRotateCW90(300, 300);
+	setCellState();
 	moveCell(2, 500, 300);
+	setCellState();
 	moveRotateCW90(300, 300);
+	setCellState();
 	moveCell(2, 500, 300);
+	setCellState();
 	moveRotateCCW90(300, 300);
+	setCellState();
 	moveCell(1, 500, 300);
+	setCellState();
 	moveRotateCW90(300, 0);
 	//	moveRotateCW90(50, 10);
 	//	moveRotateCCW90(50, 10);
