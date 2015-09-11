@@ -111,7 +111,6 @@ void multimeter_ADC_IT(void)
 
 void mulimeterTest(void)
 {
-	mulimeterInit();
 
 	while(expanderJoyFiltered()!=JOY_LEFT)
 	{

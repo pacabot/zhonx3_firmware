@@ -114,6 +114,7 @@ int main(void)
     timesBaseInit();
     ledPowerBlink(990, 10, 0);
 	settingsInit();
+	mulimeterInit();
 
     // Register Output callback
     cmd_context.out = bluetoothPrintf;

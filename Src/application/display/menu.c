@@ -23,6 +23,7 @@
 #include "peripherals/display/ssd1306.h"
 #include "peripherals/display/smallfonts.h"
 #include "peripherals/expander/pcf8574.h"
+#include "peripherals/multimeter/multimeter.h"
 
 /* Middleware declarations */
 #include "middleware/settings/settings.h"
@@ -180,6 +181,7 @@ int menu(const menuItem Menu)
 	while (true)
 	{
 		int joystick = expanderJoyFiltered();
+		killOnLowBattery();
 		// Exit Button JOYSTICK_LEFT
 		switch (joystick)
 		{
@@ -554,4 +556,10 @@ void printGraphMotor (float acceleration, float maxSpeed, float deceleration)
 	sprintf(str,"%.2fM.S^2",deceleration);
 	ssd1306DrawString((point2[0]+128)/2-27,(point2[1]+64)/2,str,&Font_3x6);
 	ssd1306Refresh();
+}
+
+void killOnLowBattery()
+{
+	if(multimeter.vbat.value < BATTERY_LOWER_VOLTAGE_NO_LOAD)
+		halt();
 }
