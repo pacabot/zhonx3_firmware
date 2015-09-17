@@ -124,6 +124,7 @@ int main(void)
     while (1)
     {
         menu(mainMenu);
+        powerOffConfirmation();
     }
 
   /* USER CODE END 2 */

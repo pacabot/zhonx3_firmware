@@ -39,5 +39,6 @@ int modifyLongParam( char *param_name,long *param);
 void graphMotorSettings (float *acceleration, float *maxSpeed, float *deceleration);
 void printGraphMotor (float acceleration, float maxSpeed, float deceleration);
 void killOnLowBattery();
+void powerOffConfirmation();
 
 #endif /* MENU_H_ */

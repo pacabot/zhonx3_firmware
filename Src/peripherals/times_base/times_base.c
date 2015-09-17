@@ -21,6 +21,8 @@
 #include <stdio.h>
 #include <stdint.h>
 
+#include "middleware/settings/settings.h"
+
 /* Peripheral declarations */
 #include "peripherals/display/ssd1306.h"
 #include "peripherals/display/smallfonts.h"
@@ -230,6 +232,18 @@ void ledBlink_IT(void)
 		cnt_led = 0;
 }
 
+void sleep_mode()
+{
+	int time_ = HAL_GetTick();
+	if((zhonxSettings.sleep_delay_s != 0) && (time_ > (joy_activ_old_time + zhonxSettings.sleep_delay_s*1000)))
+	{
+		int i = 0;
+		i++;
+		halt();
+	}
+	time_++;
+}
+
 void highFreq_IT(void)
 {
 	pidController_IT();
@@ -237,6 +251,7 @@ void highFreq_IT(void)
 
 void lowFreq_IT(void)
 {
+	sleep_mode();
 	ledBlink_IT();
 }
 

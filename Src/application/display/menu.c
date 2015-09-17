@@ -24,6 +24,7 @@
 #include "peripherals/display/smallfonts.h"
 #include "peripherals/expander/pcf8574.h"
 #include "peripherals/multimeter/multimeter.h"
+#include "peripherals/tone/tone.h"
 
 /* Middleware declarations */
 #include "middleware/settings/settings.h"
@@ -557,9 +558,21 @@ void printGraphMotor (float acceleration, float maxSpeed, float deceleration)
 	ssd1306DrawString((point2[0]+128)/2-27,(point2[1]+64)/2,str,&Font_3x6);
 	ssd1306Refresh();
 }
-
+void powerOffConfirmation()
+{
+	unsigned char power_off = FALSE;
+	modifyBoolParam("TURN POWER OFF ?",&power_off);
+	if (power_off == TRUE)
+	{
+		halt();
+	}
+}
 void killOnLowBattery()
 {
-	if(multimeter.vbat.value < BATTERY_LOWER_VOLTAGE_NO_LOAD)
+	if(multimeter.vbat.value < (BATTERY_LOWER_VOLTAGE_NO_LOAD)*1000)
+	{
+		tone(A2,500);
+		HAL_Delay(400);
 		halt();
+	}
 }

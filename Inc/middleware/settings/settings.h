@@ -23,6 +23,7 @@ typedef struct
 	char color_sensor_enabled;
 	int x_finish_maze;
 	int y_finish_maze;
+	unsigned int sleep_delay_s;
 	unsigned long threshold_color;
 	unsigned long threshold_greater;
 }settings;
