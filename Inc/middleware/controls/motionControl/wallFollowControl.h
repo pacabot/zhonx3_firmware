@@ -21,7 +21,7 @@
 
 /* Types definitions */
 #define CENTER_DISTANCE 	15.0
-#define SUCCES_GAP_DIST 	3.0
+#define SUCCES_GAP_DIST 	2.0
 
 #define MAX_DIST_FOR_ALIGN 	160.00
 #define MIN_DIST_FOR_ALIGN 	3.00

@@ -80,13 +80,13 @@ int wallFollowControlLoop(void)
 
 	if (cell_state.left == WALL_PRESENCE)// && fabs(telemeters.DL.speed_mms) < 200)
 	{
-		if (GyroGetAngle() < 3 && fabs(telemeters.DL.speed_mms) > 200)
+		if (GyroGetAngle() < 2 && fabs(telemeters.DL.speed_mms) > 400)
 		{
 			wall_follow_control.follow_error = 0;
 			pidControllerReset(wall_follow_control.follow_pid.instance);
 
 			position_control.position_type = POSITION_CTRL;
-			setCellState();
+			cell_state.left = NO_WALL;
 		}
 		else
 		{
