@@ -53,7 +53,6 @@ extern void followWallTest(void);
 extern void followLineTest(void);
 extern void rotateTest(void);
 extern void curveRotateTest(void);
-extern void telemeterFrontCalibration(void);
 
 /*
  * to create a new menu you have to create a new variable of type "const menuItem" like this :
@@ -161,7 +160,7 @@ const menuItem mainMenu =
 		"ZHONX III dark   V0.2",
 #endif
 		{
-				{"telemeters calibration",'f',		(void*)telemeterFrontCalibration},
+			//	{"telemeters calibration",'f',		(void*)telemeterFrontCalibration},
 				{"Maze menu",'m',			(void*)&maze_menu},
 				{"Unit tests",'m',			(void*)&tests_menu},
 				{"Control menu",'m',		(void*)&control_menu},
