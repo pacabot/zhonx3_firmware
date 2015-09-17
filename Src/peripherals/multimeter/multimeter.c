@@ -111,7 +111,6 @@ void multimeter_ADC_IT(void)
 
 void mulimeterTest(void)
 {
-	mulimeterInit();
 
 	while(expanderJoyFiltered()!=JOY_LEFT)
 	{
@@ -123,5 +122,4 @@ void mulimeterTest(void)
 		ssd1306PrintInt(10,  55,  "vbat (mV) =  ", multimeter.vbat.value, &Font_5x8);
 		ssd1306Refresh();
 	}
-	antiBounceJoystick();
 }

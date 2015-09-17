@@ -23,6 +23,8 @@
 #include "peripherals/display/ssd1306.h"
 #include "peripherals/display/smallfonts.h"
 #include "peripherals/expander/pcf8574.h"
+#include "peripherals/multimeter/multimeter.h"
+#include "peripherals/tone/tone.h"
 
 /* Middleware declarations */
 #include "middleware/settings/settings.h"
@@ -43,7 +45,6 @@ extern void motorsTest ();
 extern void lineSensorsTest ();
 extern void lineFollower();
 extern void mainControlTest ();
-extern int 	wallSensorsCalibration (void);
 extern int 	lineSensorsCalibration (void);
 extern void testTelemeterDistance();
 extern void maze();
@@ -52,8 +53,6 @@ extern void followWallTest(void);
 extern void followLineTest(void);
 extern void rotateTest(void);
 extern void curveRotateTest(void);
-extern void testPostSensors(void);
-extern void adxrs620Cal(void);
 
 /*
  * to create a new menu you have to create a new variable of type "const menuItem" like this :
@@ -113,7 +112,7 @@ const menuItem parameters_menu=
 {
 		"Parameters menu",
 		{
-				{"calibration",'f',(void*)wallSensorsCalibration}
+//				{"calibration",'f',(void*)wallSensorsCalibration}
 		}
 };
 const menuItem peripheral_test_menu=
@@ -125,7 +124,6 @@ const menuItem tests_menu=
 		"UNIT TEST",
 		{
 				{"distantce",		'f', (void*)testTelemeterDistance},
-				{"post sensor",		'f', (void*)testPostSensors},
 				{"wall sensor",		'f', (void*)testWallsSensors},
 				{"bluetooth",		'f', (void*)bluetoothTest},
 				{"multimeter",		'f', (void*)mulimeterTest},
@@ -134,7 +132,6 @@ const menuItem tests_menu=
 				{"encoders",		'f', (void*)encoderTest},
 				{"joystick",		'f', (void*)joystickTest},
 				{"gyroscope",		'f', (void*)adxrs620Test},
-				{"gyroscope cal",	'f', (void*)adxrs620Cal},
 				{"telemeters",		'f', (void*)telemetersTest},
 				{"beeper",			'f', (void*)toneTest},
 				{"motors",			'f', (void*)motorsTest},
@@ -163,6 +160,7 @@ const menuItem mainMenu =
 		"ZHONX III dark   V0.2",
 #endif
 		{
+			//	{"telemeters calibration",'f',		(void*)telemeterFrontCalibration},
 				{"Maze menu",'m',			(void*)&maze_menu},
 				{"Unit tests",'m',			(void*)&tests_menu},
 				{"Control menu",'m',		(void*)&control_menu},
@@ -183,6 +181,7 @@ int menu(const menuItem Menu)
 	while (true)
 	{
 		int joystick = expanderJoyFiltered();
+		killOnLowBattery();
 		// Exit Button JOYSTICK_LEFT
 		switch (joystick)
 		{
@@ -557,4 +556,22 @@ void printGraphMotor (float acceleration, float maxSpeed, float deceleration)
 	sprintf(str,"%.2fM.S^2",deceleration);
 	ssd1306DrawString((point2[0]+128)/2-27,(point2[1]+64)/2,str,&Font_3x6);
 	ssd1306Refresh();
+}
+void powerOffConfirmation()
+{
+	unsigned char power_off = FALSE;
+	modifyBoolParam("TURN POWER OFF ?",&power_off);
+	if (power_off == TRUE)
+	{
+		halt();
+	}
+}
+void killOnLowBattery()
+{
+	if(multimeter.vbat.value < (BATTERY_LOWER_VOLTAGE_NO_LOAD)*1000)
+	{
+		tone(A2,500);
+		HAL_Delay(400);
+		halt();
+	}
 }

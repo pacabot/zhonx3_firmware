@@ -77,8 +77,8 @@ int wallSensorsCalibration (void)
 		telemeter_FR_profile[i]=telemeters.FR.avrg;
 
 
-		move(0,-NUMBER_OF_MILLIMETER_BY_LOOP,50,0);
-		while(speed_control.end_control != 1);
+		//move(0,-NUMBER_OF_MILLIMETER_BY_LOOP,50,0);
+		//while(speed_control.end_control != 1);
 	}
 	//	int position_zhonx=NUMBER_OF_CELL;
 	//	int distance;
@@ -193,8 +193,8 @@ int wallSensorsCalibration (void)
 		ssd1306ProgressBar(10,10,(i*100)/NUMBER_OF_CELL);
 		ssd1306ProgressBar(10,40,50+(i*50)/NUMBER_OF_CELL);
 		ssd1306Refresh();
-		move(0,-sqrtf(2*powf(NUMBER_OF_MILLIMETER_BY_LOOP,2)),50,0);
-		while(speed_control.end_control != 1);
+		//move(0,-sqrtf(2*powf(NUMBER_OF_MILLIMETER_BY_LOOP,2)),50,0);
+		//while(speed_control.end_control != 1);
 		telemeter_DL_profile[i]=telemeters.DL.avrg;
 		telemeter_DR_profile[i]=telemeters.DR.avrg;
 	}

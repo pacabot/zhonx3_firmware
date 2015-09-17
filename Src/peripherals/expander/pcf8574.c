@@ -36,6 +36,7 @@
 #define DONE 0
 /* extern variables ---------------------------------------------------------*/
 extern I2C_HandleTypeDef hi2c1;
+unsigned int joy_activ_old_time;
 
 //Send DATA
 static void sendData(uint8_t aTxBuffer)
@@ -99,7 +100,10 @@ char expanderJoyState(void)
 {
 	int key = 0;
 	key = ~(getData() | 0xFFFFFFF0);
-
+	if (key != 0)
+	{
+		joy_activ_old_time=HAL_GetTick();
+	}
 	switch (key)
 	{
 		case 4:
