@@ -122,7 +122,7 @@
 /**************************************************************************************/
 #define WALL_THICKNESS			12.00
 #define HALF_WALL_THICKNESS		WALL_THICKNESS / 2.00
-#define CELL_LENGTH				178.00
+#define CELL_LENGTH				179.20
 #define HALF_CELL_LENGTH		CELL_LENGTH / 2.00
 #define MAZE_SIZE				16
 

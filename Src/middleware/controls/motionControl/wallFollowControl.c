@@ -53,14 +53,13 @@
 /* extern variables */
 
 /* global variables */
-extern int debug_1;
 wall_follow_control_struct wall_follow_control;
 wall_follow_params_struct wall_follow_params;
 arm_pid_instance_f32 telemeters_pid_instance;
 
 int wallFollowControlInit(void)
 {
-	telemeters_pid_instance.Kp = 6;
+	telemeters_pid_instance.Kp = 10;
 	telemeters_pid_instance.Ki = 0;
 	telemeters_pid_instance.Kd = 300;
 
@@ -78,30 +77,17 @@ int wallFollowControlLoop(void)
 	if (move_params.moveType != STRAIGHT)
 		return WALL_FOLLOW_CONTROL_E_SUCCESS;
 
-	if (cell_state.left == WALL_PRESENCE)// && fabs(telemeters.DL.speed_mms) < 200)
+	if (cell_state.left == WALL_PRESENCE)
 	{
-		if (GyroGetAngle() < 2 && fabs(telemeters.DL.speed_mms) > 400)
-		{
-			wall_follow_control.follow_error = 0;
-			pidControllerReset(wall_follow_control.follow_pid.instance);
-
-			position_control.position_type = POSITION_CTRL;
-			cell_state.left = NO_WALL;
-		}
-		else
-		{
-			position_control.position_type = NO_POSITION_CTRL;
-			wall_follow_control.follow_error = DIAG_DIST_FOR_FOLLOW - (double)telemeters.DL.dist_mm;
-			if (fabs(wall_follow_control.follow_error) < SUCCES_GAP_DIST)
-			{
-				wall_follow_control.succes = TRUE;
-				GyroResetAngle();
-			}
-		}
+		wallFollow(&telemeters.DL);
 	}
+//	else if (cell_state.right == WALL_PRESENCE)
+//	{
+//		wallFollow(&telemeters.DR);
+//	}
 	else
 	{
-		position_control.position_type = NO_POSITION_CTRL;
+		position_control.position_type = POSITION_CTRL;
 		wall_follow_control.follow_error = 0;
 		pidControllerReset(wall_follow_control.follow_pid.instance);
 	}
@@ -123,6 +109,29 @@ int wallFollowControlLoop(void)
 	return WALL_FOLLOW_CONTROL_E_SUCCESS;
 }
 
+int wallFollow(telemeterStruct * telemeter)
+{
+	if (GyroGetAngle() < 4 && fabs(telemeter->speed_mms) > 300)
+	{
+		wall_follow_control.follow_error = 0;
+		pidControllerReset(wall_follow_control.follow_pid.instance);
+
+		position_control.position_type = POSITION_CTRL;
+//			cell_state.left = NO_WALL;
+		setCellState();
+	}
+	else
+	{
+		position_control.position_type = NO_POSITION_CTRL;
+		wall_follow_control.follow_error = DIAG_DIST_FOR_FOLLOW - (double)telemeter->dist_mm;
+		if (fabs(wall_follow_control.follow_error) < SUCCES_GAP_DIST)
+		{
+			wall_follow_control.succes = TRUE;
+			GyroResetAngle();
+		}
+	}
+	return 0;
+}
 
 
 //int wallFollowControlLoop(void)

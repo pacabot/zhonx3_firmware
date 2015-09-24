@@ -412,8 +412,7 @@ void followWallTest()
 	expanderLedState(1,0);
 	expanderLedState(2,0);
 	expanderLedState(3,0);
-
-//	while(1);
+//while(1);
 //	{
 //		expanderLedState(1,0);
 //		expanderLedState(2,0);

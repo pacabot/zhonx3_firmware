@@ -59,6 +59,8 @@ extern wall_follow_params_struct  wall_follow_params;
 
 int wallFollowControlInit(void);
 int wallFollowControlLoop(void);
+int wallFollow(telemeterStruct * telemeter);
+
 double Gyro_error (void);
 int alignFront(void);
 int bothWallFollow(void);

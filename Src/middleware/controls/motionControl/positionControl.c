@@ -48,7 +48,6 @@
 /* extern variables */
 
 /* global variables */
-extern int debug_1;
 position_control_struct position_control;
 position_params_struct position_params;
 arm_pid_instance_f32 encoder_or_gyro_pid_instance;
