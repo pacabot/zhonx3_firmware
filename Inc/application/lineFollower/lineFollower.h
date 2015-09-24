@@ -16,8 +16,8 @@ typedef struct
 }line_follower_struct;
 extern line_follower_struct line_follower;
 
-#define MAXSPEED 500
-#define MINSPEED 300
+#define MAXSPEED 800
+#define MINSPEED 500
 #define SPEED_COEFF 1.00
 
 typedef struct

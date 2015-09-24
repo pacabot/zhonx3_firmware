@@ -58,9 +58,9 @@ arm_pid_instance_f32 line_follow_pid_instance;
 
 int lineFollowControlInit(void)
 {
-	line_follow_pid_instance.Kp = 30;
+	line_follow_pid_instance.Kp = 20;
 	line_follow_pid_instance.Ki = 0;
-	line_follow_pid_instance.Kd = 100;
+	line_follow_pid_instance.Kd = 200;
 
 	line_follow_control.line_follow_pid.instance = &line_follow_pid_instance;
 

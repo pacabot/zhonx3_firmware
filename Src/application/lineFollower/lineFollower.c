@@ -136,11 +136,11 @@ void lineFollower(void)
 	}
 
 	tone(c, 100);
-	coef_Floor.left=1000.0/(max_Floor.left-min_Floor.left);     //  1000/(max_capteur-min_capteur)
-	coef_Floor.front=1000.0/(max_Floor.front-min_Floor.front);
-	coef_Floor.right=1000.0/(max_Floor.right-min_Floor.right);
-	coef_Floor.leftExt=1000.0/(max_Floor.leftExt-min_Floor.leftExt);
-	coef_Floor.rightExt=1000.0/(max_Floor.rightExt-min_Floor.rightExt);
+	coef_Floor.left=100.0/(max_Floor.left-min_Floor.left);     //  100/(max_capteur-min_capteur) (0..100)
+	coef_Floor.front=100.0/(max_Floor.front-min_Floor.front);
+	coef_Floor.right=100.0/(max_Floor.right-min_Floor.right);
+	coef_Floor.leftExt=100.0/(max_Floor.leftExt-min_Floor.leftExt);
+	coef_Floor.rightExt=100.0/(max_Floor.rightExt-min_Floor.rightExt);
 
 
 
@@ -172,25 +172,75 @@ void lineFollower(void)
 	char foreward = TRUE;
 	char cpt=0;
 	int  error;
+	int coef;
 	while(expanderJoyFiltered()!=JOY_LEFT && foreward)
 	{
 		//error=follow_control.follow_error*10;
 		int left=((double)lineSensors.left.adc_value - min_Floor.left) * coef_Floor.left ;
 		int front=((double)lineSensors.front.adc_value- min_Floor.front) * coef_Floor.front ;
 		int right=((double)lineSensors.right.adc_value- min_Floor.right) * coef_Floor.right ;
+		int left_ext=((double)lineSensors.left_ext.adc_value - min_Floor.leftExt) * coef_Floor.leftExt ;
+		int right_ext=((double)lineSensors.right_ext.adc_value - min_Floor.rightExt) * coef_Floor.rightExt ;
+
+		if (left_ext>left && left_ext>front && left_ext>right && left_ext> right_ext)
+		{
+			if (left<2)
+			{
+				coef=(-100+left_ext)*2-800;
+			} else
+			{
+				coef=(100-left_ext)*2-800;
+			}
+		} else if (left>left_ext && left>front && left>right && left> right_ext)
+		{
+			if (left_ext>front)
+			{
+				coef=(-100+left)*2-400;
+			} else
+			{
+				coef=(100-left)*2-400;
+			}
+		}else if (front>left_ext && front>left && front>right && front> right_ext)
+		{
+			if (right<=left)
+			{
+				coef=(-100+front)*2;
+			} else
+			{
+				coef=(100-front)*2;
+			}
+		} else if (right>left_ext && right>left && right>front && right> right_ext)
+		{
+			if (right_ext<=right)
+			{
+				coef=(-100+right)*2+400;
+			} else
+			{
+				coef=(100-right)*2+400;
+			}
+		} else if (right_ext>left_ext && right_ext>left && right_ext>front && right_ext> right)
+		{
+			if (right>2)
+			{
+				coef=(-100+right_ext)*2+800;
+			} else
+			{
+				coef=(100-right_ext)*2+800;
+			}
+		}
+
+
+
 		error=line_follower.position*200;
 		ssd1306ClearScreen();
-//		ssd1306PrintInt(10, 5,  "LEFT_EXT  =  ", (uint16_t) lineSensors.left_ext.adc_value, &Font_5x8);
-//		ssd1306PrintInt(10, 15, "LEFT      =  ", (uint16_t) lineSensors.left.adc_value, &Font_5x8);
-//		ssd1306PrintInt(10, 25, "FRONT --  =  ", (uint16_t) lineSensors.front.adc_value, &Font_5x8);
-//		ssd1306PrintInt(10, 35, "RIGHT     =  ", (uint16_t) lineSensors.right.adc_value, &Font_5x8);
-//		ssd1306PrintInt(10, 45, "RIGHT_EXT =  ", (uint16_t) lineSensors.right_ext.adc_value, &Font_5x8);
+		ssd1306PrintInt(5, 5,  "LEFT_EXT  =  ", left_ext, &Font_5x8);
+		ssd1306PrintInt(5, 15, "LEFT      =  ", left, &Font_5x8);
+		ssd1306PrintInt(5, 25, "FRONT --  =  ", front, &Font_5x8);
+		ssd1306PrintInt(5, 35, "RIGHT     =  ", right, &Font_5x8);
+		ssd1306PrintInt(5, 45, "RIGHT_EXT =  ", right_ext, &Font_5x8);
 
-		ssd1306PrintInt(10, 15, "LEFT      =  ", left, &Font_5x8);
-		ssd1306PrintInt(10, 25, "FRONT --  =  ", front, &Font_5x8);
-		ssd1306PrintInt(10, 35, "RIGHT     =  ", right, &Font_5x8);
-
-		ssd1306PrintInt(10, 54, "Error =  ", error, &Font_5x8);
+		ssd1306PrintInt(5, 55, "coef=", coef, &Font_5x8);
+		ssd1306PrintInt(70, 55, "I ", error, &Font_5x8);
 		ssd1306Refresh();
 
 
@@ -234,6 +284,7 @@ void lineFollower(void)
 //
 void controlLoop(void)
 {
+	/*
 	static int maxfront=0;  // memorize the max level of front sensors line
 
 	int left=(lineSensors.left.adc_value - min_Floor.left) * coef_Floor.left ;
@@ -263,8 +314,63 @@ void controlLoop(void)
 //    {
 //    	exterieur = droiteExt - gaucheExt;
 //    }
+*/
+	int coef=0;
+	int left=((double)lineSensors.left.adc_value - min_Floor.left) * coef_Floor.left ;
+	int front=((double)lineSensors.front.adc_value- min_Floor.front) * coef_Floor.front ;
+	int right=((double)lineSensors.right.adc_value- min_Floor.right) * coef_Floor.right ;
+	int left_ext=((double)lineSensors.left_ext.adc_value - min_Floor.leftExt) * coef_Floor.leftExt ;
+	int right_ext=((double)lineSensors.right_ext.adc_value - min_Floor.rightExt) * coef_Floor.rightExt ;
 
-    line_follower.position = (double)(right - left + midle + outside) * 0.004;
+	if (left_ext>left && left_ext>front && left_ext>right && left_ext> right_ext)
+	{
+		if (left<2)
+		{
+			coef=(-100+left_ext)*2-800;
+		} else
+		{
+			coef=(100-left_ext)*2-800;
+		}
+	} else if (left>left_ext && left>front && left>right && left> right_ext)
+	{
+		if (left_ext>front)
+		{
+			coef=(-100+left)*2-400;
+		} else
+		{
+			coef=(100-left)*2-400;
+		}
+	}else if (front>left_ext && front>left && front>right && front> right_ext)
+	{
+		if (right<=left)
+		{
+			coef=(-100+front)*2;
+		} else
+		{
+			coef=(100-front)*2;
+		}
+	} else if (right>left_ext && right>left && right>front && right> right_ext)
+	{
+		if (right_ext<=right)
+		{
+			coef=(-100+right)*2+400;
+		} else
+		{
+			coef=(100-right)*2+400;
+		}
+	} else if (right_ext>left_ext && right_ext>left && right_ext>front && right_ext> right)
+	{
+		if (right>2)
+		{
+			coef=(-100+right_ext)*2+800;
+		} else
+		{
+			coef=(100-right_ext)*2+800;
+		}
+	}
+	coef = right-left;
+
+    line_follower.position = (double)(coef) * 0.1;
 
 }
 void lineFollower_IT(void)

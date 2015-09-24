@@ -136,8 +136,8 @@ int move(float angle, float radius_or_distance, float max_speed, float end_speed
 
 	if (angle == 0)
 	{
-//		position_control.position_type = ENCODERS;
-		position_control.position_type = GYRO;
+		position_control.position_type = ENCODERS;
+//		position_control.position_type = GYRO;
 
 		speedProfileCompute(radius_or_distance);
 		positionProfileCompute(0,0);
