@@ -24,6 +24,8 @@
 #define JOY_RIGHT 	4
 #define JOY_SEVERAL 255
 
+extern unsigned int joy_activ_old_time;
+
 void expanderLedState(char led, char val);
 char expanderJoyState(void);
 

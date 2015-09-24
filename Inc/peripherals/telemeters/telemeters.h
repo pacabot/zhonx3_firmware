@@ -11,68 +11,94 @@
 
 /* Module Identifier */
 #include "config/module_id.h"
+#include "application/statistiques/statistiques.h"
 
 /* Error codes */
 #define TELEMETERS_DRIVER_E_SUCCESS  0
 #define TELEMETERS_DRIVER_E_ERROR    MAKE_ERROR(TELEMETERS_DRIVER_MODULE_ID, 1)
 
+#define TX_ON			1
+#define TX_OFF			2
+
+#define DISTANCE_MEASURED	200
+#define NUMBER_OF_CELL 		100
+#define NUMBER_OF_MILLIMETER_BY_LOOP DISTANCE_MEASURED/NUMBER_OF_CELL
+#define MIN_TELEMETERS_SPEED 20
+
 /* Definition for ADCx Channel Pin */
-#define TX_LEFT_FRONT				GPIO_PIN_1
-#define TX_RIGHT_FRONT				GPIO_PIN_10
-#define TX_DUAL_DIAG				GPIO_PIN_11
+#define TX_FL				GPIO_PIN_1
+#define TX_FR				GPIO_PIN_10
+#define TX_DUAL_DIAG		GPIO_PIN_11
 
 /* Definition for ADCx's Channel */
-#define RX_LEFT_FRONT				ADC_CHANNEL_6
-#define RX_LEFT_DIAG				ADC_CHANNEL_5
-#define RX_RIGHT_DIAG				ADC_CHANNEL_10
-#define RX_RIGHT_FRONT				ADC_CHANNEL_11
+#define RX_FL				ADC_CHANNEL_6
+#define RX_DL				ADC_CHANNEL_5
+#define RX_DR				ADC_CHANNEL_10
+#define RX_FR				ADC_CHANNEL_11
 
-#define SIZE_OF_AVEVAGE_TABLE_TELEMETERS_SENSORS 5
+extern int telemeter_FR_profile[NUMBER_OF_CELL + 1];
+extern int telemeter_FL_profile[NUMBER_OF_CELL + 1];
+extern int telemeter_DR_profile[NUMBER_OF_CELL + 1];
+extern int telemeter_DL_profile[NUMBER_OF_CELL + 1];
 
 /* Types definitions */
-typedef struct
-{
-    int32_t adc_value;
-    int32_t telemeter_values[SIZE_OF_AVEVAGE_TABLE_TELEMETERS_SENSORS];
-    int32_t average_value;
-    int32_t offset;
-    uint16_t higher_interval;
-    uint16_t lower_interval;
-    char wall_presence;
-    char sensor_state;
-}telemeter_state;
+
+/* Types definitions */
+enum telemeterType {FL, DL, DR, FR};
 
 typedef struct
 {
-	telemeter_state right_front;
-	telemeter_state ref_right_front;
-	telemeter_state right_diag;
-	telemeter_state ref_right_diag;
-	telemeter_state left_front;
-	telemeter_state ref_left_front;
-	telemeter_state left_diag;
-	telemeter_state ref_left_diag;
+    double old_dist_mm;
+	int old_avrg;
+	int cell_idx;
+	int	*profile;
+} telemeterConvStruct;
 
-	uint64_t it_cnt;
-	uint64_t end_of_conversion;
+typedef struct
+{
+    double dist_mm;
+	double delta_mm;
+    double delta_avrg;
+	double speed_mms;
+	telemeterConvStruct mm_conv;
+    int adc;
+    int adc_ref;
+    mobileAvrgStruct sAvrgStruct;
+    mobileAvrgStruct mAvrgStruct;
+    mobileAvrgStruct mAvrgStruct_ref;
+    int avrg;
+    int avrg_ref;
+    char isActivated;
+    uint16_t led_gpio;
+} telemeterStruct;
+
+typedef struct
+{
+	telemeterStruct FR;
+	telemeterStruct DR;
+	telemeterStruct FL;
+	telemeterStruct DL;
+
+	int it_cnt;
+	int end_of_conversion;
 	char active_state;
-	char emitter_state;
 	char selector;
-	char ref_selector;
-} telemeters_struct;
+} telemetersStruct;
 
-volatile telemeters_struct telemeters;
+extern telemetersStruct telemeters;
 
-void telemetersInit(void);
-void telemetersStart(void);
-void telemetersStop(void);
-void telemetersCalibrate(void);
-void telemeters_IT(void);
-void telemeters_DMA_IT(void);
-void telemetersAdc2Start(void);
-void telemetersAdc3Start(void);
-void telemeters_ADC2_IT(void);
-void telemeters_ADC3_IT(void);
-void telemetersTest(void);
+void   telemetersInit(void);
+void   telemetersStart(void);
+void   telemetersStop(void);
+void   telemeters_IT(void);
+void   telemeters_DMA_IT(void);
+void   telemetersAdc2Start(void);
+void   telemetersAdc3Start(void);
+void   telemeters_ADC2_IT(void);
+void   telemeters_ADC3_IT(void);
+void   getTelemetersADC(telemeterStruct *tel, ADC_HandleTypeDef *hadc);
+void getTelemetersDistance (telemeterStruct *tel);
+int	   getTelemetersVariation(telemeterStruct *tel);
+void   telemetersTest(void);
 
 #endif

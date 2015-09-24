@@ -41,7 +41,6 @@ int maze(void)
 	mainControlInit ();
 
 	control_params.wall_follow_state = true;
-	wall_follow_control.follow_type = FOLLOW_WALL;//NOFOLLOW;
 	move(0, 0, 0, 0);
 	HAL_Delay(500);
 
@@ -77,7 +76,7 @@ int maze(void)
 		rotate90WithCal(CW, 300, 0);
 		while(isEndMove() != true);
 		positionZhonx.orientation=(positionZhonx.orientation+1)%4;
-		newCell (getCellState (), &maze, positionZhonx);
+//plf		newCell (getCellState (), &maze, positionZhonx);
 	}
 	move (0, -CELL_LENGTH/2, 50, 0);
 	while(isEndMove() != true);
@@ -112,7 +111,7 @@ void exploration(labyrinthe *maze, positionRobot* positionZhonx, char xFinish,
 	motorsSleepDriver (OFF);
 	telemetersStart();
 	HAL_Delay(1000);
-	newCell (getCellState(), maze, *positionZhonx);
+//plf	newCell (getCellState(), maze, *positionZhonx);
 	telemetersStart();
 
 	while (positionZhonx->x != xFinish || positionZhonx->y != yFinish)
@@ -251,7 +250,7 @@ void moveRealZhonxArc(labyrinthe *maze, positionRobot *positionZhonx, coordinate
 		else
 			chain = true;
 		move_zhonx_arc (orientaionToGo, positionZhonx, length, endMidCase, chain);
-		cell_state = getCellState ();
+//plf		cell_state = getCellState ();
 		newCell (cell_state, maze, *positionZhonx);
 
 	}

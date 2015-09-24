@@ -2,13 +2,13 @@
   ******************************************************************************
   * @file    stm32f4xx_hal_flash.h
   * @author  MCD Application Team
-  * @version V1.2.0
-  * @date    26-December-2014
+  * @version V1.3.2
+  * @date    26-June-2015
   * @brief   Header file of FLASH HAL module.
   ******************************************************************************
   * @attention
   *
-  * <h2><center>&copy; COPYRIGHT(c) 2014 STMicroelectronics</center></h2>
+  * <h2><center>&copy; COPYRIGHT(c) 2015 STMicroelectronics</center></h2>
   *
   * Redistribution and use in source and binary forms, with or without modification,
   * are permitted provided that the following conditions are met:
@@ -194,6 +194,13 @@ typedef struct
 #define __HAL_FLASH_SET_LATENCY(__LATENCY__) (*(__IO uint8_t *)ACR_BYTE0_ADDRESS = (uint8_t)(__LATENCY__))
 
 /**
+  * @brief  Get the FLASH Latency.
+  * @retval FLASH Latency
+  *          The value of this parameter depend on device used within the same series
+  */ 
+#define __HAL_FLASH_GET_LATENCY()     (READ_BIT((FLASH->ACR), FLASH_ACR_LATENCY))
+
+/**
   * @brief  Enable the FLASH prefetch buffer.
   * @retval none
   */ 
@@ -234,15 +241,18 @@ typedef struct
   * @note   This function must be used only when the Instruction Cache is disabled.  
   * @retval None
   */
-#define __HAL_FLASH_INSTRUCTION_CACHE_RESET()  (FLASH->ACR |= FLASH_ACR_ICRST)
+#define __HAL_FLASH_INSTRUCTION_CACHE_RESET() do {FLASH->ACR |= FLASH_ACR_ICRST;  \
+                                                  FLASH->ACR &= ~FLASH_ACR_ICRST; \
+                                                 }while(0)
 
 /**
   * @brief  Resets the FLASH data Cache.
   * @note   This function must be used only when the data Cache is disabled.  
   * @retval None
   */
-#define __HAL_FLASH_DATA_CACHE_RESET()  (FLASH->ACR |= FLASH_ACR_DCRST)
-
+#define __HAL_FLASH_DATA_CACHE_RESET() do {FLASH->ACR |= FLASH_ACR_DCRST;  \
+                                           FLASH->ACR &= ~FLASH_ACR_DCRST; \
+                                          }while(0)
 /**
   * @brief  Enable the specified FLASH interrupt.
   * @param  __INTERRUPT__ : FLASH interrupt 

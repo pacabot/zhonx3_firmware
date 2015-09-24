@@ -46,13 +46,15 @@
 #include "middleware/controls/motionControl/mainControl.h"
 
 control_params_struct control_params;
+move_params_struct move_params;
+
+int debug_1 = 0;
 
 double ROTATION_DIAMETER;
 
 int mainControlInit(void)
 {
-
-    ROTATION_DIAMETER = sqrt(pow(WHEELS_DISTANCE, 2) + pow(WHEELS_SPACING, 2));
+	ROTATION_DIAMETER = sqrt(pow(WHEELS_DISTANCE, 2) + pow(WHEELS_SPACING, 2));
 
 	motorsInit();
 	encodersInit();
@@ -66,10 +68,9 @@ int mainControlInit(void)
 	adxrs620Init();
 
 	speed_params.initial_speed = 0;
+	move_params.moveType = STRAIGHT;
 
 	control_params.wall_follow_state = 0;
-	control_params.position_state = 0;
-	control_params.speed_state = 0;
 	control_params.line_follow_state = 0;
 
 	return MAIN_CONTROL_E_SUCCESS;
@@ -80,27 +81,15 @@ int mainControlLoop(void)
 	if (control_params.line_follow_state == TRUE)
 	{
 		lineFollowControlLoop();
-		control_params.position_state = FALSE;
 		control_params.wall_follow_state = FALSE;
-
-//		control_params.wall_follow_state = TRUE;
-		control_params.position_state = FALSE;
 	}
 	else if (control_params.wall_follow_state == TRUE)
 	{
 		wallFollowControlLoop();
-//		control_params.position_state = FALSE;
-		control_params.position_state = TRUE;
 	}
-	else
-	{
-		control_params.position_state = TRUE;
-	}
-	if (control_params.speed_state == TRUE)
-		speedControlLoop();
-	if (control_params.position_state == TRUE)
-		positionControlLoop();
 
+	positionControlLoop();
+	speedControlLoop();
 	transfertFunctionLoop();
 
 	return MAIN_CONTROL_E_SUCCESS;
@@ -132,21 +121,16 @@ int move(float angle, float radius_or_distance, float max_speed, float end_speed
 	speed_params.accel 		= MAX_ACCEL;
 	speed_params.decel 		= MAX_ACCEL;
 
-	control_params.speed_state = TRUE;
-
 	if (angle == 0)
 	{
-		position_control.position_type = ENCODERS;
-//		position_control.position_type = GYRO;
+		move_params.moveType = STRAIGHT;
 
 		speedProfileCompute(radius_or_distance);
 		positionProfileCompute(0,0);
 	}
 	else
 	{
-		position_control.position_type = GYRO;
-//		position_control.position_type = ENCODERS;
-		control_params.wall_follow_state = FALSE;
+		move_params.moveType = CURVE;
 
 		distance_per_wheel = (2.00 * PI * ROTATION_DIAMETER * (angle / 360.00)) * slip_compensation;
 		distance = fabsf((PI * (2.00 * radius_or_distance) * (angle / 360.00)));
@@ -166,38 +150,177 @@ char isEndMove(void)
 		return FALSE;
 }
 
+/**************************************************************************************/
+/***************                    Basic Moves                    ********************/
+/**************************************************************************************/
+
+/*
+ * 			 :
+ * 		o    :    o
+ * 		:    :    :
+ * 		:    :    :
+ * 		o         o
+ */
+int moveCell(unsigned long nb_cell, float max_speed, float end_speed)
+{
+	if (nb_cell == 0)
+		return POSITION_CONTROL_E_SUCCESS;
+
+	move_params.initial_position = OFFSET_DIST;
+
+	for(int i = 0; i < (nb_cell - 1); i++)
+	{
+		while(isEndMove() != TRUE);
+		move(0, (CELL_LENGTH), max_speed, max_speed);
+	}
+	while(isEndMove() != TRUE);
+	move(0, (CELL_LENGTH), max_speed, end_speed);
+
+	return POSITION_CONTROL_E_SUCCESS;
+}
+
+/*
+ *
+ * 		o	 	  o
+ * 		:         :
+ * 		:    :    :
+ * 		o         o
+ */
+int moveHalfCell_IN(float max_speed, float end_speed)
+{
+	move_params.initial_position = OFFSET_DIST;
+
+	while(isEndMove() != TRUE);
+	move(0, (HALF_CELL_LENGTH - OFFSET_DIST), max_speed, end_speed);
+
+	return POSITION_CONTROL_E_SUCCESS;
+}
+
+/*
+ * 			 :
+ * 		o	 :	  o
+ * 		:    :    :
+ * 		:         :
+ * 		o         :
+ */
+int moveHalfCell_OUT(float max_speed, float end_speed)
+{
+	move_params.initial_position = HALF_CELL_LENGTH;
+
+	while(isEndMove() != TRUE);
+	move(0, HALF_CELL_LENGTH + OFFSET_DIST, max_speed, end_speed);
+
+	return POSITION_CONTROL_E_SUCCESS;
+}
+
+/*
+ * 			 :
+ * 		o    :    o
+ * 		:    :    :
+ * 		:    :    :
+ * 		o_________o
+ */
+int moveStartCell(float max_speed, float end_speed)
+{
+	move_params.initial_position = Z3_CENTER_BACK_DIST;
+
+	while(isEndMove() != TRUE);
+	move(0, ((CELL_LENGTH - (Z3_CENTER_BACK_DIST + HALF_WALL_THICKNESS)) + OFFSET_DIST), max_speed, end_speed);;
+
+	return POSITION_CONTROL_E_SUCCESS;
+}
+
+/*
+ *		 	 :
+ * 		o	 :	  o
+ * 		:    '._    <<<
+ * 		:			<<<
+ * 		o_________o
+ */
+int moveRotateCW90(float max_speed, float end_speed)
+{
+	move_params.initial_position = (CELL_LENGTH - OFFSET_DIST); //ignore rotate
+
+	while(isEndMove() != TRUE);
+	move(90, (HALF_CELL_LENGTH - OFFSET_DIST), max_speed, max_speed);
+	while(isEndMove() != TRUE);
+	move(0, (OFFSET_DIST * 2.00), max_speed, end_speed);
+
+	return POSITION_CONTROL_E_SUCCESS;
+}
+
+/*
+ *		 	 :
+ * 		o	 :	  o
+ * 	>>>    _·'	  :
+ * 	>>>	          :
+ * 		o_________o
+ */
+int moveRotateCCW90(float max_speed, float end_speed)
+{
+	move_params.initial_position = (CELL_LENGTH - OFFSET_DIST); //ignore rotate
+
+	while(isEndMove() != TRUE);
+	move(-90, (HALF_CELL_LENGTH - OFFSET_DIST), max_speed, max_speed);
+	while(isEndMove() != TRUE);
+	move(0, (OFFSET_DIST * 2.00), max_speed, end_speed);
+
+	return POSITION_CONTROL_E_SUCCESS;
+}
+
+/**************************************************************************************/
+/***************                Combination Moves                  ********************/
+/**************************************************************************************/
+
+/*		 _________
+ * 		o	 _	  o
+ * 		:   / )   :
+ * 		:   \'    :
+ * 		o    :    o
+ * 			 v
+ */
+int moveUTurn(float speed_rotation, float max_speed, float end_speed)
+{
+	while(isEndMove() != TRUE);
+	moveHalfCell_IN(max_speed, 0);
+
+	while(isEndMove() != TRUE);
+	move (180, 0, speed_rotation, 0);
+
+	moveHalfCell_OUT(max_speed, end_speed);
+
+	return POSITION_CONTROL_E_SUCCESS;
+}
+
 int frontCal(float max_speed)
 {
 	int i = 0;
-	char save_folow_type = wall_follow_control.follow_type;
-	telemetersDistancesTypeDef distances;
 	float relative_dist = 0.0;
+	telemetersStruct*ptr_distances;
+	ptr_distances = getDistance_ptr();
 
-		wall_follow_control.follow_type = ALIGN_FRONT;
-		move(0, 0, 0, 0);
-		while (wall_follow_control.succes != TRUE)
-		{
-			if (timeOut(1, i) == TRUE)
-				return POSITION_CONTROL_E_ERROR;
-			i++;
-		}
+	move(0, 0, 0, 0);
+	while (wall_follow_control.succes != TRUE)
+	{
+		if (timeOut(1, i) == TRUE)
+			return POSITION_CONTROL_E_ERROR;
+		i++;
+	}
 
 	/**************************************************************************/
 
-	getTelemetersDistance(&distances);
-	relative_dist = (distances.distance_front_left + distances.distance_front_right) / 2;
+	relative_dist = (telemeters.FL.dist_mm + telemeters.FR.dist_mm) / 2;
 	if (relative_dist < MAX_DIST_FOR_ALIGN)
 	{
 		move(0, relative_dist - CENTER_DISTANCE, max_speed, 0);
 		while(isEndMove() != TRUE);
 	}
 
-	wall_follow_control.follow_type = save_folow_type;
 
 	return POSITION_CONTROL_E_SUCCESS;
 }
 
-int rotate180WithCal(enum rotation_type_enum rotation_type, float max_speed, float end_speed)
+int rotate180WithCal(enum rotationTypeEnum rotation_type, float max_speed, float end_speed)
 {
 	frontCal(max_speed);
 
@@ -222,7 +345,7 @@ int rotate180WithCal(enum rotation_type_enum rotation_type, float max_speed, flo
 	return POSITION_CONTROL_E_SUCCESS;
 }
 
-int rotate90WithCal(enum rotation_type_enum rotation_type, float max_speed, float end_speed)
+int rotate90WithCal(enum rotationTypeEnum rotation_type, float max_speed, float end_speed)
 {
 	/***************************************/
 	if (rotation_type == CW)
@@ -233,105 +356,6 @@ int rotate90WithCal(enum rotation_type_enum rotation_type, float max_speed, floa
 	/***************************************/
 
 	frontCal(max_speed);
-
-	return POSITION_CONTROL_E_SUCCESS;
-}
-
-int moveCell(unsigned long nb_cell, float max_speed, float end_speed)
-{
-	if (nb_cell == 0)
-		return POSITION_CONTROL_E_SUCCESS;
-
-	telemetersDistancesTypeDef distances;
-	float relative_dist = 0.0;
-
-	while(isEndMove() != TRUE);
-
-	if (nb_cell > 1)
-	{
-		move(0, (CELL_LENGTH * (nb_cell - 1)), max_speed, max_speed);
-		while(isEndMove() != TRUE);
-	}
-	move(0, (NO_FOLLOW_DIST - STRAIGHT_DIST), max_speed, max_speed);
-	while(isEndMove() != TRUE);
-	control_params.wall_follow_state = FALSE;
-
-	move(0, (CELL_LENGTH - STRAIGHT_DIST - NO_FOLLOW_DIST), max_speed, max_speed);
-	while(isEndMove() != TRUE);
-	control_params.wall_follow_state = TRUE;
-	move(0, 2.00 * STRAIGHT_DIST, max_speed, end_speed);
-
-	return POSITION_CONTROL_E_SUCCESS;
-}
-
-int moveHalfCell(float max_speed, float end_speed)
-{
-	while(isEndMove() != TRUE);
-	move(0, 80, max_speed, max_speed);
-	while(isEndMove() != TRUE);
-	move(0, (1.00 * STRAIGHT_DIST), max_speed, end_speed);
-
-	return POSITION_CONTROL_E_SUCCESS;
-}
-
-int moveEndCell(float max_speed, float end_speed)
-{
-	while(isEndMove() != TRUE);
-	move(0, 80, max_speed, max_speed);
-	while(isEndMove() != TRUE);
-
-	return POSITION_CONTROL_E_SUCCESS;
-}
-
-int moveStartCell(float max_speed, float end_speed)
-{
-	while(isEndMove() != TRUE);
-	move(0, ((CELL_LENGTH) - ((STRAIGHT_DIST) + 39.00)), max_speed, max_speed);
-	while(isEndMove() != TRUE);
-	control_params.wall_follow_state = FALSE;
-	move(0, (2.00 * STRAIGHT_DIST), max_speed, end_speed);
-	control_params.wall_follow_state = TRUE;
-
-	return POSITION_CONTROL_E_SUCCESS;
-}
-
-int moveRotateCW90(float max_speed, float end_speed)
-{
-	while(isEndMove() != TRUE);
-	move(90, ((CELL_LENGTH / 2.00) - (STRAIGHT_DIST)), max_speed, max_speed); //
-	while(isEndMove() != TRUE);
-	control_params.wall_follow_state = TRUE;
-	move(0, (STRAIGHT_DIST * 2.00), max_speed, end_speed);
-
-	return POSITION_CONTROL_E_SUCCESS;
-}
-
-int moveRotateCCW90(float max_speed, float end_speed)
-{
-	while(isEndMove() != TRUE);
-	move(-90, ((CELL_LENGTH / 2.00) - (STRAIGHT_DIST)), max_speed, max_speed); //
-	while(isEndMove() != TRUE);
-	control_params.wall_follow_state = TRUE;
-	move(0, (STRAIGHT_DIST * 2.00), max_speed, end_speed);
-
-	return POSITION_CONTROL_E_SUCCESS;
-}
-
-int moveUTurn(float speed_rotation, float max_speed, float end_speed)
-{
-//	char save_folow_type = follow_control.follow_type;
-	while(isEndMove() != TRUE);
-	control_params.wall_follow_state = TRUE;
-//	follow_control.follow_type = ALIGN_FRONT;
-	moveEndCell(max_speed, 0);
-
-	control_params.wall_follow_state = FALSE;
-	while(isEndMove() != TRUE);
-	move (180, 0, speed_rotation, 0);
-	while(isEndMove() != TRUE);
-	control_params.wall_follow_state = TRUE;
-//	follow_control.follow_type = save_folow_type;
-	moveHalfCell(max_speed, end_speed);
 
 	return POSITION_CONTROL_E_SUCCESS;
 }
@@ -366,8 +390,6 @@ void mainControlTest(void)
 	telemetersStart();
 	HAL_Delay(500);
 
-	wall_follow_control.follow_type = NOFOLLOW;
-
 	rotate180WithCal(CCW, 400, 0);
 
 	telemetersStop();
@@ -379,28 +401,68 @@ void followWallTest()
 	mainControlInit();
 	telemetersStart();
 	motorsSleepDriver(OFF);
-	HAL_Delay(500);
 
-//	control_params.wall_follow_state = TRUE;
-	wall_follow_control.follow_type = FOLLOW_WALL;//NOFOLLOW
+	//	position_control.position_type = GYRO;
+	control_params.wall_follow_state = TRUE;
 
-//	moveUTurn(300, 300, 0);
-//while(1);
+	setCellState();
+	HAL_Delay(2000);
 	move(0, 0, 0, 0);
+
+	expanderLedState(1,0);
+	expanderLedState(2,0);
+	expanderLedState(3,0);
+
+//	while(1);
+//	{
+//		expanderLedState(1,0);
+//		expanderLedState(2,0);
+//		expanderLedState(3,0);
+//		expanderLedState(debug_1,1);
+//		HAL_Delay(100);
+//	}
+//
+//	//	while(1);
+//	HAL_Delay(2000);
+//	moveStartCell(100, 100);
+//	moveCell(4, 100, 100);
+//	while(1);
+//	moveRotateCW90(100, 100);
+//	while(1);
+//	moveStartCell(500, 500);
+//	moveRotateCCW90(300, 300);
+//	moveRotateCCW90(300, 300);
+//	moveRotateCW90(300, 300);
+//	moveCell(1, 500, 300);
+//	moveRotateCW90(300, 300);
+//	moveRotateCCW90(300, 300);
+
+//	while(1);
+
 	moveStartCell(500, 500);
-	moveCell(5, 500, 300);
+	setCellState();
+	moveCell(4, 500, 300);
+	setCellState();
 	moveRotateCW90(300, 300);
+	setCellState();
 	moveCell(3, 500, 300);
+	setCellState();
 	moveRotateCW90(300, 300);
+	setCellState();
 	moveCell(2, 500, 300);
+	setCellState();
 	moveRotateCW90(300, 300);
+	setCellState();
 	moveCell(2, 500, 300);
+	setCellState();
 	moveRotateCCW90(300, 300);
+	setCellState();
 	moveCell(1, 500, 300);
+	setCellState();
 	moveRotateCW90(300, 0);
-//	moveRotateCW90(50, 10);
-//	moveRotateCCW90(50, 10);
-//	moveRotateCCW90(50, 10);
+	//	moveRotateCW90(50, 10);
+	//	moveRotateCCW90(50, 10);
+	//	moveRotateCCW90(50, 10);
 
 	while(1);
 
@@ -434,12 +496,15 @@ void followLineTest()
 void rotateTest()
 {
 	mainControlInit();
-	HAL_Delay(500);
+	telemetersStart();
+	motorsSleepDriver(OFF);
 
-	wall_follow_control.follow_type = NOFOLLOW;
+	control_params.wall_follow_state = FALSE;
 	position_control.position_type = GYRO;
 
-	move(90, 90, 300, 0);
+	move(90, 90, 100, 100);
+
+	//	while(1);
 	//	while(isEndMove() != TRUE);
 	//	move(0, 180, 100, 0);
 	//	while(isEndMove() != TRUE);

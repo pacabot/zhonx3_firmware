@@ -1,7 +1,6 @@
 /**
   ******************************************************************************
   * File Name          : USART.c
-  * Date               : 09/05/2015 00:03:36
   * Description        : This file provides code for the configuration
   *                      of the USART instances.
   ******************************************************************************
@@ -51,6 +50,7 @@ DMA_HandleTypeDef hdma_usart3_tx;
 
 void MX_USART3_UART_Init(void)
 {
+
   huart3.Instance = USART3;
   huart3.Init.BaudRate = 115200;
   huart3.Init.WordLength = UART_WORDLENGTH_8B;
@@ -60,6 +60,7 @@ void MX_USART3_UART_Init(void)
   huart3.Init.HwFlowCtl = UART_HWCONTROL_NONE;
   huart3.Init.OverSampling = UART_OVERSAMPLING_16;
   HAL_UART_Init(&huart3);
+
 }
 
 void HAL_UART_MspInit(UART_HandleTypeDef* huart)
@@ -81,7 +82,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef* huart)
     GPIO_InitStruct.Pin = GPIO_PIN_10|GPIO_PIN_11;
     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
     GPIO_InitStruct.Pull = GPIO_PULLUP;
-    GPIO_InitStruct.Speed = GPIO_SPEED_LOW;
+    GPIO_InitStruct.Speed = GPIO_SPEED_HIGH;
     GPIO_InitStruct.Alternate = GPIO_AF7_USART3;
     HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
@@ -148,10 +149,10 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* huart)
     /* Peripheral interrupt Deinit*/
     HAL_NVIC_DisableIRQ(USART3_IRQn);
 
+  }
   /* USER CODE BEGIN USART3_MspDeInit 1 */
 
   /* USER CODE END USART3_MspDeInit 1 */
-  }
 } 
 
 /* USER CODE BEGIN 1 */

@@ -1,7 +1,6 @@
 /**
   ******************************************************************************
   * File Name          : I2C.c
-  * Date               : 09/05/2015 00:03:35
   * Description        : This file provides code for the configuration
   *                      of the I2C instances.
   ******************************************************************************
@@ -53,7 +52,7 @@ void MX_I2C1_Init(void)
 
   hi2c1.Instance = I2C1;
   hi2c1.Init.ClockSpeed = 400000;
-  hi2c1.Init.DutyCycle = I2C_DUTYCYCLE_16_9;
+  hi2c1.Init.DutyCycle = I2C_DUTYCYCLE_2;
   hi2c1.Init.OwnAddress1 = 0;
   hi2c1.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
   hi2c1.Init.DualAddressMode = I2C_DUALADDRESS_DISABLED;
@@ -73,8 +72,6 @@ void HAL_I2C_MspInit(I2C_HandleTypeDef* hi2c)
   /* USER CODE BEGIN I2C1_MspInit 0 */
 
   /* USER CODE END I2C1_MspInit 0 */
-    /* Peripheral clock enable */
-    __I2C1_CLK_ENABLE();
   
     /**I2C1 GPIO Configuration    
     PB6     ------> I2C1_SCL
@@ -86,6 +83,9 @@ void HAL_I2C_MspInit(I2C_HandleTypeDef* hi2c)
     GPIO_InitStruct.Speed = GPIO_SPEED_FAST;
     GPIO_InitStruct.Alternate = GPIO_AF4_I2C1;
     HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+    /* Peripheral clock enable */
+    __I2C1_CLK_ENABLE();
 
     /* Peripheral DMA init*/
   
@@ -143,10 +143,10 @@ void HAL_I2C_MspDeInit(I2C_HandleTypeDef* hi2c)
     /* Peripheral DMA DeInit*/
     HAL_DMA_DeInit(hi2c->hdmatx);
     HAL_DMA_DeInit(hi2c->hdmarx);
+  }
   /* USER CODE BEGIN I2C1_MspDeInit 1 */
 
   /* USER CODE END I2C1_MspDeInit 1 */
-  }
 } 
 
 /* USER CODE BEGIN 1 */

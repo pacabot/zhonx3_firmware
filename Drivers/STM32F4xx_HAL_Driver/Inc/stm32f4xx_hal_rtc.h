@@ -2,13 +2,13 @@
   ******************************************************************************
   * @file    stm32f4xx_hal_rtc.h
   * @author  MCD Application Team
-  * @version V1.2.0
-  * @date    26-December-2014
+  * @version V1.3.2
+  * @date    26-June-2015
   * @brief   Header file of RTC HAL module.
   ******************************************************************************
   * @attention
   *
-  * <h2><center>&copy; COPYRIGHT(c) 2014 STMicroelectronics</center></h2>
+  * <h2><center>&copy; COPYRIGHT(c) 2015 STMicroelectronics</center></h2>
   *
   * Redistribution and use in source and binary forms, with or without modification,
   * are permitted provided that the following conditions are met:
@@ -111,11 +111,18 @@ typedef struct
   uint8_t Seconds;          /*!< Specifies the RTC Time Seconds.
                                  This parameter must be a number between Min_Data = 0 and Max_Data = 59 */
   
-  uint32_t SubSeconds;      /*!< Specifies the RTC Time SubSeconds.
-                                 This parameter must be a number between Min_Data = 0 and Max_Data = 59 */
-
   uint8_t TimeFormat;       /*!< Specifies the RTC AM/PM Time.
-                                 This parameter can be a value of @ref RTC_AM_PM_Definitions */ 
+                                 This parameter can be a value of @ref RTC_AM_PM_Definitions */
+                                 
+  uint32_t SubSeconds;     /*!< Specifies the RTC_SSR RTC Sub Second register content.
+                                 This parameter corresponds to a time unit range between [0-1] Second
+                                 with [1 Sec / SecondFraction +1] granularity */
+ 
+  uint32_t SecondFraction;  /*!< Specifies the range or granularity of Sub Second register content
+                                 corresponding to Synchronous pre-scaler factor value (PREDIV_S)
+                                 This parameter corresponds to a time unit range between [0-1] Second
+                                 with [1 Sec / SecondFraction +1] granularity.
+                                 This field will be used only by HAL_RTC_GetTime function */ 
   
   uint32_t DayLightSaving;  /*!< Specifies DayLight Save Operation.
                                  This parameter can be a value of @ref RTC_DayLightSaving_Definitions */
@@ -503,7 +510,7 @@ typedef struct
   *            @arg RTC_IT_ALRB: Alarm B interrupt  
   * @retval None
   */
-#define __HAL_RTC_ALARM_GET_IT(__HANDLE__, __INTERRUPT__)           ((((((__HANDLE__)->Instance->ISR)& ((__INTERRUPT__)>> 4)) & 0x0000FFFF) != RESET)? SET : RESET)
+#define __HAL_RTC_ALARM_GET_IT(__HANDLE__, __INTERRUPT__)           (((((__HANDLE__)->Instance->ISR)& ((__INTERRUPT__)>> 4)) != RESET)? SET : RESET)
 
 /**
   * @brief  Get the selected RTC Alarm's flag status.
@@ -527,7 +534,7 @@ typedef struct
   *             @arg RTC_FLAG_ALRBF 
   * @retval None
   */
-#define __HAL_RTC_ALARM_CLEAR_FLAG(__HANDLE__, __FLAG__)                  ((__HANDLE__)->Instance->ISR) = (~(((__FLAG__) | RTC_ISR_INIT)& 0x0000FFFF)|((__HANDLE__)->Instance->ISR & RTC_ISR_INIT))
+#define __HAL_RTC_ALARM_CLEAR_FLAG(__HANDLE__, __FLAG__)                  ((__HANDLE__)->Instance->ISR) = (~((__FLAG__) | RTC_ISR_INIT)|((__HANDLE__)->Instance->ISR & RTC_ISR_INIT))
   
   
 /**
@@ -710,7 +717,7 @@ HAL_RTCStateTypeDef HAL_RTC_GetState(RTC_HandleTypeDef *hrtc);
 
 #define RTC_TIMEOUT_VALUE       1000
 
-#define RTC_EXTI_LINE_ALARM_EVENT             ((uint32_t)0x00020000)  /*!< External interrupt line 17 Connected to the RTC Alarm event */
+#define RTC_EXTI_LINE_ALARM_EVENT             ((uint32_t)EXTI_IMR_MR17)  /*!< External interrupt line 17 Connected to the RTC Alarm event */
 /**
   * @}
   */

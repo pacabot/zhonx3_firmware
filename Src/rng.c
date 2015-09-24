@@ -1,7 +1,6 @@
 /**
   ******************************************************************************
   * File Name          : RNG.c
-  * Date               : 09/05/2015 00:03:35
   * Description        : This file provides code for the configuration
   *                      of the RNG instances.
   ******************************************************************************
@@ -77,10 +76,10 @@ void HAL_RNG_MspDeInit(RNG_HandleTypeDef* hrng)
   /* USER CODE END RNG_MspDeInit 0 */
     /* Peripheral clock disable */
     __RNG_CLK_DISABLE();
+  }
   /* USER CODE BEGIN RNG_MspDeInit 1 */
 
   /* USER CODE END RNG_MspDeInit 1 */
-  }
 } 
 
 /* USER CODE BEGIN 1 */

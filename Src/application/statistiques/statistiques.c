@@ -18,7 +18,7 @@ float cVariance (int statistical_series[], int statistical_serial_length)
 	//float variance=0;
 	double variance=0;// TODO test if in double the precision is better
 	int average =cAverage(statistical_series,statistical_serial_length);
-	for (int i = 0; i<statistical_serial_length; i++)
+	for (int i = 0; i < statistical_serial_length; i++)
 	{
 		variance+=powf((statistical_series[i]-average),2);
 	}
@@ -39,6 +39,20 @@ int cAverage (int statistical_series[], int statistical_serial_length)
 		average+=(long)statistical_series[i];
 	}
 	return (int)(average/=statistical_serial_length);
+}
+
+int mobileAvrgInt(mobileAvrgStruct *mavrg, int new_sample)
+{
+    //compute MA
+	mavrg->hist_sum = mavrg->hist_sum + new_sample - mavrg->hist_series[mavrg->old_index];
+
+    //update index
+    mavrg->hist_series[mavrg->old_index] = new_sample;
+
+    //ring buffer management
+    mavrg->old_index = (unsigned int)(mavrg->old_index + 1) % MAVRG_BUFF_SIZE;
+
+    return  mavrg->hist_sum >> MAVRG_NBITS;
 }
 
 void eliminateExtremeValues (int *statistical_series, int *statistical_serial_length)

@@ -48,6 +48,7 @@
 /* extern variables */
 
 /* global variables */
+extern int debug_1;
 position_control_struct position_control;
 position_params_struct position_params;
 arm_pid_instance_f32 encoder_or_gyro_pid_instance;
@@ -77,6 +78,16 @@ int positionControlInit(void)
 
 int positionControlLoop(void)
 {
+	if (move_params.moveType == CURVE)
+		position_control.position_type = GYRO;
+
+	if (position_control.position_type == NO_POSITION_CTRL)
+	{
+		position_control.position_command = 0;
+		pidControllerReset(position_control.position_pid.instance);
+		return SPEED_CONTROL_E_SUCCESS;
+	}
+
 	if (position_control.position_type == ENCODERS)
 	{
 		if (position_params.sign > 0)
@@ -120,6 +131,7 @@ int positionControlLoop(void)
 	}
 
 	position_control.position_error = position_control.current_diff_dist_consign - position_control.current_diff_dist;		//for distance control
+
 	position_control.position_command = (pidController(position_control.position_pid.instance, position_control.position_error)) * (float)position_params.sign;
 
 	position_control.old_distance = position_control.current_diff_dist;

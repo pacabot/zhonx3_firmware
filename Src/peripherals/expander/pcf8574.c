@@ -36,6 +36,7 @@
 #define DONE 0
 /* extern variables ---------------------------------------------------------*/
 extern I2C_HandleTypeDef hi2c1;
+unsigned int joy_activ_old_time;
 
 //Send DATA
 static void sendData(uint8_t aTxBuffer)
@@ -71,7 +72,7 @@ void expanderSetbit(char pin, char val)
 
 char expanderGetbit(char pin)
 {
-	return getData();
+	return getData(); //todo return bit
 }
 
 void expanderReset(void)
@@ -99,7 +100,10 @@ char expanderJoyState(void)
 {
 	int key = 0;
 	key = ~(getData() | 0xFFFFFFF0);
-
+	if (key != 0)
+	{
+		joy_activ_old_time=HAL_GetTick();
+	}
 	switch (key)
 	{
 		case 4:
@@ -124,9 +128,9 @@ char expanderJoyState(void)
 }
 char expanderJoyFiltered(void)
 {
-	char joystck=expanderJoyState();
-	if (antiBounceJoystick2(joystck)==DONE)
-		return joystck;
+	char joystick=expanderJoyState();
+	if (antiBounceJoystick2(joystick)==DONE)
+		return joystick;
 	return 0;
 }
 void joystickTest(void)
@@ -166,6 +170,7 @@ void joystickTest(void)
 	HAL_Delay(1000);
 	antiBounceJoystick();
 }
+
 void antiBounceJoystick(void)
 {
 	unsigned long int time_base = HAL_GetTick();
@@ -175,6 +180,7 @@ void antiBounceJoystick(void)
 			time_base = HAL_GetTick();
 	}while (time_base!=(HAL_GetTick()-20));
 }
+
 char antiBounceJoystick2(char arrow_type)
 {
 	static long time_base = 0;

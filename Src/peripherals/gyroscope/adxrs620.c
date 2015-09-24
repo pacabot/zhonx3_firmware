@@ -55,7 +55,7 @@ void adxrs620Init(void)
 	sConfigInjected.InjectedChannel = ADC_CHANNEL_14;
 	sConfigInjected.InjectedRank = 1;
 	sConfigInjected.InjectedNbrOfConversion = 1;
-	sConfigInjected.InjectedSamplingTime = ADC_SAMPLETIME_3CYCLES;
+	sConfigInjected.InjectedSamplingTime = ADC_SAMPLETIME_28CYCLES;
 	sConfigInjected.ExternalTrigInjecConvEdge = ADC_EXTERNALTRIGINJECCONVEDGE_RISING;
 	sConfigInjected.ExternalTrigInjecConv = ADC_EXTERNALTRIGINJECCONV_T5_TRGO;
 	sConfigInjected.AutoInjectedConv = DISABLE;
@@ -63,19 +63,7 @@ void adxrs620Init(void)
 	sConfigInjected.InjectedOffset = 0;
 	HAL_ADCEx_InjectedConfigChannel(&hadc1, &sConfigInjected);
 
-	adxrs620Calibrate(10);
 	HAL_ADCEx_InjectedStart_IT(&hadc1);
-}
-
-void adxrs620Calibrate(int nb_ech)
-{
-	gyro.calibration_current_cycle = 0;
-	gyro.calibration_nb_cycle = nb_ech;
-	gyro.beta = 0;
-	gyro.callback_cnt = 0;
-	gyro.calibration_state = 0;
-	gyro.max_adc_value = 0;
-	gyro.min_adc_value = 0;
 }
 
 /*## ADC Gyroscope callback for angle computing  #################################*/
@@ -84,34 +72,20 @@ void adxrs620Calibrate(int nb_ech)
 	      ----------------------------------------------------------------------- */
 void adxrs620_ADC_IT(void)
 {
-	uint32_t gyro_adc = 0;
-	if (gyro.calibration_state == 0)
+	gyro.current_angle += (GYRO_A_COEFF * (gyro.adc_value = HAL_ADCEx_InjectedGetValue(&hadc1, ADC_INJECTED_RANK_1))) - GYRO_B_COEFF;  //optimized gyro integration DMA
+
+	gyro.callback_cnt++;
+}
+
+double adxrs620Calibrate(int nb_ech)
+{
+	double sample_sum = 0;
+	for( int i = 0; i < nb_ech; i++)
 	{
-		if (gyro.calibration_current_cycle < gyro.calibration_nb_cycle)
-		{
-			gyro.calibration_current_cycle++;
-			gyro.beta += (GYRO_COEFF * (gyro_adc += HAL_ADCEx_InjectedGetValue(&hadc1, ADC_INJECTED_RANK_1)));
-		}
-		else
-		{
-			gyro.calibration_state = 1;
-			gyro.beta /= gyro.calibration_current_cycle;
-			gyro_adc /= gyro.calibration_current_cycle;
-			gyro.max_adc_value = gyro_adc;
-			gyro.min_adc_value = gyro_adc;
-		}
-		gyro.beta = GYRO_BETA;
+		sample_sum += GYRO_A_COEFF * gyro.adc_value;
+		HAL_Delay(1);
 	}
-	else if (gyro.calibration_state == 1)
-	{
-		gyro.current_angle += (GYRO_COEFF * (gyro_adc = HAL_ADCEx_InjectedGetValue(&hadc1, ADC_INJECTED_RANK_1))) - gyro.beta;  //optimized gyro integration DMA
-		if (gyro_adc > gyro.max_adc_value)
-			gyro.max_adc_value = gyro_adc;
-		if (gyro_adc < gyro.min_adc_value)
-			gyro.min_adc_value = gyro_adc;
-		gyro.adc_value = gyro_adc;
-		gyro.callback_cnt++;
-	}
+	return sample_sum / (double)nb_ech;
 }
 
 double GyroGetAngle(void)
@@ -135,12 +109,25 @@ void adxrs620Test(void)
 		ssd1306PrintInt(10,  5,  "Angle =  ", (int32_t) GyroGetAngle(), &Font_5x8);
 		ssd1306PrintInt(10,  15,  "cnt =  ", (int32_t) gyro.callback_cnt/1000, &Font_5x8);
 
-		ssd1306PrintInt(10,  25,  "max ADC =  ", (int32_t) gyro.max_adc_value, &Font_5x8);
-		ssd1306PrintInt(10,  35,  "b =", (int32_t) (gyro.beta*10000.00), &Font_5x8);
 		ssd1306PrintInt(10,  45,  "ADC val =  ", (int32_t) gyro.adc_value, &Font_5x8);
 
-		ssd1306PrintInt(10,  55,  "Beta =  ", (volatile double) (gyro.beta * 1000), &Font_5x8);
-		ssd1306DrawString(80,  55,  ".10^-3", &Font_5x8);
+		ssd1306Refresh();
+	}
+}
+
+void adxrs620Cal(void)
+{
+	double cal;
+	adxrs620Init();
+	ssd1306ClearScreen();
+	ssd1306DrawString(0, 50, "DON'T TOUTCH Z3!!", &Font_3x6);
+	ssd1306Refresh();
+	HAL_Delay(3000);
+	cal = adxrs620Calibrate(5000);
+	while(expanderJoyFiltered()!=JOY_LEFT)
+	{
+		ssd1306ClearScreen();
+		ssd1306PrintInt(10,  5,  "B =", (int32_t)(cal * 100000.00), &Font_5x8);
 		ssd1306Refresh();
 	}
 }

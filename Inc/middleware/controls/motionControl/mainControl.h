@@ -11,6 +11,7 @@
 
 #include "config/config.h"
 #include "middleware/controls/motionControl/speedControl.h"
+#include "middleware/wall_sensors/wall_sensors.h"
 
 /* Module Identifier */
 #include "config/module_id.h"
@@ -19,11 +20,11 @@
 #define MAIN_CONTROL_E_SUCCESS  0
 #define MAIN_CONTROL_E_ERROR    MAKE_ERROR(MAIN_CONTROL_MODULE_ID, 1)
 
-#define STRAIGHT_DIST	10.00
-#define NO_FOLLOW_DIST	60.00
+#define OFFSET_DIST	10.00
 
 /* Types definitions */
-enum rotation_type_enum {CW, CCW};
+enum rotationTypeEnum {CW, CCW};
+enum moveTypeEnum {STRAIGHT, CURVE};
 
 extern double ROTATION_DIAMETER;
 
@@ -35,7 +36,15 @@ typedef struct
 	char speed_state;
 }control_params_struct;
 
+typedef struct
+{
+	enum moveTypeEnum moveType;
+	walls cellState;
+	double initial_position;
+}move_params_struct;
+
 extern control_params_struct control_params;
+extern move_params_struct move_params;
 
 int mainControlInit(void);
 int mainControlLoop(void);
@@ -55,10 +64,11 @@ int mainControlLoop(void);
 int  move(float angle, float radius_or_distance, float max_speed, float end_speed);
 char isEndMove(void);
 int  frontCal(float max_speed);
-int  rotate180WithCal(enum rotation_type_enum rotation_type, float max_speed, float end_speed);
-int  rotate90WithCal(enum rotation_type_enum rotation_type, float max_speed, float end_speed);
+int  rotate180WithCal(enum rotationTypeEnum rotation_type, float max_speed, float end_speed);
+int  rotate90WithCal(enum rotationTypeEnum rotation_type, float max_speed, float end_speed);
 int  moveCell(unsigned long nb_cell, float max_speed, float end_speed);
-int  moveHalfCell(float max_speed, float end_speed);
+int  moveHalfCell_IN(float max_speed, float end_speed);
+int  moveHalfCell_OUT(float max_speed, float end_speed);
 int  moveEndCell(float max_speed, float end_speed);
 int  moveStartCell(float max_speed, float end_speed);
 int  moveRotateCW90(float max_speed, float end_speed);

@@ -22,7 +22,6 @@
 #include "peripherals/display/ssd1306.h"
 #include "peripherals/expander/pcf8574.h"
 
-#include <arm_math.h>
 #include <middleware/controls/pidController/pidController.h>
 #include "middleware/controls/motionControl/mainControl.h"
 

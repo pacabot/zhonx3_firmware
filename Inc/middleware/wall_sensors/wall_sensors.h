@@ -6,6 +6,7 @@
  */
 
 #include "application/solverMaze/solverMaze.h"
+#include "peripherals/telemeters/telemeters.h"
 
 #ifndef WALL_SENSORS_H_
 #define WALL_SENSORS_H_
@@ -13,31 +14,35 @@
 #define WALL_SENSORS_E_SUCCESS  0
 #define WALL_SENSORS_E_ERROR    MAKE_ERROR(WALL_SENSORS_MODULE_ID, 1)
 
-#define NUMBER_OF_CELL 		100
-#define DISTANCE_MEASURED	200
-
 #if ((DISTANCE_MEASURED) % (NUMBER_OF_CELL)) != 0
 #error you must put a multiple of NUMBER_OF_CELL in DISTANCE_MEASURED
 #endif
 
-#define NUMBER_OF_MILLIMETER_BY_LOOP DISTANCE_MEASURED/NUMBER_OF_CELL
 //#define NUMBER_OF_MEASURE_BY_STEP 5000
 
-#define DISTANCE_FIRST_WALL_FRONT	190.00
+#define DISTANCE_FIRST_WALL_FRONT	150.00
 #define DISTANCE_SEGOND_WALL_FRONT	200.00
 #define DISTANCE_WALL_DIAG			160.00
 
+/* Types definitions */
+
 typedef struct
 {
-	float distance_front_left;
-	float distance_front_right;
-	float distance_diag_left;
-	float distance_diag_right;
-}telemetersDistancesTypeDef;
+	char next_front;
+	char front;
+	char left;
+	char right;
+}walls;
 
-int wallSensorsCalibration();
-int getTelemetersDistance (telemetersDistancesTypeDef *telemeter_distances);
-walls getCellState();
-void testWallsSensors();
+extern walls cell_state;
+
+void  wallSensorInit(void);
+int   wallSensorsCalibration();
+//int getTelemetersDistance ( telemetersStruct *telemeters);
+void  setCellState();
+void  testWallsSensors();
+void  testPostSensors();
+
+telemetersStruct * getDistance_ptr(void);
 
 #endif /* WALL_SENSORS_H_ */
