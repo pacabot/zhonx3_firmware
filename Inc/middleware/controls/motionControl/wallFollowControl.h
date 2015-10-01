@@ -38,6 +38,9 @@
 #define MAX_ANGLE_ERROR		30.00	//Degres
 #define MAX_FOLLOW_ERROR	50.00	//Millimeter
 
+#define DEADZONE_DIST		115.00	//Distance between the start of the cell and doubt area
+#define DEADZONE			45.00	//doubt area
+
 typedef struct
 {
 	int sign;
@@ -57,14 +60,9 @@ typedef struct
 extern wall_follow_control_struct wall_follow_control;
 extern wall_follow_params_struct  wall_follow_params;
 
+char isDeadZone(void);
 int wallFollowControlInit(void);
 int wallFollowControlLoop(void);
-int wallFollow(telemeterStruct * telemeter);
-
-double Gyro_error (void);
-int alignFront(void);
-int bothWallFollow(void);
-int rightWallFollow(void);
-int leftWallFollow(void);
+double wallFollow(telemeterStruct * telemeter);
 
 #endif

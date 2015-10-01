@@ -215,6 +215,12 @@ void ledBlink_IT(void)
 {
 	static unsigned int cnt_led = 0;
 
+	if (Blink[0] == 0 && Blink[1] == 0)
+	{
+		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, RESET);
+		return;
+	}
+
 	GPIO_InitStruct.Pin = GPIO_PIN_15;
 	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
 	HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);

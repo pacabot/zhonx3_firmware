@@ -398,6 +398,7 @@ void mainControlTest(void)
 
 void followWallTest()
 {
+    ledPowerBlink(0, 0, 0);
 	mainControlInit();
 	telemetersStart();
 	motorsSleepDriver(OFF);
@@ -438,27 +439,31 @@ void followWallTest()
 
 //	while(1);
 
-	moveStartCell(500, 500);
+	int Vmin, Vmax;
+	Vmin = 500;
+	Vmax = 1000;
+
+	moveStartCell(Vmax, Vmax);
 	setCellState();
-	moveCell(4, 500, 300);
+	moveCell(4, Vmax, Vmin);
 	setCellState();
-	moveRotateCW90(300, 300);
+	moveRotateCW90(Vmin, Vmin);
 	setCellState();
-	moveCell(3, 500, 300);
+	moveCell(3, Vmax, Vmin);
 	setCellState();
-	moveRotateCW90(300, 300);
+	moveRotateCW90(Vmin, Vmin);
 	setCellState();
-	moveCell(2, 500, 300);
+	moveCell(2, Vmax, Vmin);
 	setCellState();
-	moveRotateCW90(300, 300);
+	moveRotateCW90(Vmin, Vmin);
 	setCellState();
-	moveCell(2, 500, 300);
+	moveCell(2, Vmax, Vmin);
 	setCellState();
-	moveRotateCCW90(300, 300);
+	moveRotateCCW90(Vmin, Vmin);
 	setCellState();
-	moveCell(1, 500, 300);
+	moveCell(1, Vmax, Vmin);
 	setCellState();
-	moveRotateCW90(300, 0);
+	moveRotateCW90(Vmin, 0);
 	//	moveRotateCW90(50, 10);
 	//	moveRotateCCW90(50, 10);
 	//	moveRotateCCW90(50, 10);
