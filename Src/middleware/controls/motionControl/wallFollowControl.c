@@ -80,8 +80,17 @@ char isDeadZone(void)
 			distance < (DEADZONE_DIST + (DEADZONE / 2.00)))
 	{
 		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, SET);
-		setCellState();
 		return TRUE;
+	}
+	else if (distance < (DEADZONE_DIST + (DEADZONE / 2.00)))
+	{
+		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, RESET);
+		setCellState();
+		return FALSE;
+	}
+	else if (distance <= 10.00) //todo add define
+	{
+		setCellState();
 	}
 	else
 	{
@@ -125,7 +134,7 @@ int wallFollowControlLoop(void)
 
 double wallFollow(telemeterStruct * telemeter)
 {
-	if (isDeadZone() == TRUE)
+	if (isDeadZone() == TRUE) //todo redefine call architecture
 	{
 		position_control.position_type = POSITION_CTRL;
 		wall_follow_control.follow_error = 0;
