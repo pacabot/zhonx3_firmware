@@ -253,7 +253,7 @@ void testWallsSensors()
 
 	while(expanderJoyFiltered()!=JOY_LEFT)
 	{
-		setCellState();;
+		setCellState();
 		ssd1306ClearScreen();
 		if (cell_state.front == WALL_PRESENCE)
 		{

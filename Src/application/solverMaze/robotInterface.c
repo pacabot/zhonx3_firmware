@@ -228,7 +228,7 @@ int waitValidation(unsigned long timeout)
 
 void newCell(walls new_walls, labyrinthe *maze, positionRobot positionZhonx)
 {
-#ifdef debug
+#ifdef DEBUG
 	/*print walls position*/
 		ssd1306ClearRect(64,0,64,64);
 		if (new_walls.front == WALL_PRESENCE)
@@ -347,4 +347,9 @@ void newCell(walls new_walls, labyrinthe *maze, positionRobot positionZhonx)
 	}
 	telemetersStart();
 	motorsSleepDriver(OFF);
+}
+walls getCellState ()
+{
+	//setCellState();
+	return cell_state;
 }

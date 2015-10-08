@@ -43,6 +43,7 @@ int maze(void)
 	control_params.wall_follow_state = true;
 	move(0, 0, 0, 0);
 	HAL_Delay(500);
+	//testWallsSensors();
 
 	/*init for different micromouse competition*/
 
@@ -71,13 +72,13 @@ int maze(void)
 //		calibrateSimple ();
 //	}
 	motorsSleepDriver(OFF);
-	for (int i = 0; i < 4; ++i)
-	{
-		rotate90WithCal(CW, 300, 0);
-		while(isEndMove() != true);
-		positionZhonx.orientation=(positionZhonx.orientation+1)%4;
-//plf		newCell (getCellState (), &maze, positionZhonx);
-	}
+//	for (int i = 0; i < 4; ++i)
+//	{
+//		rotate90WithCal(CW, 300, 0);
+//		while(isEndMove() != true);
+//		positionZhonx.orientation=(positionZhonx.orientation+1)%4;
+//		newCell (getCellState (), &maze, positionZhonx);
+//	}
 	move (0, -CELL_LENGTH/2, 50, 0);
 	while(isEndMove() != true);
 	motorsSleepDriver(ON);
@@ -101,6 +102,7 @@ int maze(void)
 					zhonxSettings.x_finish_maze, zhonxSettings.y_finish_maze));
 	run1 (&maze, &positionZhonx, posXStart, posYStart);
 	run2 (&maze, &positionZhonx, posXStart, posYStart);
+	telemetersStop();
 	return MAZE_SOLVER_E_SUCCESS;
 }
 
@@ -111,9 +113,7 @@ void exploration(labyrinthe *maze, positionRobot* positionZhonx, char xFinish,
 	motorsSleepDriver (OFF);
 	telemetersStart();
 	HAL_Delay(1000);
-//plf	newCell (getCellState(), maze, *positionZhonx);
-	telemetersStart();
-
+	newCell (getCellState(), maze, *positionZhonx);
 	while (positionZhonx->x != xFinish || positionZhonx->y != yFinish)
 	{
 		clearMazelength (maze);
@@ -122,7 +122,6 @@ void exploration(labyrinthe *maze, positionRobot* positionZhonx, char xFinish,
 		moveVirtualZhonx (*maze, *positionZhonx, &way, xFinish, yFinish);
 		moveRealZhonxArc (maze, positionZhonx, way.next);//, &xFinish, &yFinish);
 	}
-	telemetersStop();
 	HAL_Delay (200);
 	motorsSleepDriver (ON);
 
@@ -250,7 +249,7 @@ void moveRealZhonxArc(labyrinthe *maze, positionRobot *positionZhonx, coordinate
 		else
 			chain = true;
 		move_zhonx_arc (orientaionToGo, positionZhonx, length, endMidCase, chain);
-//plf		cell_state = getCellState ();
+		cell_state = getCellState ();
 		newCell (cell_state, maze, *positionZhonx);
 
 	}
@@ -354,7 +353,7 @@ void mazeInit(labyrinthe *maze)
 		maze->cell[0][i].wall_west = WALL_PRESENCE;
 		maze->cell[MAZE_SIZE - 1][i].wall_east = WALL_PRESENCE;
 	}
-	newCell((walls){WALL_PRESENCE, WALL_PRESENCE, WALL_PRESENCE},maze, (positionRobot){8,8,SOUTH,false});
+	//newCell((walls){WALL_PRESENCE, WALL_PRESENCE, WALL_PRESENCE},maze, (positionRobot){8,8,SOUTH,false});
 #else
 	labyrinthe maze_initial=
 	{

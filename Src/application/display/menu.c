@@ -564,6 +564,7 @@ void powerOffConfirmation()
 	if (power_off == TRUE)
 	{
 		halt();
+		while(1);
 	}
 }
 void killOnLowBattery()
