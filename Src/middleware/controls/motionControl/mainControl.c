@@ -114,7 +114,7 @@ int move(float angle, float radius_or_distance, float max_speed, float end_speed
 	angle = fabsf(angle);
 
 	/* Apply the correction factor, delete function with the future gyro compensation */
-	slip_compensation = 1.0;
+	slip_compensation = 0.9;
 
 	speed_params.end_speed  = end_speed;
 	speed_params.max_speed 	= max_speed;
@@ -413,35 +413,11 @@ void followWallTest()
 	expanderLedState(1,0);
 	expanderLedState(2,0);
 	expanderLedState(3,0);
-//while(1);
-//	{
-//		expanderLedState(1,0);
-//		expanderLedState(2,0);
-//		expanderLedState(3,0);
-//		expanderLedState(debug_1,1);
-//		HAL_Delay(100);
-//	}
-//
-//	//	while(1);
-//	HAL_Delay(2000);
-//	moveStartCell(100, 100);
-//	moveCell(4, 100, 100);
-//	while(1);
-//	moveRotateCW90(100, 100);
-//	while(1);
-//	moveStartCell(500, 500);
-//	moveRotateCCW90(300, 300);
-//	moveRotateCCW90(300, 300);
-//	moveRotateCW90(300, 300);
-//	moveCell(1, 500, 300);
-//	moveRotateCW90(300, 300);
-//	moveRotateCCW90(300, 300);
 
-//	while(1);
-
-	int Vmin, Vmax;
+	int Vmin, Vmax, Vrotate;
 	Vmin = 500;
-	Vmax = 1000;
+	Vmax = 900;
+	Vrotate = 500;
 
 	moveStartCell(Vmax, Vmax);
 	setCellState();
@@ -500,13 +476,15 @@ void followLineTest()
 void rotateTest()
 {
 	mainControlInit();
-	telemetersStart();
+//	telemetersStart();
 	motorsSleepDriver(OFF);
 
-	control_params.wall_follow_state = FALSE;
-	position_control.position_type = GYRO;
+	//	position_control.position_type = GYRO;
+	control_params.wall_follow_state = TRUE;
 
-	move(90, 90, 100, 100);
+	HAL_Delay(2000);
+	move(0, 0, 0, 0);
+	moveRotateCCW90(100, 100);
 
 	//	while(1);
 	//	while(isEndMove() != TRUE);
