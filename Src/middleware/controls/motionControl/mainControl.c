@@ -420,29 +420,16 @@ void followWallTest()
 	Vrotate = 500;
 
 	moveStartCell(Vmax, Vmax);
-	setCellState();
 	moveCell(4, Vmax, Vmin);
-	setCellState();
 	moveRotateCW90(Vmin, Vmin);
-	setCellState();
 	moveCell(3, Vmax, Vmin);
-	setCellState();
 	moveRotateCW90(Vmin, Vmin);
-	setCellState();
 	moveCell(2, Vmax, Vmin);
-	setCellState();
 	moveRotateCW90(Vmin, Vmin);
-	setCellState();
 	moveCell(2, Vmax, Vmin);
-	setCellState();
 	moveRotateCCW90(Vmin, Vmin);
-	setCellState();
 	moveCell(1, Vmax, Vmin);
-	setCellState();
 	moveRotateCW90(Vmin, 0);
-	//	moveRotateCW90(50, 10);
-	//	moveRotateCCW90(50, 10);
-	//	moveRotateCCW90(50, 10);
 
 	while(1);
 

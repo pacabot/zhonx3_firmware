@@ -231,21 +231,6 @@ void newCell(walls new_walls, labyrinthe *maze, positionRobot positionZhonx)
 #ifdef DEBUG
 	/*print walls position*/
 		ssd1306ClearRect(64,0,64,64);
-		if (new_walls.front == WALL_PRESENCE)
-		{
-			ssd1306FillRect(64,49,54,5);
-		}
-		switch (new_walls.next_front)
-		{
-			case WALL_PRESENCE:
-				ssd1306FillRect(64,0,54,5);
-				break;
-			case NO_KNOWN :
-				ssd1306DrawRect(64,0,54,5);
-				break;
-			default:
-				break;
-		}
 		switch (new_walls.left)
 		{
 			case WALL_PRESENCE:
@@ -345,11 +330,10 @@ void newCell(walls new_walls, labyrinthe *maze, positionRobot positionZhonx)
 			maze->cell[(int) (positionZhonx.x)][(int) (positionZhonx.y)].wall_west = new_walls.front;
 			break;
 	}
-	telemetersStart();
-	motorsSleepDriver(OFF);
+//	telemetersStart();
+//	motorsSleepDriver(OFF);
 }
 walls getCellState ()
 {
-	//setCellState();
 	return cell_state;
 }

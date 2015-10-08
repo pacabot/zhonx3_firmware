@@ -83,12 +83,12 @@ char isDeadZone(void)
 		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, SET);
 		return TRUE;
 	}
-//	else if (distance < (DEADZONE_DIST - (DEADZONE / 2.00)))
-//	{
-//		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, RESET);
-////		setCellState();
-//		return FALSE;
-//	}
+	//	else if (distance < (DEADZONE_DIST - (DEADZONE / 2.00)))
+	//	{
+	//		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, RESET);
+	////		setCellState();
+	//		return FALSE;
+	//	}
 	else if (distance <= 4.00) //todo add define
 	{
 		setCellState();
@@ -106,7 +106,13 @@ int wallFollowControlLoop(void)
 	if (move_params.moveType != STRAIGHT)
 		return WALL_FOLLOW_CONTROL_E_SUCCESS;
 
-	if (cell_state.left == WALL_PRESENCE)
+	if (isDeadZone() == TRUE) //todo redefine call architecture
+	{
+		position_control.position_type = POSITION_CTRL;
+		wall_follow_control.follow_error = 0;
+		pidControllerReset(wall_follow_control.follow_pid.instance);
+	}
+	else if (cell_state.left == WALL_PRESENCE)
 	{
 		wall_follow_control.follow_error = wallFollow(&telemeters.DL);
 	}
@@ -129,36 +135,19 @@ int wallFollowControlLoop(void)
 
 	wall_follow_control.follow_command = (pidController(wall_follow_control.follow_pid.instance, wall_follow_control.follow_error));
 
-//	volatile int telemeters_measure_error = (telemeters.it_cnt - telemeters.end_of_conversion);
+	//	volatile int telemeters_measure_error = (telemeters.it_cnt - telemeters.end_of_conversion);
 
 	return WALL_FOLLOW_CONTROL_E_SUCCESS;
 }
 
 double wallFollow(telemeterStruct * telemeter)
 {
-	if (isDeadZone() == TRUE) //todo redefine call architecture
+	position_control.position_type = NO_POSITION_CTRL;
+	wall_follow_control.follow_error = DIAG_DIST_FOR_FOLLOW - (double)telemeter->dist_mm;
+	if (fabs(wall_follow_control.follow_error) < SUCCES_GAP_DIST)
 	{
-		position_control.position_type = POSITION_CTRL;
-		wall_follow_control.follow_error = 0;
-		pidControllerReset(wall_follow_control.follow_pid.instance);
-    }
-//	else if (GyroGetAngle() < 4 && fabs(telemeter->speed_mms) > 300)
-//	{
-//		wall_follow_control.follow_error = 0;
-//		pidControllerReset(wall_follow_control.follow_pid.instance);
-//
-//		position_control.position_type = POSITION_CTRL;
-////			cell_state.left = NO_WALL;
-//	}
-	else
-	{
-		position_control.position_type = NO_POSITION_CTRL;
-		wall_follow_control.follow_error = DIAG_DIST_FOR_FOLLOW - (double)telemeter->dist_mm;
-		if (fabs(wall_follow_control.follow_error) < SUCCES_GAP_DIST)
-		{
-			wall_follow_control.succes = TRUE;
-		}
-		return DIAG_DIST_FOR_FOLLOW - (double)telemeter->dist_mm;
+		wall_follow_control.succes = TRUE;
 	}
+	return DIAG_DIST_FOR_FOLLOW - (double)telemeter->dist_mm;
 	return 0;
 }

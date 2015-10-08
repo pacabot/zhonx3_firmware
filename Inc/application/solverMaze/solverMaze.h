@@ -38,7 +38,7 @@
 #define MAX_SPEED_TRANSLATION   (400)
 #define END_SPEED_TRANSLATION	(400)
 
-#define DEBUG 0
+#define DEBUG 2
 
 #ifdef DEBUG
 #undef END_SPEED_TRANSLATION

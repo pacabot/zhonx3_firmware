@@ -64,6 +64,7 @@ int maze(void)
 	}
 	/*end of initialization for different micromouse competition*/
 	positionZhonx.midOfCell = true;
+	positionZhonx.orientation = EAST;
 	posXStart = positionZhonx.x;
 	posYStart = positionZhonx.y;
 	printMaze (maze, positionZhonx.x, positionZhonx.y);
@@ -77,10 +78,12 @@ int maze(void)
 //		rotate90WithCal(CW, 300, 0);
 //		while(isEndMove() != true);
 //		positionZhonx.orientation=(positionZhonx.orientation+1)%4;
-//		newCell (getCellState (), &maze, positionZhonx);
+		newCell (getCellState (), &maze, positionZhonx);
 //	}
+	control_params.wall_follow_state = FALSE;
 	move (0, -CELL_LENGTH/2, 50, 0);
 	while(isEndMove() != true);
+	control_params.wall_follow_state = TRUE;
 	motorsSleepDriver(ON);
 
 	printMaze(maze,positionZhonx.x, positionZhonx.y);
@@ -111,15 +114,15 @@ void exploration(labyrinthe *maze, positionRobot* positionZhonx, char xFinish,
 {
 	coordinate way = { 0, 0, 0, 0};
 	motorsSleepDriver (OFF);
-	telemetersStart();
-	HAL_Delay(1000);
 	newCell (getCellState(), maze, *positionZhonx);
 	while (positionZhonx->x != xFinish || positionZhonx->y != yFinish)
 	{
+		motorsSleepDriver(ON);
 		clearMazelength (maze);
 		poids (maze, xFinish, yFinish, true);
 		printLength(*maze, positionZhonx->x, positionZhonx->y);
 		moveVirtualZhonx (*maze, *positionZhonx, &way, xFinish, yFinish);
+		motorsSleepDriver(OFF);
 		moveRealZhonxArc (maze, positionZhonx, way.next);//, &xFinish, &yFinish);
 	}
 	HAL_Delay (200);
