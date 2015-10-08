@@ -79,19 +79,16 @@ char isDeadZone(void)
 	if (distance > (DEADZONE_DIST - (DEADZONE / 2.00)) &&
 			distance < (DEADZONE_DIST + (DEADZONE / 2.00)))
 	{
-		setCellState();
 		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, SET);
 		return TRUE;
 	}
 	//	else if (distance < (DEADZONE_DIST - (DEADZONE / 2.00)))
 	//	{
 	//		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, RESET);
-	////		setCellState();
 	//		return FALSE;
 	//	}
 	else if (distance <= 4.00) //todo add define
 	{
-		setCellState();
 		return FALSE;
 	}
 	else

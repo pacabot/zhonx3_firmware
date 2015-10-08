@@ -29,8 +29,13 @@
 
 /* Middleware declarations */
 
+/*application include */
+#include "application/solverMaze/solverMaze.h"
+
 /* Declarations for this module */
 #include "peripherals/telemeters/telemeters.h"
+
+#include "middleware/wall_sensors/wall_sensors.h"
 
 /* extern variables */
 extern ADC_HandleTypeDef hadc2;
@@ -41,6 +46,7 @@ GPIO_InitTypeDef GPIO_InitStruct;
 ADC_ChannelConfTypeDef sConfig;
 
 telemetersStruct telemeters;
+extern walls cell_state;
 
 #ifdef DARK
 int telemeter_FR_profile[NUMBER_OF_CELL + 1] = {3834,3822,3551,3759,3724,3762,3748,3745,3752,3741,3696,3735,3717,3686,3670,3656,3630,3600,3554,3530,3479,3446,3385,3286,3157,2990,2810,2728,2611,2496,2389,2221,2198,2101,2038,1962,1887,1820,1756,1703,1640,1588,1536,1495,1395,1387,1354,1308,1242,1195,1198,1156,1117,1087,1050,1020,1001,951,936,901,876,846,818,813,778,746,733,712,691,681,666,645,624,616,605,592,573,566,557,546,537,529,521,514,511,496,489,480,471,465,449,450,436,433,420,407,403,401,390,379};
@@ -356,6 +362,15 @@ void getTelemetersDistance(telemeterStruct *tel)
 
 	tel->mm_conv.old_avrg = tel->avrg;
 	tel->mm_conv.old_dist_mm = tel->dist_mm;
+
+	if (telemeters.FL.dist_mm < DISTANCE_FIRST_WALL_FRONT)
+		cell_state.front = WALL_PRESENCE;
+	if (telemeters.FL.dist_mm < DISTANCE_SEGOND_WALL_FRONT)
+		cell_state.next_front = WALL_PRESENCE;
+	if (telemeters.DL.dist_mm < DISTANCE_WALL_DIAG)
+		cell_state.left = WALL_PRESENCE;
+	if (telemeters.DR.dist_mm < DISTANCE_WALL_DIAG)
+		cell_state.right = WALL_PRESENCE;
 }
 
 int getTelemetersVariation(telemeterStruct *tel)

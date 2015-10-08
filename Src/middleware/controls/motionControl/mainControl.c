@@ -78,6 +78,7 @@ int mainControlInit(void)
 
 int mainControlLoop(void)
 {
+	setCellState();
 	if (control_params.line_follow_state == TRUE)
 	{
 		lineFollowControlLoop();
@@ -406,7 +407,7 @@ void followWallTest()
 	//	position_control.position_type = GYRO;
 	control_params.wall_follow_state = TRUE;
 
-	setCellState();
+//	setCellState();
 	HAL_Delay(2000);
 	move(0, 0, 0, 0);
 

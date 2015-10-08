@@ -210,15 +210,15 @@ int wallSensorsCalibration (void)
 
 void setCellState()
 {
-	memset(&cell_state, 0, sizeof(walls));
-	if (telemeters.FL.dist_mm < DISTANCE_FIRST_WALL_FRONT)
-		cell_state.front = WALL_PRESENCE;
-	if (telemeters.FL.dist_mm < DISTANCE_SEGOND_WALL_FRONT)
-		cell_state.next_front = WALL_PRESENCE;
-	if (telemeters.DL.dist_mm < DISTANCE_WALL_DIAG)
-		cell_state.left = WALL_PRESENCE;
-	if (telemeters.DR.dist_mm < DISTANCE_WALL_DIAG)
-		cell_state.right = WALL_PRESENCE;
+//	memset(&cell_state, 0, sizeof(walls));
+//	if (telemeters.FL.dist_mm < DISTANCE_FIRST_WALL_FRONT)
+//		cell_state.front = WALL_PRESENCE;
+//	if (telemeters.FL.dist_mm < DISTANCE_SEGOND_WALL_FRONT)
+//		cell_state.next_front = WALL_PRESENCE;
+//	if (telemeters.DL.dist_mm < DISTANCE_WALL_DIAG)
+//		cell_state.left = WALL_PRESENCE;
+//	if (telemeters.DR.dist_mm < DISTANCE_WALL_DIAG)
+//		cell_state.right = WALL_PRESENCE;
 }
 
 void testTelemeterDistance()

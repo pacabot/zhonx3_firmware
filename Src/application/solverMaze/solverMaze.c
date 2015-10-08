@@ -41,6 +41,8 @@ int maze(void)
 	mainControlInit ();
 
 	control_params.wall_follow_state = true;
+
+	motorsSleepDriver(OFF);
 	move(0, 0, 0, 0);
 	HAL_Delay(500);
 	//testWallsSensors();
@@ -72,7 +74,6 @@ int maze(void)
 //	{
 //		calibrateSimple ();
 //	}
-	motorsSleepDriver(OFF);
 //	for (int i = 0; i < 4; ++i)
 //	{
 //		rotate90WithCal(CW, 300, 0);
@@ -114,7 +115,7 @@ void exploration(labyrinthe *maze, positionRobot* positionZhonx, char xFinish,
 {
 	coordinate way = { 0, 0, 0, 0};
 	motorsSleepDriver (OFF);
-	newCell (getCellState(), maze, *positionZhonx);
+//	newCell (getCellState(), maze, *positionZhonx);
 	while (positionZhonx->x != xFinish || positionZhonx->y != yFinish)
 	{
 		motorsSleepDriver(ON);

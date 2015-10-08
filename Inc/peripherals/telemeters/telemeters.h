@@ -36,6 +36,10 @@
 #define RX_DR				ADC_CHANNEL_10
 #define RX_FR				ADC_CHANNEL_11
 
+#define DISTANCE_FIRST_WALL_FRONT	150.00
+#define DISTANCE_SEGOND_WALL_FRONT	200.00
+#define DISTANCE_WALL_DIAG			130.00
+
 extern int telemeter_FR_profile[NUMBER_OF_CELL + 1];
 extern int telemeter_FL_profile[NUMBER_OF_CELL + 1];
 extern int telemeter_DR_profile[NUMBER_OF_CELL + 1];
