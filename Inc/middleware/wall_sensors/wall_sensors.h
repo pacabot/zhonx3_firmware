@@ -22,7 +22,7 @@
 
 #define DISTANCE_FIRST_WALL_FRONT	150.00
 #define DISTANCE_SEGOND_WALL_FRONT	200.00
-#define DISTANCE_WALL_DIAG			150.00
+#define DISTANCE_WALL_DIAG			130.00
 
 /* Types definitions */
 

@@ -59,7 +59,7 @@ arm_pid_instance_f32 telemeters_pid_instance;
 
 int wallFollowControlInit(void)
 {
-	telemeters_pid_instance.Kp = 10;
+	telemeters_pid_instance.Kp = 20;
 	telemeters_pid_instance.Ki = 0;
 	telemeters_pid_instance.Kd = 300;
 
@@ -79,18 +79,20 @@ char isDeadZone(void)
 	if (distance > (DEADZONE_DIST - (DEADZONE / 2.00)) &&
 			distance < (DEADZONE_DIST + (DEADZONE / 2.00)))
 	{
+		setCellState();
 		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, SET);
 		return TRUE;
 	}
-	else if (distance < (DEADZONE_DIST + (DEADZONE / 2.00)))
+//	else if (distance < (DEADZONE_DIST - (DEADZONE / 2.00)))
+//	{
+//		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, RESET);
+////		setCellState();
+//		return FALSE;
+//	}
+	else if (distance <= 4.00) //todo add define
 	{
-		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, RESET);
 		setCellState();
 		return FALSE;
-	}
-	else if (distance <= 10.00) //todo add define
-	{
-		setCellState();
 	}
 	else
 	{
