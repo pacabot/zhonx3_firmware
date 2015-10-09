@@ -78,7 +78,6 @@ int mainControlInit(void)
 
 int mainControlLoop(void)
 {
-	setCellState();
 	if (control_params.line_follow_state == TRUE)
 	{
 		lineFollowControlLoop();
