@@ -1,6 +1,6 @@
 /**************************************************************************/
 /*!
-    @file    telemeters.c5
+    @file    telemeters.c
     @author  PLF (PACABOT)
     @date    11 July 2015
     @version 1.0
@@ -362,6 +362,15 @@ void getTelemetersDistance(telemeterStruct *tel)
 
 	tel->mm_conv.old_avrg = tel->avrg;
 	tel->mm_conv.old_dist_mm = tel->dist_mm;
+
+	if (telemeters.FL.dist_mm < DISTANCE_FIRST_WALL_FRONT)
+		cell_state.front = WALL_PRESENCE;
+	if (telemeters.FL.dist_mm < DISTANCE_SEGOND_WALL_FRONT)
+		cell_state.next_front = WALL_PRESENCE;
+	if (telemeters.DL.dist_mm < DISTANCE_WALL_DIAG)
+		cell_state.left = WALL_PRESENCE;
+	if (telemeters.DR.dist_mm < DISTANCE_WALL_DIAG)
+		cell_state.right = WALL_PRESENCE;
 }
 
 int getTelemetersVariation(telemeterStruct *tel)
