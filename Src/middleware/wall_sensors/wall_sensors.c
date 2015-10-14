@@ -253,7 +253,7 @@ void testWallsSensors()
 
 	while(expanderJoyFiltered()!=JOY_LEFT)
 	{
-		setCellState();
+//		tests_menusetCellState();
 		ssd1306ClearScreen();
 		if (cell_state.front == WALL_PRESENCE)
 		{
@@ -262,17 +262,6 @@ void testWallsSensors()
 		else
 		{
 			ssd1306DrawRect(0,49,54,5);
-		}
-		switch (cell_state.next_front)
-		{
-		case WALL_PRESENCE:
-			ssd1306FillRect(0,0,54,5);
-			break;
-		case NO_KNOWN :
-			ssd1306DrawRect(0,0,54,5);
-			break;
-		default:
-			break;
 		}
 		switch (cell_state.left)
 		{

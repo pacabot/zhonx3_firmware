@@ -25,21 +25,18 @@
 #include "application/solverMaze/robotInterface.h"
 #include "application/solverMaze/run.h"
 #endif // codebloc
-
-void run1(labyrinthe *maze, positionRobot *positionZhonx, char posXStart,
-		char posYStart)
+void run1(labyrinthe *maze, positionRobot *positionZhonx, coordinate start_oordinate, coordinate end_coordinate)
 {
 	char choice;
 	do
 	{
 		choice = -1;
 		waitStart ();
-		exploration (maze, positionZhonx, zhonxSettings.x_finish_maze,
-				zhonxSettings.y_finish_maze);
+		exploration (maze, positionZhonx, end_coordinate);
 //		if (zhonxSettings.calibration_enabled == true)
 //			calibrateSimple ();
 		HAL_Delay (2000);
-		exploration (maze, positionZhonx, posXStart, posYStart);
+		exploration (maze, positionZhonx, start_oordinate);
 //		if (zhonxSettings.calibration_enabled == true)
 //			calibrateSimple ();
 		doUTurn (positionZhonx);
@@ -63,26 +60,23 @@ void run1(labyrinthe *maze, positionRobot *positionZhonx, char posXStart,
 		}
 	}while (choice == 1);
 }
-
-void run2(labyrinthe *maze, positionRobot *positionZhonx, char posXStart,
-		char posYStart)
+void run2(labyrinthe *maze, positionRobot *positionZhonx, coordinate start_oordinate, coordinate end_coordinate)
 {
-	coordinate way = {0,0,NULL};
+	coordinate way[MAZE_SIZE*MAZE_SIZE];
 	char choice;
 	do
 	{
 		choice = -1;
 		clearMazelength(maze);
-		poids(maze,zhonxSettings.x_finish_maze, zhonxSettings.y_finish_maze, true);
-		printMaze(*maze,positionZhonx->x, positionZhonx->y);
+		poids(maze,zhonxSettings.maze_end_coordinate, true);
+		printMaze(*maze,positionZhonx->cordinate);
 		waitStart ();
-		moveVirtualZhonx (*maze, *positionZhonx, &way,
-				zhonxSettings.x_finish_maze, zhonxSettings.y_finish_maze);
-		moveRealZhonxArc (maze, positionZhonx, way.next);
+		moveVirtualZhonx (*maze, *positionZhonx, way, end_coordinate);
+		moveRealZhonxArc (maze, positionZhonx, way);
 //		if (zhonxSettings.calibration_enabled == true)
 //			calibrateSimple ();
 		HAL_Delay (2000);
-		exploration (maze, positionZhonx, posXStart, posYStart);
+		exploration (maze, positionZhonx, start_oordinate);
 //		if (zhonxSettings.calibration_enabled == true)
 //			calibrateSimple ();
 		doUTurn (positionZhonx);

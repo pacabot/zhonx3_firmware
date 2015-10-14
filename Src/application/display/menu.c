@@ -53,6 +53,7 @@ extern void followWallTest(void);
 extern void followLineTest(void);
 extern void rotateTest(void);
 extern void curveRotateTest(void);
+extern void expenderLedTest ();
 
 /*
  * to create a new menu you have to create a new variable of type "const menuItem" like this :
@@ -92,8 +93,8 @@ const menuItem maze_menu=
 				//			{"test maze",'f',		(void*)test_maze},
 				{"calibration",'b',		(void*)&zhonxSettings.calibration_enabled},
 				{"color finish",'b',	(void*)&zhonxSettings.color_sensor_enabled},
-				{"x finish",'i',		(void*)&zhonxSettings.x_finish_maze},
-				{"y finish",'i',		(void*)&zhonxSettings.y_finish_maze}
+				{"x finish",'i',		(void*)&zhonxSettings.maze_end_coordinate.x},
+				{"y finish",'i',		(void*)&zhonxSettings.maze_end_coordinate.x}
 		}
 
 };
@@ -136,6 +137,7 @@ const menuItem tests_menu=
 				{"beeper",			'f', (void*)toneTest},
 				{"motors",			'f', (void*)motorsTest},
 				{"line sensors",	'f', (void*)lineSensorsTest},
+				{"Expender LEDs",	'f', (void*)expenderLedTest},
 				{0,0,0}
 		}
 };
