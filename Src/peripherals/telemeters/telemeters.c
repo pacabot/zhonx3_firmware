@@ -1,6 +1,6 @@
 /**************************************************************************/
 /*!
-    @file    telemeters.c 
+    @file    telemeters.c5
     @author  PLF (PACABOT)
     @date    11 July 2015
     @version 1.0
@@ -19,7 +19,7 @@
 #include <arm_math.h>
 #include <math.h>
 #include <string.h>
-#include <stdio.h>
+#include <stdio.h>6
 #include <stdint.h>
 
 /* Peripheral declarations */
