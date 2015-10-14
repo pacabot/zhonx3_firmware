@@ -1,5 +1,5 @@
 /*
- * wall_sensors.c
+ * telemetersCal.c
  *
  *  Created on: 10 avr. 2015
  *      Author: Colin
@@ -36,9 +36,7 @@
 #include "middleware/controls/motionControl/mainControl.h"
 
 /* Declarations for this module */
-#include "middleware/wall_sensors/wall_sensors.h"
-
-walls cell_state = {NO_WALL,NO_WALL,NO_WALL,NO_WALL};
+#include "peripherals/telemeters/telemetersCal.h"
 
 //int telemetersWithOutNoise//TODO this function
 int wallSensorsCalibration (void)
@@ -205,20 +203,7 @@ int wallSensorsCalibration (void)
 	}
 	telemetersStop();
 	motorsSleepDriver(ON);
-	return WALL_SENSORS_E_SUCCESS;
-}
-
-void setCellState()
-{
-//	memset(&cell_state, 0, sizeof(walls));
-//	if (telemeters.FL.dist_mm < DISTANCE_FIRST_WALL_FRONT)
-//		cell_state.front = WALL_PRESENCE;
-//	if (telemeters.FL.dist_mm < DISTANCE_SEGOND_WALL_FRONT)
-//		cell_state.next_front = WALL_PRESENCE;
-//	if (telemeters.DL.dist_mm < DISTANCE_WALL_DIAG)
-//		cell_state.left = WALL_PRESENCE;
-//	if (telemeters.DR.dist_mm < DISTANCE_WALL_DIAG)
-//		cell_state.right = WALL_PRESENCE;
+	return TELEMETERS_CAL_E_SUCCESS;
 }
 
 void testTelemeterDistance()
@@ -253,9 +238,8 @@ void testWallsSensors()
 
 	while(expanderJoyFiltered()!=JOY_LEFT)
 	{
-		setCellState();
 		ssd1306ClearScreen();
-		if (cell_state.front == WALL_PRESENCE)
+		if (getWallPresence(FRONT_WALL) == WALL_PRESENCE)
 		{
 			ssd1306FillRect(0,49,54,5);
 		}
@@ -263,18 +247,18 @@ void testWallsSensors()
 		{
 			ssd1306DrawRect(0,49,54,5);
 		}
-		switch (cell_state.next_front)
-		{
-		case WALL_PRESENCE:
-			ssd1306FillRect(0,0,54,5);
-			break;
-		case NO_KNOWN :
-			ssd1306DrawRect(0,0,54,5);
-			break;
-		default:
-			break;
-		}
-		switch (cell_state.left)
+//		switch (cell_state.next_front) //todo add this functionality
+//		{
+//		case WALL_PRESENCE:
+//			ssd1306FillRect(0,0,54,5);
+//			break;
+//		case NO_KNOWN :
+//			ssd1306DrawRect(0,0,54,5);
+//			break;
+//		default:
+//			break;
+//		}
+		switch (getWallPresence(LEFT_WALL))
 		{
 		case WALL_PRESENCE:
 			ssd1306FillRect(0,0,5,54);
@@ -285,7 +269,7 @@ void testWallsSensors()
 		default:
 			break;
 		}
-		switch (cell_state.right)
+		switch (getWallPresence(RIGHT_WALL))
 		{
 		case WALL_PRESENCE:
 			ssd1306FillRect(49,0,5,54);
@@ -353,9 +337,4 @@ void testPostSensors()
 		ssd1306Refresh();
 	}
 	telemetersStop();
-}
-
-telemetersStruct * getDistance_ptr(void)
-{
-	return &telemeters;
 }

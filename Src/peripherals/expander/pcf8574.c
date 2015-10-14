@@ -60,7 +60,7 @@ static char getData(void)
 
 void expanderSetbit(char pin, char val)
 {
-	if(val == true)
+	if(val == 1)
 	{
 		sendData(getData() | (0x1 << pin));
 	}
