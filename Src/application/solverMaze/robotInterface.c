@@ -231,11 +231,8 @@ void newCell(walls new_walls, labyrinthe *maze, positionRobot positionZhonx)
 {
 #ifdef DEBUG
 	/*print walls position*/
-	static char i=0;
-	expanderSetbit(i,0);
+	static char i=1;
 	i++;
-	i = i % 3;
-	expanderLedState(i,1);
 	ssd1306ClearRect(64,0,64,64);
 	if (new_walls.front == WALL_PRESENCE)
 	{
@@ -249,6 +246,7 @@ void newCell(walls new_walls, labyrinthe *maze, positionRobot positionZhonx)
 	{
 		ssd1306FillRect(113,0,5,54);
 	}
+	ssd1306Printf(60,45,&Font_5x8,"i = %d", i);
 	ssd1306Refresh();
 	/*end print wall position*/
 #endif
@@ -331,6 +329,10 @@ void newCell(walls new_walls, labyrinthe *maze, positionRobot positionZhonx)
 }
 walls getCellState ()
 {
+	walls cell_condition;
 	telemetersStart();
-	return cell_state;
+	cell_condition.front = getWallPresence(FRONT_WALL);
+	cell_condition.left = getWallPresence(LEFT_WALL);
+	cell_condition.right = getWallPresence(RIGHT_WALL);
+	return cell_condition;
 }

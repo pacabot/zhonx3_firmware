@@ -85,7 +85,7 @@ int mainControlLoop(void)
 	}
 	else if (control_params.wall_follow_state == TRUE)
 	{
-		wallFollowControlLoop();
+		//wallFollowControlLoop();
 	}
 
 	positionControlLoop();
@@ -297,7 +297,7 @@ int frontCal(float max_speed)
 	int i = 0;
 	float relative_dist = 0.0;
 	telemetersStruct*ptr_distances;
-	ptr_distances = getDistance_ptr();
+//	ptr_distances = getDistance_ptr();
 
 	move(0, 0, 0, 0);
 	while (wall_follow_control.succes != TRUE)

@@ -363,7 +363,7 @@ void getTelemetersDistance(telemeterStruct *tel)
 	tel->mm_conv.old_avrg = tel->avrg;
 	tel->mm_conv.old_dist_mm = tel->dist_mm;
 
-	if (telemeters.FL.dist_mm < DISTANCE_FIRST_WALL_FRONT)
+	if (telemeters.FL.dist_mm < DISTANCE_WALL_FRONT)
 	{
 		cell_state.front = WALL_PRESENCE;
 	}

@@ -72,7 +72,6 @@ int maze(void)
 //	{
 //		calibrateSimple ();
 //	}
-#if DEBUG > 2
 	for (int i = 0; i < 4; ++i)
 	{
 		rotate90WithCal(CW, 300, 0);
@@ -81,7 +80,6 @@ int maze(void)
 		newCell (getCellState (), &maze, positionZhonx);
 		printLength(maze,positionZhonx.cordinate.x,positionZhonx.cordinate.y);
 	}
-#endif
 	move (0, -CELL_LENGTH/2, 50, 0);
 	while(isEndMove() != true);
 	control_params.wall_follow_state = TRUE;

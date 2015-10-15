@@ -48,7 +48,7 @@
 #define SIGN(a)	((a)<(0)?(-1):(1))
 #endif
 
-#define reverse_bit(val) ((val) ^ 0x00000001)
+#define reverse_bit(val) ((val) ^ 0x1)
 #define reverse_bits(val) ((val) ^ 0xffffffff)
 #define check_bit(val, mask) ((((val) & (mask)) == (mask)) ? TRUE : FALSE)
 #define check_bit_key(val, mask, key) ((((val) & (mask)) == (key)) ? TRUE : FALSE)

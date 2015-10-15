@@ -60,7 +60,7 @@ static char getData(void)
 
 void expanderSetbit(char pin, char val)
 {
-	if(val == true)
+	if(val == 1)
 	{
 		sendData(getData() | (0x1 << pin));
 	}
@@ -98,12 +98,8 @@ void expanderLedState(char led, char val)
 
 char expanderJoyState(void)
 {
-	int key = 0;
-	key = ~(getData() | 0xFFFFFFF0);
-	if (key != 0)
-	{
-		joy_activ_old_time=HAL_GetTick();
-	}
+	char key = 0;
+	key = ~(getData() | 0xF0);
 	switch (key)
 	{
 		case 4:
@@ -152,6 +148,7 @@ char antiBounceJoystick2(char arrow_type)
 	long time=HAL_GetTick();
 	if(old_arrow_type != arrow_type)
 	{
+		joy_activ_old_time = HAL_GetTick();
 		old_arrow_type = arrow_type;
 		time_base = time;
 		fast_clic = false;
@@ -168,6 +165,7 @@ char antiBounceJoystick2(char arrow_type)
 		fast_clic = true;
 		return DONE;
 	}
+
 	return -1;
 }
 
@@ -184,7 +182,6 @@ void joystickTest(void)
 		ssd1306DrawCircle(60,30, 3);
 		ssd1306DrawCircle(50,20, 3);
 		ssd1306DrawCircle(70,20, 3);
-
 		switch (state)
 		{
 			case JOY_UP:
@@ -211,7 +208,7 @@ void joystickTest(void)
 
 void expenderLedTest ()
 {
-	char i=0;
+//	char i=0;
 //	while(expanderJoyState()!=JOY_LEFT)
 //	{
 //		if ((HAL_GetTick() % 200) == 0)
@@ -224,14 +221,16 @@ void expenderLedTest ()
 //			ssd1306Refresh();
 //		}
 //	}
-	for (i=1; i<4; i++)
-	{
-		expanderLedState(i,1);
-	}
-	HAL_Delay(500);
-	for (i=1; i<4; i++)
-	{
-		expanderLedState(i,0);
-	}
+//	for (i=1; i<4; i++)
+//	{
+//		expanderLedState(i,1);
+//	}
+//	HAL_Delay(500);
+//	for (i=1; i<4; i++)
+//	{
+//		expanderLedState(i,0);
+//	}
+	expanderLedState(2,1);
+	joystickTest();
 	HAL_Delay(500);
 }

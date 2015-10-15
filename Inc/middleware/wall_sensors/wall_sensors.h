@@ -1,5 +1,5 @@
 /*
- * calibration.h
+ *  wall_sensors.h
  *
  *  Created on: 10 avr. 2015
  *      Author: Colin
@@ -18,11 +18,15 @@
 #error you must put a multiple of NUMBER_OF_CELL in DISTANCE_MEASURED
 #endif
 
+/* Types definitions */
+enum wallSelectorEnum {LEFT_WALL, RIGHT_WALL, FRONT_WALL};
+
 //#define NUMBER_OF_MEASURE_BY_STEP 5000
 
-//#define DISTANCE_FIRST_WALL_FRONT	150.00
-//#define DISTANCE_SEGOND_WALL_FRONT	200.00
-//#define DISTANCE_WALL_DIAG			130.00
+#define DISTANCE_WALL_DIAG		130.00
+#define DISTANCE_WALL_FRONT		150.00
+#define DISTANCE_SEGOND_WALL_FRONT	200.00
+
 
 /* Types definitions */
 
@@ -36,13 +40,6 @@ typedef struct
 
 extern walls cell_state;
 
-void  wallSensorInit(void);
-int   wallSensorsCalibration();
-//int getTelemetersDistance ( telemetersStruct *telemeters);
-void  setCellState();
-void  testWallsSensors();
-void  testPostSensors();
-
-telemetersStruct * getDistance_ptr(void);
+char getWallPresence(enum wallSelectorEnum wallSelector);
 
 #endif /* WALL_SENSORS_H_ */
