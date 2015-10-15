@@ -37,7 +37,7 @@ typedef struct
 	channel_meter stm32_temp;
 	uint32_t timer_cnt;
 	char active_state;
-	char get_vbat_state;
+	char gpio_vbat_state;
 } multimeter_struct;
 
 extern volatile multimeter_struct multimeter;

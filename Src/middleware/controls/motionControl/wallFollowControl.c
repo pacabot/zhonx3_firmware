@@ -109,11 +109,12 @@ int wallFollowControlLoop(void)
 		wall_follow_control.follow_error = 0;
 		pidControllerReset(wall_follow_control.follow_pid.instance);
 	}
-	else if (cell_state.left == WALL_PRESENCE)
+	//else if (cell_state.left == WALL_PRESENCE)
+	else if (getWallPresence(LEFT_WALL) == TRUE)
 	{
 		wall_follow_control.follow_error = wallFollow(&telemeters.DL);
 	}
-	else if (cell_state.right == WALL_PRESENCE)
+	else if (getWallPresence(RIGHT_WALL) == TRUE)
 	{
 		wall_follow_control.follow_error = -1.00 * wallFollow(&telemeters.DR);
 	}
