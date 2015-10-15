@@ -19,10 +19,15 @@
 /* structure of settings */
 typedef struct
 {
+  int x;
+  int y;
+}coordinate;
+
+typedef struct
+{
 	char calibration_enabled;
 	char color_sensor_enabled;
-	int x_finish_maze;
-	int y_finish_maze;
+	coordinate maze_end_coordinate;
 	unsigned int sleep_delay_s;
 	unsigned long threshold_color;
 	unsigned long threshold_greater;

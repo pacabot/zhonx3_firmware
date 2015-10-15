@@ -8,8 +8,11 @@
 #ifndef RESOLUTION_MAZE_H_
 #define RESOLUTION_MAZE_H_
 
+#define NAND(a,b) (!a && !b)
+
 #include "config/module_id.h"
 #include "config/errors.h"
+#include "middleware/settings/settings.h"
 
 /* Error codes */
 #define MAZE_SOLVER_E_SUCCESS  0
@@ -34,17 +37,17 @@
 #define WALL_PRESENCE 1
 #define NO_WALL 2
 
-#define MAX_SPEED_ROTATION		(300)
-#define MAX_SPEED_TRANSLATION   (400)
-#define END_SPEED_TRANSLATION	(400)
+#define MAX_SPEED_ROTATION		(100)
+#define MAX_SPEED_TRANSLATION   (200)
+#define END_SPEED_TRANSLATION	(100)
 
-#define DEBUG 2
+#define DEBUG 3
 
 #ifdef DEBUG
 #undef END_SPEED_TRANSLATION
 #define END_SPEED_TRANSLATION 0
 #endif
-
+#define END_OF_LIST 255
 #include <stdlib.h>
 
 //Structures typedef
@@ -62,17 +65,10 @@ typedef struct
   one_cell cell[MAZE_SIZE][MAZE_SIZE];
 }labyrinthe;
 
-typedef struct coordinate
-{
-  int x;
-  int y;
-  struct coordinate *next;
-  struct coordinate *previous;
-}coordinate;
+
 typedef struct
 {
-    char x;
-    char y;
+    coordinate cordinate;
     char orientation;
     char midOfCell;
 } positionRobot;
@@ -80,18 +76,17 @@ typedef struct
 
 // fonctions
 extern int maze(void);
-void exploration(labyrinthe *maze, positionRobot* poitionZhonx,char xFinish, char yFinish);
-void moveVirtualZhonx(labyrinthe maze, positionRobot positionZhonxVirtuel,coordinate *way, char xFinish, char yFinish);
-void newDot(coordinate **old_dot,int x,int y);
-void poids(labyrinthe *maze, int xFinish, int yfinish, char wallNoKnow);
+void exploration(labyrinthe *maze, positionRobot* positionZhonx,  coordinate end_coordinate);
+void moveVirtualZhonx(labyrinthe maze, positionRobot positionZhonxVirtuel,
+		coordinate way[], coordinate end_coordinate);
+void poids(labyrinthe *maze, coordinate end_coordinate, char wallNoKnow);
 void mazeInit (labyrinthe *maze);
 void* calloc_s (size_t nombre, size_t taille);
-void printMaze(const labyrinthe maze, const int x_robot, const int y_robot);
+void printMaze(const labyrinthe maze, coordinate robot_coordinate);
 void printLength(const labyrinthe maze,const int x_robot, const int y_robot);
 void clearMazelength(labyrinthe* maze);
-char miniWayFind(labyrinthe *maze,char xStart, char yStart, char xFinish, char yFinish);
-void moveRealZhonxArc(labyrinthe *maze, positionRobot *positionZhonx, coordinate *way);
+char miniwayFind(labyrinthe *maze, coordinate start_coordinate, coordinate end_coordinate);
+void moveRealZhonxArc(labyrinthe *maze, positionRobot *positionZhonx, coordinate way[]);
 void waitStart(void);
-char diffWay(coordinate *way1,coordinate *way2);
-void deleteWay(coordinate *way);
+char diffway(coordinate *way1,coordinate *way2);
 #endif /* RESOLUTION_MAZE_H_ */

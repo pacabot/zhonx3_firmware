@@ -98,12 +98,8 @@ void expanderLedState(char led, char val)
 
 char expanderJoyState(void)
 {
-	int key = 0;
-	key = ~(getData() | 0xFFFFFFF0);
-	if (key != 0)
-	{
-		joy_activ_old_time=HAL_GetTick();
-	}
+	char key = 0;
+	key = ~(getData() | 0xF0);
 	switch (key)
 	{
 		case 4:
@@ -133,6 +129,46 @@ char expanderJoyFiltered(void)
 		return joystick;
 	return 0;
 }
+
+void antiBounceJoystick(void)
+{
+	unsigned long int time_base = HAL_GetTick();
+	do
+	{
+		if (expanderJoyState()!=0)
+			time_base = HAL_GetTick();
+	}while (time_base!=(HAL_GetTick()-20));
+}
+
+char antiBounceJoystick2(char arrow_type)
+{
+	static long time_base = 0;
+	static char old_arrow_type = 0;
+	static char fast_clic = false;
+	long time=HAL_GetTick();
+	if(old_arrow_type != arrow_type)
+	{
+		joy_activ_old_time = HAL_GetTick();
+		old_arrow_type = arrow_type;
+		time_base = time;
+		fast_clic = false;
+		return DONE;
+	}
+	else if((fast_clic == true) && ((time_base + FAST_DELAY_REAPEAT) < time))
+	{
+		time_base = time;
+		return DONE;
+	}
+	else if (((time_base + NORMAL_DELAY_REAPEAT) < time) && (fast_clic == false))
+	{
+		time_base = time;
+		fast_clic = true;
+		return DONE;
+	}
+
+	return -1;
+}
+
 void joystickTest(void)
 {
 	int state;
@@ -146,7 +182,6 @@ void joystickTest(void)
 		ssd1306DrawCircle(60,30, 3);
 		ssd1306DrawCircle(50,20, 3);
 		ssd1306DrawCircle(70,20, 3);
-
 		switch (state)
 		{
 			case JOY_UP:
@@ -171,39 +206,31 @@ void joystickTest(void)
 	antiBounceJoystick();
 }
 
-void antiBounceJoystick(void)
+void expenderLedTest ()
 {
-	unsigned long int time_base = HAL_GetTick();
-	do
-	{
-		if (expanderJoyState()!=0)
-			time_base = HAL_GetTick();
-	}while (time_base!=(HAL_GetTick()-20));
-}
-
-char antiBounceJoystick2(char arrow_type)
-{
-	static long time_base = 0;
-	static char old_arrow_type = 0;
-	static char fast_clic = false;
-	long time=HAL_GetTick();
-	if(old_arrow_type != arrow_type)
-	{
-		old_arrow_type = arrow_type;
-		time_base = time;
-		fast_clic = false;
-		return DONE;
-	}
-	else if((fast_clic == true) && ((time_base + FAST_DELAY_REAPEAT) < time))
-	{
-		time_base = time;
-		return DONE;
-	}
-	else if (((time_base + NORMAL_DELAY_REAPEAT) < time) && (fast_clic == false))
-	{
-		time_base = time;
-		fast_clic = true;
-		return DONE;
-	}
-	return -1;
+//	char i=0;
+//	while(expanderJoyState()!=JOY_LEFT)
+//	{
+//		if ((HAL_GetTick() % 200) == 0)
+//		{
+//			expanderSetbit(i,0);
+//			i = (i % 3)+1;
+//			expanderLedState(i,1);
+//			ssd1306ClearScreen();
+//			ssd1306Printf(0,0,&Font_5x8,"i : %d", i);
+//			ssd1306Refresh();
+//		}
+//	}
+//	for (i=1; i<4; i++)
+//	{
+//		expanderLedState(i,1);
+//	}
+//	HAL_Delay(500);
+//	for (i=1; i<4; i++)
+//	{
+//		expanderLedState(i,0);
+//	}
+	expanderLedState(2,1);
+	joystickTest();
+	HAL_Delay(500);
 }
