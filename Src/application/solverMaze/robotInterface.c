@@ -230,6 +230,7 @@ int waitValidation(unsigned long timeout)
 void newCell(walls new_walls, labyrinthe *maze, positionRobot positionZhonx)
 {
 #ifdef DEBUG
+	telemetersStop();
 	/*print walls position*/
 	static char i=1;
 	i++;
@@ -324,15 +325,36 @@ void newCell(walls new_walls, labyrinthe *maze, positionRobot positionZhonx)
 			maze->cell[(int) (positionZhonx.cordinate.x)][(int) (positionZhonx.cordinate.y)].wall_west = new_walls.front;
 			break;
 	}
-//	telemetersStart();
+	telemetersStart();
 //	motorsSleepDriver(OFF);
 }
 walls getCellState ()
 {
 	walls cell_condition;
 	telemetersStart();
-	cell_condition.front = getWallPresence(FRONT_WALL);
-	cell_condition.left = getWallPresence(LEFT_WALL);
-	cell_condition.right = getWallPresence(RIGHT_WALL);
+	if (getWallPresence(FRONT_WALL) == false)
+	{
+		cell_condition.front = NO_WALL;
+	}
+	else
+	{
+		cell_condition.front = NO_WALL;
+	}
+	if (getWallPresence(LEFT_WALL) == false)
+	{
+		cell_condition.left = NO_WALL;
+	}
+	else
+	{
+		cell_condition.left = NO_WALL;
+	}
+	if (getWallPresence(RIGHT_WALL) == false)
+	{
+		cell_condition.right = NO_WALL;
+	}
+	else
+	{
+		cell_condition.right = NO_WALL;
+	}
 	return cell_condition;
 }
