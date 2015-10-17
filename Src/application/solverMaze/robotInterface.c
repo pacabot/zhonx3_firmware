@@ -332,13 +332,14 @@ walls getCellState ()
 {
 	walls cell_condition;
 	telemetersStart();
+	HAL_Delay(500);
 	if (getWallPresence(FRONT_WALL) == false)
 	{
 		cell_condition.front = NO_WALL;
 	}
 	else
 	{
-		cell_condition.front = NO_WALL;
+		cell_condition.front = WALL_PRESENCE;
 	}
 	if (getWallPresence(LEFT_WALL) == false)
 	{
@@ -346,7 +347,7 @@ walls getCellState ()
 	}
 	else
 	{
-		cell_condition.left = NO_WALL;
+		cell_condition.left = WALL_PRESENCE;
 	}
 	if (getWallPresence(RIGHT_WALL) == false)
 	{
@@ -354,7 +355,7 @@ walls getCellState ()
 	}
 	else
 	{
-		cell_condition.right = NO_WALL;
+		cell_condition.right = WALL_PRESENCE;
 	}
 	return cell_condition;
 }

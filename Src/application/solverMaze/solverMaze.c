@@ -72,14 +72,14 @@ int maze(void)
 //	{
 //		calibrateSimple ();
 //	}
-//	for (int i = 0; i < 4; ++i)
-//	{
-//		rotate90WithCal(CW, 300, 0);
-//		while(isEndMove() != true);
-//		positionZhonx.orientation=(positionZhonx.orientation+1)%4;
-//		newCell (getCellState (), &maze, positionZhonx);
-//		printLength(maze,positionZhonx.cordinate.x,positionZhonx.cordinate.y);
-//	}
+	for (int i = 0; i < 4; ++i)
+	{
+		rotate90WithCal(CW, 300, 0);
+		while(isEndMove() != true);
+		positionZhonx.orientation=(positionZhonx.orientation+1)%4;
+		newCell (getCellState (), &maze, positionZhonx);
+		printLength(maze,positionZhonx.cordinate.x,positionZhonx.cordinate.y);
+	}
 	move (0, -CELL_LENGTH/2, 50, 0);
 	while(isEndMove() != true);
 	control_params.wall_follow_state = TRUE;
@@ -178,9 +178,7 @@ void moveVirtualZhonx(labyrinthe maze, positionRobot positionZhonxVirtuel,
 				}
 			}
 		}
-
 		printMaze(maze,positionZhonxVirtuel.cordinate);
-		ssd1306Refresh ();
 		way[i].x = positionZhonxVirtuel.cordinate.x, way[i].y = positionZhonxVirtuel.cordinate.y;
 		i++;
 	}
