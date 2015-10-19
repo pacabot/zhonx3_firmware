@@ -36,9 +36,8 @@ int maze(void)
 	mazeInit (&maze);
 	positionRobot positionZhonx;
 
-	telemetersInit();
+	mainControlInit();
 	telemetersStart();
-	mainControlInit ();
 
 	control_params.wall_follow_state = true;
 
