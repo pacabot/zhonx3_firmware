@@ -184,7 +184,6 @@ int menu(const menuItem Menu)
 	{
 		int joystick = expanderJoyFiltered();
 		killOnLowBattery();
-		// Exit Button JOYSTICK_LEFT
 		switch (joystick)
 		{
 		case JOY_LEFT:
@@ -211,14 +210,26 @@ int menu(const menuItem Menu)
 							(line_screen) * ROW_HEIGHT);
 				}
 			}
+			else
+			{
+				line_menu = 0;
+				line_screen = 1;displayMenu(Menu, line_menu - (line_screen - 1));
+				ssd1306InvertArea(0, line_screen * MARGIN,
+						HIGHLIGHT_LENGHT, HIGHLIGHT_HEIGHT);
+				ssd1306Refresh();
+			}
 			break;
 		case JOY_UP:
 			//beeper
-			if (line_screen == 1)
+			if (line_menu > 0)
 			{
-				if (line_menu > 0)
+				line_menu--;
+				line_screen--;
+				menuHighlightedMove((line_screen + 1) * ROW_HEIGHT - 1,
+						(line_screen) * ROW_HEIGHT);
+				if (line_screen <= 1)
 				{
-					line_menu--;
+					line_screen++;
 					displayMenu(Menu, line_menu);
 					ssd1306InvertArea(0, MARGIN, HIGHLIGHT_LENGHT,
 							HIGHLIGHT_HEIGHT);
@@ -227,10 +238,23 @@ int menu(const menuItem Menu)
 			}
 			else
 			{
-				line_menu--;
-				line_screen--;
-				menuHighlightedMove((line_screen + 1) * ROW_HEIGHT - 1,
-						(line_screen) * ROW_HEIGHT);
+				while(Menu.line[line_menu+1].name != null)
+				{
+					line_menu++;
+				}
+				if (line_menu < MAX_LINE_SCREEN-1)
+				{
+					displayMenu(Menu, 0);
+					line_screen = line_menu;
+				}
+				else
+				{
+					line_screen = MAX_LINE_SCREEN;
+					displayMenu(Menu, line_menu-(MAX_LINE_SCREEN-1));
+				}
+				ssd1306InvertArea(0, MARGIN * line_screen, HIGHLIGHT_LENGHT,
+									HIGHLIGHT_HEIGHT);
+				ssd1306Refresh();
 			}
 			break;
 		case JOY_RIGHT: // Validate button joystick right
