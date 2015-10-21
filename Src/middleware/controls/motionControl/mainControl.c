@@ -85,7 +85,7 @@ int mainControlLoop(void)
 	}
 	else if (control_params.wall_follow_state == TRUE)
 	{
-		//wallFollowControlLoop();
+		wallFollowControlLoop();
 	}
 
 	positionControlLoop();
