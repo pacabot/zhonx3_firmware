@@ -174,7 +174,9 @@ int moveCell(unsigned long nb_cell, float max_speed, float end_speed)
 		move(0, (CELL_LENGTH), max_speed, max_speed);
 	}
 	while(isEndMove() != TRUE);
-	move(0, (CELL_LENGTH), max_speed, end_speed);
+	move(0, (CELL_LENGTH - (OFFSET_DIST * 2.00)), max_speed, end_speed);
+	while(isEndMove() != TRUE);
+	move(0, (OFFSET_DIST * 2.00), max_speed, end_speed);
 
 	return POSITION_CONTROL_E_SUCCESS;
 }
@@ -208,7 +210,9 @@ int moveHalfCell_OUT(float max_speed, float end_speed)
 	move_params.initial_position = HALF_CELL_LENGTH;
 
 	while(isEndMove() != TRUE);
-	move(0, HALF_CELL_LENGTH + OFFSET_DIST, max_speed, end_speed);
+	move(0, HALF_CELL_LENGTH - OFFSET_DIST, max_speed, end_speed);
+	while(isEndMove() != TRUE);
+	move(0, (OFFSET_DIST * 2.00), max_speed, end_speed);
 
 	return POSITION_CONTROL_E_SUCCESS;
 }
@@ -225,7 +229,9 @@ int moveStartCell(float max_speed, float end_speed)
 	move_params.initial_position = Z3_CENTER_BACK_DIST;
 
 	while(isEndMove() != TRUE);
-	move(0, ((CELL_LENGTH - (Z3_CENTER_BACK_DIST + HALF_WALL_THICKNESS)) + OFFSET_DIST), max_speed, end_speed);;
+	move(0, ((CELL_LENGTH - (Z3_CENTER_BACK_DIST + HALF_WALL_THICKNESS)) - OFFSET_DIST), max_speed, end_speed);
+	while(isEndMove() != TRUE);
+	move(0, (OFFSET_DIST * 2.00), max_speed, end_speed);
 
 	return POSITION_CONTROL_E_SUCCESS;
 }

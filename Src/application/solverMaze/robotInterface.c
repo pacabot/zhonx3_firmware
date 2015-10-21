@@ -111,9 +111,7 @@ void doUTurn(positionRobot *positionZhonx)
 	goOrientation (&positionZhonx->orientation,
 			(positionZhonx->orientation + 2) % 4);
 
-	move (0, -CELL_LENGTH/2, 50, 0);
-	while (isEndMove() != TRUE);
-	HAL_Delay(200);
+	moveUTurn(MAX_SPEED_ROTATION, MAX_SPEED_TRANSLATION, END_SPEED_TRANSLATION);
 	motorsSleepDriver(ON);
 }
 
@@ -331,8 +329,7 @@ void newCell(walls new_walls, labyrinthe *maze, positionRobot positionZhonx)
 walls getCellState ()
 {
 	walls cell_condition;
-//	telemetersStart();
-HAL_Delay(500);
+//HAL_Delay(500);
 	if (getWallPresence(FRONT_WALL) == false)
 	{
 		cell_condition.front = NO_WALL;
@@ -356,6 +353,9 @@ HAL_Delay(500);
 	else
 	{
 		cell_condition.right = WALL_PRESENCE;
+//		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, SET);
+//		HAL_Delay(500);
+//		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, RESET);
 	}
 	return cell_condition;
 }

@@ -79,7 +79,7 @@ char isDeadZone(void)
 	if (distance > (DEADZONE_DIST - (DEADZONE / 2.00)) &&
 			distance < (DEADZONE_DIST + (DEADZONE / 2.00)))
 	{
-		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, SET);
+//		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, SET);
 		return TRUE;
 	}
 	//	else if (distance < (DEADZONE_DIST - (DEADZONE / 2.00)))
@@ -93,7 +93,7 @@ char isDeadZone(void)
 	}
 	else
 	{
-		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, RESET);
+//		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, RESET);
 		return FALSE;
 	}
 }

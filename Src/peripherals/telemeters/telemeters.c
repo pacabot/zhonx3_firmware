@@ -362,39 +362,6 @@ void getTelemetersDistance(telemeterStruct *tel)
 
 	tel->mm_conv.old_avrg = tel->avrg;
 	tel->mm_conv.old_dist_mm = tel->dist_mm;
-
-	if (telemeters.FL.dist_mm < DISTANCE_WALL_FRONT)
-	{
-		cell_state.front = WALL_PRESENCE;
-	}
-	else
-	{
-		cell_state.front = NO_WALL;
-	}
-	if (telemeters.FL.dist_mm < DISTANCE_SEGOND_WALL_FRONT)
-	{
-		cell_state.next_front = WALL_PRESENCE;
-	}
-	else
-	{
-		cell_state.next_front = NO_WALL;
-	}
-	if (telemeters.DL.dist_mm < DISTANCE_WALL_DIAG)
-	{
-		cell_state.left = WALL_PRESENCE;
-	}
-	else
-	{
-		cell_state.left = NO_WALL;
-	}
-	if (telemeters.DR.dist_mm < DISTANCE_WALL_DIAG)
-	{
-		cell_state.right = WALL_PRESENCE;
-	}
-	else
-	{
-		cell_state.right = NO_WALL;
-	}
 }
 
 int getTelemetersVariation(telemeterStruct *tel)

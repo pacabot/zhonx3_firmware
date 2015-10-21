@@ -217,7 +217,6 @@ void ledBlink_IT(void)
 
 	if (Blink[0] == 0 && Blink[1] == 0)
 	{
-		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, RESET);
 		return;
 	}
 
