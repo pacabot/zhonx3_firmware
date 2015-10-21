@@ -85,7 +85,7 @@ int mainControlLoop(void)
 	}
 	else if (control_params.wall_follow_state == TRUE)
 	{
-		//wallFollowControlLoop();
+		wallFollowControlLoop();
 	}
 
 	positionControlLoop();
@@ -417,13 +417,14 @@ void followWallTest()
 	int Vmin, Vmax, Vrotate;
 	Vmin = 500;
 	Vmax = 900;
-	Vrotate = 500;
+	Vrotate = 400;
 
 	moveStartCell(Vmax, Vmax);
 	moveCell(4, Vmax, Vmin);
 	moveRotateCW90(Vmin, Vmin);
-	moveCell(3, Vmax, Vmin);
-	moveRotateCW90(Vmin, Vmin);
+	moveCell(4, Vmax, Vmin);
+	moveUTurn(Vrotate, Vmax, Vmin);
+	moveRotateCCW90(Vmin, Vmin);
 	moveCell(2, Vmax, Vmin);
 	moveRotateCW90(Vmin, Vmin);
 	moveCell(2, Vmax, Vmin);

@@ -41,11 +41,11 @@
 #define MAX_SPEED_TRANSLATION   (200)
 #define END_SPEED_TRANSLATION	(100)
 
-#define DEBUG 3
+//#define DEBUG 3
 
 #ifdef DEBUG
 #undef END_SPEED_TRANSLATION
-#define END_SPEED_TRANSLATION 0
+#define END_SPEED_TRANSLATION 10
 #endif
 #define END_OF_LIST 255
 #include <stdlib.h>

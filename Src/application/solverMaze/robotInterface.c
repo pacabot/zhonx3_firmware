@@ -53,7 +53,7 @@ void move_zhonx_arc (int direction_to_go, positionRobot *positionZhonx, int numb
 		case RIGHT :
 			if (positionZhonx->midOfCell == true)
 			{
-				while(isEndMove() != TRUE);
+				while(isEndMove() != TRUE);				//todo rotate in place
 				move (90, 0, MAX_SPEED_ROTATION, 0);
 			}
 			else
@@ -100,7 +100,7 @@ void move_zhonx_arc (int direction_to_go, positionRobot *positionZhonx, int numb
 	{
 		moveHalfCell_IN(MAX_SPEED_TRANSLATION, END_SPEED_TRANSLATION);
 	}
-	moveCell (numberOfCell, MAX_SPEED_TRANSLATION, END_SPEED_TRANSLATION);
+	moveCell(numberOfCell, MAX_SPEED_TRANSLATION, END_SPEED_TRANSLATION);
 	positionZhonx->midOfCell = end_mid_of_case;
 
 }
@@ -331,8 +331,8 @@ void newCell(walls new_walls, labyrinthe *maze, positionRobot positionZhonx)
 walls getCellState ()
 {
 	walls cell_condition;
-	telemetersStart();
-	HAL_Delay(500);
+//	telemetersStart();
+HAL_Delay(500);
 	if (getWallPresence(FRONT_WALL) == false)
 	{
 		cell_condition.front = NO_WALL;
