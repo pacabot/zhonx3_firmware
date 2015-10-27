@@ -20,10 +20,14 @@
 #define TX_ON			1
 #define TX_OFF			2
 
-#define DISTANCE_MEASURED	200
-#define NUMBER_OF_CELL 		100
-#define NUMBER_OF_MILLIMETER_BY_LOOP DISTANCE_MEASURED/NUMBER_OF_CELL
+#define DISTANCE_MEASURED	300
+#define NUMBER_OF_CELL 		150
+#define NUMBER_OF_MILLIMETER_BY_LOOP (DISTANCE_MEASURED/NUMBER_OF_CELL)
 #define MIN_TELEMETERS_SPEED 20
+
+#if (DISTANCE_MEASURED)%(NUMBER_OF_CELL) != 0
+#error  DISTANCE_MEASURED of cell must be a multiple of NUMBER_OF_CELL
+#endif
 
 /* Definition for ADCx Channel Pin */
 #define TX_FL				GPIO_PIN_1
@@ -43,7 +47,6 @@ extern int telemeter_DL_profile[NUMBER_OF_CELL + 1];
 
 /* Types definitions */
 
-/* Types definitions */
 enum telemeterType {FL, DL, DR, FR};
 
 typedef struct
