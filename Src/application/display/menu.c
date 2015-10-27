@@ -53,7 +53,9 @@ extern void followWallTest(void);
 extern void followLineTest(void);
 extern void rotateTest(void);
 extern void curveRotateTest(void);
-extern void expenderLedTest ();
+extern void expenderLedTest();
+extern int	wallSensorsCalibrationFront(void);
+extern int	wallSensorsCalibrationDiag (void);
 
 /*
  * to create a new menu you have to create a new variable of type "const menuItem" like this :
@@ -113,7 +115,8 @@ const menuItem parameters_menu=
 {
 		"Parameters menu",
 		{
-//				{"calibration",'f',(void*)wallSensorsCalibration}
+				{"calibration front",'f',(void*)wallSensorsCalibrationFront},
+				{"calibration diag",'f',(void*)wallSensorsCalibrationDiag}
 		}
 };
 const menuItem peripheral_test_menu=

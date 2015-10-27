@@ -23,7 +23,8 @@
 /* Types definitions */
 
 
-int   wallSensorsCalibration();
+int   wallSensorsCalibrationFront(void);
+int	  wallSensorsCalibrationDiag (void);
 void  testWallsSensors();
 void  testPostSensors();
 
