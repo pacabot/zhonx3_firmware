@@ -84,7 +84,7 @@ int maze(void)
 //	move (0, -CELL_LENGTH/2, 50, 0);
 //	while(isEndMove() != true);
 	control_params.wall_follow_state = TRUE;
-	motorsSleepDriver(ON);
+//	motorsSleepDriver(ON);
 
 	printMaze(maze,positionZhonx.cordinate);
 	do
