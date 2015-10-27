@@ -7,6 +7,7 @@
 #include "config/basetypes.h"
 
 /* peripherale inlcudes*/
+#include "peripherals/times_base/times_base.h"
 #include "peripherals/display/ssd1306.h"
 #include "peripherals/expander/pcf8574.h"
 #include "peripherals/motors/motors.h"
@@ -36,11 +37,11 @@ int maze(void)
 	mazeInit (&maze);
 	positionRobot positionZhonx;
 
-	telemetersInit();
+    ledPowerBlink(0, 0, 0);
+	mainControlInit();
 	telemetersStart();
-	mainControlInit ();
 
-	control_params.wall_follow_state = true;
+	control_params.wall_follow_state = TRUE;
 
 	motorsSleepDriver(OFF);
 	move(0, 0, 0, 0);
@@ -72,18 +73,18 @@ int maze(void)
 //	{
 //		calibrateSimple ();
 //	}
-	for (int i = 0; i < 4; ++i)
-	{
-		rotate90WithCal(CW, 300, 0);
-		while(isEndMove() != true);
-		positionZhonx.orientation=(positionZhonx.orientation+1)%4;
-		newCell (getCellState (), &maze, positionZhonx);
-		printLength(maze,positionZhonx.cordinate.x,positionZhonx.cordinate.y);
-	}
-	move (0, -CELL_LENGTH/2, 50, 0);
-	while(isEndMove() != true);
+//	for (int i = 0; i < 4; ++i)
+//	{
+//		rotate90WithCal(CW, 300, 0);
+//		while(isEndMove() != true);
+//		positionZhonx.orientation=(positionZhonx.orientation+1)%4;
+//		newCell (getCellState (), &maze, positionZhonx);
+//		printLength(maze,positionZhonx.cordinate.x,positionZhonx.cordinate.y);
+//	}
+//	move (0, -CELL_LENGTH/2, 50, 0);
+//	while(isEndMove() != true);
 	control_params.wall_follow_state = TRUE;
-	motorsSleepDriver(ON);
+//	motorsSleepDriver(ON);
 
 	printMaze(maze,positionZhonx.cordinate);
 	do
@@ -92,14 +93,6 @@ int maze(void)
 		exploration (&maze, &positionZhonx, zhonxSettings.maze_end_coordinate);
 //		if (zhonxSettings.calibration_enabled == true)
 //			calibrateSimple ();
-		for (int i = 0; i < 4; ++i)
-		{
-			rotate90WithCal(CW, 300, 0);
-			while(isEndMove() != true);
-			positionZhonx.orientation=(positionZhonx.orientation+1)%4;
-			newCell (getCellState (), &maze, positionZhonx);
-			printLength(maze,positionZhonx.cordinate.x,positionZhonx.cordinate.y);
-		}
 		HAL_Delay (2000);
 		exploration (&maze, &positionZhonx, start_coordinate);
 //		if (zhonxSettings.calibration_enabled == true)
@@ -117,7 +110,6 @@ int maze(void)
 void exploration(labyrinthe *maze, positionRobot* positionZhonx,  coordinate end_coordinate)
 {
 	coordinate way[MAZE_SIZE*MAZE_SIZE] = {0};
-	motorsSleepDriver (OFF);
 	newCell (getCellState(), maze, *positionZhonx);
 	while (positionZhonx->cordinate.x != end_coordinate.x || positionZhonx->cordinate.y != end_coordinate.y)
 	{
@@ -175,9 +167,7 @@ void moveVirtualZhonx(labyrinthe maze, positionRobot positionZhonxVirtuel,
 				}
 			}
 		}
-
 		printMaze(maze,positionZhonxVirtuel.cordinate);
-		ssd1306Refresh ();
 		way[i].x = positionZhonxVirtuel.cordinate.x, way[i].y = positionZhonxVirtuel.cordinate.y;
 		i++;
 	}

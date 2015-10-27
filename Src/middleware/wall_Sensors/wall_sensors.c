@@ -42,7 +42,6 @@ walls cell_state = {NO_WALL,NO_WALL,NO_WALL,NO_WALL};
 
 char getWallPresence(enum wallSelectorEnum wallSelector)
 {
-
 	switch (wallSelector)
 	{
 	case LEFT_WALL:

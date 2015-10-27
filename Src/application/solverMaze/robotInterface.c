@@ -53,7 +53,7 @@ void move_zhonx_arc (int direction_to_go, positionRobot *positionZhonx, int numb
 		case RIGHT :
 			if (positionZhonx->midOfCell == true)
 			{
-				while(isEndMove() != TRUE);
+				while(isEndMove() != TRUE);				//todo rotate in place
 				move (90, 0, MAX_SPEED_ROTATION, 0);
 			}
 			else
@@ -100,7 +100,7 @@ void move_zhonx_arc (int direction_to_go, positionRobot *positionZhonx, int numb
 	{
 		moveHalfCell_IN(MAX_SPEED_TRANSLATION, END_SPEED_TRANSLATION);
 	}
-	moveCell (numberOfCell, MAX_SPEED_TRANSLATION, END_SPEED_TRANSLATION);
+	moveCell(numberOfCell, MAX_SPEED_TRANSLATION, END_SPEED_TRANSLATION);
 	positionZhonx->midOfCell = end_mid_of_case;
 
 }
@@ -111,9 +111,7 @@ void doUTurn(positionRobot *positionZhonx)
 	goOrientation (&positionZhonx->orientation,
 			(positionZhonx->orientation + 2) % 4);
 
-	move (0, -CELL_LENGTH/2, 50, 0);
-	while (isEndMove() != TRUE);
-	HAL_Delay(200);
+	moveUTurn(MAX_SPEED_ROTATION, MAX_SPEED_TRANSLATION, END_SPEED_TRANSLATION);
 	motorsSleepDriver(ON);
 }
 
@@ -230,6 +228,7 @@ int waitValidation(unsigned long timeout)
 void newCell(walls new_walls, labyrinthe *maze, positionRobot positionZhonx)
 {
 #ifdef DEBUG
+	telemetersStop();
 	/*print walls position*/
 	static char i=1;
 	i++;
@@ -324,15 +323,39 @@ void newCell(walls new_walls, labyrinthe *maze, positionRobot positionZhonx)
 			maze->cell[(int) (positionZhonx.cordinate.x)][(int) (positionZhonx.cordinate.y)].wall_west = new_walls.front;
 			break;
 	}
-//	telemetersStart();
+	telemetersStart();
 //	motorsSleepDriver(OFF);
 }
 walls getCellState ()
 {
 	walls cell_condition;
-	telemetersStart();
-	cell_condition.front = getWallPresence(FRONT_WALL);
-	cell_condition.left = getWallPresence(LEFT_WALL);
-	cell_condition.right = getWallPresence(RIGHT_WALL);
+//HAL_Delay(500);
+	if (getWallPresence(FRONT_WALL) == false)
+	{
+		cell_condition.front = NO_WALL;
+	}
+	else
+	{
+		cell_condition.front = WALL_PRESENCE;
+	}
+	if (getWallPresence(LEFT_WALL) == false)
+	{
+		cell_condition.left = NO_WALL;
+	}
+	else
+	{
+		cell_condition.left = WALL_PRESENCE;
+	}
+	if (getWallPresence(RIGHT_WALL) == false)
+	{
+		cell_condition.right = NO_WALL;
+	}
+	else
+	{
+		cell_condition.right = WALL_PRESENCE;
+//		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, SET);
+//		HAL_Delay(500);
+//		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, RESET);
+	}
 	return cell_condition;
 }
