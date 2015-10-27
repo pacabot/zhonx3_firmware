@@ -25,19 +25,19 @@ void goOrientation(char *orientationZhonx, char directionToGo)
 		case FORWARD :
 			break;
 		case RIGHT :
-			while(isEndMove() != TRUE);
+			while(hasMoveEnded() != TRUE);
 			move (-90, 0, MAX_SPEED_ROTATION, 0);
-			while(isEndMove() != TRUE);
+			while(hasMoveEnded() != TRUE);
 			break;
 		case UTURN :
-			while(isEndMove() != TRUE);
+			while(hasMoveEnded() != TRUE);
 			move (180, 0, MAX_SPEED_ROTATION, 0);
-			while(isEndMove() != TRUE);
+			while(hasMoveEnded() != TRUE);
 			break;
 		case LEFT :
-			while(isEndMove() != TRUE);
+			while(hasMoveEnded() != TRUE);
 			move (90, 0, MAX_SPEED_ROTATION, 0);
-			while(isEndMove() != TRUE);
+			while(hasMoveEnded() != TRUE);
 			break;
 	}
 }
@@ -53,7 +53,7 @@ void move_zhonx_arc (int direction_to_go, positionRobot *positionZhonx, int numb
 		case RIGHT :
 			if (positionZhonx->midOfCell == true)
 			{
-				while(isEndMove() != TRUE);				//todo rotate in place
+				while(hasMoveEnded() != TRUE);				//todo rotate in place
 				move (90, 0, MAX_SPEED_ROTATION, 0);
 			}
 			else
@@ -73,7 +73,7 @@ void move_zhonx_arc (int direction_to_go, positionRobot *positionZhonx, int numb
 		case LEFT :
 			if (positionZhonx->midOfCell == true)
 			{
-				while(isEndMove() != TRUE);
+				while(hasMoveEnded() != TRUE);
 				move (-90, 0, MAX_SPEED_ROTATION, 0);
 			}
 			else
@@ -107,12 +107,12 @@ void move_zhonx_arc (int direction_to_go, positionRobot *positionZhonx, int numb
 
 void doUTurn(positionRobot *positionZhonx)
 {
-	motorsSleepDriver(OFF);
+	motorsDriverSleep(OFF);
 	goOrientation (&positionZhonx->orientation,
 			(positionZhonx->orientation + 2) % 4);
 
 	moveUTurn(MAX_SPEED_ROTATION, MAX_SPEED_TRANSLATION, END_SPEED_TRANSLATION);
-	motorsSleepDriver(ON);
+	motorsDriverSleep(ON);
 }
 
 int floorSensorCalibrate(void)

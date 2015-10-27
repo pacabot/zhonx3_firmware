@@ -171,6 +171,31 @@ static void CMD(uint8_t c)
 	//	  }
 	//	}
 }
+
+////Send DATA
+//static void DATA(uint8_t c[])
+//{
+//	// I2C
+//	uint8_t control = 0x40;   // Co = 0, D/C = 1
+//
+//	uint8_t aTxBuffer[1]; // = {control, c};
+//	aTxBuffer[0] = control;
+////	aTxBuffer[1] = c;
+//
+////	HAL_I2C_Master_Transmit_DMA(&hi2c1, (uint16_t)120, (uint8_t*)aTxBuffer, 1);
+//	HAL_I2C_Master_Transmit_DMA(&hi2c1, (uint16_t)120, (uint8_t*)c, SSD1306_LCDWIDTH * SSD1306_LCDHEIGHT / 8);
+//	//	while(HAL_I2C_Master_Transmit(&hi2c1, (uint16_t)120, (uint8_t*)aTxBuffer, 2, 10000)!= HAL_OK)
+//	//	{
+//	//	  /* Error_Handler() function is called when Timout error occurs.
+//	//	     When Acknowledge failure ocucurs (Slave don't acknowledge it's address)
+//	//	     Master restarts communication */
+//	//	  if (HAL_I2C_GetError(&hi2c1) != HAL_I2C_ERROR_AF)
+//	//	  {
+//	//	      blink();
+//	//	  }
+//	//	}
+//}
+
 //Send DATA
 static void DATA(uint8_t c)
 {
@@ -414,6 +439,7 @@ void ssd1306Refresh(void)
 	{
 		DATA(buffer[i]);
 	}
+//	DATA(buffer);
 }
 
 /**************************************************************************/

@@ -65,7 +65,7 @@ void lineSensorsCalibration(void)
 	lineSensorsInit();
 	lineSensorsStart();
 	motorsInit();
-	motorsSleepDriver(OFF);
+	motorsDriverSleep(OFF);
 
 	tone(a, 500);
 //	HAL_Delay(1000);
@@ -80,7 +80,7 @@ void lineSensorsCalibration(void)
 	max_Floor.leftExt=(double)lineSensors.left_ext.adc_value;
 	max_Floor.rightExt=(double)lineSensors.right_ext.adc_value;
 	memcpy(&min_Floor, &max_Floor, sizeof(ground_sensors_struct) );
-	while(isEndMove() != TRUE)
+	while(hasMoveEnded() != TRUE)
 	{
 		if (lineSensors.left.adc_value < min_Floor.left) min_Floor.left = lineSensors.left.adc_value;
 		if (lineSensors.front.adc_value < min_Floor.front) min_Floor.front = lineSensors.front.adc_value;
@@ -101,7 +101,7 @@ void lineSensorsCalibration(void)
 	pid_loop.start_state = FALSE;
 	line_follower.active_state = FALSE;
 	telemetersStop();
-	motorsSleepDriver(ON);
+	motorsDriverSleep(ON);
 }
 
 //---------------------------------------------------------------------
@@ -114,7 +114,7 @@ void lineFollower(void)
 	lineSensorsStart();
 	motorsInit();
 	control_params.line_follow_state = TRUE;
-	motorsSleepDriver(OFF);
+	motorsDriverSleep(OFF);
 
 
 	if (max_Floor.left-min_Floor.left< 100.0)
@@ -226,7 +226,7 @@ void lineFollower(void)
 	pid_loop.start_state = FALSE;
 	line_follower.active_state = FALSE;
 	telemetersStop();
-	motorsSleepDriver(ON);
+	motorsDriverSleep(ON);
 }
 
 //----------------------------------------------------------------------

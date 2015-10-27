@@ -43,7 +43,7 @@ extern motor left_motor;
 extern motor right_motor;
 
 void motorsInit(void);
-void motorsSleepDriver(int isOn);
+void motorsDriverSleep(int isOn);
 void motorSet(motor *mot, int duty, int isSlowDecay);
 void motorsBrake(void);
 void motorsTest(void);

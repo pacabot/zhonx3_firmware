@@ -95,9 +95,19 @@ int mainControlLoop(void)
 	return MAIN_CONTROL_E_SUCCESS;
 }
 
+int setWallFollowControl(char isActive)
+{
+	if (isActive == TRUE)
+		control_params.wall_follow_state = TRUE;
+	else
+		control_params.wall_follow_state = FALSE;
+
+	return POSITION_CONTROL_E_SUCCESS;
+}
+
 int move(float angle, float radius_or_distance, float max_speed, float end_speed)
 {
-	pid_loop.start_state = FALSE;
+	pid_loop.start_state = FALSE; //todo optimize
 
 	encoderResetDistance(&left_encoder);
 	encoderResetDistance(&right_encoder);
@@ -142,7 +152,7 @@ int move(float angle, float radius_or_distance, float max_speed, float end_speed
 	return POSITION_CONTROL_E_SUCCESS;
 }
 
-char isEndMove(void)
+char hasMoveEnded(void)
 {
 	if (position_control.end_control == TRUE && speed_control.end_control == TRUE)
 		return TRUE;
@@ -170,12 +180,12 @@ int moveCell(unsigned long nb_cell, float max_speed, float end_speed)
 
 	for(int i = 0; i < (nb_cell - 1); i++)
 	{
-		while(isEndMove() != TRUE);
+		while(hasMoveEnded() != TRUE);
 		move(0, (CELL_LENGTH), max_speed, max_speed);
 	}
-	while(isEndMove() != TRUE);
+	while(hasMoveEnded() != TRUE);
 	move(0, (CELL_LENGTH - (OFFSET_DIST * 2.00)), max_speed, end_speed);
-	while(isEndMove() != TRUE);
+	while(hasMoveEnded() != TRUE);
 	move(0, (OFFSET_DIST * 2.00), max_speed, end_speed);
 
 	return POSITION_CONTROL_E_SUCCESS;
@@ -192,7 +202,7 @@ int moveHalfCell_IN(float max_speed, float end_speed)
 {
 	move_params.initial_position = OFFSET_DIST;
 
-	while(isEndMove() != TRUE);
+	while(hasMoveEnded() != TRUE);
 	move(0, (HALF_CELL_LENGTH - OFFSET_DIST), max_speed, end_speed);
 
 	return POSITION_CONTROL_E_SUCCESS;
@@ -209,9 +219,9 @@ int moveHalfCell_OUT(float max_speed, float end_speed)
 {
 	move_params.initial_position = HALF_CELL_LENGTH;
 
-	while(isEndMove() != TRUE);
+	while(hasMoveEnded() != TRUE);
 	move(0, HALF_CELL_LENGTH - OFFSET_DIST, max_speed, end_speed);
-	while(isEndMove() != TRUE);
+	while(hasMoveEnded() != TRUE);
 	move(0, (OFFSET_DIST * 2.00), max_speed, end_speed);
 
 	return POSITION_CONTROL_E_SUCCESS;
@@ -228,9 +238,9 @@ int moveStartCell(float max_speed, float end_speed)
 {
 	move_params.initial_position = Z3_CENTER_BACK_DIST;
 
-	while(isEndMove() != TRUE);
+	while(hasMoveEnded() != TRUE);
 	move(0, ((CELL_LENGTH - (Z3_CENTER_BACK_DIST + HALF_WALL_THICKNESS)) - OFFSET_DIST), max_speed, end_speed);
-	while(isEndMove() != TRUE);
+	while(hasMoveEnded() != TRUE);
 	move(0, (OFFSET_DIST * 2.00), max_speed, end_speed);
 
 	return POSITION_CONTROL_E_SUCCESS;
@@ -247,9 +257,9 @@ int moveRotateCW90(float max_speed, float end_speed)
 {
 	move_params.initial_position = (CELL_LENGTH - OFFSET_DIST); //ignore rotate
 
-	while(isEndMove() != TRUE);
+	while(hasMoveEnded() != TRUE);
 	move(90, (HALF_CELL_LENGTH - OFFSET_DIST), max_speed, max_speed);
-	while(isEndMove() != TRUE);
+	while(hasMoveEnded() != TRUE);
 	move(0, (OFFSET_DIST * 2.00), max_speed, end_speed);
 
 	return POSITION_CONTROL_E_SUCCESS;
@@ -266,9 +276,9 @@ int moveRotateCCW90(float max_speed, float end_speed)
 {
 	move_params.initial_position = (CELL_LENGTH - OFFSET_DIST); //ignore rotate
 
-	while(isEndMove() != TRUE);
+	while(hasMoveEnded() != TRUE);
 	move(-90, (HALF_CELL_LENGTH - OFFSET_DIST), max_speed, max_speed);
-	while(isEndMove() != TRUE);
+	while(hasMoveEnded() != TRUE);
 	move(0, (OFFSET_DIST * 2.00), max_speed, end_speed);
 
 	return POSITION_CONTROL_E_SUCCESS;
@@ -287,10 +297,10 @@ int moveRotateCCW90(float max_speed, float end_speed)
  */
 int moveUTurn(float speed_rotation, float max_speed, float end_speed)
 {
-	while(isEndMove() != TRUE);
+	while(hasMoveEnded() != TRUE);
 	moveHalfCell_IN(max_speed, 0);
 
-	while(isEndMove() != TRUE);
+	while(hasMoveEnded() != TRUE);
 	move (180, 0, speed_rotation, 0);
 
 	moveHalfCell_OUT(max_speed, end_speed);
@@ -319,7 +329,7 @@ int frontCal(float max_speed)
 	if (relative_dist < MAX_DIST_FOR_ALIGN)
 	{
 		move(0, relative_dist - CENTER_DISTANCE, max_speed, 0);
-		while(isEndMove() != TRUE);
+		while(hasMoveEnded() != TRUE);
 	}
 
 
@@ -335,7 +345,7 @@ int rotate180WithCal(enum rotationTypeEnum rotation_type, float max_speed, float
 		move(90, 0, max_speed, 0);
 	else
 		move(-90, 0, max_speed, 0);
-	while(isEndMove() != TRUE);
+	while(hasMoveEnded() != TRUE);
 	/***************************************/
 
 	frontCal(max_speed);
@@ -345,7 +355,7 @@ int rotate180WithCal(enum rotationTypeEnum rotation_type, float max_speed, float
 		move(90, 0, max_speed, end_speed);
 	else
 		move(-90, 0, max_speed, end_speed);
-	while(isEndMove() != TRUE);
+	while(hasMoveEnded() != TRUE);
 	/***************************************/
 
 	return POSITION_CONTROL_E_SUCCESS;
@@ -358,7 +368,7 @@ int rotate90WithCal(enum rotationTypeEnum rotation_type, float max_speed, float 
 		move(90, 0, max_speed, 0);
 	else
 		move(-90, 0, max_speed, 0);
-	while(isEndMove() != TRUE);
+	while(hasMoveEnded() != TRUE);
 	/***************************************/
 
 	frontCal(max_speed);
@@ -387,7 +397,7 @@ void mainControlDisplayTest(void)
 	}
 	pid_loop.start_state = FALSE;
 	telemetersStop();
-	motorsSleepDriver(ON);
+	motorsDriverSleep(ON);
 }
 
 void mainControlTest(void)
@@ -407,7 +417,7 @@ void followWallTest()
     ledPowerBlink(0, 0, 0);
 	mainControlInit();
 	telemetersStart();
-	motorsSleepDriver(OFF);
+	motorsDriverSleep(OFF);
 
 	//	position_control.position_type = GYRO;
 	control_params.wall_follow_state = TRUE;
@@ -471,7 +481,7 @@ void rotateTest()
 {
 	mainControlInit();
 //	telemetersStart();
-	motorsSleepDriver(OFF);
+	motorsDriverSleep(OFF);
 
 	//	position_control.position_type = GYRO;
 	control_params.wall_follow_state = TRUE;

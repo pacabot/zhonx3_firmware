@@ -106,7 +106,7 @@ int positionControlLoop(void)
 		position_control.position_type = ENCODERS;
 	}
 
-	if (position_params.nb_loop_accel > 0)
+	if (position_params.nb_loop_accel > 0.00)
 	{
 		position_params.nb_loop_accel--;
 		position_control.position_consign += position_params.accel_dist_per_loop;
@@ -117,13 +117,13 @@ int positionControlLoop(void)
 		position_params.nb_loop_maint--;
 		position_control.current_diff_dist_consign += position_control.position_consign;
 	}
-	else if (position_params.nb_loop_decel > 0)
+	else if (position_params.nb_loop_decel > 0.00)
 	{
 		position_params.nb_loop_decel--;
 		position_control.position_consign -= position_params.decel_dist_per_loop;
 		position_control.current_diff_dist_consign += position_control.position_consign;
 	}
-	else if (position_params.nb_loop_decel <= 0)
+	else if (position_params.nb_loop_decel <= 0.00)
 	{
 		position_control.current_diff_dist_consign = position_params.distance_consign;
 		position_control.end_control = 1;

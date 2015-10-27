@@ -61,8 +61,9 @@ int mainControlLoop(void);
  *
  * @retval HAL status
  */
+int  setWallFollowControl(char isActive);
 int  move(float angle, float radius_or_distance, float max_speed, float end_speed);
-char isEndMove(void);
+char hasMoveEnded(void);
 int  frontCal(float max_speed);
 int  rotate180WithCal(enum rotationTypeEnum rotation_type, float max_speed, float end_speed);
 int  rotate90WithCal(enum rotationTypeEnum rotation_type, float max_speed, float end_speed);

@@ -96,10 +96,10 @@ void motorsInit(void)
 	sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
 	HAL_TIMEx_MasterConfigSynchronization(&htim8, &sMasterConfig);
 
-	motorsSleepDriver(ON);
+	motorsDriverSleep(ON);
 }
 
-void motorsSleepDriver(int isOn)
+void motorsDriverSleep(int isOn)
 {
 	if (isOn == 1)
 		HAL_GPIO_WritePin(GPIOA, MOTORS_STANDBY, RESET);
@@ -265,7 +265,7 @@ void motorsTest(void)
 	// Forward Fast (PWM on IN1, LOW on IN2)
 	motorSet(&left_motor, 0, DECAY_FAST);
 	motorSet(&right_motor, 0, DECAY_FAST);
-	motorsSleepDriver(OFF);
+	motorsDriverSleep(OFF);
 
 	ssd1306ClearScreen();
 	ssd1306DrawString(1,  20,  "FWD FAST DECAY 0->20%", &Font_5x8);
@@ -376,5 +376,5 @@ void motorsTest(void)
 	ssd1306Refresh();
 	motorsBrake();
 
-	motorsSleepDriver(ON);
+	motorsDriverSleep(ON);
 }

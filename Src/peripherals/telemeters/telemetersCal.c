@@ -52,30 +52,35 @@ int wallSensorsCalibrationFront (void)
 	ssd1306Refresh();
 
 	mainControlInit();
-	telemetersInit();
+	motorsDriverSleep(OFF);
+
 	telemetersStart();
-//	control_params.wall_follow_state = FALSE;
+	setWallFollowControl(FALSE);
+
 	move(0,0,0,0);
-	HAL_Delay(1000);
+	HAL_Delay(3000);
 	for(int i = 0; i < NUMBER_OF_CELL; i++)
 	{
-		ssd1306ProgressBar(10,10,(i*100)/NUMBER_OF_CELL);
-		ssd1306ProgressBar(10,40,(i*50)/NUMBER_OF_CELL);
-		ssd1306Refresh();
+//		ssd1306ProgressBar(10,10,(i*100)/NUMBER_OF_CELL);
+//		ssd1306ProgressBar(10,40,(i*50)/NUMBER_OF_CELL);
+//		ssd1306Refresh();
 
 		telemeter_FL_profile[i]=telemeters.FL.avrg;
 		telemeter_FR_profile[i]=telemeters.FR.avrg;
 
 
-		move(0,-NUMBER_OF_MILLIMETER_BY_LOOP,50,0);
-		while(isEndMove() != TRUE);
+		move(0,-NUMBER_OF_MILLIMETER_BY_LOOP,5,5);
+		while(hasMoveEnded() != TRUE);
 	}
+	telemetersStop();
+	motorsDriverSleep(ON);
 
 	bluetoothPrintf("\n\n\nfilterd measures :\n");
 	for (int i = 0; i < NUMBER_OF_CELL; ++i)
 	{
 		bluetoothPrintf("%2d|%10d|%d\n",i,telemeter_FL_profile[i],telemeter_FR_profile[i]);
 	}
+	return TELEMETERS_DRIVER_E_SUCCESS;
 }
 int wallSensorsCalibrationDiag (void)
 {
@@ -83,33 +88,40 @@ int wallSensorsCalibrationDiag (void)
 	ssd1306DrawString(0,0,"Place the robot front",&Font_5x8);
 	ssd1306DrawString(0,10,"of wall and press 'RIGHT'",&Font_5x8);
 	ssd1306Refresh();
+
 	while(expanderJoyFiltered()!=JOY_RIGHT);
+
 	ssd1306ProgressBar(10,10,0);
+	ssd1306ClearScreen();
+	ssd1306Printf(0,0,&Font_5x8,"Calibrating front sensors");
 	ssd1306Refresh();
+
 	mainControlInit();
-	telemetersInit();
+	motorsDriverSleep(OFF);
+
 	telemetersStart();
-	control_params.wall_follow_state = FALSE;
+	setWallFollowControl(FALSE);
+
 	move(0,0,0,0);
-	HAL_Delay(1000);
+	HAL_Delay(3000);
 
 	for(int i=0;i<NUMBER_OF_CELL;i++)
 	{
-		ssd1306ProgressBar(10,10,(i*100)/NUMBER_OF_CELL);
-		ssd1306Refresh();
-		move(0,-sqrtf(2*powf(NUMBER_OF_MILLIMETER_BY_LOOP,2)),50,0);
-		while(isEndMove() != TRUE);
+//		ssd1306ProgressBar(10,10,(i*100)/NUMBER_OF_CELL);
+//		ssd1306Refresh();
+		move(0,-sqrtf(2*powf(NUMBER_OF_MILLIMETER_BY_LOOP,2)),5,5);
+		while(hasMoveEnded() != TRUE);
 		telemeter_DL_profile[i]=telemeters.DL.avrg;
 		telemeter_DR_profile[i]=telemeters.DR.avrg;
 	}
+	telemetersStop();
+	motorsDriverSleep(ON);
 
 	bluetoothPrintf("\n\n\nfilterd diag measures :\n");
 	for (int i = 0; i < NUMBER_OF_CELL; ++i)
 	{
 		bluetoothPrintf("%2d|%10d|%d\n",i,telemeter_DL_profile[i],telemeter_DR_profile[i]);
 	}
-	telemetersStop();
-	motorsSleepDriver(ON);
 	return TELEMETERS_DRIVER_E_SUCCESS;
 }
 
@@ -117,7 +129,7 @@ void testTelemeterDistance()
 {
 	telemetersInit();
 	telemetersStart();
-	motorsSleepDriver(OFF);
+	motorsDriverSleep(OFF);
 
 	while(expanderJoyFiltered()!=JOY_LEFT)
 	{
@@ -143,7 +155,7 @@ void testWallsSensors()
 {
 	telemetersInit();
 	telemetersStart();
-	motorsSleepDriver(OFF);
+	motorsDriverSleep(OFF);
 
 	while(expanderJoyFiltered()!=JOY_LEFT)
 	{

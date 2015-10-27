@@ -43,7 +43,7 @@ int maze(void)
 
 	control_params.wall_follow_state = TRUE;
 
-	motorsSleepDriver(OFF);
+	motorsDriverSleep(OFF);
 	move(0, 0, 0, 0);
 	HAL_Delay(500);
 
@@ -119,7 +119,7 @@ void exploration(labyrinthe *maze, positionRobot* positionZhonx,  coordinate end
 		moveRealZhonxArc (maze, positionZhonx, way);//, &end_coordinate.x, &end_coordinate.y);
 	}
 	HAL_Delay (200);
-	motorsSleepDriver (ON);
+	motorsDriverSleep (ON);
 
 }
 
@@ -160,7 +160,7 @@ void moveVirtualZhonx(labyrinthe maze, positionRobot positionZhonxVirtuel,
 				printMaze(maze,positionZhonxVirtuel.cordinate);
 				ssd1306DrawString (60, 0, "no solution", &Font_5x8);
 				ssd1306Refresh ();
-				motorsSleepDriver (ON);
+				motorsDriverSleep (ON);
 				while (true)
 				{
 					HAL_Delay (200);
@@ -220,7 +220,7 @@ void moveRealZhonxArc(labyrinthe *maze, positionRobot *positionZhonx, coordinate
 			bluetoothPrintf("Error way : position zhonx x= %d y=%d \t way x= %d y=%d \n",\
 					positionZhonx->cordinate.x,positionZhonx->cordinate.y, way[i].x, way[i].y);
 			HAL_Delay (200);
-			motorsSleepDriver (ON);
+			motorsDriverSleep (ON);
 			ssd1306DrawString (60, 0, "Error way", &Font_5x8);
 			ssd1306Refresh ();
 			while (1)
