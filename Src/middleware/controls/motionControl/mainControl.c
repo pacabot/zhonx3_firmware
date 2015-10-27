@@ -66,6 +66,9 @@ int mainControlInit(void)
 	lineFollowControlInit();
 	transfertFunctionInit();
 	adxrs620Init();
+	position_control.position_type = ENCODERS;
+	pid_loop.start_state = TRUE;
+	setWallFollowControl(FALSE);
 
 	speed_params.initial_speed = 0;
 	move_params.moveType = STRAIGHT;
@@ -107,7 +110,7 @@ int setWallFollowControl(char isActive)
 
 int move(float angle, float radius_or_distance, float max_speed, float end_speed)
 {
-	pid_loop.start_state = FALSE; //todo optimize
+//	pid_loop.start_state = FALSE; //todo optimize
 
 	encoderResetDistance(&left_encoder);
 	encoderResetDistance(&right_encoder);
@@ -148,7 +151,7 @@ int move(float angle, float radius_or_distance, float max_speed, float end_speed
 		positionProfileCompute(distance_per_wheel, speedProfileCompute(distance));
 	}
 
-	pid_loop.start_state = TRUE;
+//	pid_loop.start_state = TRUE;
 	return POSITION_CONTROL_E_SUCCESS;
 }
 
@@ -431,9 +434,9 @@ void followWallTest()
 	expanderLedState(3,0);
 
 	int Vmin, Vmax, Vrotate;
-	Vmin = 500;
-	Vmax = 900;
-	Vrotate = 400;
+	Vmin = 100;
+	Vmax = 200;
+	Vrotate = 100;
 
 	moveStartCell(Vmax, Vmax);
 	moveCell(4, Vmax, Vmin);

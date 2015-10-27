@@ -74,26 +74,17 @@ int wallFollowControlInit(void)
 
 char isDeadZone(void)
 {
-	double distance = (((encoderGetDistance(&left_encoder) + encoderGetDistance(&right_encoder)) / 2.00) + OFFSET_DIST);
+	double distance = (((encoderGetDistance(&left_encoder) + encoderGetDistance(&right_encoder)) / 2.00) + move_params.initial_position);
 
 	if (distance > (DEADZONE_DIST - (DEADZONE / 2.00)) &&
 			distance < (DEADZONE_DIST + (DEADZONE / 2.00)))
 	{
-//		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, SET);
+		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, SET);
 		return TRUE;
-	}
-	//	else if (distance < (DEADZONE_DIST - (DEADZONE / 2.00)))
-	//	{
-	//		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, RESET);
-	//		return FALSE;
-	//	}
-	else if (distance <= 4.00) //todo add define
-	{
-		return FALSE;
 	}
 	else
 	{
-//		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, RESET);
+		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, RESET);
 		return FALSE;
 	}
 }
@@ -103,13 +94,20 @@ int wallFollowControlLoop(void)
 	if (move_params.moveType != STRAIGHT)
 		return WALL_FOLLOW_CONTROL_E_SUCCESS;
 
+	//	return WALL_FOLLOW_CONTROL_E_SUCCESS;
+
 	if (isDeadZone() == TRUE) //todo redefine call architecture
 	{
 		position_control.position_type = POSITION_CTRL;
 		wall_follow_control.follow_error = 0;
 		pidControllerReset(wall_follow_control.follow_pid.instance);
 	}
-	//else if (cell_state.left == WALL_PRESENCE)
+	else if (getWallPresence(FRONT_WALL) == TRUE)
+	{
+		position_control.position_type = POSITION_CTRL;
+		wall_follow_control.follow_error = 0;
+		pidControllerReset(wall_follow_control.follow_pid.instance);
+	}
 	else if (getWallPresence(LEFT_WALL) == TRUE)
 	{
 		wall_follow_control.follow_error = wallFollow(&telemeters.DL);

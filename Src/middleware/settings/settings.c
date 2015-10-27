@@ -14,8 +14,8 @@ int settingsInit (void)
 {
 	zhonxSettings.calibration_enabled=false;
 	zhonxSettings.color_sensor_enabled=false;
-	zhonxSettings.maze_end_coordinate.x=1;
-	zhonxSettings.maze_end_coordinate.y=1;
+	zhonxSettings.maze_end_coordinate.x=7;
+	zhonxSettings.maze_end_coordinate.y=7;
 	zhonxSettings.sleep_delay_s=300; // the robot will go sleep in zhonxSettings.sleep_delay_s S
 	return SETTING_MODULE_E_SUCCESS;
 }

@@ -249,8 +249,6 @@ void newCell(walls new_walls, labyrinthe *maze, positionRobot positionZhonx)
 	ssd1306Refresh();
 	/*end print wall position*/
 #endif
-//		telemetersStop();
-//		motorsSleepDriver(ON);
 	switch (positionZhonx.orientation)
 	{
 		case NORTH :
@@ -323,13 +321,11 @@ void newCell(walls new_walls, labyrinthe *maze, positionRobot positionZhonx)
 			maze->cell[(int) (positionZhonx.cordinate.x)][(int) (positionZhonx.cordinate.y)].wall_west = new_walls.front;
 			break;
 	}
-	telemetersStart();
-//	motorsSleepDriver(OFF);
 }
 walls getCellState ()
 {
 	walls cell_condition;
-//HAL_Delay(500);
+
 	if (getWallPresence(FRONT_WALL) == false)
 	{
 		cell_condition.front = NO_WALL;
@@ -353,9 +349,6 @@ walls getCellState ()
 	else
 	{
 		cell_condition.right = WALL_PRESENCE;
-//		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, SET);
-//		HAL_Delay(500);
-//		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, RESET);
 	}
 	return cell_condition;
 }

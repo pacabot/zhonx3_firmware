@@ -37,15 +37,10 @@ int maze(void)
 	mazeInit (&maze);
 	positionRobot positionZhonx;
 
-    ledPowerBlink(0, 0, 0);
 	mainControlInit();
 	telemetersStart();
 
 	control_params.wall_follow_state = TRUE;
-
-	motorsDriverSleep(OFF);
-	move(0, 0, 0, 0);
-	HAL_Delay(500);
 
 	/*init for different micromouse competition*/
 
@@ -90,6 +85,11 @@ int maze(void)
 	do
 	{
 		waitStart ();
+
+		HAL_Delay(3000);
+		motorsDriverSleep(OFF);
+		move(0, 0, 0, 0);
+
 		exploration (&maze, &positionZhonx, zhonxSettings.maze_end_coordinate);
 //		if (zhonxSettings.calibration_enabled == true)
 //			calibrateSimple ();
@@ -109,7 +109,7 @@ int maze(void)
 
 void exploration(labyrinthe *maze, positionRobot* positionZhonx,  coordinate end_coordinate)
 {
-	coordinate way[MAZE_SIZE*MAZE_SIZE] = {0};
+	coordinate way[MAZE_SIZE * MAZE_SIZE];// = {0};
 	newCell (getCellState(), maze, *positionZhonx);
 	while (positionZhonx->cordinate.x != end_coordinate.x || positionZhonx->cordinate.y != end_coordinate.y)
 	{
