@@ -53,7 +53,8 @@ extern void followWallTest(void);
 extern void followLineTest(void);
 extern void rotateTest(void);
 extern void curveRotateTest(void);
-
+extern void lineSensorSendBluetooth(void);
+extern void lineSensortest(void);
 /*
  * to create a new menu you have to create a new variable of type "const menuItem" like this :
  * const menuItem name =
@@ -104,6 +105,9 @@ const menuItem follower_menu=
 		{
 				{"line follower",'f',	(void*)lineFollower},
 				{"calibration",'f',		(void*)lineSensorsCalibration},
+				{"Sensor Bluetooth",'f', (void*)lineSensorSendBluetooth},
+				{"test 1",'f', (void*)lineSensortest},
+
 		}
 };
 

@@ -56,6 +56,128 @@ ground_sensors_struct min_Floor;	//global data to memorize minimum value of sens
 
 GPIO_InitTypeDef GPIO_InitStruct;
 
+void averageSensor(ground_sensors_struct, ground_sensors_struct * , int);
+
+
+void averageSensor(ground_sensors_struct current, ground_sensors_struct *tab, int cpt)
+{
+    #define size 10
+	ground_sensors_struct average;
+
+	memcpy(&average, &current, sizeof(ground_sensors_struct) );
+
+    int j= cpt%size;
+    tab[j].front=current.front;
+    tab[j].left=current.left;
+    tab[j].right=current.right;
+    tab[j].rightExt=current.rightExt;
+    tab[j].leftExt=current.leftExt;
+	if (cpt>size)
+	{
+	   for (int k=1;k<size;k++)
+	   {
+		   average.front += tab[k].front;
+		   average.right += tab[k].right;
+		   average.left += tab[k].left;
+		   average.leftExt += tab[k].leftExt;
+		   average.rightExt += tab[k].rightExt;
+	   }
+	   average.front/=10;
+	   average.left/=10;
+	   average.right/=10;
+	   average.leftExt/=10;
+	   average.rightExt/=10;
+
+/*	   ssd1306ClearScreen();
+	   ssd1306PrintInt(10, 15, ",",average.leftExt, &Font_5x8); //,left,front,right,rightExt
+	   ssd1306PrintInt(10, 25, ",",average.left, &Font_5x8); //,left,front,right,rightExt
+	   ssd1306PrintInt(10, 35, ",",average.front, &Font_5x8); //,left,front,right,rightExt
+	   ssd1306PrintInt(10, 45, ",",average.right, &Font_5x8); //,left,front,right,rightExt
+	   ssd1306PrintInt(10, 55, ",",average.rightExt, &Font_5x8); //,left,front,right,rightExt
+	   ssd1306Refresh();*/
+	}
+	memcpy(&current, &average, sizeof(ground_sensors_struct) );
+}
+
+void lineSensortest(void)
+{
+	ground_sensors_struct current;
+	ground_sensors_struct average;
+	ground_sensors_struct tab[10];
+	mainControlInit();
+	telemetersStop();
+	lineSensorsInit();
+	lineSensorsStart();
+	int i=0;
+	for (i=0;i<1000;i++)
+	{
+
+		current.left=lineSensors.left.adc_value;
+		current.front=lineSensors.front.adc_value;
+		current.right=lineSensors.right.adc_value;
+		current.leftExt=lineSensors.left_ext.adc_value;
+		current.rightExt=lineSensors.right_ext.adc_value;
+
+		memcpy(&average, &current, sizeof(ground_sensors_struct) );
+
+		averageSensor(current, tab, i);
+
+
+/*
+       j= i%10;
+       tab[j].front=current.front;
+	   if (i>9)
+	   {
+	      for (int k=1;k<10;k++)
+	      {
+			  average.front += tab[k].front;
+	      }
+	      average.front/=10;
+	   }*/
+	}
+}
+
+void lineSensorSendBluetooth(void)
+{
+	mainControlInit();
+	telemetersStop();
+	lineSensorsInit();
+	lineSensorsStart();
+	motorsInit();
+	motorsSleepDriver(OFF);
+	int leftExt=0;
+	int left=0;
+	int front=0;
+	int right=0;
+	int rightExt=0;
+
+
+	while(expanderJoyFiltered()!=JOY_LEFT)
+	{
+		left=lineSensors.left.adc_value;
+		front=lineSensors.front.adc_value;
+		right=lineSensors.right.adc_value;
+		leftExt=lineSensors.left_ext.adc_value;
+		rightExt=lineSensors.right_ext.adc_value;
+// ===================================================================================
+// Envoi BLUETOOTH
+// ===================================================================================
+
+		bluetoothPrintf("%d , %d , %d , %d , %d \n",leftExt,left,front,right,rightExt);
+		ssd1306ClearScreen();
+		ssd1306DrawString(10, 5, "send hello ZHONX III", &Font_5x8);
+		ssd1306PrintInt(10, 15, "",leftExt, &Font_5x8);
+		ssd1306PrintInt(10, 25, ",",leftExt, &Font_5x8);
+		ssd1306PrintInt(10, 35, ",",leftExt, &Font_5x8);
+		ssd1306PrintInt(10, 45, ",",leftExt, &Font_5x8);
+		ssd1306PrintInt(10, 55, ",",leftExt, &Font_5x8); //,left,front,right,rightExt
+		ssd1306Refresh();
+
+	}
+	antiBounceJoystick();
+}
+
+
 //----------------------------------------------------------------
 // Initialize data sensor to memorize the max and min value for each 5 sensors
 void lineSensorsCalibration(void)
@@ -67,41 +189,96 @@ void lineSensorsCalibration(void)
 	motorsInit();
 	motorsSleepDriver(OFF);
 
+	ground_sensors_struct current;
+	ground_sensors_struct average;
+	ground_sensors_struct tab[10];
+	ground_sensors_struct grostab[4000];
+
 	tone(a, 500);
 //	HAL_Delay(1000);
-	move(0, 100, 200, 0);
-
+	move(45, 0, 100, 0);
+	while(isEndMove() != TRUE){}
+	move(-90, 0, 100, 0);
 // -------------------------------------------------------------
 // Init line Sensor
 
-	max_Floor.left=(double)lineSensors.left.adc_value;
-	max_Floor.front=(double)lineSensors.front.adc_value;
-	max_Floor.right=(double)lineSensors.right.adc_value;
-	max_Floor.leftExt=(double)lineSensors.left_ext.adc_value;
-	max_Floor.rightExt=(double)lineSensors.right_ext.adc_value;
+	max_Floor.left=lineSensors.left.adc_value;
+	max_Floor.front=lineSensors.front.adc_value;
+	max_Floor.right=lineSensors.right.adc_value;
+	max_Floor.leftExt=lineSensors.left_ext.adc_value;
+	max_Floor.rightExt=lineSensors.right_ext.adc_value;
 	memcpy(&min_Floor, &max_Floor, sizeof(ground_sensors_struct) );
+	memcpy(&current, &min_Floor, sizeof(ground_sensors_struct) );
+
+	int i=0; int j=0;
+
+
 	while(isEndMove() != TRUE)
 	{
-		if (lineSensors.left.adc_value < min_Floor.left) min_Floor.left = lineSensors.left.adc_value;
-		if (lineSensors.front.adc_value < min_Floor.front) min_Floor.front = lineSensors.front.adc_value;
-		if (lineSensors.right.adc_value < min_Floor.right) min_Floor.right = lineSensors.right.adc_value;
-		if (lineSensors.left_ext.adc_value < min_Floor.leftExt) min_Floor.leftExt = lineSensors.left_ext.adc_value;
-		if (lineSensors.right_ext.adc_value < min_Floor.rightExt) min_Floor.rightExt = lineSensors.right_ext.adc_value;
 
-		if (lineSensors.left.adc_value > max_Floor.left) max_Floor.left = lineSensors.left.adc_value;
-		if (lineSensors.front.adc_value > max_Floor.front) max_Floor.front = lineSensors.front.adc_value;
-		if (lineSensors.right.adc_value > max_Floor.right) max_Floor.right = lineSensors.right.adc_value;
-		if (lineSensors.left_ext.adc_value > max_Floor.leftExt) max_Floor.leftExt = lineSensors.left_ext.adc_value;
-		if (lineSensors.right_ext.adc_value > max_Floor.rightExt) max_Floor.rightExt = lineSensors.right_ext.adc_value;
+		current.left=lineSensors.left.adc_value;
+		current.front=lineSensors.front.adc_value;
+		current.right=lineSensors.right.adc_value;
+		current.leftExt=lineSensors.left_ext.adc_value;
+		current.rightExt=lineSensors.right_ext.adc_value;
+
+		if (current.left < min_Floor.left) min_Floor.left = current.left;
+		if (current.front < min_Floor.front) min_Floor.front = current.front;
+		if (current.right < min_Floor.right) min_Floor.right = current.right;
+		if (current.leftExt < min_Floor.leftExt) min_Floor.leftExt = current.leftExt;
+		if (current.rightExt < min_Floor.rightExt) min_Floor.rightExt = current.rightExt;
+
+		if (current.left > max_Floor.left) max_Floor.left = current.left;
+		if (current.front > max_Floor.front) max_Floor.front = current.front;
+		if (current.right > max_Floor.right) max_Floor.right = current.right;
+		if (current.leftExt > max_Floor.leftExt) max_Floor.leftExt = current.leftExt;
+		if (current.rightExt > max_Floor.rightExt) max_Floor.rightExt = current.rightExt;
+
+		memcpy(&average, &current, sizeof(ground_sensors_struct) );
+		averageSensor(current, tab, i);
+		i++;
+		if(i%10==0)
+		{
+			if (j<4000)
+			{
+			    memcpy(&grostab[j], &average, sizeof(ground_sensors_struct) );
+			}
+			else
+			{
+				tone(e, 50);
+			}
+			j=j+1;
+		}
 	}
+	move(45, 0, 100, 0);
 	tone(b, 500);
 	tone(c, 500);
 
+
+
+	ssd1306ClearScreen();
+	ssd1306PrintInt(5, 5,  "compteur ", (uint16_t) i, &Font_5x8);
+	ssd1306PrintInt(80, 5,  "-", (uint16_t) j, &Font_5x8);
+
+   ssd1306PrintInt(10, 15, ",",min_Floor.leftExt, &Font_5x8); //,left,front,right,rightExt
+   ssd1306PrintInt(10, 25, ",",min_Floor.left, &Font_5x8); //,left,front,right,rightExt
+   ssd1306PrintInt(10, 35, ",",min_Floor.front, &Font_5x8); //,left,front,right,rightExt
+   ssd1306PrintInt(10, 45, ",",min_Floor.right, &Font_5x8); //,left,front,right,rightExt
+   ssd1306PrintInt(10, 55, ",",min_Floor.rightExt, &Font_5x8); //,left,front,right,rightExt
+
+   ssd1306PrintInt(42, 15, ",",max_Floor.leftExt, &Font_5x8); //,left,front,right,rightExt
+   ssd1306PrintInt(42, 25, ",",max_Floor.left, &Font_5x8); //,left,front,right,rightExt
+   ssd1306PrintInt(42, 35, ",",max_Floor.front, &Font_5x8); //,left,front,right,rightExt
+   ssd1306PrintInt(42, 45, ",",max_Floor.right, &Font_5x8); //,left,front,right,rightExt
+   ssd1306PrintInt(42, 55, ",",max_Floor.rightExt, &Font_5x8); //,left,front,right,rightExt
+
+	ssd1306Refresh();
 	// desactivate PID
 	pid_loop.start_state = FALSE;
 	line_follower.active_state = FALSE;
 	telemetersStop();
 	motorsSleepDriver(ON);
+	HAL_Delay(20000);
 }
 
 //---------------------------------------------------------------------

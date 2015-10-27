@@ -22,11 +22,11 @@ extern line_follower_struct line_follower;
 
 typedef struct
 {
-	double left;
-	double front;
-	double right;
-	double leftExt;
-	double rightExt;
+	int left;
+	int front;
+	int right;
+	int leftExt;
+	int rightExt;
 } ground_sensors_struct;
 
 void lineSensorsCalibration(void);
