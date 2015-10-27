@@ -117,7 +117,6 @@ void testTelemeterDistance()
 {
 	telemetersInit();
 	telemetersStart();
-	motorsSleepDriver(OFF);
 
 	while(expanderJoyFiltered()!=JOY_LEFT)
 	{
