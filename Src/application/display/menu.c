@@ -94,7 +94,7 @@ const menuItem maze_menu=
 				{"calibration",'b',		(void*)&zhonxSettings.calibration_enabled},
 				{"color finish",'b',	(void*)&zhonxSettings.color_sensor_enabled},
 				{"x finish",'i',		(void*)&zhonxSettings.maze_end_coordinate.x},
-				{"y finish",'i',		(void*)&zhonxSettings.maze_end_coordinate.x}
+				{"y finish",'i',		(void*)&zhonxSettings.maze_end_coordinate.y}
 		}
 
 };
