@@ -51,10 +51,14 @@ static char getData(void)
 	// I2C
 	uint8_t aRxBuffer[1];
 
+	while (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY)
+	{
+	}
 	HAL_I2C_Master_Receive_DMA(&hi2c1, (uint16_t)65, (uint8_t *)aRxBuffer, 1);
 	while (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY)
 	{
 	}
+
 	return aRxBuffer[0];
 }
 

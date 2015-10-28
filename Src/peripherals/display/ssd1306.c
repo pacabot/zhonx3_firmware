@@ -51,7 +51,7 @@
 /* extern variables ---------------------------------------------------------*/
 extern I2C_HandleTypeDef hi2c1;
 
-unsigned char buffer[SSD1306_LCDWIDTH * SSD1306_LCDHEIGHT / 8]= {
+unsigned char buffer[(SSD1306_LCDWIDTH * SSD1306_LCDHEIGHT / 8) + 1]= {
 		/*0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -172,18 +172,26 @@ static void CMD(uint8_t c)
 	//	}
 }
 
-////Send DATA
-//static void DATA(uint8_t c[])
+//Send DATA
+static void DATA(uint8_t c[])
+{
+	// I2C
+	buffer[0] = 0x40; // Co = 0, D/C = 1
+
+	HAL_I2C_Master_Transmit_DMA(&hi2c1, (uint16_t)120, (uint8_t*)c, (SSD1306_LCDWIDTH * SSD1306_LCDHEIGHT / 8) + 1);
+}
+
+//Send DATA
+//static void DATA(uint8_t c)
 //{
 //	// I2C
 //	uint8_t control = 0x40;   // Co = 0, D/C = 1
 //
-//	uint8_t aTxBuffer[1]; // = {control, c};
+//	uint8_t aTxBuffer[2]; // = {control, c};
 //	aTxBuffer[0] = control;
-////	aTxBuffer[1] = c;
+//	aTxBuffer[1] = c;
 //
-////	HAL_I2C_Master_Transmit_DMA(&hi2c1, (uint16_t)120, (uint8_t*)aTxBuffer, 1);
-//	HAL_I2C_Master_Transmit_DMA(&hi2c1, (uint16_t)120, (uint8_t*)c, SSD1306_LCDWIDTH * SSD1306_LCDHEIGHT / 8);
+//	HAL_I2C_Master_Transmit_DMA(&hi2c1, (uint16_t)120, (uint8_t*)aTxBuffer, 2);
 //	//	while(HAL_I2C_Master_Transmit(&hi2c1, (uint16_t)120, (uint8_t*)aTxBuffer, 2, 10000)!= HAL_OK)
 //	//	{
 //	//	  /* Error_Handler() function is called when Timout error occurs.
@@ -195,29 +203,6 @@ static void CMD(uint8_t c)
 //	//	  }
 //	//	}
 //}
-
-//Send DATA
-static void DATA(uint8_t c)
-{
-	// I2C
-	uint8_t control = 0x40;   // Co = 0, D/C = 1
-
-	uint8_t aTxBuffer[2]; // = {control, c};
-	aTxBuffer[0] = control;
-	aTxBuffer[1] = c;
-
-	HAL_I2C_Master_Transmit_DMA(&hi2c1, (uint16_t)120, (uint8_t*)aTxBuffer, 2);
-	//	while(HAL_I2C_Master_Transmit(&hi2c1, (uint16_t)120, (uint8_t*)aTxBuffer, 2, 10000)!= HAL_OK)
-	//	{
-	//	  /* Error_Handler() function is called when Timout error occurs.
-	//	     When Acknowledge failure ocucurs (Slave don't acknowledge it's address)
-	//	     Master restarts communication */
-	//	  if (HAL_I2C_GetError(&hi2c1) != HAL_I2C_ERROR_AF)
-	//	  {
-	//	      blink();
-	//	  }
-	//	}
-}
 
 /**************************************************************************/
 /*!
@@ -355,7 +340,7 @@ void ssd1306DrawPixel(unsigned char x, unsigned char y)
 	if ((x >= SSD1306_LCDWIDTH) || (y >= SSD1306_LCDHEIGHT))
 		return;
 
-	buffer[x+ (y/8)*SSD1306_LCDWIDTH] |= (1 << y%8);
+	buffer[x+ ((y/8)*SSD1306_LCDWIDTH) + 1] |= (1 << y%8);
 }
 
 /**************************************************************************/
@@ -373,7 +358,7 @@ void ssd1306ClearPixel(unsigned char x, unsigned char y)
 	if ((x >= SSD1306_LCDWIDTH) || (y >= SSD1306_LCDHEIGHT))
 		return;
 
-	buffer[x+ (y/8)*SSD1306_LCDWIDTH] &= ~(1 << y%8);
+	buffer[(x+ (y/8)*SSD1306_LCDWIDTH) + 1] &= ~(1 << y%8);
 }
 
 /**************************************************************************/
@@ -392,7 +377,7 @@ void ssd1306InvertPixel(unsigned char x, unsigned char y)
 	{
 		return;
 	}
-	buffer[x + (y / 8) * SSD1306_LCDWIDTH] ^= (1 << (y % 8));
+	buffer[(x + (y / 8) * SSD1306_LCDWIDTH) + 1] ^= (1 << (y % 8));
 }
 
 /**************************************************************************/
@@ -410,7 +395,7 @@ void ssd1306InvertPixel(unsigned char x, unsigned char y)
 unsigned char ssd1306GetPixel(unsigned char x, unsigned char y)
 {
 	if ((x >= SSD1306_LCDWIDTH) || (y >=SSD1306_LCDHEIGHT)) return 0;
-	return buffer[x+ (y/8)*SSD1306_LCDWIDTH] & (1 << y%8) ? 1 : 0;
+	return buffer[(x+ (y/8)*SSD1306_LCDWIDTH) + 1] & (1 << y%8) ? 1 : 0;
 }
 
 /**************************************************************************/
@@ -434,12 +419,12 @@ void ssd1306Refresh(void)
 	CMD(SSD1306_SETHIGHCOLUMN | 0x0);  // hi col = 0
 	CMD(SSD1306_SETSTARTLINE | 0x0); // line #0
 
-	unsigned int i;
-	for (i=0; i<1024; i++)
-	{
-		DATA(buffer[i]);
-	}
-//	DATA(buffer);
+//	unsigned int i;
+//	for (i=0; i<1024; i++)
+//	{
+//		DATA(buffer[i+1]);
+//	}
+	DATA(buffer);
 }
 
 /**************************************************************************/
@@ -502,14 +487,14 @@ void ssd1306PrintInt(unsigned int x, unsigned int y, const char *text, unsigned 
 }
 void ssd1306Printf(int x, int y, const FONT_DEF *font, const char *format, ...)
 {
-	char buffer[43];
+	char temp_buffer[43];
 	va_list va_args;
 
 	va_start(va_args, format);
-    vsnprintf(buffer, 43, format, va_args);
+    vsnprintf(temp_buffer, 43, format, va_args);
     va_end(va_args);
 
-    ssd1306DrawString(x,y,(char *)buffer, font);
+    ssd1306DrawString(x,y,(char *)temp_buffer, font);
 }
 
 /**************************************************************************/
@@ -890,7 +875,7 @@ void ssd1306Test(void)
 	for (i = 0; i <= 100; i+=2)
 	{
 		ssd1306ProgressBar(10, 20, i);
-		//      HAL_Delay(1);
+		HAL_Delay(10);
 		ssd1306Refresh();
 	}
 
