@@ -215,11 +215,11 @@ int menu(const menuItem Menu)
 			}
 			else
 			{
-				line_menu = 0;
-				line_screen = 1;displayMenu(Menu, line_menu - (line_screen - 1));
-				ssd1306InvertArea(0, line_screen * MARGIN,
-						HIGHLIGHT_LENGHT, HIGHLIGHT_HEIGHT);
-				ssd1306Refresh();
+//				line_menu = 0;
+//				line_screen = 1;displayMenu(Menu, line_menu - (line_screen - 1));
+//				ssd1306InvertArea(0, line_screen * MARGIN,
+//						HIGHLIGHT_LENGHT, HIGHLIGHT_HEIGHT);
+//				ssd1306Refresh();
 			}
 			break;
 		case JOY_UP:
@@ -241,23 +241,23 @@ int menu(const menuItem Menu)
 			}
 			else
 			{
-				while(Menu.line[line_menu+1].name != null)
-				{
-					line_menu++;
-				}
-				if (line_menu < MAX_LINE_SCREEN-1)
-				{
-					displayMenu(Menu, 0);
-					line_screen = line_menu;
-				}
-				else
-				{
-					line_screen = MAX_LINE_SCREEN;
-					displayMenu(Menu, line_menu-(MAX_LINE_SCREEN-1));
-				}
-				ssd1306InvertArea(0, MARGIN * line_screen, HIGHLIGHT_LENGHT,
-									HIGHLIGHT_HEIGHT);
-				ssd1306Refresh();
+//				while(Menu.line[line_menu+1].name != null)
+//				{
+//					line_menu++;
+//				}
+//				if (line_menu < MAX_LINE_SCREEN-1)
+//				{
+//					displayMenu(Menu, 0);
+//					line_screen = line_menu;
+//				}
+//				else
+//				{
+//					line_screen = MAX_LINE_SCREEN;
+//					displayMenu(Menu, line_menu-(MAX_LINE_SCREEN-1));
+//				}
+//				ssd1306InvertArea(0, MARGIN * line_screen, HIGHLIGHT_LENGHT,
+//									HIGHLIGHT_HEIGHT);
+//				ssd1306Refresh();
 			}
 			break;
 		case JOY_RIGHT: // Validate button joystick right
@@ -318,7 +318,7 @@ void menuHighlightedMove(unsigned char y, unsigned char max_y)
 		{
 			ssd1306InvertArea(0, y - 1, HIGHLIGHT_LENGHT, HIGHLIGHT_HEIGHT);
 			ssd1306InvertArea(0, y, HIGHLIGHT_LENGHT, HIGHLIGHT_HEIGHT);
-			//				ssd1306Refresh();
+							ssd1306Refresh();
 		}
 	}
 	else
@@ -328,10 +328,10 @@ void menuHighlightedMove(unsigned char y, unsigned char max_y)
 		{
 			ssd1306InvertArea(0, y + 1, HIGHLIGHT_LENGHT, HIGHLIGHT_HEIGHT);
 			ssd1306InvertArea(0, y, HIGHLIGHT_LENGHT, HIGHLIGHT_HEIGHT);
-			//				ssd1306Refresh();
+			ssd1306Refresh();
 		}
 	}
-	ssd1306Refresh();
+//	ssd1306Refresh();
 }
 
 void displayMenu(const menuItem menu,int line)
