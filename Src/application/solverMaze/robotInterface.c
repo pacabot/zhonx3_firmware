@@ -228,7 +228,6 @@ int waitValidation(unsigned long timeout)
 void newCell(walls new_walls, labyrinthe *maze, positionRobot positionZhonx)
 {
 #ifdef DEBUG
-	telemetersStop();
 	/*print walls position*/
 	static char i=1;
 	i++;
@@ -237,16 +236,14 @@ void newCell(walls new_walls, labyrinthe *maze, positionRobot positionZhonx)
 	{
 		ssd1306FillRect(64,0,54,5);
 	}
-	if (new_walls.left)
+	if (new_walls.left == WALL_PRESENCE)
 	{
 		ssd1306FillRect(64,0,5,54);
 	}
-	if (new_walls.right)
+	if (new_walls.right == WALL_PRESENCE)
 	{
 		ssd1306FillRect(113,0,5,54);
 	}
-	ssd1306Printf(60,45,&Font_5x8,"i = %d", i);
-	ssd1306Refresh();
 	/*end print wall position*/
 #endif
 	switch (positionZhonx.orientation)

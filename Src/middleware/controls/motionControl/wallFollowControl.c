@@ -28,6 +28,7 @@
 #include "peripherals/telemeters/telemeters.h"
 #include "peripherals/encoders/ie512.h"
 #include "peripherals/gyroscope/adxrs620.h"
+#include "peripherals/tone/tone.h"
 
 /* Middleware declarations */
 #include "middleware/wall_sensors/wall_sensors.h"
@@ -79,12 +80,12 @@ char isDeadZone(void)
 	if (distance > (DEADZONE_DIST - (DEADZONE / 2.00)) &&
 			distance < (DEADZONE_DIST + (DEADZONE / 2.00)))
 	{
-		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, SET);
+		toneStart(F3H);
 		return TRUE;
 	}
 	else
 	{
-		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, RESET);
+		toneStop();
 		return FALSE;
 	}
 }

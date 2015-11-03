@@ -30,6 +30,8 @@
 #include "application/solverMaze/robotInterface.h"
 #include "application/solverMaze/run.h"
 
+/* extern variables ---------------------------------------------------------*/
+extern I2C_HandleTypeDef hi2c1;
 int maze(void)
 {
 	coordinate start_coordinate; // it's the coordinates which Zhonx have at the start
@@ -824,6 +826,9 @@ void waitStart()
 {
 	ssd1306ClearRect(SSD1306_LCDWIDTH/2,0,SSD1306_LCDWIDTH/2,SSD1306_LCDHEIGHT);
 	ssd1306Printf(SSD1306_LCDWIDTH/2,0,&Font_5x8,"wait start");
+	while (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY)
+	{
+	}
 	ssd1306Refresh();
 	while (expanderJoyFiltered() != JOY_RIGHT)
 	{

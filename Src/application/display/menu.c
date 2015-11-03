@@ -318,7 +318,8 @@ void menuHighlightedMove(unsigned char y, unsigned char max_y)
 		{
 			ssd1306InvertArea(0, y - 1, HIGHLIGHT_LENGHT, HIGHLIGHT_HEIGHT);
 			ssd1306InvertArea(0, y, HIGHLIGHT_LENGHT, HIGHLIGHT_HEIGHT);
-							ssd1306Refresh();
+			ssd1306Refresh();
+			HAL_Delay(5);
 		}
 	}
 	else
@@ -329,6 +330,7 @@ void menuHighlightedMove(unsigned char y, unsigned char max_y)
 			ssd1306InvertArea(0, y + 1, HIGHLIGHT_LENGHT, HIGHLIGHT_HEIGHT);
 			ssd1306InvertArea(0, y, HIGHLIGHT_LENGHT, HIGHLIGHT_HEIGHT);
 			ssd1306Refresh();
+			HAL_Delay(5);
 		}
 	}
 //	ssd1306Refresh();
