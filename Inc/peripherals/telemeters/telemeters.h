@@ -40,10 +40,10 @@
 #define RX_DR				ADC_CHANNEL_10
 #define RX_FR				ADC_CHANNEL_11
 
-extern int telemeter_FR_profile[NUMBER_OF_CELL + 1];
-extern int telemeter_FL_profile[NUMBER_OF_CELL + 1];
-extern int telemeter_DR_profile[NUMBER_OF_CELL + 1];
-extern int telemeter_DL_profile[NUMBER_OF_CELL + 1];
+extern uint16_t telemeter_FR_profile[NUMBER_OF_CELL + 1];
+extern uint16_t telemeter_FL_profile[NUMBER_OF_CELL + 1];
+extern uint16_t telemeter_DR_profile[NUMBER_OF_CELL + 1];
+extern uint16_t telemeter_DL_profile[NUMBER_OF_CELL + 1];
 
 /* Types definitions */
 

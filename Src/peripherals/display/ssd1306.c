@@ -415,9 +415,9 @@ void ssd1306ClearScreen(void)
 /**************************************************************************/
 void ssd1306Refresh(void) 
 {
-	CMD(SSD1306_SETLOWCOLUMN | 0x0);  // low col = 0
-	CMD(SSD1306_SETHIGHCOLUMN | 0x0);  // hi col = 0
-	CMD(SSD1306_SETSTARTLINE | 0x0); // line #0
+//	CMD(SSD1306_SETLOWCOLUMN | 0x0);  // low col = 0
+//	CMD(SSD1306_SETHIGHCOLUMN | 0x0);  // hi col = 0
+//	CMD(SSD1306_SETSTARTLINE | 0x0); // line #0
 
 //	unsigned int i;
 //	for (i=0; i<1024; i++)
@@ -849,10 +849,10 @@ void ssd1306Test(void)
 	ssd1306DrawBmp(Pacabot_bmp, 1, 1, 128, 40);
 	ssd1306Refresh();
 
-	for (i = 0; i <= 100; i+=10)
+	for (i = 0; i <= 100; i+=1)
 	{
 		ssd1306ProgressBar(10, 35, i);
-		//HAL_Delay(1);
+		HAL_Delay(5);
 		ssd1306Refresh();
 	}
 
