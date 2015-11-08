@@ -64,21 +64,64 @@ void eepromWriteByte(unsigned int eeaddress, unsigned char data )
 	}
 }
 
+int eepromWriteBuffer(unsigned int eeaddress, unsigned char *data, unsigned int length)
+{
+    int             page_count = 0;
+    unsigned int    remaining_bytes = 0;
+    int             i = 0;
+
+    // Sanity checks
+    if (length > CONFIG_EEPROM_MAX_PAGE_COUNT)
+    {
+        return E24LC64_DRIVER_E_PAGE_OVERFLOW;
+    }
+
+    // Compute the number of pages
+    page_count = (length / 32);
+
+    // Write pages
+    for (i = 0; i < page_count; i++)
+    {
+        eepromWritePage(eeaddress, data[i * 32], 32);
+        eeaddress += 32;
+    }
+
+    // Compute the number of remaining bytes
+    remaining_bytes = (length % 32);
+
+    // Write the remaining bytes
+    if (remaining_bytes > 0)
+    {
+        eepromWritePage(eeaddress, data[i * 32], remaining_bytes);
+    }
+
+    return E24LC64_DRIVER_E_SUCCESS;
+}
+
 // WARNING: eeaddresspage is a page address, 6-bit end will wrap around
-void eepromWritePage(unsigned int eeaddresspage, unsigned char* data, unsigned char length)
+int eepromWritePage(unsigned int eeaddresspage, unsigned char *data, unsigned char length)
 {
 	unsigned char aTxBuffer[34] = {0};
+
+	if (length > 32)
+	{
+	    return E24LC64_DRIVER_E_PAGE_OVERFLOW;
+	}
 
 	aTxBuffer[0] = (unsigned char)((eeaddresspage & 0xFF00)>> 8); //MSB
 	aTxBuffer[1] = (unsigned char) (eeaddresspage & 0x00FF);	  //LSB
 
 	for (int c = 0; c < length; c++)
+	{
 		aTxBuffer[c+2] = data[c];
+	}
 
 	HAL_I2C_Master_Transmit_DMA(&hi2c1, (unsigned char)0x50<<1, (unsigned char*)aTxBuffer, length+2);
 	while (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY)
 	{
 	}
+
+	return E24LC64_DRIVER_E_SUCCESS;
 }
 
 char eepromReadByte(unsigned int eeaddress)

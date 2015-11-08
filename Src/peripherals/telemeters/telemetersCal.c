@@ -32,6 +32,8 @@
 #include "peripherals/bluetooth/bluetooth.h"
 #include "peripherals/motors/motors.h"
 
+#include "peripherals/eeprom/24lc64.h"
+
 /* Middleware declarations */
 #include "middleware/controls/motionControl/mainControl.h"
 

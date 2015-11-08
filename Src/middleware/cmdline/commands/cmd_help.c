@@ -18,6 +18,8 @@
 
 int cmd_help(const char *args)
 {
+    UNUSED(args);
+
     CMD_HANDLER *hcmd = (CMD_HANDLER *)cmd_handlers;
 
     // Check if Display Callback was registered

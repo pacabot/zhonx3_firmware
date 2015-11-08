@@ -611,7 +611,7 @@ void welcomDisplay()
 		HAL_Delay(5);
 	}
 	ssd1306ClearScreen();
-	ssd1306DrawBmp(five_years_bmp, 1, 1, 128, 54);
+	ssd1306DrawBmp(five_years, 1, 1, 128, 54);
 	ssd1306Refresh();
 	HAL_Delay(300);
 
