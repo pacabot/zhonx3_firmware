@@ -190,7 +190,7 @@ int menu(const menuItem Menu)
 	while (true)
 	{
 		int joystick = expanderJoyFiltered();
-//		killOnLowBattery();
+		killOnLowBattery();
 		switch (joystick)
 		{
 		case JOY_LEFT:

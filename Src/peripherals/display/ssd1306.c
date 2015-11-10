@@ -181,29 +181,6 @@ static void DATA(uint8_t c[])
 	HAL_I2C_Master_Transmit_DMA(&hi2c1, (uint16_t)120, (uint8_t*)c, (SSD1306_LCDWIDTH * SSD1306_LCDHEIGHT / 8) + 1);
 }
 
-//Send DATA
-//static void DATA(uint8_t c)
-//{
-//	// I2C
-//	uint8_t control = 0x40;   // Co = 0, D/C = 1
-//
-//	uint8_t aTxBuffer[2]; // = {control, c};
-//	aTxBuffer[0] = control;
-//	aTxBuffer[1] = c;
-//
-//	HAL_I2C_Master_Transmit_DMA(&hi2c1, (uint16_t)120, (uint8_t*)aTxBuffer, 2);
-//	//	while(HAL_I2C_Master_Transmit(&hi2c1, (uint16_t)120, (uint8_t*)aTxBuffer, 2, 10000)!= HAL_OK)
-//	//	{
-//	//	  /* Error_Handler() function is called when Timout error occurs.
-//	//	     When Acknowledge failure ocucurs (Slave don't acknowledge it's address)
-//	//	     Master restarts communication */
-//	//	  if (HAL_I2C_GetError(&hi2c1) != HAL_I2C_ERROR_AF)
-//	//	  {
-//	//	      blink();
-//	//	  }
-//	//	}
-//}
-
 /**************************************************************************/
 /*!
     @brief  Draws a single graphic character using the supplied font
@@ -419,11 +396,6 @@ void ssd1306Refresh(void)
 //	CMD(SSD1306_SETHIGHCOLUMN | 0x0);  // hi col = 0
 //	CMD(SSD1306_SETSTARTLINE | 0x0); // line #0
 
-//	unsigned int i;
-//	for (i=0; i<1024; i++)
-//	{
-//		DATA(buffer[i+1]);
-//	}
 	DATA(buffer);
 }
 
@@ -849,10 +821,10 @@ void ssd1306Test(void)
 	ssd1306DrawBmp(Pacabot_bmp, 1, 1, 128, 40);
 	ssd1306Refresh();
 
-	for (i = 0; i <= 100; i+=1)
+	for (i = 0; i <= 100; i+=10)
 	{
 		ssd1306ProgressBar(10, 35, i);
-		HAL_Delay(5);
+		//HAL_Delay(1);
 		ssd1306Refresh();
 	}
 

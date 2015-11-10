@@ -34,7 +34,14 @@
 
 void imperialMarch(void);
 
+/* extern variables ---------------------------------------------------------*/
 extern TIM_HandleTypeDef htim11;
+static unsigned int tone_duration = 0;
+
+void toneInit(void)
+{
+
+}
 
 void tonesplayer(int *note, int *duration, int size, int tempo)
 {
@@ -64,6 +71,7 @@ void tonesplayer(int *note, int *duration, int size, int tempo)
 void tone(int note, int duration)
 {
 	int uwPrescalerValue = 1800;
+	tone_duration = 0;
 
 	uwPrescalerValue = (uint32_t) ((SystemCoreClock /2) / (note * 1000)) - 1;
 	htim11.Instance = TIM11;
@@ -76,6 +84,51 @@ void tone(int note, int duration)
 	HAL_TIM_PWM_Start(&htim11, TIM_CHANNEL_1);
 
 	HAL_Delay(duration);
+	HAL_TIM_PWM_Stop(&htim11, TIM_CHANNEL_1);
+}
+
+void toneItMode(int note, int duration)
+{
+	int uwPrescalerValue = 1800;
+	tone_duration = (duration * LOW_TIME_FREQ) + 1;
+
+	uwPrescalerValue = (uint32_t) ((SystemCoreClock /2) / (note * 1000)) - 1;
+	htim11.Instance = TIM11;
+	htim11.Init.Prescaler = uwPrescalerValue;
+	htim11.Init.CounterMode = TIM_COUNTERMODE_UP;
+	htim11.Init.Period = 1000-1;
+	htim11.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+	HAL_TIM_Base_Init(&htim11);
+	HAL_TIM_PWM_Init(&htim11);
+	HAL_TIM_PWM_Start(&htim11, TIM_CHANNEL_1);
+}
+
+void tone_IT(void)
+{
+	if (tone_duration >= 1)
+		tone_duration--;
+	if (tone_duration == 1)
+		HAL_TIM_PWM_Stop(&htim11, TIM_CHANNEL_1);
+}
+
+void toneStart(int note)
+{
+	int uwPrescalerValue = 1800;
+	tone_duration = 0;
+
+	uwPrescalerValue = (uint32_t) ((SystemCoreClock /2) / (note * 1000)) - 1;
+	htim11.Instance = TIM11;
+	htim11.Init.Prescaler = uwPrescalerValue;
+	htim11.Init.CounterMode = TIM_COUNTERMODE_UP;
+	htim11.Init.Period = 1000-1;
+	htim11.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+	HAL_TIM_Base_Init(&htim11);
+	HAL_TIM_PWM_Init(&htim11);
+	HAL_TIM_PWM_Start(&htim11, TIM_CHANNEL_1);
+}
+
+void toneStop(void)
+{
 	HAL_TIM_PWM_Stop(&htim11, TIM_CHANNEL_1);
 }
 
@@ -98,7 +151,16 @@ void toneSetVolulme(int volume)
 
 void toneTest(void)
 {
-	toneSetVolulme(100);
+	toneSetVolulme(500);
+	toneStart(c);
+	HAL_Delay(1000);
+	toneStop();
+	toneItMode(a, 500);
+	HAL_Delay(500);
+	toneItMode(b, 500);
+	HAL_Delay(500);
+	toneItMode(c, 500);
+	HAL_Delay(500);
 //	telemetersInit();
 	imperialMarch();
 //	while(1)

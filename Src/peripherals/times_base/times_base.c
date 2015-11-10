@@ -27,6 +27,7 @@
 #include "peripherals/display/ssd1306.h"
 #include "peripherals/display/smallfonts.h"
 #include "peripherals/expander/pcf8574.h"
+#include "peripherals/tone/tone.h"
 
 /* Middleware declarations */
 #include "middleware/controls/pidController/pidController.h"
@@ -237,7 +238,7 @@ void ledBlink_IT(void)
 		cnt_led = 0;
 }
 
-void sleep_mode()
+void sleep_mode_IT()//todo move this function
 {
 	int time_ = HAL_GetTick();
 //	static unsigned int count = 0;
@@ -274,7 +275,8 @@ void highFreq_IT(void)
 
 void lowFreq_IT(void)
 {
-	sleep_mode();
+	tone_IT();
+	sleep_mode_IT();
 	ledBlink_IT();
 }
 
