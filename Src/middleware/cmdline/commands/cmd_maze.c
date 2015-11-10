@@ -20,6 +20,8 @@
 
 int cmd_maze(const char *args)
 {
+    UNUSED(args);
+
     maze();
     return CMDLINE_PARSER_E_SUCCESS;
 }

@@ -47,6 +47,8 @@ const CMD_HANDLER cmd_handlers[] =
 
 void cmd_output(const char *format, ...)
 {
+    UNUSED(format);
+
     return;
 }
 

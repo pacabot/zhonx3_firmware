@@ -145,5 +145,18 @@
 
 #define MOTORS_PERIOD			1000
 
+/**************************************************************************************/
+/***************                  Flash Constants                  ********************/
+/**************************************************************************************/
+#define CONFIG_FLASH_SECTOR_BUFFER_SIZE		(128 * 1024)
+#define CONFIG_FLASH_NB_FLASH_DEVICES		(1)
+
+/**************************************************************************************/
+/***************                 EEPROM Constants                  ********************/
+/**************************************************************************************/
+#define CONFIG_EEPROM_SIZE              8192
+#define CONFIG_EEPROM_PAGE_SIZE         32
+#define CONFIG_EEPROM_MAX_PAGE_COUNT    ((CONFIG_EEPROM_SIZE) / (CONFIG_EEPROM_PAGE_SIZE))
+
 #endif // __CONFIG_H__
 
