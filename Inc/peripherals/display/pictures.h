@@ -9,9 +9,28 @@
 
 // TODO: Re-declare correctly these global variables
 
+//w = 13 h = 7
+const unsigned char battery[13] =
+{
+		0XFE,0X82,0X82,0X82,0X82,0X82,0X82,0X82,0X82,0X82,0X82,0XFE,0X38
+};
+
+//w = 13 h = 7
+const unsigned char batterySationPowered0n[13] =
+{
+		0XFE,0X82,0X82,0X02,0X92,0X7A,0XBC,0X92,0X80,0X82,0X82,0XFE,0X38
+};
+
+//w = 13 h = 7
+const unsigned char batterySationPowered0ff[13] =
+{
+		0XFE,0X82,0X82,0X02,0X02,0X02,0X80,0X80,0X80,0X82,0X82,0XFE,0X38
+};
+
+
 static const unsigned char pic_battery_level[] =
 {
-    0XFC,0X84,0X84,0X84,0X84,0X84,0XFC,0X30
+		0XFC,0X84,0X84,0X84,0X84,0X84,0XFC,0X30
 };
 
 //w = 128 h = 40
