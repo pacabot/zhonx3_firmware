@@ -16,6 +16,13 @@ typedef struct
 }line_follower_struct;
 extern line_follower_struct line_follower;
 
+#define MAXTAB 5000
+#define LEFTEXT 1
+#define LEFT 2
+#define FRONT 3
+#define RIGHT 4
+#define RIGHTEXT 5
+
 #define MAXSPEED 800
 #define MINSPEED 500
 #define SPEED_COEFF 1.00

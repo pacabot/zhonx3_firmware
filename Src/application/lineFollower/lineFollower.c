@@ -50,6 +50,7 @@ line_follower_struct line_follower;
 ground_sensors_struct max_Floor;	//global data to memorize maximum value of sensors
 ground_sensors_struct coef_Floor;	//global data to memorize coeff value (0..1000]
 ground_sensors_struct min_Floor;	//global data to memorize minimum value of sensors
+int tabCD[2000];
 
 //__IO uint16_t ADC1ConvertedValues[2] = {0};
 //__IO uint16_t ADC3ConvertedValues[3] = {0};
@@ -57,7 +58,107 @@ ground_sensors_struct min_Floor;	//global data to memorize minimum value of sens
 GPIO_InitTypeDef GPIO_InitStruct;
 
 void averageSensor(ground_sensors_struct, ground_sensors_struct * , int);
+int maxIndiceSensor(ground_sensors_struct *tab, int noCapteur);
+int maxSensor(ground_sensors_struct *tab, int noCapteur);
+int minSensor(ground_sensors_struct *tab, int noCapteur);
 
+//--------------------------------------------------------------------------------
+// Renvoie la valeur max du sensor
+//--------------------------------------------------------------------------------
+int maxSensor(ground_sensors_struct *tab, int noCapteur)
+{
+	int value=0;
+
+	for (int ii=1; ii<MAXTAB; ii++)
+	{
+		switch (noCapteur)
+		{
+		case LEFTEXT:
+			if (tab[ii].leftExt>value) value=tab[ii].leftExt;
+		break;
+		case LEFT:
+			if (tab[ii].left>value) value=tab[ii].left;
+		break;
+		case FRONT:
+			if (tab[ii].front>value) value=tab[ii].front;
+		break;
+		case RIGHT:
+			if (tab[ii].right>value) value=tab[ii].right;
+		break;
+		default:
+			if (tab[ii].rightExt>value) value=tab[ii].rightExt;
+		break;
+		}
+	}
+	return value;
+}
+
+//--------------------------------------------------------------------------------
+// Renvoie la valeur min du sensor
+//--------------------------------------------------------------------------------
+int minSensor(ground_sensors_struct *tab, int noCapteur)
+{
+	int value=32000;
+
+	for (int ii=1; ii<MAXTAB; ii++)
+	{
+		switch (noCapteur)
+		{
+		case LEFTEXT:
+			if (tab[ii].leftExt<value) value=tab[ii].leftExt;
+		break;
+		case LEFT:
+			if (tab[ii].left<value) value=tab[ii].left;
+		break;
+		case FRONT:
+			if (tab[ii].front<value) value=tab[ii].front;
+		break;
+		case RIGHT:
+			if (tab[ii].right<value) value=tab[ii].right;
+		break;
+		default:
+			if (tab[ii].rightExt<value) value=tab[ii].rightExt;
+		break;
+		}
+	}
+	return value;
+}
+
+
+//-------------------------------------------------------------------------------------------------------
+// Parcours tout le tableau et rend l'indice du pic correspondant a valeur maximale du sensor noCapteur
+//-------------------------------------------------------------------------------------------------------
+int maxIndiceSensor(ground_sensors_struct *tab, int noCapteur)
+{
+	int timeUp=0;
+	int value=0;
+	int valueprec=0;
+	for (int ii=1; ii<MAXTAB; ii++)
+	{
+		valueprec = value;
+		switch (noCapteur)
+		{
+		case LEFTEXT:
+			value=tab[ii].leftExt;
+		break;
+		case LEFT:
+			value=tab[ii].left;
+		break;
+		case FRONT:
+			value=tab[ii].front;
+		break;
+		case RIGHT:
+			value=tab[ii].right;
+		break;
+		default:
+			value=tab[ii].rightExt;
+		break;
+		}
+		if ((value>1000)&&(valueprec<1000)) timeUp=ii;
+		if ((value<1000)&&(valueprec>1000)) return ((ii+timeUp)/2);
+
+	}
+}
 
 void averageSensor(ground_sensors_struct current, ground_sensors_struct *tab, int cpt)
 {
@@ -121,19 +222,6 @@ void lineSensortest(void)
 		memcpy(&average, &current, sizeof(ground_sensors_struct) );
 
 		averageSensor(current, tab, i);
-
-
-/*
-       j= i%10;
-       tab[j].front=current.front;
-	   if (i>9)
-	   {
-	      for (int k=1;k<10;k++)
-	      {
-			  average.front += tab[k].front;
-	      }
-	      average.front/=10;
-	   }*/
 	}
 }
 
@@ -182,6 +270,9 @@ void lineSensorSendBluetooth(void)
 // Initialize data sensor to memorize the max and min value for each 5 sensors
 void lineSensorsCalibration(void)
 {
+	int i=0; int j=0;
+	int GO=0;
+
 	mainControlInit();
 	telemetersStop();
 	lineSensorsInit();
@@ -192,7 +283,9 @@ void lineSensorsCalibration(void)
 	ground_sensors_struct current;
 	ground_sensors_struct average;
 	ground_sensors_struct tab[10];
-	ground_sensors_struct grostab[4000];
+	ground_sensors_struct * grostab = malloc(MAXTAB*sizeof(ground_sensors_struct));
+	int *temp = malloc(MAXTAB*sizeof(int));
+
 
 	tone(a, 500);
 //	HAL_Delay(1000);
@@ -210,9 +303,6 @@ void lineSensorsCalibration(void)
 	memcpy(&min_Floor, &max_Floor, sizeof(ground_sensors_struct) );
 	memcpy(&current, &min_Floor, sizeof(ground_sensors_struct) );
 
-	int i=0; int j=0;
-
-
 	while(isEndMove() != TRUE)
 	{
 
@@ -221,7 +311,7 @@ void lineSensorsCalibration(void)
 		current.right=lineSensors.right.adc_value;
 		current.leftExt=lineSensors.left_ext.adc_value;
 		current.rightExt=lineSensors.right_ext.adc_value;
-
+/*
 		if (current.left < min_Floor.left) min_Floor.left = current.left;
 		if (current.front < min_Floor.front) min_Floor.front = current.front;
 		if (current.right < min_Floor.right) min_Floor.right = current.right;
@@ -233,52 +323,151 @@ void lineSensorsCalibration(void)
 		if (current.right > max_Floor.right) max_Floor.right = current.right;
 		if (current.leftExt > max_Floor.leftExt) max_Floor.leftExt = current.leftExt;
 		if (current.rightExt > max_Floor.rightExt) max_Floor.rightExt = current.rightExt;
-
+*/
 		memcpy(&average, &current, sizeof(ground_sensors_struct) );
-		averageSensor(current, tab, i);
+		averageSensor(average, tab, i);
 		i++;
-		if(i%10==0)
+
+		if(i%10==0 && GO)
 		{
-			if (j<4000)
+			if (j<MAXTAB)
 			{
-			    memcpy(&grostab[j], &average, sizeof(ground_sensors_struct) );
+			 //   memcpy(&grostab[j], &average, sizeof(ground_sensors_struct) );
+				grostab[j].leftExt=average.leftExt;
+				grostab[j].left=average.left;
+				grostab[j].front=average.front;
+				grostab[j].right=average.right;
+				grostab[j].rightExt=average.rightExt;
 			}
 			else
 			{
 				tone(e, 50);
+				tone(d, 50);
 			}
 			j=j+1;
 		}
+		if (average.leftExt>min_Floor.leftExt*1.2) GO=i;
 	}
+
 	move(45, 0, 100, 0);
 	tone(b, 500);
 	tone(c, 500);
-
-
 
 	ssd1306ClearScreen();
 	ssd1306PrintInt(5, 5,  "compteur ", (uint16_t) i, &Font_5x8);
 	ssd1306PrintInt(80, 5,  "-", (uint16_t) j, &Font_5x8);
 
-   ssd1306PrintInt(10, 15, ",",min_Floor.leftExt, &Font_5x8); //,left,front,right,rightExt
-   ssd1306PrintInt(10, 25, ",",min_Floor.left, &Font_5x8); //,left,front,right,rightExt
-   ssd1306PrintInt(10, 35, ",",min_Floor.front, &Font_5x8); //,left,front,right,rightExt
-   ssd1306PrintInt(10, 45, ",",min_Floor.right, &Font_5x8); //,left,front,right,rightExt
-   ssd1306PrintInt(10, 55, ",",min_Floor.rightExt, &Font_5x8); //,left,front,right,rightExt
+   ssd1306PrintInt(10, 15, ",",minSensor(grostab, LEFTEXT), &Font_5x8); //,left,front,right,rightExt
+   ssd1306PrintInt(10, 25, ",",minSensor(grostab, LEFT), &Font_5x8); //,left,front,right,rightExt
+   ssd1306PrintInt(10, 35, ",",minSensor(grostab, FRONT), &Font_5x8); //,left,front,right,rightExt
+   ssd1306PrintInt(10, 45, ",",minSensor(grostab, RIGHT), &Font_5x8); //,left,front,right,rightExt
+   ssd1306PrintInt(10, 55, ",",minSensor(grostab, RIGHTEXT), &Font_5x8); //,left,front,right,rightExt
 
-   ssd1306PrintInt(42, 15, ",",max_Floor.leftExt, &Font_5x8); //,left,front,right,rightExt
-   ssd1306PrintInt(42, 25, ",",max_Floor.left, &Font_5x8); //,left,front,right,rightExt
-   ssd1306PrintInt(42, 35, ",",max_Floor.front, &Font_5x8); //,left,front,right,rightExt
-   ssd1306PrintInt(42, 45, ",",max_Floor.right, &Font_5x8); //,left,front,right,rightExt
-   ssd1306PrintInt(42, 55, ",",max_Floor.rightExt, &Font_5x8); //,left,front,right,rightExt
-
-	ssd1306Refresh();
+   ssd1306PrintInt(42, 15, ",",maxSensor(grostab, LEFTEXT), &Font_5x8); //,left,front,right,rightExt
+   ssd1306PrintInt(42, 25, ",",maxSensor(grostab, LEFT), &Font_5x8); //,left,front,right,rightExt
+   ssd1306PrintInt(42, 35, ",",maxSensor(grostab, FRONT), &Font_5x8); //,left,front,right,rightExt
+   ssd1306PrintInt(42, 45, ",",maxSensor(grostab, RIGHT), &Font_5x8); //,left,front,right,rightExt
+   ssd1306PrintInt(42, 55, ",",maxSensor(grostab, RIGHTEXT), &Font_5x8); //,left,front,right,rightExt
+   ssd1306Refresh();
 	// desactivate PID
 	pid_loop.start_state = FALSE;
 	line_follower.active_state = FALSE;
 	telemetersStop();
 	motorsSleepDriver(ON);
-	HAL_Delay(20000);
+
+   HAL_Delay(5000);
+
+   ssd1306ClearScreen();
+   for (i=1;i<=5;i++)
+   {
+	   ssd1306PrintInt(10, 5+10*i, "indice= ",maxIndiceSensor(grostab, i), &Font_5x8);
+   }
+   ssd1306Refresh();
+   HAL_Delay(10000);
+// Calcul du poid du capteur left [-1000;0]
+   int poidLeft=0;
+   int poidRight=0;
+   double poid;
+   double delta = 0.0;
+
+   delta= maxIndiceSensor(grostab, FRONT)-maxIndiceSensor(grostab, LEFTEXT);
+   poid = 1000*((maxIndiceSensor(grostab, LEFT)-maxIndiceSensor(grostab, LEFTEXT))/delta) - 1000;
+   poidLeft=round(poid);
+
+   // Calcul du poid du capteur right [0;1000]
+   delta= maxIndiceSensor(grostab, RIGHTEXT)-maxIndiceSensor(grostab, FRONT);
+   poid = 1000*(maxIndiceSensor(grostab, RIGHT)-maxIndiceSensor(grostab, FRONT))/delta;
+   poidRight=round(poid);
+/*
+   ssd1306ClearScreen();
+   for(i=0; i<MAXTAB; i+=10)
+   {
+	   bluetoothPrintf("%d , %d , %d , %d , %d \n",grostab[i].leftExt,grostab[i].left,grostab[i].front,grostab[i].right,grostab[i].rightExt);
+	   ssd1306ClearScreen();
+	   ssd1306PrintInt(10, 5, "indice= ",i, &Font_5x8); //,left,front,right,rightExt
+	   ssd1306PrintInt(10, 15, "LeftE = ",grostab[i].leftExt, &Font_5x8); //,left,front,right,rightExt
+	   ssd1306PrintInt(10, 25, "Left  = ",grostab[i].left, &Font_5x8); //,left,front,right,rightExt
+	   ssd1306PrintInt(10, 35, "Front = ",grostab[i].front, &Font_5x8); //,left,front,right,rightExt
+	   ssd1306PrintInt(10, 45, "Right = ",grostab[i].right, &Font_5x8); //,left,front,right,rightExt
+	   ssd1306PrintInt(10, 55, "RigthE= ",grostab[i].rightExt, &Font_5x8); //,left,front,right,rightExt
+	   ssd1306Refresh();
+   }
+ */
+    min_Floor.left = minSensor(grostab, LEFT);
+    min_Floor.front = minSensor(grostab, FRONT);
+    min_Floor.right = minSensor(grostab, RIGHT);
+    min_Floor.leftExt = minSensor(grostab, LEFTEXT);
+    min_Floor.rightExt = minSensor(grostab, RIGHTEXT);
+
+	coef_Floor.left=1000.0/(maxSensor(grostab, LEFT)-min_Floor.left);
+	coef_Floor.front=1000.0/(maxSensor(grostab, FRONT)-min_Floor.front);
+	coef_Floor.right=1000.0/(maxSensor(grostab, RIGHT)-min_Floor.right);
+	coef_Floor.leftExt=1000.0/(maxSensor(grostab, LEFTEXT)-min_Floor.leftExt);
+	coef_Floor.rightExt=1000.0/(maxSensor(grostab, RIGHTEXT)-min_Floor.rightExt);
+
+	double ct=0.0;
+	// etalonner chaque capteur entre [0..1000]
+	for(i=0; i<MAXTAB; i++)
+	{
+	   grostab[i].leftExt = (grostab[i].leftExt - min_Floor.leftExt) * coef_Floor.leftExt;
+	   grostab[i].left = (grostab[i].left - min_Floor.left) * coef_Floor.left;
+	   grostab[i].front = (grostab[i].front - min_Floor.front) * coef_Floor.front;
+	   grostab[i].right = (grostab[i].right - min_Floor.right) * coef_Floor.right;
+	   grostab[i].rightExt = (grostab[i].rightExt - min_Floor.rightExt) * coef_Floor.rightExt;
+	   // calcul center gravity =($A$1*A5+$B$1*B5+$C$1*C5+$D$1*D5+$E$1*E5)/(A5+B5+C5+D5+E5)
+	   ct=(double)(-1000*grostab[i].leftExt + poidLeft*grostab[i].left + grostab[i].front + poidRight*grostab[i].right + 1000*grostab[i].rightExt)
+			   /(double)(grostab[i].leftExt + grostab[i].left + grostab[i].front + grostab[i].right + grostab[i].rightExt);
+	   temp[i]=round(ct);
+	}
+    free (grostab);
+
+	int ii=1;
+	for (j=0; j<2000; j++)
+	{
+		while (temp[ii]<(j-1000)&&(ii<MAXTAB))
+		{ ii++; }
+		tabCD[j] = (temp[ii-1] + temp[ii])/2;
+		ssd1306ClearScreen();
+		ssd1306PrintInt(10, 15, "j  =",j, &Font_5x8);
+		ssd1306PrintInt(10, 25, "val= ",tabCD[j], &Font_5x8);
+		ssd1306Refresh();
+
+	}
+
+
+   bluetoothPrintf("poidleft %d , poidright %d , delta %d \n",poidLeft,poidRight,delta);
+   ssd1306ClearScreen();
+   ssd1306PrintInt(10, 15, "poidLeft  ",poidLeft, &Font_5x8);
+   ssd1306PrintInt(10, 25, "poidRight ",poidRight, &Font_5x8);
+   ssd1306PrintInt(10, 35, "delta2 ",delta, &Font_5x8);
+   ssd1306Refresh();
+
+	// desactivate PID
+	pid_loop.start_state = FALSE;
+	line_follower.active_state = FALSE;
+	telemetersStop();
+	motorsSleepDriver(ON);
+	HAL_Delay(10000);
 }
 
 //---------------------------------------------------------------------
