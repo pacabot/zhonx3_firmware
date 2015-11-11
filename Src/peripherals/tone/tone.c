@@ -161,13 +161,8 @@ void toneTest(void)
 	HAL_Delay(500);
 	toneItMode(c, 500);
 	HAL_Delay(500);
-//	telemetersInit();
+	telemetersInit();
 	imperialMarch();
-//	while(1)
-//	{
-//		tone(telemeters.left_diag.telemeter_average/10, 2);
-//		toneSetVolulme(telemeters.right_diag.telemeter_average/20);
-//	}
 }
 
 void imperialMarch()

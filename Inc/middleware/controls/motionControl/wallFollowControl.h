@@ -39,7 +39,7 @@
 #define MAX_FOLLOW_ERROR	50.00	//Millimeter
 
 #define DEADZONE_DIST		100.00	//Distance between the start of the cell and doubt area
-#define DEADZONE			40.00	//doubt area
+#define DEADZONE			100.00	//doubt area
 
 typedef struct
 {

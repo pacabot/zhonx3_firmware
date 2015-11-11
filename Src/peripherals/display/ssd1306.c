@@ -29,6 +29,7 @@
 #include <stdarg.h>
 
 /* Peripheral declarations */
+#include "peripherals/display/icons.h"
 #include "peripherals/display/pictures.h"
 #include "peripherals/display/smallfonts.h"
 #include "peripherals/expander/pcf8574.h"
@@ -320,7 +321,7 @@ void ssd1306Refresh(void)
 	//	CMD(SSD1306_SETHIGHCOLUMN | 0x0);  // hi col = 0
 	//	CMD(SSD1306_SETSTARTLINE | 0x0); // line #0
 
-		CMD(SSD1306_SETPAGESTART | 0x0); //page 0
+	CMD(SSD1306_SETPAGESTART | 0x0); //page 0
 
 	DATA(buffer);
 }
@@ -471,6 +472,7 @@ void ssd1306ShiftFrameBuffer( unsigned char height )
     - open Image2LCD
     - chose into BitsPixel box => monochrome
     - chose into Scan Mode box => Vertical Scan
+    - chose mirror up-down
     - chose into Output file type box => C array (*C)
     - save
     - open the file with SublimeText => select all => copy
@@ -756,97 +758,107 @@ void ssd1306Test(void)
 {
 	int i;
 
-	for(int i = 0; i <= 12; i++)
+	for(i = 0; i < 59; i++)
 	{
-		HAL_Delay(400);
 		ssd1306ClearScreen();
 
-		if (i >= 1)
+		if (i > 12)
 		{
-			ssd1306DrawPixel(117,5);
+			ssd1306DrawBmp(USB_Icon, 115, 0, 13, 8);
+		}
+		else
+		{
+			ssd1306DrawBmp(bat_Icon, 115, 0, 13, 8);
+			if (i >= 1)
+			{
+				ssd1306DrawPixel(117,5);
+			}
+
+			if (i >= 2)
+			{
+				ssd1306DrawPixel(118,5);
+				ssd1306DrawPixel(117,4);
+			}
+
+			if (i >= 3)
+			{
+				ssd1306DrawPixel(118,4);
+				ssd1306DrawPixel(117,3);
+			}
+
+			if (i >= 4)
+			{
+				ssd1306DrawPixel(118,3);
+			}
+
+			if (i >= 5)
+			{
+				ssd1306DrawPixel(120,5);
+			}
+
+			if (i >= 6)
+			{
+				ssd1306DrawPixel(121,5);
+				ssd1306DrawPixel(120,4);
+			}
+
+			if (i >= 7)
+			{
+				ssd1306DrawPixel(121,4);
+				ssd1306DrawPixel(120,3);
+			}
+
+			if (i >= 8)
+			{
+				ssd1306DrawPixel(121,3);
+			}
+
+			if (i >= 9)
+			{
+				ssd1306DrawPixel(123,5);
+			}
+
+			if (i >= 10)
+			{
+				ssd1306DrawPixel(124,5);
+				ssd1306DrawPixel(123,4);
+			}
+
+			if (i >= 11)
+			{
+				ssd1306DrawPixel(124,4);
+				ssd1306DrawPixel(123,3);
+			}
+
+			if (i >= 12)
+			{
+				ssd1306DrawPixel(124,3);
+			}
 		}
 
-		if (i >= 2)
-		{
-			ssd1306DrawPixel(118,5);
-			ssd1306DrawPixel(117,4);
-		}
+		if (i > 40)
+			ssd1306DrawBmp(BT_Icon,  105, 0,  5, 8);
+		if (i < 50)
+			ssd1306DrawBmp(beeper_Icon, 89, 0, 11, 8);
+		if (i > 10)
+			ssd1306DrawBmp(gyro_Icon1, 72, 0, 12, 8);
+		if (i < 48)
+			ssd1306DrawBmp(IR_Icon1, 55, 0, 13, 8);
+		if (i > 24)
+			ssd1306DrawBmp(IRLine_Icon, 38, 0, 13, 8);
 
-		if (i >= 3)
-		{
-			ssd1306DrawPixel(118,4);
-			ssd1306DrawPixel(117,3);
-		}
+		ssd1306PrintInt(10, 0, "", (char) i, &Font_3x6);
+		ssd1306PrintInt(0, 0, "", 0, &Font_3x6);
+		ssd1306DrawString(8, 0, ":", &Font_3x6);
 
-		if (i >= 4)
-		{
-			ssd1306DrawPixel(118,3);
-		}
-
-		if (i >= 5)
-		{
-			ssd1306DrawPixel(120,5);
-		}
-
-		if (i >= 6)
-		{
-			ssd1306DrawPixel(121,5);
-			ssd1306DrawPixel(120,4);
-		}
-
-		if (i >= 7)
-		{
-			ssd1306DrawPixel(121,4);
-			ssd1306DrawPixel(120,3);
-		}
-
-		if (i >= 8)
-		{
-			ssd1306DrawPixel(121,3);
-		}
-
-		if (i >= 9)
-		{
-			ssd1306DrawPixel(123,5);
-		}
-
-		if (i >= 10)
-		{
-			ssd1306DrawPixel(124,5);
-			ssd1306DrawPixel(123,4);
-		}
-
-		if (i >= 11)
-		{
-			ssd1306DrawPixel(124,4);
-			ssd1306DrawPixel(123,3);
-		}
-
-		if (i >= 12)
-		{
-			ssd1306DrawPixel(124,3);
-		}
-
-		//	ssd1306PrintInt(115, 0, "", i , &Font_3x6);
-		ssd1306DrawBmp(battery, 115, 0, 13, 8);
 		ssd1306DrawDashedLine(0,9,128,9);
 		ssd1306Refresh();
-	}
-	HAL_Delay(2000);
-	while(1)
-	{
 		HAL_Delay(1000);
-		ssd1306ClearScreen();
-		ssd1306DrawBmp(batterySationPowered0n, 115, 0, 13, 8);
-		ssd1306DrawDashedLine(0,9,128,9);
-		ssd1306Refresh();
-		HAL_Delay(1000);
-//		ssd1306ClearScreen();
-//		ssd1306DrawBmp(batterySationPowered0ff, 115, 0, 13, 8);
-//		ssd1306DrawDashedLine(0,9,128,9);
-//		ssd1306Refresh();
 	}
 
+	HAL_Delay(20000);
+
+	//////////////////////////////////////////////////////////////////////////
 	ssd1306DrawBmp(Pacabot_bmp, 1, 1, 128, 40);
 	ssd1306Refresh();
 

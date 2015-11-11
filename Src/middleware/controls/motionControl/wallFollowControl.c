@@ -62,7 +62,7 @@ int wallFollowControlInit(void)
 {
 	telemeters_pid_instance.Kp = 20;
 	telemeters_pid_instance.Ki = 0;
-	telemeters_pid_instance.Kd = 300;
+	telemeters_pid_instance.Kd = 400;
 
 	wall_follow_control.follow_pid.instance = &telemeters_pid_instance;
 
@@ -104,16 +104,19 @@ int wallFollowControlLoop(void)
 		pidControllerReset(wall_follow_control.follow_pid.instance);
 	}
 	else if (getWallPresence(FRONT_WALL) == TRUE)
+//	else if (telemeters.FL.avrg > 100 || telemeters.FR.avrg > 100)
 	{
 		position_control.position_type = POSITION_CTRL;
 		wall_follow_control.follow_error = 0;
 		pidControllerReset(wall_follow_control.follow_pid.instance);
 	}
 	else if (getWallPresence(LEFT_WALL) == TRUE)
+//	else if (telemeters.DL.avrg > 100)
 	{
 		wall_follow_control.follow_error = wallFollow(&telemeters.DL);
 	}
 	else if (getWallPresence(RIGHT_WALL) == TRUE)
+//	else if (telemeters.DL.avrg > 100)
 	{
 		wall_follow_control.follow_error = -1.00 * wallFollow(&telemeters.DR);
 	}
