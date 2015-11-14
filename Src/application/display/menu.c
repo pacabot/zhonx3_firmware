@@ -19,15 +19,18 @@
 #include <stdio.h>
 #include <stdint.h>
 
+/* Application declarations */
+
 /* Peripheral declarations */
 #include "peripherals/display/ssd1306.h"
 #include "peripherals/display/smallfonts.h"
 #include "peripherals/expander/pcf8574.h"
 #include "peripherals/multimeter/multimeter.h"
 #include "peripherals/tone/tone.h"
-#include "peripherals/display/pictures.h"
 
 /* Middleware declarations */
+#include "middleware/display/icons.h"
+#include "middleware/display/pictures.h"
 #include "middleware/settings/settings.h"
 #include "middleware/cmdline/cmdline_parser.h"
 
@@ -614,8 +617,8 @@ void welcomDisplay()
 	ssd1306DrawBmp(five_years, 1, 1, 128, 54);
 	ssd1306Refresh();
 	HAL_Delay(300);
-
 }
+
 void powerOffConfirmation()
 {
 	unsigned char confirm = FALSE;

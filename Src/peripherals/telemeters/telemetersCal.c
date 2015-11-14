@@ -217,11 +217,9 @@ void testPostSensors()
 	telemetersInit();
 	telemetersStart();
 
-	walls wall_saw;
 
 	while(expanderJoyFiltered()!=JOY_LEFT)
 	{
-//plf		wall_saw=getCellState();
 		ssd1306ClearScreen();
 
 		if (fabs(telemeters.DL.speed_mms) > 500)

@@ -60,4 +60,5 @@ char getWallPresence(enum wallSelectorEnum wallSelector)
 		else
 			return FALSE;
 	}
+	return 3;
 }

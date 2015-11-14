@@ -28,13 +28,15 @@
 #include <stdint.h>
 #include <stdarg.h>
 
+/* Application declarations */
+
 /* Peripheral declarations */
-#include "peripherals/display/icons.h"
-#include "peripherals/display/pictures.h"
 #include "peripherals/display/smallfonts.h"
 #include "peripherals/expander/pcf8574.h"
 
 /* Middleware declarations */
+#include "middleware/display/icons.h"
+#include "middleware/display/pictures.h"
 
 /* Declarations for this module */
 #include "peripherals/display/ssd1306.h"
@@ -843,7 +845,7 @@ void ssd1306Test(void)
 		if (i > 10)
 			ssd1306DrawBmp(gyro_Icon1, 72, 0, 12, 8);
 		if (i < 48)
-			ssd1306DrawBmp(IR_Icon1, 55, 0, 13, 8);
+			ssd1306DrawBmp(IR_Icon3, 55, 0, 13, 8);
 		if (i > 24)
 			ssd1306DrawBmp(IRLine_Icon, 38, 0, 13, 8);
 

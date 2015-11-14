@@ -43,3 +43,4 @@ void killOnLowBattery();
 void powerOffConfirmation();
 
 #endif /* MENU_H_ */
+

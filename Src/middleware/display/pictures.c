@@ -1,16 +1,11 @@
 /*---------------------------------------------------------------------------
  *
- *      pictures.h
+ *      pictures.c
  *
  *---------------------------------------------------------------------------*/
 
-#ifndef __PICTURES_H__
-#define __PICTURES_H__
-
-// TODO: Re-declare correctly these global variables
-
 //w = 128 h = 40
-static const unsigned char Pacabot_bmp[] =
+const unsigned char Pacabot_bmp[] =
 {
 		0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,
 		0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,
@@ -54,7 +49,7 @@ static const unsigned char Pacabot_bmp[] =
 		0X00,0X01,0X01,0X01,0X01,0X01,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,
 };
 
-static const unsigned char five_years[] =
+const unsigned char five_years[] =
 {
 		0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -111,5 +106,3 @@ static const unsigned char five_years[] =
 		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xC0, 0x40, 0x40, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 		0x00, 0x80, 0xC0, 0x00, 0x00, 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x80, 0x40, 0x00, 0x00, 0x00
 };
-
-#endif // __PICTURES_H__
