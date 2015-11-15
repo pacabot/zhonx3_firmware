@@ -181,7 +181,7 @@ void joystickTest(void)
 	{
 		state = expanderJoyState();
 
-		ssd1306ClearScreen();
+		ssd1306ClearScreen(MAIN_AERA);
 		ssd1306DrawCircle(60,10, 3);
 		ssd1306DrawCircle(60,30, 3);
 		ssd1306DrawCircle(50,20, 3);
@@ -202,10 +202,10 @@ void joystickTest(void)
 				break;
 		}
 
-		ssd1306Refresh();
+		ssd1306Refresh(MAIN_AERA);
 	}
 	ssd1306FillCircle(50,20, 3);
-	ssd1306Refresh();
+	ssd1306Refresh(MAIN_AERA);
 	HAL_Delay(1000);
 	antiBounceJoystick();
 }
@@ -220,9 +220,9 @@ void expenderLedTest ()
 //			expanderSetbit(i,0);
 //			i = (i % 3)+1;
 //			expanderLedState(i,1);
-//			ssd1306ClearScreen();
+//			ssd1306ClearScreen(MAIN_AERA);
 //			ssd1306Printf(0,0,&Font_5x8,"i : %d", i);
-//			ssd1306Refresh();
+//			ssd1306Refresh(MAIN_AERA);
 //		}
 //	}
 //	for (i=1; i<4; i++)

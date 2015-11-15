@@ -224,7 +224,6 @@ void telemeters_IT(void)
 		sConfig.Channel = RX_DR;
 		telemetersAdc3Start();
 		return;
-
 	}
 }
 
@@ -378,7 +377,7 @@ void telemetersTest(void)
 	while (joy != JOY_LEFT)	//todo make a generic test menu (unit test)
 	{
 		joy = expanderJoyFiltered();
-		ssd1306ClearScreen();
+		ssd1306ClearScreen(MAIN_AERA);
 
 		ssd1306DrawString(1,0, "   AVRG 1/10mm", &Font_5x8);
 
@@ -394,14 +393,14 @@ void telemetersTest(void)
 
 //		ssd1306PrintInt(1, 45, "IT TIME  =  ", (int32_t) telemeters.it_time, &Font_5x8);
 		ssd1306PrintInt(1, 54, "IT ERROR =  ", (telemeters.it_cnt - telemeters.end_of_conversion), &Font_5x8);
-		ssd1306Refresh();
+		ssd1306Refresh(MAIN_AERA);
 
 		if (joy == JOY_RIGHT)
 		{
 			while (joy != JOY_LEFT)
 			{
 				joy = expanderJoyFiltered();
-				ssd1306ClearScreen();
+				ssd1306ClearScreen(MAIN_AERA);
 				ssd1306DrawString(1,0, "   ADC  REF  VAR", &Font_5x8);
 
 				ssd1306PrintInt(1, 9 , "FL ", (int32_t) telemeters.FL.adc, &Font_5x8);
@@ -424,7 +423,7 @@ void telemetersTest(void)
 				ssd1306PrintInt(75, 27, "", (int32_t) telemeters.DR.speed_mms, &Font_5x8);
 				ssd1306PrintInt(75, 36, "", (int32_t) telemeters.FR.speed_mms, &Font_5x8);
 
-				ssd1306Refresh();
+				ssd1306Refresh(MAIN_AERA);
 			}
 			while (joy == JOY_LEFT)
 			{

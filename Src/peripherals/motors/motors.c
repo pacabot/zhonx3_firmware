@@ -267,113 +267,113 @@ void motorsTest(void)
 	motorSet(&right_motor, 0, DECAY_FAST);
 	motorsDriverSleep(OFF);
 
-	ssd1306ClearScreen();
+	ssd1306ClearScreen(MAIN_AERA);
 	ssd1306DrawString(1,  20,  "FWD FAST DECAY 0->20%", &Font_5x8);
-	ssd1306Refresh();
+	ssd1306Refresh(MAIN_AERA);
 	for (i = 0; i < 150; i += 1)
 	{
 		motorSet(&left_motor, i, DECAY_FAST);
 		motorSet(&right_motor, i, DECAY_FAST);
 		HAL_Delay(20);
 	}
-	ssd1306ClearScreen();
+	ssd1306ClearScreen(MAIN_AERA);
 	ssd1306DrawString(1,  20,  "FWD FAST DECAY 20%", &Font_5x8);
-	ssd1306Refresh();
+	ssd1306Refresh(MAIN_AERA);
 	HAL_Delay(500);
-	ssd1306ClearScreen();
+	ssd1306ClearScreen(MAIN_AERA);
 	ssd1306DrawString(1,  20,  "FWD FAST DECAY 20->0%", &Font_5x8);
-	ssd1306Refresh();
+	ssd1306Refresh(MAIN_AERA);
 	for (i = 150; i > 0; i -= 1)
 	{
 		motorSet(&left_motor, i, DECAY_FAST);
 		motorSet(&right_motor, i, DECAY_FAST);
 		HAL_Delay(20);
 	}
-	ssd1306ClearScreen();
+	ssd1306ClearScreen(MAIN_AERA);
 	ssd1306DrawString(1,  20,  "BRAKE FAST DECAY 0%", &Font_5x8);
-	ssd1306Refresh();
+	ssd1306Refresh(MAIN_AERA);
 	motorsBrake();
 	HAL_Delay(4000);
-	ssd1306ClearScreen();
+	ssd1306ClearScreen(MAIN_AERA);
 	ssd1306DrawString(1,  20,  "BWD FAST DECAY 0->20%", &Font_5x8);
-	ssd1306Refresh();
+	ssd1306Refresh(MAIN_AERA);
 	for (i = 0; i > -150; i -= 1)
 	{
 		motorSet(&left_motor, i, DECAY_FAST);
 		motorSet(&right_motor, i, DECAY_FAST);
 		HAL_Delay(20);
 	}
-	ssd1306ClearScreen();
+	ssd1306ClearScreen(MAIN_AERA);
 	ssd1306DrawString(1,  20,  "BWD FAST DECAY 20%", &Font_5x8);
-	ssd1306Refresh();
+	ssd1306Refresh(MAIN_AERA);
 	HAL_Delay(500);
-	ssd1306ClearScreen();
+	ssd1306ClearScreen(MAIN_AERA);
 	ssd1306DrawString(1,  20,  "BWD FAST DECAY 20->0%", &Font_5x8);
-	ssd1306Refresh();
+	ssd1306Refresh(MAIN_AERA);
 	for (i = -150; i < 0; i += 1)
 	{
 		motorSet(&left_motor, i, DECAY_FAST);
 		motorSet(&right_motor, i, DECAY_FAST);
 		HAL_Delay(20);
 	}
-	ssd1306ClearScreen();
+	ssd1306ClearScreen(MAIN_AERA);
 	ssd1306DrawString(1,  20,  "BRAKE FAST DECAY 0%", &Font_5x8);
-	ssd1306Refresh();
+	ssd1306Refresh(MAIN_AERA);
 	motorsBrake();
 	// Slow decay
 	HAL_Delay(1000);
-	ssd1306ClearScreen();
+	ssd1306ClearScreen(MAIN_AERA);
 	ssd1306DrawString(1,  20,  "FWD SLOW DECAY 0->20%", &Font_5x8);
-	ssd1306Refresh();
+	ssd1306Refresh(MAIN_AERA);
 	for (i = 0; i < 150; i += 1)
 	{
 		motorSet(&left_motor, i, DECAY_SLOW);
 		motorSet(&right_motor, i, DECAY_SLOW);
 		HAL_Delay(20);
 	}
-	ssd1306ClearScreen();
+	ssd1306ClearScreen(MAIN_AERA);
 	ssd1306DrawString(1,  20,  "FWD SLOW DECAY 20%", &Font_5x8);
-	ssd1306Refresh();
+	ssd1306Refresh(MAIN_AERA);
 	HAL_Delay(500);
-	ssd1306ClearScreen();
+	ssd1306ClearScreen(MAIN_AERA);
 	ssd1306DrawString(1,  20,  "FWD SLOW DECAY 20->0%", &Font_5x8);
-	ssd1306Refresh();
+	ssd1306Refresh(MAIN_AERA);
 	for (i = 150; i > 0; i -= 1)
 	{
 		motorSet(&left_motor, i, DECAY_SLOW);
 		motorSet(&right_motor, i, DECAY_SLOW);
 		HAL_Delay(20);
 	}
-	ssd1306ClearScreen();
+	ssd1306ClearScreen(MAIN_AERA);
 	ssd1306DrawString(1,  20,  "BRAKE SLOW DECAY 0%", &Font_5x8);
-	ssd1306Refresh();
+	ssd1306Refresh(MAIN_AERA);
 	motorsBrake();
 	HAL_Delay(1000);
-	ssd1306ClearScreen();
+	ssd1306ClearScreen(MAIN_AERA);
 	ssd1306DrawString(1,  20,  "BWD SLOW DECAY 0->20%", &Font_5x8);
-	ssd1306Refresh();
+	ssd1306Refresh(MAIN_AERA);
 	for (i = 0; i > -150; i -= 1)
 	{
 		motorSet(&left_motor, i, DECAY_SLOW);
 		motorSet(&right_motor, i, DECAY_SLOW);
 		HAL_Delay(20);
 	}
-	ssd1306ClearScreen();
+	ssd1306ClearScreen(MAIN_AERA);
 	ssd1306DrawString(1,  20,  "BWD SLOW DECAY 20%", &Font_5x8);
-	ssd1306Refresh();
+	ssd1306Refresh(MAIN_AERA);
 	HAL_Delay(500);
-	ssd1306ClearScreen();
+	ssd1306ClearScreen(MAIN_AERA);
 	ssd1306DrawString(1,  20,  "BWD SLOW DECAY 20->0%", &Font_5x8);
-	ssd1306Refresh();
+	ssd1306Refresh(MAIN_AERA);
 	for (i = -150; i < 0; i += 1)
 	{
 		motorSet(&left_motor, i, DECAY_SLOW);
 		motorSet(&right_motor, i, DECAY_SLOW);
 		HAL_Delay(20);
 	}
-	ssd1306ClearScreen();
+	ssd1306ClearScreen(MAIN_AERA);
 	ssd1306DrawString(1,  20,  "BRAK SLOW DECAY 0%", &Font_5x8);
-	ssd1306Refresh();
+	ssd1306Refresh(MAIN_AERA);
 	motorsBrake();
 
 	motorsDriverSleep(ON);

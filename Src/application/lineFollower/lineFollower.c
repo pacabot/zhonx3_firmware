@@ -144,23 +144,23 @@ void lineFollower(void)
 
 
 
-	ssd1306ClearScreen();
+	ssd1306ClearScreen(MAIN_AERA);
 	ssd1306PrintInt(10, 5,  "LEFT_EXT  =  ", (uint16_t) min_Floor.leftExt, &Font_5x8);
 	ssd1306PrintInt(10, 15, "LEFT      =  ", (uint16_t) min_Floor.left, &Font_5x8);
 	ssd1306PrintInt(10, 25, "FRONT --  =  ", (uint16_t) min_Floor.front, &Font_5x8);
 	ssd1306PrintInt(10, 35, "RIGHT     =  ", (uint16_t) min_Floor.right, &Font_5x8);
 	ssd1306PrintInt(10, 45, "RIGHT_EXT =  ", (uint16_t) min_Floor.rightExt, &Font_5x8);
-	ssd1306Refresh();
+	ssd1306Refresh(MAIN_AERA);
 //	HAL_Delay(900);
 	tone(c, 100);
 
-	ssd1306ClearScreen();
+	ssd1306ClearScreen(MAIN_AERA);
 	ssd1306PrintInt(10, 5,  "LEFT_EXT  =  ", (uint16_t) max_Floor.leftExt, &Font_5x8);
 	ssd1306PrintInt(10, 15, "LEFT      =  ", (uint16_t) max_Floor.left, &Font_5x8);
 	ssd1306PrintInt(10, 25, "FRONT --  =  ", (uint16_t) max_Floor.front, &Font_5x8);
 	ssd1306PrintInt(10, 35, "RIGHT     =  ", (uint16_t) max_Floor.right, &Font_5x8);
 	ssd1306PrintInt(10, 45, "RIGHT_EXT =  ", (uint16_t) max_Floor.rightExt, &Font_5x8);
-	ssd1306Refresh();
+	ssd1306Refresh(MAIN_AERA);
 //	HAL_Delay(900);
 
 
@@ -179,7 +179,7 @@ void lineFollower(void)
 		int front=((double)lineSensors.front.adc_value- min_Floor.front) * coef_Floor.front ;
 		int right=((double)lineSensors.right.adc_value- min_Floor.right) * coef_Floor.right ;
 		error=line_follower.position*200;
-		ssd1306ClearScreen();
+		ssd1306ClearScreen(MAIN_AERA);
 //		ssd1306PrintInt(10, 5,  "LEFT_EXT  =  ", (uint16_t) lineSensors.left_ext.adc_value, &Font_5x8);
 //		ssd1306PrintInt(10, 15, "LEFT      =  ", (uint16_t) lineSensors.left.adc_value, &Font_5x8);
 //		ssd1306PrintInt(10, 25, "FRONT --  =  ", (uint16_t) lineSensors.front.adc_value, &Font_5x8);
@@ -191,7 +191,7 @@ void lineFollower(void)
 		ssd1306PrintInt(10, 35, "RIGHT     =  ", right, &Font_5x8);
 
 		ssd1306PrintInt(10, 54, "Error =  ", error, &Font_5x8);
-		ssd1306Refresh();
+		ssd1306Refresh(MAIN_AERA);
 
 
 // -----------------------------------------------------------------------

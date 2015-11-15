@@ -30,7 +30,7 @@ void bannerExample(void)
 
 	for(i = 0; i < 59; i++)
 	{
-		ssd1306ClearScreen();
+		ssd1306ClearScreen(MAIN_AERA);
 
 		if (i > 12)
 		{
@@ -122,7 +122,7 @@ void bannerExample(void)
 		ssd1306DrawString(8, 0, ":", &Font_3x6);
 
 		ssd1306DrawDashedLine(0,9,128,9);
-		ssd1306Refresh();
+		ssd1306Refresh(MAIN_AERA);
 		HAL_Delay(1000);
 	}
 }
