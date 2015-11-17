@@ -43,7 +43,6 @@
 
 #define SSD1306_CMDSIZE					1
 
-//#define SSD1306_BANNERSIZE				(SSD1306_CMDSIZE + SSD1306_LCDWIDTH)
 #define SSD1306_MAINSIZE				(SSD1306_CMDSIZE + (SSD1306_LCDWIDTH * SSD1306_LCDPAGEHEIGHT))
 
 // Commands
@@ -256,15 +255,7 @@ void ssd1306DrawPixel(unsigned char x, unsigned char y)
 	if ((x >= SSD1306_LCDWIDTH) || (y >= SSD1306_LCDHEIGHT))
 		return;
 
-//	if (y < SSD1306_LCDPAGEHEIGHT)
-//	{
-//		banner_aera_buffer[x + ((y/8)*SSD1306_LCDWIDTH) + SSD1306_CMDSIZE] |= (1 << y%8);
-//	}
-//	else
-//	{
-//		y -= SSD1306_LCDPAGEHEIGHT;
-		main_aera_buffer[x + ((y/8)*SSD1306_LCDWIDTH) + SSD1306_CMDSIZE] |= (1 << y%8);
-//	}
+	main_aera_buffer[x + ((y/8)*SSD1306_LCDWIDTH) + SSD1306_CMDSIZE] |= (1 << y%8);
 }
 
 /**************************************************************************/
@@ -282,15 +273,7 @@ void ssd1306ClearPixel(unsigned char x, unsigned char y)
 	if ((x >= SSD1306_LCDWIDTH) || (y >= SSD1306_LCDHEIGHT))
 		return;
 
-//	if (y < SSD1306_LCDPAGEHEIGHT)
-//	{
-//		banner_aera_buffer[x + ((y/8)*SSD1306_LCDWIDTH) + SSD1306_CMDSIZE] &= (1 << y%8);
-//	}
-//	else
-//	{
-//		y -= SSD1306_LCDPAGEHEIGHT;
-		main_aera_buffer[x + ((y/8)*SSD1306_LCDWIDTH) + SSD1306_CMDSIZE] &= (1 << y%8);
-//	}
+	main_aera_buffer[x + ((y/8)*SSD1306_LCDWIDTH) + SSD1306_CMDSIZE] &= (1 << y%8);
 }
 
 /**************************************************************************/
@@ -308,15 +291,7 @@ void ssd1306InvertPixel(unsigned char x, unsigned char y)
 	if ((x >= SSD1306_LCDWIDTH) || (y >= SSD1306_LCDHEIGHT))
 		return;
 
-//	if (y < SSD1306_LCDPAGEHEIGHT)
-//	{
-//		banner_aera_buffer[x + ((y/8)*SSD1306_LCDWIDTH) + SSD1306_CMDSIZE] ^= (1 << y%8);
-//	}
-//	else
-//	{
-//		y -= SSD1306_LCDPAGEHEIGHT;
-		main_aera_buffer[x + ((y/8)*SSD1306_LCDWIDTH) + SSD1306_CMDSIZE] ^= (1 << y%8);
-//	}
+	main_aera_buffer[x + ((y/8)*SSD1306_LCDWIDTH) + SSD1306_CMDSIZE] ^= (1 << y%8);
 }
 
 /**************************************************************************/
@@ -336,15 +311,7 @@ unsigned char ssd1306GetPixel(unsigned char x, unsigned char y)
 	if ((x >= SSD1306_LCDWIDTH) || (y >=SSD1306_LCDHEIGHT))
 		return 0;
 
-//	if (y < SSD1306_LCDPAGEHEIGHT)
-//	{
-//		return banner_aera_buffer[(x + (y/8)*SSD1306_LCDWIDTH) + SSD1306_CMDSIZE] & (1 << y%8) ? 1 : 0;
-//	}
-//	else
-//	{
-//		y -= SSD1306_LCDPAGEHEIGHT;
-		return main_aera_buffer[(x + (y/8)*SSD1306_LCDWIDTH) + SSD1306_CMDSIZE] & (1 << y%8) ? 1 : 0;
-//	}
+	return main_aera_buffer[(x + (y/8)*SSD1306_LCDWIDTH) + SSD1306_CMDSIZE] & (1 << y%8) ? 1 : 0;
 }
 
 /**************************************************************************/
@@ -355,16 +322,6 @@ unsigned char ssd1306GetPixel(unsigned char x, unsigned char y)
 void ssd1306ClearScreen(enum refreshTypeEnum clearType)
 {
 	memset(main_aera_buffer, 0, SSD1306_MAINSIZE);
-
-//	switch (clearType)
-//	{
-//	case MAIN_AREA:
-//		memset(main_aera_buffer, 0, SSD1306_MAINSIZE);
-//		return;
-//	case BANNER_AREA:
-//		memset(banner_aera_buffer, 0, SSD1306_BANNERSIZE);
-//		return;
-//	}
 }
 
 /**************************************************************************/
@@ -374,22 +331,8 @@ void ssd1306ClearScreen(enum refreshTypeEnum clearType)
 /**************************************************************************/
 void ssd1306Refresh(enum refreshTypeEnum refreshType)
 {
-//	switch (refreshType)
-//	{
-//	case BANNER_AREA:
-//		CMD(SSD1306_SETPAGESTART | 0x0); //page 0
-//		banner_aera_buffer[0] = 0x40;
-//		DATA(banner_aera_buffer, SSD1306_BANNERSIZE);
-//		return;
-//	case MAIN_AREA:
-//		while (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY)
-//		{
-//		}
-//		CMD(SSD1306_SETPAGESTART | 0x1); //page 1
-		main_aera_buffer[0] = 0x40;
-		DATA(main_aera_buffer, SSD1306_MAINSIZE);
-//		return;
-//	}
+	main_aera_buffer[0] = 0x40;
+	DATA(main_aera_buffer, SSD1306_MAINSIZE);
 }
 
 /**************************************************************************/
