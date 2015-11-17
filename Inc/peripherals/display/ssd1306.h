@@ -22,7 +22,7 @@
 #define SSD1306_LCDHEIGHT               64
 #define SSD1306_LCDPAGEHEIGHT           8   //8 lines per page
 
-enum refreshTypeEnum {BANNER_AERA, MAIN_AERA, ALL_AERA};
+enum refreshTypeEnum {BANNER_AREA, MAIN_AREA};
 
 // Initialisation/Config Prototypes
 void ssd1306Init(unsigned char vccstate);

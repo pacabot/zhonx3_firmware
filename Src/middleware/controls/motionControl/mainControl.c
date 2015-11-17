@@ -381,7 +381,7 @@ void mainControlDisplayTest(void)
 {
 	while(expanderJoyFiltered()!=JOY_LEFT)
 	{
-		ssd1306ClearScreen(MAIN_AERA);
+		ssd1306ClearScreen(MAIN_AREA);
 		ssd1306PrintInt(10,  5,  "speed dist =  ",(int) (speed_control.current_distance * 100), &Font_5x8);
 		ssd1306PrintInt(10,  15, "follow err =  ",(int) (wall_follow_control.follow_error), &Font_5x8);
 		ssd1306PrintInt(10,  25, "right_dist =  ",(int) (position_control.end_control * 100), &Font_5x8);
@@ -394,7 +394,7 @@ void mainControlDisplayTest(void)
 		//		transfert_function.right_motor_pwm = (speed_control.speed_command - (position_control.position_command + follow_control.follow_command)) * transfert_function.pwm_ratio;
 		//		transfert_function.left_motor_pwm  = (speed_control.speed_command + (position_control.position_command + follow_control.follow_command)) * transfert_function.pwm_ratio;
 
-		ssd1306Refresh(MAIN_AERA);
+		ssd1306Refresh(MAIN_AREA);
 	}
 	pid_loop.start_state = FALSE;
 	telemetersStop();

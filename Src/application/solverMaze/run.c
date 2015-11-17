@@ -41,10 +41,10 @@ void run1(labyrinthe *maze, positionRobot *positionZhonx, coordinate start_oordi
 //			calibrateSimple();
 		doUTurn(positionZhonx);
 
-		ssd1306ClearScreen(MAIN_AERA);
+		ssd1306ClearScreen(MAIN_AREA);
 		ssd1306DrawString(10, 10, "presse \"RIGHT\" to ", &Font_5x8);
 		ssd1306DrawString(10, 18, "do a new run 1", &Font_5x8);
-		ssd1306Refresh(MAIN_AERA);
+		ssd1306Refresh(MAIN_AREA);
 		while(choice == -1)
 		{
 			if(expanderJoyFiltered() == JOY_RIGHT)
@@ -80,10 +80,10 @@ void run2(labyrinthe *maze, positionRobot *positionZhonx, coordinate start_oordi
 //		if(zhonxSettings.calibration_enabled == true)
 //			calibrateSimple();
 		doUTurn(positionZhonx);
-		ssd1306ClearScreen(MAIN_AERA);
+		ssd1306ClearScreen(MAIN_AREA);
 		ssd1306DrawString(10, 10, "presse \"RIGHT\" to ", &Font_5x8);
 		ssd1306DrawString(10, 18, "do a new run 2", &Font_5x8);
-		ssd1306Refresh(MAIN_AERA);
+		ssd1306Refresh(MAIN_AREA);
 		while(choice == -1)
 		{
 			if(expanderJoyFiltered() == JOY_RIGHT)

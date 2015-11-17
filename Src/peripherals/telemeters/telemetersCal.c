@@ -43,15 +43,15 @@
 //int telemetersWithOutNoise//TODO this function
 int wallSensorsCalibrationFront (void)
 {
-	ssd1306ClearScreen(MAIN_AERA);
+	ssd1306ClearScreen(MAIN_AREA);
 	ssd1306DrawString(0,0,"Place the robot front",&Font_5x8);
 	ssd1306DrawString(0,10,"of wall and press 'RIGHT'",&Font_5x8);
-	ssd1306Refresh(MAIN_AERA);
+	ssd1306Refresh(MAIN_AREA);
 	while(expanderJoyFiltered()!=JOY_RIGHT);
 
-	ssd1306ClearScreen(MAIN_AERA);
+	ssd1306ClearScreen(MAIN_AREA);
 	ssd1306Printf(0,0,&Font_5x8,"Calibrating front sensors");
-	ssd1306Refresh(MAIN_AERA);
+	ssd1306Refresh(MAIN_AREA);
 
 	mainControlInit();
 	motorsDriverSleep(OFF);
@@ -86,17 +86,17 @@ int wallSensorsCalibrationFront (void)
 }
 int wallSensorsCalibrationDiag (void)
 {
-	ssd1306ClearScreen(MAIN_AERA);
+	ssd1306ClearScreen(MAIN_AREA);
 	ssd1306DrawString(0,0,"Place the robot front",&Font_5x8);
 	ssd1306DrawString(0,10,"of wall and press 'RIGHT'",&Font_5x8);
-	ssd1306Refresh(MAIN_AERA);
+	ssd1306Refresh(MAIN_AREA);
 
 	while(expanderJoyFiltered()!=JOY_RIGHT);
 
 	ssd1306ProgressBar(10,10,0);
-	ssd1306ClearScreen(MAIN_AERA);
+	ssd1306ClearScreen(MAIN_AREA);
 	ssd1306Printf(0,0,&Font_5x8,"Calibrating front sensors");
-	ssd1306Refresh(MAIN_AERA);
+	ssd1306Refresh(MAIN_AREA);
 
 	mainControlInit();
 	motorsDriverSleep(OFF);
@@ -135,7 +135,7 @@ void testTelemeterDistance()
 
 	while(expanderJoyFiltered()!=JOY_LEFT)
 	{
-		ssd1306ClearScreen(MAIN_AERA);
+		ssd1306ClearScreen(MAIN_AREA);
 
 		ssd1306Printf(0, 0 ,&Font_5x8,"F L :%d",(int)(telemeters.FL.dist_mm*10));
 		ssd1306Printf(0, 10,&Font_5x8,"F R :%d",(int)(telemeters.FR.dist_mm*10));
@@ -148,7 +148,7 @@ void testTelemeterDistance()
 		ssd1306Printf(60,30,&Font_5x8,"V d r=%d",(int)(telemeters.DR.avrg));
 
 
-		ssd1306Refresh(MAIN_AERA);
+		ssd1306Refresh(MAIN_AREA);
 	}
 	telemetersStop();
 }
@@ -161,7 +161,7 @@ void testWallsSensors()
 
 	while(expanderJoyFiltered()!=JOY_LEFT)
 	{
-		ssd1306ClearScreen(MAIN_AERA);
+		ssd1306ClearScreen(MAIN_AREA);
 		if (getWallPresence(FRONT_WALL) == WALL_PRESENCE)
 		{
 			ssd1306FillRect(0,49,54,5);
@@ -207,7 +207,7 @@ void testWallsSensors()
 		ssd1306Printf(55, 10,&Font_5x8,"F R :%d",(int)(telemeters.FR.dist_mm*10));
 		ssd1306Printf(55, 20,&Font_5x8,"D L :%d",(int)(telemeters.DL.dist_mm*10));
 		ssd1306Printf(55, 30,&Font_5x8,"D R :%d",(int)(telemeters.DR.dist_mm*10));
-		ssd1306Refresh(MAIN_AERA);
+		ssd1306Refresh(MAIN_AREA);
 	}
 	telemetersStop();
 }
@@ -220,7 +220,7 @@ void testPostSensors()
 
 	while(expanderJoyFiltered()!=JOY_LEFT)
 	{
-		ssd1306ClearScreen(MAIN_AERA);
+		ssd1306ClearScreen(MAIN_AREA);
 
 		if (fabs(telemeters.DL.speed_mms) > 500)
 		{
@@ -256,7 +256,7 @@ void testPostSensors()
 		ssd1306PrintInt(55, 10, "", (int32_t) telemeters.DL.speed_mms, &Font_5x8);
 		ssd1306PrintInt(55, 20, "", (int32_t) telemeters.DR.speed_mms, &Font_5x8);
 		ssd1306PrintInt(55, 30, "", (int32_t) telemeters.FR.speed_mms, &Font_5x8);
-		ssd1306Refresh(MAIN_AERA);
+		ssd1306Refresh(MAIN_AREA);
 	}
 	telemetersStop();
 }

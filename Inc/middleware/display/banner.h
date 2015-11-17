@@ -10,5 +10,6 @@
 
 #define BANNER_HEIGHT	8
 
+void banner_IT(void);
 
 #endif /* BANNER_H_ */

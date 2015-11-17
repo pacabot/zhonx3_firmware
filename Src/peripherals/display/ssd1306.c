@@ -41,8 +41,10 @@
 /* Declarations for this module */
 #include "peripherals/display/ssd1306.h"
 
-#define SSD1306_BANNERSIZE				(SSD1306_LCDWIDTH)
-#define SSD1306_MAINSIZE				(SSD1306_LCDWIDTH * SSD1306_LCDPAGEHEIGHT - SSD1306_BANNERSIZE)
+#define SSD1306_CMDSIZE					1
+
+#define SSD1306_BANNERSIZE				(SSD1306_CMDSIZE + SSD1306_LCDWIDTH)
+#define SSD1306_MAINSIZE				(SSD1306_CMDSIZE + ((SSD1306_LCDWIDTH * SSD1306_LCDPAGEHEIGHT) - SSD1306_LCDWIDTH))
 
 // Commands
 #define SSD1306_SETCONTRAST             0x81
@@ -96,24 +98,26 @@ static void ssd1306DrawChar(unsigned int x, unsigned int y, unsigned char c, con
 static void CMD(uint8_t c)
 {
 	// I2C
-	// control = 0x80 => Co = 0, D/C = 0
+	uint8_t control = 0x00;   // Co = 0, D/C = 0
 
-	HAL_I2C_Mem_Write_DMA(&hi2c1, (uint16_t)120, 0x80, I2C_MEMADD_SIZE_8BIT, &c, 1);
+	uint8_t aTxBuffer[2]; // = {control, c};
+	aTxBuffer[0] = control;
+	aTxBuffer[1] = c;
+
+	//	while (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY)
+	//	{
+	//	}
+	HAL_I2C_Master_Transmit_DMA(&hi2c1, (uint16_t)120, (uint8_t*)aTxBuffer, 2);
 }
 
 //Send DATA
 static void DATA(uint8_t c[], uint16_t size)
 {
 	// I2C
-	// data = 0x40 => Co = 0, D/C = 0
-//		uint8_t control = 0x40; // Co = 0, D/C = 1
-//
-//		uint8_t aTxBuffer[2]; // = {control, c};
-//		aTxBuffer[0] = control;
-//		aTxBuffer[1] = c;
-
-//	HAL_I2C_Master_Transmit_DMA(&hi2c1, (uint16_t)120, (uint8_t*)aTxBuffer, 2);
-	HAL_I2C_Mem_Write_DMA(&hi2c1, (uint16_t)120, 0x40, I2C_MEMADD_SIZE_8BIT, c, size);
+	//	while (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY)
+	//	{
+	//	}
+	HAL_I2C_Master_Transmit_DMA(&hi2c1, (uint16_t)120, (uint8_t*)c, size);
 }
 
 /**************************************************************************/
@@ -171,6 +175,8 @@ static void ssd1306DrawChar(unsigned int x, unsigned int y, unsigned char c, con
 /**************************************************************************/
 void ssd1306Init(unsigned char vccstate)
 {
+	banner_aera_buffer[0] = 0xFF;
+
 	// Reset the LCD
 	expanderSetbit(7,1);
 	HAL_Delay(50);
@@ -235,6 +241,8 @@ void ssd1306Init(unsigned char vccstate)
 
 	// Enabled the OLED panel
 	CMD(SSD1306_DISPLAYON);
+
+	banner_aera_buffer[0] = 0x00;
 }
 
 /**************************************************************************/
@@ -254,12 +262,12 @@ void ssd1306DrawPixel(unsigned char x, unsigned char y)
 
 	if (y < SSD1306_LCDPAGEHEIGHT)
 	{
-		banner_aera_buffer[x + ((y/8)*SSD1306_LCDWIDTH)] |= (1 << y%8);
+		banner_aera_buffer[x + ((y/8)*SSD1306_LCDWIDTH) + SSD1306_CMDSIZE] |= (1 << y%8);
 	}
 	else
 	{
 		y -= SSD1306_LCDPAGEHEIGHT;
-		main_aera_buffer[x + ((y/8)*SSD1306_LCDWIDTH)] |= (1 << y%8);
+		main_aera_buffer[x + ((y/8)*SSD1306_LCDWIDTH) + SSD1306_CMDSIZE] |= (1 << y%8);
 	}
 }
 
@@ -280,12 +288,12 @@ void ssd1306ClearPixel(unsigned char x, unsigned char y)
 
 	if (y < SSD1306_LCDPAGEHEIGHT)
 	{
-		banner_aera_buffer[x + ((y/8)*SSD1306_LCDWIDTH)] &= (1 << y%8);
+		banner_aera_buffer[x + ((y/8)*SSD1306_LCDWIDTH) + SSD1306_CMDSIZE] &= (1 << y%8);
 	}
 	else
 	{
 		y -= SSD1306_LCDPAGEHEIGHT;
-		main_aera_buffer[x + ((y/8)*SSD1306_LCDWIDTH)] &= (1 << y%8);
+		main_aera_buffer[x + ((y/8)*SSD1306_LCDWIDTH) + SSD1306_CMDSIZE] &= (1 << y%8);
 	}
 }
 
@@ -306,12 +314,12 @@ void ssd1306InvertPixel(unsigned char x, unsigned char y)
 
 	if (y < SSD1306_LCDPAGEHEIGHT)
 	{
-		banner_aera_buffer[x + ((y/8)*SSD1306_LCDWIDTH)] ^= (1 << y%8);
+		banner_aera_buffer[x + ((y/8)*SSD1306_LCDWIDTH) + SSD1306_CMDSIZE] ^= (1 << y%8);
 	}
 	else
 	{
 		y -= SSD1306_LCDPAGEHEIGHT;
-		main_aera_buffer[x + ((y/8)*SSD1306_LCDWIDTH)] ^= (1 << y%8);
+		main_aera_buffer[x + ((y/8)*SSD1306_LCDWIDTH) + SSD1306_CMDSIZE] ^= (1 << y%8);
 	}
 }
 
@@ -334,12 +342,12 @@ unsigned char ssd1306GetPixel(unsigned char x, unsigned char y)
 
 	if (y < SSD1306_LCDPAGEHEIGHT)
 	{
-		return banner_aera_buffer[(x + (y/8)*SSD1306_LCDWIDTH)] & (1 << y%8) ? 1 : 0;
+		return banner_aera_buffer[(x + (y/8)*SSD1306_LCDWIDTH) + SSD1306_CMDSIZE] & (1 << y%8) ? 1 : 0;
 	}
 	else
 	{
 		y -= SSD1306_LCDPAGEHEIGHT;
-		return main_aera_buffer[(x + (y/8)*SSD1306_LCDWIDTH)] & (1 << y%8) ? 1 : 0;
+		return main_aera_buffer[(x + (y/8)*SSD1306_LCDWIDTH) + SSD1306_CMDSIZE] & (1 << y%8) ? 1 : 0;
 	}
 }
 
@@ -352,14 +360,10 @@ void ssd1306ClearScreen(enum refreshTypeEnum clearType)
 {
 	switch (clearType)
 	{
-	case MAIN_AERA:
+	case MAIN_AREA:
 		memset(main_aera_buffer, 0, SSD1306_MAINSIZE);
 		return;
-	case BANNER_AERA:
-		memset(banner_aera_buffer, 0, SSD1306_BANNERSIZE);
-		return;
-	case ALL_AERA:
-		memset(main_aera_buffer, 0, SSD1306_MAINSIZE);
+	case BANNER_AREA:
 		memset(banner_aera_buffer, 0, SSD1306_BANNERSIZE);
 		return;
 	}
@@ -372,27 +376,29 @@ void ssd1306ClearScreen(enum refreshTypeEnum clearType)
 /**************************************************************************/
 void ssd1306Refresh(enum refreshTypeEnum refreshType)
 {
-	//	CMD(SSD1306_SETLOWCOLUMN | 0x0);  // low col = 0
-	//	CMD(SSD1306_SETHIGHCOLUMN | 0x0);  // hi col = 0
-	//	CMD(SSD1306_SETSTARTLINE | 0x0); // line #0
-
-	//  CMD(SSD1306_SETPAGESTART | 0x0); //page 0
-
 	switch (refreshType)
 	{
-	case MAIN_AERA:
+	case BANNER_AREA:
+		while (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY)
+		{
+		}
+		CMD(SSD1306_SETPAGESTART | 0x0); //page 0
+		banner_aera_buffer[0] = 0x40;
+		while (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY)
+		{
+		}
+		DATA(banner_aera_buffer, SSD1306_BANNERSIZE);
+		return;
+	case MAIN_AREA:
+		while (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY)
+		{
+		}
 		CMD(SSD1306_SETPAGESTART | 0x1); //page 1
-		DATA((uint8_t*)main_aera_buffer, SSD1306_MAINSIZE);
-		return;
-	case BANNER_AERA:
-		CMD(SSD1306_SETPAGESTART | 0x0); //page 0
-		DATA((uint8_t*)banner_aera_buffer, SSD1306_BANNERSIZE);
-		return;
-	case ALL_AERA:
-		CMD(SSD1306_SETPAGESTART | 0x1); //page 0
-		DATA((uint8_t*)main_aera_buffer, SSD1306_MAINSIZE);
-		CMD(SSD1306_SETPAGESTART | 0x0); //page 0
-		DATA((uint8_t*)banner_aera_buffer, SSD1306_BANNERSIZE);
+		main_aera_buffer[0] = 0x40;
+		while (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY)
+		{
+		}
+		DATA(main_aera_buffer, SSD1306_MAINSIZE);
 		return;
 	}
 }
@@ -510,7 +516,7 @@ void ssd1306ShiftFrameBuffer( unsigned char height )
 	if (height >= SSD1306_LCDHEIGHT)
 	{
 		// Clear the entire frame buffer
-		ssd1306ClearScreen(MAIN_AERA);
+		ssd1306ClearScreen(MAIN_AREA);
 		return;
 	}
 
@@ -830,9 +836,14 @@ void ssd1306Test(void)
 {
 	int i;
 
+	ssd1306ClearScreen(MAIN_AREA);
+	ssd1306DrawDashedLine(0,9,128,9);
+	ssd1306Refresh(MAIN_AREA);
+
+
 	for(i = 0; i < 59; i++)
 	{
-		ssd1306ClearScreen(BANNER_AERA);
+		ssd1306ClearScreen(BANNER_AREA);
 
 		if (i > 12)
 		{
@@ -923,8 +934,7 @@ void ssd1306Test(void)
 		ssd1306PrintInt(0, 0, "", 0, &Font_3x6);
 		ssd1306DrawString(8, 0, ":", &Font_3x6);
 
-		ssd1306DrawDashedLine(0,9,128,9);
-		ssd1306Refresh(ALL_AERA);
+		ssd1306Refresh(BANNER_AREA);
 		HAL_Delay(1000);
 	}
 
@@ -932,19 +942,19 @@ void ssd1306Test(void)
 
 	//////////////////////////////////////////////////////////////////////////
 	ssd1306DrawBmp(Pacabot_bmp, 1, 1, 128, 40);
-	ssd1306Refresh(MAIN_AERA);
+	ssd1306Refresh(MAIN_AREA);
 
 	for (i = 0; i <= 100; i+=1)
 	{
 		ssd1306ProgressBar(10, 35, i);
 		HAL_Delay(100);
-		ssd1306Refresh(MAIN_AERA);
+		ssd1306Refresh(MAIN_AREA);
 	}
 
-	ssd1306Refresh(MAIN_AERA);
+	ssd1306Refresh(MAIN_AREA);
 	HAL_Delay(500);
-	ssd1306ClearScreen(MAIN_AERA);
-	ssd1306Refresh(MAIN_AERA);
+	ssd1306ClearScreen(MAIN_AREA);
+	ssd1306Refresh(MAIN_AREA);
 	// miniature bitmap display
 	ssd1306DrawCircle(40, 30, 20);
 	//  ssd1306DrawCircle(50, 20, 10);
@@ -953,33 +963,33 @@ void ssd1306Test(void)
 	ssd1306FillRect(1, 60, 10, 20);
 	ssd1306DrawDashedLine(5, 45, 70, 45);
 	ssd1306DrawLine(70, 45, 20, 6);
-	ssd1306Refresh(MAIN_AERA);
+	ssd1306Refresh(MAIN_AREA);
 	HAL_Delay(5500);
-	ssd1306ClearScreen(MAIN_AERA);
+	ssd1306ClearScreen(MAIN_AREA);
 
 	for (i = 0; i <= 100; i+=2)
 	{
 		ssd1306ProgressBar(10, 20, i);
 		HAL_Delay(10);
-		ssd1306Refresh(MAIN_AERA);
+		ssd1306Refresh(MAIN_AREA);
 	}
 
 	ssd1306ShiftFrameBuffer(8);
 	ssd1306DrawString(13, 1, "Oled 128x64", &Font_8x8); // 3x6 is UPPER CASE only
-	ssd1306Refresh(MAIN_AERA);
+	ssd1306Refresh(MAIN_AREA);
 	HAL_Delay(1500);
 	ssd1306DrawString(1, 25, "Driver for STM32f4xx", &Font_5x8); // 3x6 is UPPER CASE only
-	ssd1306Refresh(MAIN_AERA);
+	ssd1306Refresh(MAIN_AREA);
 	HAL_Delay(500);
 	ssd1306DrawString(1, 35, "I2C mode", &Font_5x8); // 3x6 is UPPER CASE only
-	ssd1306Refresh(MAIN_AERA);
+	ssd1306Refresh(MAIN_AREA);
 	HAL_Delay(1500);
 	ssd1306DrawString(10, 55, "BY PLF, PACABOT TEAM", &Font_3x6); // 3x6 is UPPER CASE only
-	ssd1306Refresh(MAIN_AERA);
+	ssd1306Refresh(MAIN_AREA);
 	HAL_Delay(5000);
 
-	ssd1306ClearScreen(MAIN_AERA);
-	ssd1306Refresh(MAIN_AERA);
+	ssd1306ClearScreen(MAIN_AREA);
+	ssd1306Refresh(MAIN_AREA);
 }
 
 

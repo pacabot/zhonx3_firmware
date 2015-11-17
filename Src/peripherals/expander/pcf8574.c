@@ -181,7 +181,7 @@ void joystickTest(void)
 	{
 		state = expanderJoyState();
 
-		ssd1306ClearScreen(MAIN_AERA);
+		ssd1306ClearScreen(MAIN_AREA);
 		ssd1306DrawCircle(60,10, 3);
 		ssd1306DrawCircle(60,30, 3);
 		ssd1306DrawCircle(50,20, 3);
@@ -202,10 +202,10 @@ void joystickTest(void)
 				break;
 		}
 
-		ssd1306Refresh(MAIN_AERA);
+		ssd1306Refresh(MAIN_AREA);
 	}
 	ssd1306FillCircle(50,20, 3);
-	ssd1306Refresh(MAIN_AERA);
+	ssd1306Refresh(MAIN_AREA);
 	HAL_Delay(1000);
 	antiBounceJoystick();
 }

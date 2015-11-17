@@ -31,6 +31,7 @@
 
 /* Middleware declarations */
 #include "middleware/controls/pidController/pidController.h"
+#include "middleware/display/banner.h"
 
 /* Declarations for this module */
 #include "peripherals/times_base/times_base.h"
@@ -276,6 +277,7 @@ void highFreq_IT(void)
 void lowFreq_IT(void)
 {
 	tone_IT();
+	banner_IT();
 	sleep_mode_IT();
 	ledBlink_IT();
 }

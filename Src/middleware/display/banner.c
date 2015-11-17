@@ -24,86 +24,99 @@
 /* Declarations for this module */
 #include "middleware/display/banner.h"
 
+void bannerExample(void);
+#define SSD1306_BANNER_REFRESH_FPS		1
+
+void banner_IT(void)
+{
+	static char cnt = 0;
+	cnt++;
+
+	if ((cnt % (LOW_TIME_FREQ / SSD1306_BANNER_REFRESH_FPS)) == TRUE)
+		bannerExample();
+
+	if (cnt > LOW_TIME_FREQ)
+		cnt = 0;
+}
+
 void bannerExample(void)
 {
-	int i;
+	static char i = 0;
+	i++;
 
-	for(i = 0; i < 59; i++)
+	ssd1306ClearScreen(BANNER_AREA);
+
+	if (i > 12)
 	{
-		ssd1306ClearScreen(MAIN_AERA);
-
-		if (i > 12)
+		ssd1306DrawBmp(USB_Icon, 115, 0, 13, 8);
+	}
+	else
+	{
+		ssd1306DrawBmp(bat_Icon, 115, 0, 13, 8);
+		if (i >= 1)
 		{
-			ssd1306DrawBmp(USB_Icon, 115, 0, 13, 8);
+			ssd1306DrawPixel(117,5);
 		}
-		else
+
+		if (i >= 2)
 		{
-			ssd1306DrawBmp(bat_Icon, 115, 0, 13, 8);
-			if (i >= 1)
-			{
-				ssd1306DrawPixel(117,5);
-			}
+			ssd1306DrawPixel(118,5);
+			ssd1306DrawPixel(117,4);
+		}
 
-			if (i >= 2)
-			{
-				ssd1306DrawPixel(118,5);
-				ssd1306DrawPixel(117,4);
-			}
+		if (i >= 3)
+		{
+			ssd1306DrawPixel(118,4);
+			ssd1306DrawPixel(117,3);
+		}
 
-			if (i >= 3)
-			{
-				ssd1306DrawPixel(118,4);
-				ssd1306DrawPixel(117,3);
-			}
+		if (i >= 4)
+		{
+			ssd1306DrawPixel(118,3);
+		}
 
-			if (i >= 4)
-			{
-				ssd1306DrawPixel(118,3);
-			}
+		if (i >= 5)
+		{
+			ssd1306DrawPixel(120,5);
+		}
 
-			if (i >= 5)
-			{
-				ssd1306DrawPixel(120,5);
-			}
+		if (i >= 6)
+		{
+			ssd1306DrawPixel(121,5);
+			ssd1306DrawPixel(120,4);
+		}
 
-			if (i >= 6)
-			{
-				ssd1306DrawPixel(121,5);
-				ssd1306DrawPixel(120,4);
-			}
+		if (i >= 7)
+		{
+			ssd1306DrawPixel(121,4);
+			ssd1306DrawPixel(120,3);
+		}
 
-			if (i >= 7)
-			{
-				ssd1306DrawPixel(121,4);
-				ssd1306DrawPixel(120,3);
-			}
+		if (i >= 8)
+		{
+			ssd1306DrawPixel(121,3);
+		}
 
-			if (i >= 8)
-			{
-				ssd1306DrawPixel(121,3);
-			}
+		if (i >= 9)
+		{
+			ssd1306DrawPixel(123,5);
+		}
 
-			if (i >= 9)
-			{
-				ssd1306DrawPixel(123,5);
-			}
+		if (i >= 10)
+		{
+			ssd1306DrawPixel(124,5);
+			ssd1306DrawPixel(123,4);
+		}
 
-			if (i >= 10)
-			{
-				ssd1306DrawPixel(124,5);
-				ssd1306DrawPixel(123,4);
-			}
+		if (i >= 11)
+		{
+			ssd1306DrawPixel(124,4);
+			ssd1306DrawPixel(123,3);
+		}
 
-			if (i >= 11)
-			{
-				ssd1306DrawPixel(124,4);
-				ssd1306DrawPixel(123,3);
-			}
-
-			if (i >= 12)
-			{
-				ssd1306DrawPixel(124,3);
-			}
+		if (i >= 12)
+		{
+			ssd1306DrawPixel(124,3);
 		}
 
 		if (i > 40)
@@ -121,8 +134,6 @@ void bannerExample(void)
 		ssd1306PrintInt(0, 0, "", 0, &Font_3x6);
 		ssd1306DrawString(8, 0, ":", &Font_3x6);
 
-		ssd1306DrawDashedLine(0,9,128,9);
-		ssd1306Refresh(MAIN_AERA);
-		HAL_Delay(1000);
+		ssd1306Refresh(BANNER_AREA);
 	}
 }

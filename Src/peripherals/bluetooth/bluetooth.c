@@ -71,10 +71,10 @@ void bluetoothTest(void)
 	while(expanderJoyFiltered()!=JOY_LEFT)
 	{
 		bluetoothPrintf("hello ZHONX_III, nb send = %d\r\n", i);
-		ssd1306ClearScreen(MAIN_AERA);
+		ssd1306ClearScreen(MAIN_AREA);
 		ssd1306DrawString(10, 5, "send hello ZHONX III", &Font_5x8);
 		ssd1306PrintInt(10, 15, "nb send = ", i, &Font_5x8);
-		ssd1306Refresh(MAIN_AERA);
+		ssd1306Refresh(MAIN_AREA);
 		i++;
 	}
 	antiBounceJoystick();

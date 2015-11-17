@@ -23,10 +23,10 @@
 
 int cmd_halt(const char *args)
 {
-    ssd1306ClearScreen(MAIN_AERA);
+    ssd1306ClearScreen(MAIN_AREA);
     ssd1306Printf(0, 0, &Font_8x8, "GOOD BYE!!!");
     ssd1306Printf(0, 15, &Font_8x8, args);
-    ssd1306Refresh(MAIN_AERA);
+    ssd1306Refresh(MAIN_AREA);
 
     HAL_Delay(5000);
 

@@ -175,7 +175,7 @@ void encoderTest(void)
 
 	while(expanderJoyFiltered()!=JOY_LEFT)
 	{
-		ssd1306ClearScreen(MAIN_AERA);
+		ssd1306ClearScreen(MAIN_AREA);
 
 		ssd1306PrintInt(0, 5,  "L_DIST_REL =  ",(signed int) encoderGetDistance(&left_encoder), &Font_5x8);
 		ssd1306PrintInt(0, 15, "L_DIST_ABS =  ",(signed int) left_encoder.abs_dist, &Font_5x8);
@@ -188,7 +188,7 @@ void encoderTest(void)
 			encoderResetDistance(&left_encoder);
 			encoderResetDistance(&right_encoder);
 		}
-		ssd1306Refresh(MAIN_AERA);
+		ssd1306Refresh(MAIN_AREA);
 		HAL_Delay(10);
 	}
 	antiBounceJoystick();

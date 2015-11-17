@@ -210,9 +210,9 @@ void eepromTest(void)
 
 	HAL_Delay(10); //add a small delay
 
-	ssd1306ClearScreen(MAIN_AERA);
+	ssd1306ClearScreen(MAIN_AREA);
 	ssd1306DrawString(10, 10, "Memory written", &Font_5x8);
-	ssd1306Refresh(MAIN_AERA);
+	ssd1306Refresh(MAIN_AREA);
 
 //	for (int i = 0; i < sizeof(somedata); i++) //increase address
 	for (int i = 0; i < 32; i++) //increase address
@@ -227,10 +227,10 @@ void eepromTest(void)
 			ssd1306PrintInt(((i-16)*15), 40, " ",(char) b, &Font_5x8);
 		else if (i < 32)
 			ssd1306PrintInt(((i-24)*15), 50, " ",(char) b, &Font_5x8);
-		ssd1306Refresh(MAIN_AERA);
+		ssd1306Refresh(MAIN_AREA);
 		HAL_Delay(100);
 	}
 //	ssd1306DrawString(10, 50, "End Cycle", &Font_5x8);
-	ssd1306Refresh(MAIN_AERA);
+	ssd1306Refresh(MAIN_AREA);
 	HAL_Delay(2000);
 }
