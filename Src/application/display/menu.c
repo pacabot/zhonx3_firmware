@@ -131,7 +131,7 @@ const menuItem tests_menu=
 {
 		"UNIT TEST",
 		{
-				{"distantce",		'f', (void*)testTelemeterDistance},
+				{"distance",		'f', (void*)testTelemeterDistance},
 				{"wall sensor",		'f', (void*)testWallsSensors},
 				{"bluetooth",		'f', (void*)bluetoothTest},
 				{"multimeter",		'f', (void*)mulimeterTest},

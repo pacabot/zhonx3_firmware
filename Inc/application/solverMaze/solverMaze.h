@@ -45,7 +45,7 @@
 
 #ifdef DEBUG0
 #undef END_SPEED_TRANSLATION
-#define END_SPEED_TRANSLATION 10
+//#define END_SPEED_TRANSLATION 10
 #endif
 #define END_OF_LIST 255
 #include <stdlib.h>

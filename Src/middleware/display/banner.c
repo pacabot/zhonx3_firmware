@@ -29,14 +29,14 @@ void bannerExample(void);
 
 void banner_IT(void)
 {
-	static char cnt = 0;
-	cnt++;
-
-	if ((cnt % (LOW_TIME_FREQ / SSD1306_BANNER_REFRESH_FPS)) == TRUE)
-		bannerExample();
-
-	if (cnt > LOW_TIME_FREQ)
-		cnt = 0;
+//	static char cnt = 0;
+//	cnt++;
+//
+//	if ((cnt % (LOW_TIME_FREQ / SSD1306_BANNER_REFRESH_FPS)) == TRUE)
+//		bannerExample();
+//
+//	if (cnt > LOW_TIME_FREQ)
+//		cnt = 0;
 }
 
 void bannerExample(void)
@@ -44,7 +44,7 @@ void bannerExample(void)
 	static char i = 0;
 	i++;
 
-	ssd1306ClearScreen(BANNER_AREA);
+//	ssd1306ClearScreen(BANNER_AREA);
 
 	if (i > 12)
 	{
@@ -134,6 +134,6 @@ void bannerExample(void)
 		ssd1306PrintInt(0, 0, "", 0, &Font_3x6);
 		ssd1306DrawString(8, 0, ":", &Font_3x6);
 
-		ssd1306Refresh(BANNER_AREA);
+//		ssd1306Refresh(BANNER_AREA);
 	}
 }

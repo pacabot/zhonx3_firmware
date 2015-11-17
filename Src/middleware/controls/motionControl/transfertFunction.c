@@ -77,6 +77,10 @@ int transfertFunctionLoop(void)
 	transfert_function.right_motor_pwm = (speed_control.speed_command - (position_control.position_command + wall_follow_control.follow_command + line_follow_control.line_follow_command)) * transfert_function.pwm_ratio;
 	transfert_function.left_motor_pwm  = (speed_control.speed_command + (position_control.position_command + wall_follow_control.follow_command + line_follow_control.line_follow_command)) * transfert_function.pwm_ratio;
 
+//	transfert_function.right_motor_pwm = (speed_control.speed_command - (position_control.position_command));// + wall_follow_control.follow_command + line_follow_control.line_follow_command)) * transfert_function.pwm_ratio;
+//	transfert_function.left_motor_pwm  = (speed_control.speed_command + (position_control.position_command));// + wall_follow_control.follow_command + line_follow_control.line_follow_command)) * transfert_function.pwm_ratio;
+
+
 	transfertFunctionLimiter();
 	motorSet(&right_motor, transfert_function.right_motor_pwm, DECAY_FAST);
 	motorSet(&left_motor, transfert_function.left_motor_pwm, DECAY_FAST);

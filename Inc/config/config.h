@@ -46,7 +46,7 @@
 
 #define GYRO_B_COEFF			(1237.5938788750565 / GYRO_TIME_FREQ)
 //#define GYRO_B_COEFF			1.2400995740599703// / GYRO_TIME_FREQ)//FORCE COEFF_B
-#define GYRO_GAIN_COMPENSATION	0.95
+#define GYRO_GAIN_COMPENSATION	1
 
 /**************************************************************************************/
 /***************                 Temperature STM32                 ********************/
@@ -87,13 +87,13 @@
 /**************************************************************************************/
 /***************                 Mechanical Constants              ********************/
 /**************************************************************************************/
-#define WHEEL_DIAMETER			23.80	//Wheel diameter in millimeters
+#define WHEEL_DIAMETER			24.10	//Wheel diameter in millimeters
 #define WHEELS_DISTANCE			63.20	//Distance between right and left wheels
 #define WHEELS_SPACING			25.96	//Distance between front and rear wheels
 #define	GEAR_RATIO				(50.00/15.00)	//wheel gear teeth per motor gear teeth
-#define ENCODER_RESOLUTION  	2047.00	//Number steps per revolution (IE512)
+#define ENCODER_RESOLUTION  	2048.00	//Number steps per revolution (IE512)
 
-#define STEPS_PER_WHEEL_REV		(ENCODER_RESOLUTION*GEAR_RATIO)	//Number steps per wheel revolution
+#define STEPS_PER_WHEEL_REV		(ENCODER_RESOLUTION * GEAR_RATIO)	//Number steps per wheel revolution
 #define MM_PER_WHEEL_REV		((M_PI) * (WHEEL_DIAMETER))		//Number of millimeters per wheel revolution
 #define STEPS_PER_MM			((STEPS_PER_WHEEL_REV) / (MM_PER_WHEEL_REV))	//Number of steps per millimeter
 

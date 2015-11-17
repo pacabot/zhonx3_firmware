@@ -65,7 +65,7 @@ void encodersInit(void)
 	htim3.Instance = TIM3;
 	htim3.Init.Prescaler = 0;
 	htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
-	htim3.Init.Period = 2047;
+	htim3.Init.Period = ENCODER_RESOLUTION;
 	htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
 	sConfig.EncoderMode = TIM_ENCODERMODE_TI12;
 	sConfig.IC1Polarity = TIM_ICPOLARITY_RISING;
@@ -81,7 +81,7 @@ void encodersInit(void)
 	htim1.Instance = TIM1;
 	htim1.Init.Prescaler = 0;
 	htim1.Init.CounterMode = TIM_COUNTERMODE_UP;
-	htim1.Init.Period = 2047;
+	htim1.Init.Period = ENCODER_RESOLUTION;
 	htim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
 	htim1.Init.RepetitionCounter = 0;
 	sConfig.EncoderMode = TIM_ENCODERMODE_TI12;

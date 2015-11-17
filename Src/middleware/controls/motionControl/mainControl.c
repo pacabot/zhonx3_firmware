@@ -110,7 +110,7 @@ int setWallFollowControl(char isActive)
 
 int move(float angle, float radius_or_distance, float max_speed, float end_speed)
 {
-//	pid_loop.start_state = FALSE; //todo optimize
+	//	pid_loop.start_state = FALSE; //todo optimize
 
 	encoderResetDistance(&left_encoder);
 	encoderResetDistance(&right_encoder);
@@ -127,7 +127,7 @@ int move(float angle, float radius_or_distance, float max_speed, float end_speed
 	angle = fabsf(angle);
 
 	/* Apply the correction factor, delete function with the future gyro compensation */
-	slip_compensation = 0.9;
+	slip_compensation = 1; //0.9;
 
 	speed_params.end_speed  = end_speed;
 	speed_params.max_speed 	= max_speed;
@@ -151,7 +151,7 @@ int move(float angle, float radius_or_distance, float max_speed, float end_speed
 		positionProfileCompute(distance_per_wheel, speedProfileCompute(distance));
 	}
 
-//	pid_loop.start_state = TRUE;
+	//	pid_loop.start_state = TRUE;
 	return POSITION_CONTROL_E_SUCCESS;
 }
 
@@ -281,8 +281,8 @@ int moveRotateCCW90(float max_speed, float end_speed)
 
 	while(hasMoveEnded() != TRUE);
 	move(-90, (HALF_CELL_LENGTH - OFFSET_DIST), max_speed, max_speed);
-	while(hasMoveEnded() != TRUE);
-	move(0, (OFFSET_DIST * 2.00), max_speed, end_speed);
+//	while(hasMoveEnded() != TRUE);
+//	move(0, (OFFSET_DIST * 2.00), max_speed, end_speed);
 
 	return POSITION_CONTROL_E_SUCCESS;
 }
@@ -415,17 +415,17 @@ void mainControlTest(void)
 
 void followWallTest()
 {
-    ledPowerBlink(0, 0, 0);
+	ledPowerBlink(0, 0, 0);
 	mainControlInit();
-	telemetersStart();
-	motorsDriverSleep(OFF);
+	//	telemetersStart();
 
-	//	position_control.position_type = GYRO;
-	control_params.wall_follow_state = TRUE;
+	position_control.position_type = GYRO;
+	control_params.wall_follow_state = FALSE;
 
-//	setCellState();
+	//	setCellState();
 	HAL_Delay(2000);
 	move(0, 0, 0, 0);
+	motorsDriverSleep(OFF);
 
 	expanderLedState(1,0);
 	expanderLedState(2,0);
@@ -433,21 +433,32 @@ void followWallTest()
 
 	int Vmin, Vmax, Vrotate;
 	Vmin = 100;
-	Vmax = 200;
-	Vrotate = 100;
+	Vmax = 100;
+	Vrotate = 200;
+
+	moveRotateCCW90(Vmin, Vmin);
+	while(1)
+	{
+		ssd1306ClearScreen(MAIN_AREA);
+		ssd1306PrintInt(10,  5,  "Angle =  ", (int32_t) GyroGetAngle(), &Font_5x8);
+		ssd1306Refresh(MAIN_AREA);
+		HAL_Delay(100);
+	}
 
 	moveStartCell(Vmax, Vmax);
 	moveCell(4, Vmax, Vmin);
-	moveRotateCW90(Vmin, Vmin);
-	moveCell(4, Vmax, Vmin);
-	moveUTurn(Vrotate, Vmax, Vmin);
-	moveRotateCCW90(Vmin, Vmin);
-	moveCell(2, Vmax, Vmin);
-	moveRotateCW90(Vmin, Vmin);
-	moveCell(2, Vmax, Vmin);
-	moveRotateCCW90(Vmin, Vmin);
-	moveCell(1, Vmax, Vmin);
-	moveRotateCW90(Vmin, 0);
+
+	//	moveCell(5, Vmax, Vmin);
+	//	moveRotateCW90(Vmin, Vmin);
+	//	moveCell(2, Vmax, Vmin);
+	//	moveUTurn(Vrotate, Vmax, Vmin);
+	//	moveRotateCCW90(Vmin, Vmin);
+	//	moveCell(2, Vmax, Vmin);
+	//	moveRotateCW90(Vmin, Vmin);
+	//	moveCell(2, Vmax, Vmin);
+	//	moveRotateCCW90(Vmin, Vmin);
+	//	moveCell(1, Vmax, Vmin);
+	//	moveRotateCW90(Vmin, 0);
 
 	while(1);
 
@@ -481,7 +492,7 @@ void followLineTest()
 void rotateTest()
 {
 	mainControlInit();
-//	telemetersStart();
+	//	telemetersStart();
 	motorsDriverSleep(OFF);
 
 	//	position_control.position_type = GYRO;

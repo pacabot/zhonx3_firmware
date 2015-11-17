@@ -96,8 +96,13 @@ int positionControlLoop(void)
 	}
 	else if (position_control.position_type == GYRO)
 	{
+//		if (position_params.sign > 0)
+//			position_control.current_diff_dist = (2.00 * PI * ROTATION_DIAMETER * ((GyroGetAngle() * GYRO_GAIN_COMPENSATION) / 360.00));// (GYRO_ENCODER_RATIO * GyroGetAngle());
+//		else
+//			position_control.current_diff_dist = (-2.00 * PI * ROTATION_DIAMETER * ((GyroGetAngle() * GYRO_GAIN_COMPENSATION) / 360.00));
+
 		if (position_params.sign > 0)
-			position_control.current_diff_dist = (2.00 * PI * ROTATION_DIAMETER * ((GyroGetAngle() * GYRO_GAIN_COMPENSATION) / 360.00));// (GYRO_ENCODER_RATIO * GyroGetAngle());
+			position_control.current_diff_dist = (2.00 * PI * ROTATION_DIAMETER * ((GyroGetAngle() * GYRO_GAIN_COMPENSATION) / 360.00));
 		else
 			position_control.current_diff_dist = (-2.00 * PI * ROTATION_DIAMETER * ((GyroGetAngle() * GYRO_GAIN_COMPENSATION) / 360.00));
 	}
