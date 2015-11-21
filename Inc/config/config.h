@@ -46,7 +46,6 @@
 
 #define GYRO_B_COEFF			(1237.5938788750565 / GYRO_TIME_FREQ)
 //#define GYRO_B_COEFF			1.2400995740599703// / GYRO_TIME_FREQ)//FORCE COEFF_B
-#define GYRO_GAIN_COMPENSATION	1
 
 /**************************************************************************************/
 /***************                 Temperature STM32                 ********************/

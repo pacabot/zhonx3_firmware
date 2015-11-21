@@ -38,7 +38,41 @@
 /* Declarations for this module */
 #include "middleware/controls/motionControl/speedControl.h"
 
-/* App definitions */
+typedef struct
+{
+	double distance_consign;			//total distance
+	double max_speed;
+	double initial_speed;
+    double end_speed;
+	double accel;
+	double decel;
+	double accel_dist;
+	double decel_dist;
+	double accel_dist_per_loop;
+	double decel_dist_per_loop;
+	double nb_loop_accel;
+	double nb_loop_decel;
+	double nb_loop_maint;
+	double maintain_dist;
+	double sign;
+}speed_params_struct;
+
+//extern speed_params_struct speed_params;
+
+typedef struct
+{
+	double current_distance;			//distance (mm) since the control start
+	double gap_distance_per_loop;	//distance between two control loop call
+	double current_distance_consign;		//distance consign for current loop
+	double old_distance;				//effective distance at the previous call
+    double current_speed;
+	double speed_consign;
+	double speed_error;
+	double speed_command;
+	char end_control;
+
+    pid_control_struct speed_pid;
+}speed_control_struct;
 
 /* Macros */
 
@@ -46,10 +80,11 @@
 
 /* extern variables */
 /* global variables */
-speed_params_struct speed_params;
-speed_control_struct speed_control;
-pid_control_struct speed_control_pid;
-arm_pid_instance_f32 encoder_pid_instance;
+
+/* private variables */
+static speed_params_struct speed_params;
+static speed_control_struct speed_control;
+static arm_pid_instance_f32 encoder_pid_instance;
 
 int speedControlInit(void)
 {
@@ -74,19 +109,37 @@ int speedControlInit(void)
 	pidControllerInit(speed_control.speed_pid.instance);
 
 
-	encoderResetDistance(&left_encoder);
-	encoderResetDistance(&right_encoder);
+	encodersReset();
 
 	return SPEED_CONTROL_E_SUCCESS;
+}
+
+char speedControlHasMoveEnded(void)
+{
+	return speed_control.end_control;
+}
+
+double speedControlGetCurrentDist(void)
+{
+	return speed_control.current_distance;
+}
+
+double speedControlGetSpeedCommand(void)
+{
+	return speed_control.speed_command;
+}
+
+double speedControlSetSign(double sign)
+{
+	return speed_params.sign = sign;
 }
 
 int speedControlLoop(void)
 {
 	if (speed_params.sign > 0)
-		speed_control.current_distance = (encoderGetDistance(&left_encoder) + encoderGetDistance(&right_encoder)) / 2.00;
+		speed_control.current_distance = (encoderGetDist(ENCODER_L) + encoderGetDist(ENCODER_R)) / 2.00;
 	else
-		speed_control.current_distance = -1.00 * (encoderGetDistance(&left_encoder) + encoderGetDistance(&right_encoder)) / 2.00;
-
+		speed_control.current_distance = -1.00 * (encoderGetDist(ENCODER_L) + encoderGetDist(ENCODER_R)) / 2.00;
 
 
 	//	speedCompute();
@@ -111,7 +164,7 @@ int speedControlLoop(void)
 	else if (speed_params.nb_loop_decel <= 0.00)
 	{
 		speed_control.current_distance_consign = speed_params.distance_consign;
-		speed_control.end_control = 1;
+		speed_control.end_control = TRUE;
 	}
 
 	speed_control.speed_error = speed_control.current_distance_consign - speed_control.current_distance;		//for distance control
@@ -187,8 +240,13 @@ int speedCompute(void)
                    t²
  */
 /**************************************************************************/
-float speedProfileCompute(float distance)
+double speedProfileCompute(double distance, double max_speed, double end_speed)
 {
+	speed_params.end_speed  = end_speed;
+	speed_params.max_speed 	= max_speed;
+	speed_params.accel 		= MAX_ACCEL;
+	speed_params.decel 		= MAX_ACCEL;
+
 	speed_control.current_distance 	= 0;
 	speed_control.gap_distance_per_loop 	= 0;
 	speed_control.current_distance_consign 	= 0;

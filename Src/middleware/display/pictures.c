@@ -4,8 +4,11 @@
  *
  *---------------------------------------------------------------------------*/
 
+/* Declarations for this module */
+#include "middleware/display/pictures.h"
+
 //w = 128 h = 40
-const unsigned char Pacabot_bmp[] =
+const unsigned char Pacabot_bmp[5120] =
 {
 		0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,
 		0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,
@@ -49,7 +52,7 @@ const unsigned char Pacabot_bmp[] =
 		0X00,0X01,0X01,0X01,0X01,0X01,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,
 };
 
-const unsigned char five_years[] =
+const unsigned char five_years[864] =
 {
 		0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,

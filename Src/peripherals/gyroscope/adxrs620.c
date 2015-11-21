@@ -32,6 +32,16 @@
 /* Declarations for this module */
 #include "peripherals/gyroscope/adxrs620.h"
 
+/* Types definitions */
+typedef struct
+{
+    uint16_t adc_value;
+    uint32_t callback_cnt;
+    volatile double current_angle;
+}gyro_struct;
+
+volatile gyro_struct gyro;
+
 extern ADC_HandleTypeDef hadc1;
 
 __IO uint32_t DMA_ADC_Gyro_Rate;

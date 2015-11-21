@@ -113,7 +113,7 @@ void lineFollower(void)
 	lineSensorsInit();
 	lineSensorsStart();
 	motorsInit();
-	control_params.line_follow_state = TRUE;
+	mainControlSetFollowType(LINE_FOLLOW);
 	motorsDriverSleep(OFF);
 
 

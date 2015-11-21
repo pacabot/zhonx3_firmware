@@ -69,21 +69,16 @@ int transfertFunctionLimiter(void)
 
 int transfertFunctionLoop(void)
 {
-	if (multimeter.vbat.value > 6000 && multimeter.vbat.value < 9000)
-		transfert_function.pwm_ratio = (PWM_RATIO_COEFF_A * multimeter.vbat.value + PWM_RATIO_COEFF_B);	//compute ratio to not exceed motor voltage
+	if (multimeterGetBatVoltage() > 6000 && multimeterGetBatVoltage() < 9000)
+		transfert_function.pwm_ratio = (PWM_RATIO_COEFF_A * multimeterGetBatVoltage() + PWM_RATIO_COEFF_B);	//compute ratio to not exceed motor voltage
 	else
 		transfert_function.pwm_ratio = (PWM_RATIO_COEFF_A * 8000 + PWM_RATIO_COEFF_B);						//if vbat read fail
 
-	transfert_function.right_motor_pwm = (speed_control.speed_command - (position_control.position_command + wall_follow_control.follow_command + line_follow_control.line_follow_command)) * transfert_function.pwm_ratio;
-	transfert_function.left_motor_pwm  = (speed_control.speed_command + (position_control.position_command + wall_follow_control.follow_command + line_follow_control.line_follow_command)) * transfert_function.pwm_ratio;
-
-//	transfert_function.right_motor_pwm = (speed_control.speed_command - (position_control.position_command));// + wall_follow_control.follow_command + line_follow_control.line_follow_command)) * transfert_function.pwm_ratio;
-//	transfert_function.left_motor_pwm  = (speed_control.speed_command + (position_control.position_command));// + wall_follow_control.follow_command + line_follow_control.line_follow_command)) * transfert_function.pwm_ratio;
-
+	transfert_function.right_motor_pwm = (speedControlGetSpeedCommand() - (positionControlGetPositionCommand() + wallFollowGetFollowCommand() + line_follow_control.line_follow_command)) * transfert_function.pwm_ratio;
+	transfert_function.left_motor_pwm  = (speedControlGetSpeedCommand() + (positionControlGetPositionCommand() + wallFollowGetFollowCommand() + line_follow_control.line_follow_command)) * transfert_function.pwm_ratio;
 
 	transfertFunctionLimiter();
-	motorSet(&right_motor, transfert_function.right_motor_pwm, DECAY_FAST);
-	motorSet(&left_motor, transfert_function.left_motor_pwm, DECAY_FAST);
-
+	motorSet_DF(MOTOR_R, transfert_function.right_motor_pwm);
+	motorSet_DF(MOTOR_L, transfert_function.left_motor_pwm);
 	return TRANSFERT_FUNCTION_E_SUCCESS;
 }

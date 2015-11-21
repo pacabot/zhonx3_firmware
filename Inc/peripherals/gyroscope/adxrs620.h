@@ -16,16 +16,6 @@
 #define ADXRS620_DRIVER_E_SUCCESS  0
 #define ADXRS620_DRIVER_E_ERROR    MAKE_ERROR(ADXRS620_DRIVER_MODULE_ID, 1)
 
-/* Types definitions */
-typedef struct
-{
-    uint16_t adc_value;
-    uint32_t callback_cnt;
-    volatile double current_angle;
-}gyro_struct;
-
-volatile gyro_struct gyro;
-
 void   	adxrs620Init(void);
 double 	adxrs620Calibrate(int nb_ech);
 void 	adxrs620_IT(void);

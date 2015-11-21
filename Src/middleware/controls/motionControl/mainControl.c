@@ -45,8 +45,23 @@
 /* Declarations for this module */
 #include "middleware/controls/motionControl/mainControl.h"
 
-control_params_struct control_params;
-move_params_struct move_params;
+typedef struct
+{
+	char wall_follow_state;
+	char line_follow_state;
+	char position_state;
+	char speed_state;
+}control_params_struct;
+
+typedef struct
+{
+	enum mainControlWallFollowType moveType;
+	walls cellState;
+	double initial_position;
+}move_params_struct;
+
+static control_params_struct control_params;
+static move_params_struct move_params;
 
 int debug_1 = 0;
 
@@ -66,11 +81,10 @@ int mainControlInit(void)
 	lineFollowControlInit();
 	transfertFunctionInit();
 	adxrs620Init();
-	position_control.position_type = ENCODERS;
+	positionControlSetPositionType(ENCODERS);
 	pid_loop.start_state = TRUE;
-	setWallFollowControl(FALSE);
+	mainControlSetFollowType(FALSE);
 
-	speed_params.initial_speed = 0;
 	move_params.moveType = STRAIGHT;
 
 	control_params.wall_follow_state = 0;
@@ -98,48 +112,69 @@ int mainControlLoop(void)
 	return MAIN_CONTROL_E_SUCCESS;
 }
 
-int setWallFollowControl(char isActive)
+int mainControlSetFollowType(enum mainControlFollowType follow_type)
 {
-	if (isActive == TRUE)
-		control_params.wall_follow_state = TRUE;
-	else
+	switch(follow_type)
+	{
+	case LINE_FOLLOW:
 		control_params.wall_follow_state = FALSE;
+		control_params.line_follow_state = TRUE;
+		return MAIN_CONTROL_E_SUCCESS;
+	case WALL_FOLLOW:
+		control_params.line_follow_state = FALSE;
+		control_params.wall_follow_state = TRUE;
+		return MAIN_CONTROL_E_SUCCESS;
+	case NO_FOLLOW:
+		control_params.line_follow_state = FALSE;
+		control_params.wall_follow_state = FALSE;
+		return MAIN_CONTROL_E_SUCCESS;
+	}
 
-	return POSITION_CONTROL_E_SUCCESS;
+	return MAIN_CONTROL_E_ERROR;
 }
 
-int move(float angle, float radius_or_distance, float max_speed, float end_speed)
+enum mainControlFollowType mainControlGetFollowType()
+{
+	if (control_params.wall_follow_state == TRUE)
+		return WALL_FOLLOW;
+	else if (control_params.line_follow_state == TRUE)
+		return LINE_FOLLOW;
+	else
+		return NO_FOLLOW;
+}
+
+enum mainControlWallFollowType mainControlGetWallFollowType()
+{
+	return move_params.moveType;
+}
+
+int move(double angle, double radius_or_distance, double max_speed, double end_speed)
 {
 	//	pid_loop.start_state = FALSE; //todo optimize
 
-	encoderResetDistance(&left_encoder);
-	encoderResetDistance(&right_encoder);
+	encodersReset();
+
 	GyroResetAngle();
 
 	float distance;
 	float slip_compensation;
 	float distance_per_wheel;
 
-	speed_params.sign = SIGN(radius_or_distance);
+	speedControlSetSign(SIGN(radius_or_distance));
 	radius_or_distance = fabsf(radius_or_distance);
 
-	position_params.sign = SIGN(angle);
+	positionControlSetSign(SIGN(angle));
 	angle = fabsf(angle);
 
 	/* Apply the correction factor, delete function with the future gyro compensation */
 	slip_compensation = 1; //0.9;
 
-	speed_params.end_speed  = end_speed;
-	speed_params.max_speed 	= max_speed;
-	speed_params.accel 		= MAX_ACCEL;
-	speed_params.decel 		= MAX_ACCEL;
-
 	if (angle == 0)
 	{
 		move_params.moveType = STRAIGHT;
 
-		speedProfileCompute(radius_or_distance);
-		positionProfileCompute(0,0);
+		speedProfileCompute(radius_or_distance, max_speed, end_speed);
+		positionProfileCompute(0, 0, max_speed);
 	}
 	else
 	{
@@ -148,7 +183,7 @@ int move(float angle, float radius_or_distance, float max_speed, float end_speed
 		distance_per_wheel = (2.00 * PI * ROTATION_DIAMETER * (angle / 360.00)) * slip_compensation;
 		distance = fabsf((PI * (2.00 * radius_or_distance) * (angle / 360.00)));
 
-		positionProfileCompute(distance_per_wheel, speedProfileCompute(distance));
+		positionProfileCompute(distance_per_wheel, speedProfileCompute(distance, max_speed, end_speed), max_speed);
 	}
 
 	//	pid_loop.start_state = TRUE;
@@ -157,10 +192,15 @@ int move(float angle, float radius_or_distance, float max_speed, float end_speed
 
 char hasMoveEnded(void)
 {
-	if (position_control.end_control == TRUE && speed_control.end_control == TRUE)
+	if (positionControlHasMoveEnded() == TRUE && speedControlHasMoveEnded() == TRUE)
 		return TRUE;
 	else
 		return FALSE;
+}
+
+double mouveGetInitialPosition(void)
+{
+	return move_params.initial_position;
 }
 
 /**************************************************************************************/
@@ -281,8 +321,8 @@ int moveRotateCCW90(float max_speed, float end_speed)
 
 	while(hasMoveEnded() != TRUE);
 	move(-90, (HALF_CELL_LENGTH - OFFSET_DIST), max_speed, max_speed);
-//	while(hasMoveEnded() != TRUE);
-//	move(0, (OFFSET_DIST * 2.00), max_speed, end_speed);
+	while(hasMoveEnded() != TRUE);
+	move(0, (OFFSET_DIST * 2.00), max_speed, end_speed);
 
 	return POSITION_CONTROL_E_SUCCESS;
 }
@@ -317,21 +357,21 @@ int frontCal(float max_speed)
 	float relative_dist = 0.0;
 
 	move(0, 0, 0, 0);
-	while (wall_follow_control.succes != TRUE)
-	{
-		if (timeOut(1, i) == TRUE)
-			return POSITION_CONTROL_E_ERROR;
-		i++;
-	}
+//	while (wall_follow_control.succes != TRUE)
+//	{
+//		if (timeOut(1, i) == TRUE)
+//			return POSITION_CONTROL_E_ERROR;
+//		i++;
+//	}
 
 	/**************************************************************************/
 
-	relative_dist = (telemeters.FL.dist_mm + telemeters.FR.dist_mm) / 2;
-	if (relative_dist < MAX_DIST_FOR_ALIGN)
-	{
-		move(0, relative_dist - CENTER_DISTANCE, max_speed, 0);
-		while(hasMoveEnded() != TRUE);
-	}
+	relative_dist = (getTelemeterDist(TELEMETER_FL) + getTelemeterDist(TELEMETER_FR)) / 2;
+//	if (relative_dist < MAX_DIST_FOR_ALIGN)
+//	{
+//		move(0, relative_dist - CENTER_DISTANCE, max_speed, 0);
+//		while(hasMoveEnded() != TRUE);
+//	}
 
 
 	return POSITION_CONTROL_E_SUCCESS;
@@ -382,9 +422,9 @@ void mainControlDisplayTest(void)
 	while(expanderJoyFiltered()!=JOY_LEFT)
 	{
 		ssd1306ClearScreen(MAIN_AREA);
-		ssd1306PrintInt(10,  5,  "speed dist =  ",(int) (speed_control.current_distance * 100), &Font_5x8);
-		ssd1306PrintInt(10,  15, "follow err =  ",(int) (wall_follow_control.follow_error), &Font_5x8);
-		ssd1306PrintInt(10,  25, "right_dist =  ",(int) (position_control.end_control * 100), &Font_5x8);
+		ssd1306PrintInt(10,  5,  "speed dist =  ",(int) (speedControlGetCurrentDist() * 100), &Font_5x8);
+		ssd1306PrintInt(10,  15, "follow err =  ",(int) (wallFollowGetFollowCommand()), &Font_5x8);
+		ssd1306PrintInt(10,  25, "right_dist =  ",(int) (positionControlHasMoveEnded()), &Font_5x8);
 		ssd1306PrintInt(10,  35, "gyro =  ",(int16_t) GyroGetAngle(), &Font_5x8);
 		ssd1306PrintInt(10,  45, "left PWM =  ",(int16_t) transfert_function.left_motor_pwm, &Font_5x8);
 		ssd1306PrintInt(10,  55, "right PWM =  ",(int16_t) transfert_function.right_motor_pwm, &Font_5x8);
@@ -419,7 +459,7 @@ void followWallTest()
 	mainControlInit();
 	//	telemetersStart();
 
-	position_control.position_type = GYRO;
+	positionControlSetPositionType(GYRO);
 	control_params.wall_follow_state = FALSE;
 
 	//	setCellState();

@@ -39,6 +39,43 @@
 /* Declarations for this module */
 #include "middleware/controls/motionControl/positionControl.h"
 
+typedef struct
+{
+	double distance_consign;			//total distance
+	double max_speed;
+	double speed_average;
+	double accel;
+	double decel;
+	double accel_dist;
+	double decel_dist;
+	double accel_time;
+	double decel_time;
+	double accel_speed_avrg;
+	double decel_speed_avrg;
+	double accel_dist_per_loop;
+	double decel_dist_per_loop;
+	double nb_loop_accel;
+	double nb_loop_decel;
+	double nb_loop_maint;
+	double maintain_dist;
+	int    sign;
+}position_params_struct;
+
+typedef struct
+{
+	double current_angle;
+	double position_command;
+	double position_error;
+	double position_consign;
+	double current_diff_dist;
+	double current_diff_dist_consign;	//differential distance (mm) since the control start
+	double old_distance;				 	//effective distance at the previous call
+	char   end_control;
+	enum   position_type position_type;
+
+    pid_control_struct position_pid;
+}position_control_struct;
+
 /* App definitions */
 
 /* Macros */
@@ -48,9 +85,9 @@
 /* extern variables */
 
 /* global variables */
-position_control_struct position_control;
-position_params_struct position_params;
-arm_pid_instance_f32 encoder_or_gyro_pid_instance;
+static position_control_struct position_control;
+static position_params_struct position_params;
+static arm_pid_instance_f32 encoder_or_gyro_pid_instance;
 
 int positionControlInit(void)
 {
@@ -75,9 +112,35 @@ int positionControlInit(void)
 	return POSITION_CONTROL_E_SUCCESS;
 }
 
+char positionControlHasMoveEnded(void)
+{
+	return position_control.end_control;
+}
+
+double positionControlGetCurrentAngle(void)
+{
+	return position_control.current_diff_dist;
+}
+
+double positionControlGetPositionCommand(void)
+{
+	return position_control.position_command;
+}
+
+char positionControlSetPositionType(enum position_type position_type)
+{
+	position_control.position_type = position_type;
+	return POSITION_CONTROL_E_SUCCESS;
+}
+
+double positionControlSetSign(double sign)
+{
+	return position_params.sign = sign;
+}
+
 int positionControlLoop(void)
 {
-	if (move_params.moveType == CURVE)
+	if (mainControlGetWallFollowType() == CURVE)
 		position_control.position_type = GYRO;
 
 	if (position_control.position_type == NO_POSITION_CTRL)
@@ -90,21 +153,16 @@ int positionControlLoop(void)
 	if (position_control.position_type == ENCODERS)
 	{
 		if (position_params.sign > 0)
-				position_control.current_diff_dist = encoderGetDistance(&left_encoder) - encoderGetDistance(&right_encoder);
+				position_control.current_diff_dist = encoderGetDist(ENCODER_L) - encoderGetDist(ENCODER_R);
 			else
-				position_control.current_diff_dist = encoderGetDistance(&right_encoder) - encoderGetDistance(&left_encoder);
+				position_control.current_diff_dist = encoderGetDist(ENCODER_R) - encoderGetDist(ENCODER_L);
 	}
 	else if (position_control.position_type == GYRO)
 	{
-//		if (position_params.sign > 0)
-//			position_control.current_diff_dist = (2.00 * PI * ROTATION_DIAMETER * ((GyroGetAngle() * GYRO_GAIN_COMPENSATION) / 360.00));// (GYRO_ENCODER_RATIO * GyroGetAngle());
-//		else
-//			position_control.current_diff_dist = (-2.00 * PI * ROTATION_DIAMETER * ((GyroGetAngle() * GYRO_GAIN_COMPENSATION) / 360.00));
-
 		if (position_params.sign > 0)
-			position_control.current_diff_dist = (2.00 * PI * ROTATION_DIAMETER * ((GyroGetAngle() * GYRO_GAIN_COMPENSATION) / 360.00));
+			position_control.current_diff_dist = (2.00 * PI * ROTATION_DIAMETER * ((GyroGetAngle()) / 360.00));
 		else
-			position_control.current_diff_dist = (-2.00 * PI * ROTATION_DIAMETER * ((GyroGetAngle() * GYRO_GAIN_COMPENSATION) / 360.00));
+			position_control.current_diff_dist = (-2.00 * PI * ROTATION_DIAMETER * ((GyroGetAngle()) / 360.00));
 	}
 	else
 	{
@@ -131,7 +189,7 @@ int positionControlLoop(void)
 	else if (position_params.nb_loop_decel <= 0.00)
 	{
 		position_control.current_diff_dist_consign = position_params.distance_consign;
-		position_control.end_control = 1;
+		position_control.end_control = TRUE;
 	}
 
 	position_control.position_error = position_control.current_diff_dist_consign - position_control.current_diff_dist;		//for distance control
@@ -196,7 +254,7 @@ int positionControlLoop(void)
                    t²
  */
 /**************************************************************************/
-float positionProfileCompute(float distance, float time)
+double positionProfileCompute(double distance, double time, double max_speed)
 {
 	position_control.current_angle 		= 0;
 	position_control.position_command 	= 0;
@@ -215,9 +273,9 @@ float positionProfileCompute(float distance, float time)
 		position_params.distance_consign = 0;
 		return (0);
 	}
-	if (time == 0.0f)
+	if (time == 0.00)
 	{
-		time = distance / speed_params.max_speed;
+		time = distance / max_speed;
 	}
 
 	position_params.accel = MAX_TURN_ACCEL;

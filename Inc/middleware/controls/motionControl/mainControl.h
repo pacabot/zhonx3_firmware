@@ -24,27 +24,10 @@
 
 /* Types definitions */
 enum rotationTypeEnum {CW, CCW};
-enum moveTypeEnum {STRAIGHT, CURVE};
+enum mainControlWallFollowType {STRAIGHT, CURVE};
+enum mainControlFollowType {LINE_FOLLOW, WALL_FOLLOW, NO_FOLLOW};
 
 extern double ROTATION_DIAMETER;
-
-typedef struct
-{
-	char wall_follow_state;
-	char line_follow_state;
-	char position_state;
-	char speed_state;
-}control_params_struct;
-
-typedef struct
-{
-	enum moveTypeEnum moveType;
-	walls cellState;
-	double initial_position;
-}move_params_struct;
-
-extern control_params_struct control_params;
-extern move_params_struct move_params;
 
 int mainControlInit(void);
 int mainControlLoop(void);
@@ -61,24 +44,28 @@ int mainControlLoop(void);
  *
  * @retval HAL status
  */
-int  setWallFollowControl(char isActive);
-int  move(float angle, float radius_or_distance, float max_speed, float end_speed);
-char hasMoveEnded(void);
-int  frontCal(float max_speed);
-int  rotate180WithCal(enum rotationTypeEnum rotation_type, float max_speed, float end_speed);
-int  rotate90WithCal(enum rotationTypeEnum rotation_type, float max_speed, float end_speed);
-int  moveCell(unsigned long nb_cell, float max_speed, float end_speed);
-int  moveHalfCell_IN(float max_speed, float end_speed);
-int  moveHalfCell_OUT(float max_speed, float end_speed);
-int  moveEndCell(float max_speed, float end_speed);
-int  moveStartCell(float max_speed, float end_speed);
-int  moveRotateCW90(float max_speed, float end_speed);
-int  moveRotateCCW90(float max_speed, float end_speed);
-int  moveUTurn(float speed_rotation, float max_speed, float end_speed);
-void mainControlTest(void);
-void followWallTest(void);
-void followLineTest(void);
-void rotateTest(void);
-void curveRotate(void);
+int  	setWallFollowControl(char isActive);
+char 	hasMoveEnded(void);
+double 	mouveGetInitialPosition(void);
+int 	mainControlSetFollowType(enum mainControlFollowType follow_type);
+enum 	mainControlFollowType mainControlGetFollowType(void);
+enum 	mainControlWallFollowType mainControlGetWallFollowType(void);
+int 	move(double angle, double radius_or_distance, double max_speed, double end_speed);
+int  	frontCal(float max_speed);
+int  	rotate180WithCal(enum rotationTypeEnum rotation_type, float max_speed, float end_speed);
+int  	rotate90WithCal(enum rotationTypeEnum rotation_type, float max_speed, float end_speed);
+int  	moveCell(unsigned long nb_cell, float max_speed, float end_speed);
+int  	moveHalfCell_IN(float max_speed, float end_speed);
+int  	moveHalfCell_OUT(float max_speed, float end_speed);
+int  	moveEndCell(float max_speed, float end_speed);
+int  	moveStartCell(float max_speed, float end_speed);
+int  	moveRotateCW90(float max_speed, float end_speed);
+int  	moveRotateCCW90(float max_speed, float end_speed);
+int  	moveUTurn(float speed_rotation, float max_speed, float end_speed);
+void 	mainControlTest(void);
+void 	followWallTest(void);
+void 	followLineTest(void);
+void 	rotateTest(void);
+void 	curveRotate(void);
 
 #endif // __MAINCONTROL_H

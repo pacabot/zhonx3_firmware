@@ -636,7 +636,7 @@ void powerOffConfirmation()
 }
 void killOnLowBattery()
 {
-	if(multimeter.vbat.value < (BATTERY_LOWER_VOLTAGE_NO_LOAD)*1000)
+	if(multimeterGetBatVoltage() < (BATTERY_LOWER_VOLTAGE_NO_LOAD)*1000)
 	{
 		tone(A2,500);
 		HAL_Delay(400);

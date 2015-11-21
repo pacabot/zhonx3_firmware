@@ -21,7 +21,7 @@
 /* Declarations for this module */
 #include "peripherals/callback/user_it_callback.h"
 
-/* Private variables ---------------------------------------------------------*/
+/* Extern variables ---------------------------------------------------------*/
 extern TIM_HandleTypeDef htim1;
 extern TIM_HandleTypeDef htim2;
 extern TIM_HandleTypeDef htim3;
@@ -29,13 +29,11 @@ extern TIM_HandleTypeDef htim4;
 extern TIM_HandleTypeDef htim5;
 extern TIM_HandleTypeDef htim6;
 extern TIM_HandleTypeDef htim7;
-//extern TIM_HandleTypeDef htim10;
 
 extern ADC_HandleTypeDef hadc1;
 extern ADC_HandleTypeDef hadc2;
 extern ADC_HandleTypeDef hadc3;
 
-//#include "TimesBase.h"
 #include "config/basetypes.h"
 #include "peripherals/gyroscope/adxrs620.h"
 #include "peripherals/telemeters/telemeters.h"
@@ -53,7 +51,6 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
 	  if( htim == &htim2)
 	  {
-		  if (telemeters.active_state == TRUE)
 			  telemeters_IT();
 	  }
 	  if (htim == &htim5)

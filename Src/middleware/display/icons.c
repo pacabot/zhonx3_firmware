@@ -4,6 +4,9 @@
  *
  *---------------------------------------------------------------------------*/
 
+/* Declarations for this module */
+#include "middleware/display/icons.h"
+
 //w = 13 h = 8
 const unsigned char batDead_Icon[13] = {
 0XFE,0X02,0X82,0X42,0X22,0X92,0X88,0X84,0X82,0X80,0X82,0XFE,0X38,};

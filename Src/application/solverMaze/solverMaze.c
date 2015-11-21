@@ -42,7 +42,7 @@ int maze(void)
 	mainControlInit();
 	telemetersStart();
 
-	control_params.wall_follow_state = TRUE;
+	mainControlSetFollowType(WALL_FOLLOW);
 
 	/*init for different micromouse competition*/
 
@@ -80,7 +80,7 @@ int maze(void)
 //	}
 //	move(0, -CELL_LENGTH/2, 50, 0);
 //	while(isEndMove() != true);
-	control_params.wall_follow_state = TRUE;
+	mainControlSetFollowType(WALL_FOLLOW);
 //	motorsSleepDriver(ON);
 
 	printMaze(maze,positionZhonx.cordinate);

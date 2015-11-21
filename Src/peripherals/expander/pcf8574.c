@@ -31,6 +31,7 @@
 
 /* Declarations for this module */
 #include "peripherals/expander/pcf8574.h"
+
 #define NORMAL_DELAY_REAPEAT 400
 #define FAST_DELAY_REAPEAT 70
 #define DONE 0

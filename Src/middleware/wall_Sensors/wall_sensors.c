@@ -45,17 +45,17 @@ char getWallPresence(enum wallSelectorEnum wallSelector)
 	switch (wallSelector)
 	{
 	case LEFT_WALL:
-		if (telemeters.DL.dist_mm <= DISTANCE_WALL_DIAG)
+		if (getTelemeterDist(TELEMETER_DL) <= DISTANCE_WALL_DIAG)
 			return TRUE;
 		else
 			return FALSE;
 	case RIGHT_WALL:
-		if (telemeters.DR.dist_mm <= DISTANCE_WALL_DIAG)
+		if (getTelemeterDist(TELEMETER_DR) <= DISTANCE_WALL_DIAG)
 			return TRUE;
 		else
 			return FALSE;
 	case FRONT_WALL:
-		if ((telemeters.FL.dist_mm + telemeters.FR.dist_mm / 2.00) <= DISTANCE_WALL_FRONT)
+		if ((getTelemeterDist(TELEMETER_FL) + getTelemeterDist(TELEMETER_FR) / 2.00) <= DISTANCE_WALL_FRONT)
 			return TRUE;
 		else
 			return FALSE;

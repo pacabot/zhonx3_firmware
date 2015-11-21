@@ -32,19 +32,44 @@
 /* Declarations for this module */
 #include "peripherals/motors/motors.h"
 
-extern TIM_HandleTypeDef MOTORS_TIMER;
+#define MOTORS_TIMER		htim8
 
-motor left_motor =
+#define DECAY_SLOW			0
+#define DECAY_FAST			1
+
+#define MOTORS_STANDBY 	GPIO_PIN_11
+
+#define LEFT_MOTOR_GPIO_IN1 	GPIO_PIN_6
+#define LEFT_MOTOR_GPIO_IN2 	GPIO_PIN_7
+#define RIGHT_MOTOR_GPIO_IN1 	GPIO_PIN_8
+#define RIGHT_MOTOR_GPIO_IN2 	GPIO_PIN_9
+
+#define LEFT_MOTOR_IN1 		TIM_CHANNEL_1
+#define LEFT_MOTOR_IN2 		TIM_CHANNEL_2
+#define RIGHT_MOTOR_IN1 	TIM_CHANNEL_3
+#define RIGHT_MOTOR_IN2 	TIM_CHANNEL_4
+
+typedef struct
+{
+	uint32_t IN1;
+	uint32_t IN2;
+} motor;
+
+volatile motor left_motor =
 {
 		LEFT_MOTOR_IN1,
 		LEFT_MOTOR_IN2
 };
 
-motor right_motor =
+volatile motor right_motor =
 {
 		RIGHT_MOTOR_IN1,
 		RIGHT_MOTOR_IN2
 };
+
+extern TIM_HandleTypeDef MOTORS_TIMER;
+
+static void motorSet(motor *mot, int duty, int isSlowDECAY);
 
 void motorsInit(void)
 {
@@ -257,14 +282,34 @@ void motorsBrake(void)
 	HAL_TIM_PWM_Start(&MOTORS_TIMER, right_motor.IN2);
 }
 
+int motorSet_DF(enum motorName motor_name, int pwm)
+{
+	if (motor_name == MOTOR_L)
+		motorSet((motor*)&left_motor, pwm, DECAY_FAST);
+	if (motor_name == MOTOR_R)
+		motorSet((motor*)&right_motor, pwm, DECAY_FAST);
+
+	return MOTORS_DRIVER_E_SUCCESS;
+}
+
+int motorSet_DS(enum motorName motor_name, int pwm)
+{
+	if (motor_name == MOTOR_L)
+		motorSet((motor*)&left_motor, pwm, DECAY_SLOW);
+	if (motor_name == MOTOR_R)
+		motorSet((motor*)&right_motor, pwm, DECAY_SLOW);
+
+	return MOTORS_DRIVER_E_SUCCESS;
+}
+
 void motorsTest(void)
 {
 	int i = 0;
 	motorsInit();
 
 	// Forward Fast (PWM on IN1, LOW on IN2)
-	motorSet(&left_motor, 0, DECAY_FAST);
-	motorSet(&right_motor, 0, DECAY_FAST);
+	motorSet_DF(MOTOR_L, 0);
+	motorSet_DF(MOTOR_R, 0);
 	motorsDriverSleep(OFF);
 
 	ssd1306ClearScreen(MAIN_AREA);
@@ -272,8 +317,8 @@ void motorsTest(void)
 	ssd1306Refresh(MAIN_AREA);
 	for (i = 0; i < 150; i += 1)
 	{
-		motorSet(&left_motor, i, DECAY_FAST);
-		motorSet(&right_motor, i, DECAY_FAST);
+		motorSet_DF(MOTOR_L, i);
+		motorSet_DF(MOTOR_R, i);
 		HAL_Delay(20);
 	}
 	ssd1306ClearScreen(MAIN_AREA);
@@ -285,8 +330,8 @@ void motorsTest(void)
 	ssd1306Refresh(MAIN_AREA);
 	for (i = 150; i > 0; i -= 1)
 	{
-		motorSet(&left_motor, i, DECAY_FAST);
-		motorSet(&right_motor, i, DECAY_FAST);
+		motorSet_DF(MOTOR_L, i);
+		motorSet_DF(MOTOR_R, i);
 		HAL_Delay(20);
 	}
 	ssd1306ClearScreen(MAIN_AREA);
@@ -299,8 +344,8 @@ void motorsTest(void)
 	ssd1306Refresh(MAIN_AREA);
 	for (i = 0; i > -150; i -= 1)
 	{
-		motorSet(&left_motor, i, DECAY_FAST);
-		motorSet(&right_motor, i, DECAY_FAST);
+		motorSet_DF(MOTOR_L, i);
+		motorSet_DF(MOTOR_R, i);
 		HAL_Delay(20);
 	}
 	ssd1306ClearScreen(MAIN_AREA);
@@ -312,8 +357,8 @@ void motorsTest(void)
 	ssd1306Refresh(MAIN_AREA);
 	for (i = -150; i < 0; i += 1)
 	{
-		motorSet(&left_motor, i, DECAY_FAST);
-		motorSet(&right_motor, i, DECAY_FAST);
+		motorSet_DF(MOTOR_L, i);
+		motorSet_DF(MOTOR_R, i);
 		HAL_Delay(20);
 	}
 	ssd1306ClearScreen(MAIN_AREA);
@@ -327,8 +372,8 @@ void motorsTest(void)
 	ssd1306Refresh(MAIN_AREA);
 	for (i = 0; i < 150; i += 1)
 	{
-		motorSet(&left_motor, i, DECAY_SLOW);
-		motorSet(&right_motor, i, DECAY_SLOW);
+		motorSet_DS(MOTOR_L, i);
+		motorSet_DS(MOTOR_R, i);
 		HAL_Delay(20);
 	}
 	ssd1306ClearScreen(MAIN_AREA);
@@ -340,8 +385,8 @@ void motorsTest(void)
 	ssd1306Refresh(MAIN_AREA);
 	for (i = 150; i > 0; i -= 1)
 	{
-		motorSet(&left_motor, i, DECAY_SLOW);
-		motorSet(&right_motor, i, DECAY_SLOW);
+		motorSet_DS(MOTOR_L, i);
+		motorSet_DS(MOTOR_R, i);
 		HAL_Delay(20);
 	}
 	ssd1306ClearScreen(MAIN_AREA);
@@ -354,8 +399,8 @@ void motorsTest(void)
 	ssd1306Refresh(MAIN_AREA);
 	for (i = 0; i > -150; i -= 1)
 	{
-		motorSet(&left_motor, i, DECAY_SLOW);
-		motorSet(&right_motor, i, DECAY_SLOW);
+		motorSet_DS(MOTOR_L, i);
+		motorSet_DS(MOTOR_R, i);
 		HAL_Delay(20);
 	}
 	ssd1306ClearScreen(MAIN_AREA);
@@ -367,8 +412,8 @@ void motorsTest(void)
 	ssd1306Refresh(MAIN_AREA);
 	for (i = -150; i < 0; i += 1)
 	{
-		motorSet(&left_motor, i, DECAY_SLOW);
-		motorSet(&right_motor, i, DECAY_SLOW);
+		motorSet_DS(MOTOR_L, i);
+		motorSet_DS(MOTOR_R, i);
 		HAL_Delay(20);
 	}
 	ssd1306ClearScreen(MAIN_AREA);

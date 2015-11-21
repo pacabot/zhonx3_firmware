@@ -31,6 +31,16 @@
 /* Declarations for this module */
 #include "peripherals/encoders/ie512.h"
 
+// Machine Definitions
+typedef struct
+{
+	volatile double abs_dist;
+	volatile double offset_dist;
+	volatile double rel_dist;
+	signed int mot_rev_cnt;
+	TIM_HandleTypeDef *timer;
+} encoder;
+
 extern TIM_HandleTypeDef htim1;
 extern TIM_HandleTypeDef htim3;
 
@@ -39,7 +49,7 @@ extern TIM_HandleTypeDef htim3;
 /**************************************************************************/
 // Global variable
 
-encoder left_encoder =
+volatile encoder left_encoder =
 {
 		0,
 		0,
@@ -48,7 +58,7 @@ encoder left_encoder =
 		&htim1
 };
 
-encoder right_encoder =
+volatile encoder right_encoder =
 {
 		0,
 		0,
@@ -56,6 +66,10 @@ encoder right_encoder =
 		0,
 		&htim3
 };
+
+/* Static functions */
+static int  	encoderResetDistance(encoder *enc);
+static double 	encoderGetDistance(encoder *enc);
 
 void encodersInit(void)
 {
@@ -141,7 +155,7 @@ void encoderRight_IT(void)
 /*  encoderResetDistance
  *  set offset to current absolute distance
  *  offset in millimeters
-*/
+ */
 int encoderResetDistance(encoder *enc)
 {
 	enc->offset_dist = 	((((double)enc->mot_rev_cnt * ENCODER_RESOLUTION) +
@@ -153,7 +167,7 @@ int encoderResetDistance(encoder *enc)
 /*  encoderGetDistance
  *  return current relative distance and set absolute distance
  *  distance in millimeters
-*/
+ */
 double encoderGetDistance(encoder *enc)
 {
 	enc->rel_dist = (((((double)enc->mot_rev_cnt * ENCODER_RESOLUTION) +
@@ -166,27 +180,42 @@ double encoderGetDistance(encoder *enc)
 	return enc->rel_dist;
 }
 
+int encodersReset(void)
+{
+    encoderResetDistance((encoder*)&left_encoder);
+	encoderResetDistance((encoder*)&right_encoder);
+	return IE512_DRIVER_E_SUCCESS;
+}
+
+double encoderGetDist(enum encoderName encoder_name)
+{
+	if (encoder_name == ENCODER_L)
+		return encoderGetDistance((encoder*)&left_encoder);
+	if (encoder_name == ENCODER_R)
+		return encoderGetDistance((encoder*)&right_encoder);
+
+	return IE512_DRIVER_E_ERROR;
+}
+
 // test encoder
 void encoderTest(void)
 {
 	encodersInit();
-	encoderResetDistance(&left_encoder);
-	encoderResetDistance(&right_encoder);
+	encodersReset();
 
 	while(expanderJoyFiltered()!=JOY_LEFT)
 	{
 		ssd1306ClearScreen(MAIN_AREA);
 
-		ssd1306PrintInt(0, 5,  "L_DIST_REL =  ",(signed int) encoderGetDistance(&left_encoder), &Font_5x8);
+		ssd1306PrintInt(0, 5,  "L_DIST_REL =  ",(signed int) encoderGetDist(ENCODER_L), &Font_5x8);
 		ssd1306PrintInt(0, 15, "L_DIST_ABS =  ",(signed int) left_encoder.abs_dist, &Font_5x8);
 
-		ssd1306PrintInt(0, 25, "R_DIST_REL =  ",(signed int) encoderGetDistance(&right_encoder), &Font_5x8);
+		ssd1306PrintInt(0, 25, "R_DIST_REL =  ",(signed int) encoderGetDist(ENCODER_R), &Font_5x8);
 		ssd1306PrintInt(0, 35, "R_DIST_ABS =  ",(signed int) right_encoder.abs_dist, &Font_5x8);
-	    ssd1306DrawString(1, 53, "PRESS 'RIGHT' TO RESET REL. DIST.", &Font_3x6);
+		ssd1306DrawString(1, 53, "PRESS 'RIGHT' TO RESET REL. DIST.", &Font_3x6);
 		if (expanderJoyFiltered() == JOY_RIGHT)
 		{
-			encoderResetDistance(&left_encoder);
-			encoderResetDistance(&right_encoder);
+			encodersReset();
 		}
 		ssd1306Refresh(MAIN_AREA);
 		HAL_Delay(10);

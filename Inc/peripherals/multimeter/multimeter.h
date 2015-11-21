@@ -16,35 +16,12 @@
 #define MULTIMETER_DRIVER_E_SUCCESS  0
 #define MULTIMETER_DRIVER_E_ERROR    MAKE_ERROR(MULTIMETER_DRIVER_MODULE_ID, 1)
 
-/* Definition for ADCx Channel Pin */
-#define GET_ADC_BAT			GPIO_PIN_0
-
-/* Types definitions */
-typedef struct
-{
-    uint16_t value;
-    uint16_t offset;
-    uint16_t higher_interval;
-    uint16_t lower_interval;
-    char under_value;
-    char over_value;
-}channel_meter;
-
-typedef struct
-{
-	channel_meter vbat;
-	channel_meter gyro_temp;
-	channel_meter stm32_temp;
-	uint32_t timer_cnt;
-	char active_state;
-	char gpio_vbat_state;
-} multimeter_struct;
-
-extern volatile multimeter_struct multimeter;
-
-void mulimeterInit(void);
-void multimeter_IT(void);
-void multimeter_ADC_IT(void);
-void mulimeterTest(void);
+void  mulimeterInit(void);
+void  multimeter_IT(void);
+void  multimeter_ADC_IT(void);
+float multimeterGetBatVoltage(void);
+float multimeterSTM32Temp(void);
+float multimeterGyroTemp(void);
+void  mulimeterTest(void);
 
 #endif

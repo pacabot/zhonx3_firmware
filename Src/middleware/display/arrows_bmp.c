@@ -4,6 +4,9 @@
  *
  *---------------------------------------------------------------------------*/
 
+/* Declarations for this module */
+#include "middleware/display/arrows_bmp.h"
+
 // Up arrow
 const unsigned char up_arrow [] =
 {
