@@ -37,15 +37,6 @@
 
 /* USER CODE BEGIN 0 */
 
-#include "config/basetypes.h"
-
-#include "peripherals/lineSensors/lineSensors.h"
-#include "peripherals/multimeter/multimeter.h"
-#include "peripherals/telemeters/telemeters.h"
-#include "middleware/ring_buffer/ring_buffer.h"
-#include "middleware/cmdline/cmdline_parser.h"
-
-char  serial_buffer[100];
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
@@ -256,62 +247,10 @@ void TIM4_IRQHandler(void)
 void USART3_IRQHandler(void)
 {
   /* USER CODE BEGIN USART3_IRQn 0 */
-  uint32_t      uart_status_flag;
-  uint32_t      uart_it_flag;
-  static char   *pBuffer = serial_buffer;
-  unsigned char c;
+
   /* USER CODE END USART3_IRQn 0 */
   HAL_UART_IRQHandler(&huart3);
   /* USER CODE BEGIN USART3_IRQn 1 */
-
-  // Get UART flags
-  uart_status_flag = __HAL_UART_GET_FLAG(&huart3, UART_FLAG_RXNE);
-  uart_it_flag = __HAL_UART_GET_IT_SOURCE(&huart3, UART_IT_RXNE);
-
-  if ((uart_status_flag != RESET) && (uart_it_flag != RESET))
-  {
-      // Clear interrupt flag
-      __HAL_UART_CLEAR_FLAG(&huart3, UART_FLAG_RXNE);
-
-      // Get the character received
-      c = (uint16_t)(huart3.Instance->DR & (uint16_t)0x01FF);
-
-      switch (c)
-      {
-          case CMDLINE_CR:
-              // Carriage Return
-              cmdline_ctxt.cmd_len = (pBuffer - serial_buffer) + 1;
-              cmdline_ctxt.cmd_received = TRUE;
-              *pBuffer = c;
-              pBuffer = serial_buffer;
-              return;
-
-          case CMDLINE_LF:
-              // Line Feed
-              pBuffer = serial_buffer;
-              break;
-
-          case CMDLINE_BS:
-              // Backspace
-              if (pBuffer == serial_buffer)
-              {
-                  HAL_UART_Transmit(&huart3, (unsigned char *)"\x07", 1, 100);
-              }
-              else
-              {
-                  HAL_UART_Transmit(&huart3, (unsigned char *)"\x08\x7F", 2, 100);
-                  pBuffer--;
-              }
-              break;
-
-          default:
-              /* Echo received character */
-              HAL_UART_Transmit(&huart3, &c, 1, 100);
-              *pBuffer = c;
-              pBuffer++;
-              break;
-      }
-  }
 
   /* USER CODE END USART3_IRQn 1 */
 }
