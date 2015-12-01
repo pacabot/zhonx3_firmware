@@ -91,18 +91,14 @@ static arm_pid_instance_f32 encoder_or_gyro_pid_instance;
 
 int positionControlInit(void)
 {
+	memset(&position_control, 0, sizeof(position_control_struct));
+	memset(&position_params, 0, sizeof(position_params_struct));
+
 	encoder_or_gyro_pid_instance.Kp = 40;
 	encoder_or_gyro_pid_instance.Ki = 0;
 	encoder_or_gyro_pid_instance.Kd = 1000;
 
-	position_control.current_angle = 0;
-	position_control.position_command = 0;
-	position_control.position_error = 0;
-	position_control.current_diff_dist = 0;
-	position_control.current_diff_dist_consign = 0;
-	position_control.position_consign = 0;
 	position_control.position_pid.instance = &encoder_or_gyro_pid_instance;
-	position_control.end_control = 0;
 
 	position_control.position_type = ENCODERS;
 	position_params.sign = 1;

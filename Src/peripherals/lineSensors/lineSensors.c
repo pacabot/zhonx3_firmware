@@ -34,7 +34,7 @@
 extern ADC_HandleTypeDef hadc2;
 extern ADC_HandleTypeDef hadc3;
 
-extern ADC_ChannelConfTypeDef sConfig;
+//extern ADC_ChannelConfTypeDef sConfig;
 ADC_InjectionConfTypeDef sConfigInjected;
 
 //__IO uint16_t ADC1ConvertedValues[2] = {0};

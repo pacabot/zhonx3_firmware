@@ -65,7 +65,7 @@
 #define MAX_FOLLOW_ERROR	50.00	//Millimeter
 
 #define DEADZONE_DIST		100.00	//Distance between the start of the cell and doubt area
-#define DEADZONE			80.00	//doubt area
+#define DEADZONE			100.00	//doubt area
 
 typedef struct
 {
@@ -90,7 +90,7 @@ static arm_pid_instance_f32 telemeters_pid_instance;
 
 int wallFollowControlInit(void)
 {
-	telemeters_pid_instance.Kp = 15;
+	telemeters_pid_instance.Kp = 20;
 	telemeters_pid_instance.Ki = 0;
 	telemeters_pid_instance.Kd = 800;
 

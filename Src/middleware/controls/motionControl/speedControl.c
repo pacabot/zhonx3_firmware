@@ -27,6 +27,7 @@
 #include "peripherals/expander/pcf8574.h"
 #include "peripherals/encoders/ie512.h"
 #include "peripherals/motors/motors.h"
+#include "peripherals/tone/tone.h"
 
 /* Middleware declarations */
 #include "middleware/controls/pidController/pidController.h"
@@ -43,7 +44,7 @@ typedef struct
 	double distance_consign;			//total distance
 	double max_speed;
 	double initial_speed;
-    double end_speed;
+	double end_speed;
 	double accel;
 	double decel;
 	double accel_dist;
@@ -65,13 +66,13 @@ typedef struct
 	double gap_distance_per_loop;	//distance between two control loop call
 	double current_distance_consign;		//distance consign for current loop
 	double old_distance;				//effective distance at the previous call
-    double current_speed;
+	double current_speed;
 	double speed_consign;
 	double speed_error;
 	double speed_command;
 	char end_control;
 
-    pid_control_struct speed_pid;
+	pid_control_struct speed_pid;
 }speed_control_struct;
 
 /* Macros */
@@ -88,26 +89,16 @@ static arm_pid_instance_f32 encoder_pid_instance;
 
 int speedControlInit(void)
 {
+	memset(&speed_control, 0, sizeof(speed_control_struct));
+	memset(&speed_params, 0, sizeof(speed_params_struct));
+
 	encoder_pid_instance.Kp = 300;//400
 	encoder_pid_instance.Ki = 0;
 	encoder_pid_instance.Kd = 1000;
 
-	speed_control.current_distance = 0;
-	speed_control.gap_distance_per_loop = 0;
-	speed_control.current_distance_consign = 0;
-	speed_control.old_distance = 0;
-	speed_control.current_speed = 0;
-	speed_control.end_control = 0;
-	speed_control.speed_error = 0;
-	speed_control.speed_command = 0;
-	speed_control.speed_consign = 0;
-
-	speed_params.initial_speed = 0;
-
 	speed_control.speed_pid.instance = &encoder_pid_instance;
 
 	pidControllerInit(speed_control.speed_pid.instance);
-
 
 	encodersReset();
 
@@ -276,7 +267,7 @@ double speedProfileCompute(double distance, double max_speed, double end_speed)
 	speed_params.decel_dist_per_loop = speed_params.decel / pow(HI_TIME_FREQ, 2);
 
 	speed_control.speed_consign = (speed_params.initial_speed / HI_TIME_FREQ);
-	speed_control.current_distance_consign = 0;
+	speed_control.current_distance_consign = 0.00;
 	speed_control.end_control = 0;
 
 
@@ -306,9 +297,23 @@ double speedProfileCompute(double distance, double max_speed, double end_speed)
 	}
 
 	speed_params.initial_speed = speed_params.initial_speed + (((speed_params.nb_loop_accel / HI_TIME_FREQ) * speed_params.accel) -
-					((speed_params.nb_loop_decel / HI_TIME_FREQ) * speed_params.decel));
+			((speed_params.nb_loop_decel / HI_TIME_FREQ) * speed_params.decel));
 
 	speed_params.distance_consign = distance;
 
 	return ((speed_params.nb_loop_accel + speed_params.nb_loop_decel + speed_params.nb_loop_maint)) / HI_TIME_FREQ;
+}
+
+double speedMaintainCompute(void)
+{
+/* This function returns the maintain loop count according to front wall detection to avoid early turns leading to wall collision.
+ * 	void
+ */
+	if (getWallPresence(FRONT_WALL) == WALL_PRESENCE)
+	{
+		// Calculating average distance detected by FR and FL Telemeters
+		return ((getTelemeterDist(TELEMETER_FL) + getTelemeterDist(TELEMETER_FR)) / 2.00) + 65.00 - (CELL_LENGTH + OFFSET_DIST);
+	}
+	else
+		return 0.00;
 }

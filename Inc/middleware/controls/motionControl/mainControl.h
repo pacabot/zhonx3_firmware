@@ -20,7 +20,7 @@
 #define MAIN_CONTROL_E_SUCCESS  0
 #define MAIN_CONTROL_E_ERROR    MAKE_ERROR(MAIN_CONTROL_MODULE_ID, 1)
 
-#define OFFSET_DIST	15.00
+#define OFFSET_DIST	25.00
 
 /* Types definitions */
 enum rotationTypeEnum {CW, CCW};
@@ -50,6 +50,7 @@ double 	mouveGetInitialPosition(void);
 int 	mainControlSetFollowType(enum mainControlFollowType follow_type);
 enum 	mainControlFollowType mainControlGetFollowType(void);
 enum 	mainControlWallFollowType mainControlGetWallFollowType(void);
+double	positionControlSetSign(double sign);
 int 	move(double angle, double radius_or_distance, double max_speed, double end_speed);
 int  	frontCal(float max_speed);
 int  	rotate180WithCal(enum rotationTypeEnum rotation_type, float max_speed, float end_speed);

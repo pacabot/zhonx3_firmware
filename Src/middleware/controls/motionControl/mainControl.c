@@ -160,10 +160,10 @@ int move(double angle, double radius_or_distance, double max_speed, double end_s
 	float slip_compensation;
 	float distance_per_wheel;
 
-	speedControlSetSign(SIGN(radius_or_distance));
+	speedControlSetSign((double)SIGN(radius_or_distance));
 	radius_or_distance = fabsf(radius_or_distance);
 
-	positionControlSetSign(SIGN(angle));
+	positionControlSetSign((double)SIGN(angle));
 	angle = fabsf(angle);
 
 	/* Apply the correction factor, delete function with the future gyro compensation */
@@ -229,7 +229,7 @@ int moveCell(unsigned long nb_cell, float max_speed, float end_speed)
 	while(hasMoveEnded() != TRUE);
 	move(0, (CELL_LENGTH - (OFFSET_DIST * 2.00)), max_speed, end_speed);
 	while(hasMoveEnded() != TRUE);
-	move(0, (OFFSET_DIST * 2.00), max_speed, end_speed);
+	move(0, (OFFSET_DIST * 2.00) + speedMaintainCompute(), max_speed, end_speed);
 
 	return POSITION_CONTROL_E_SUCCESS;
 }
@@ -265,7 +265,7 @@ int moveHalfCell_OUT(float max_speed, float end_speed)
 	while(hasMoveEnded() != TRUE);
 	move(0, HALF_CELL_LENGTH - OFFSET_DIST, max_speed, end_speed);
 	while(hasMoveEnded() != TRUE);
-	move(0, (OFFSET_DIST * 2.00), max_speed, end_speed);
+	move(0, (OFFSET_DIST * 2.00) + speedMaintainCompute(), max_speed, end_speed);
 
 	return POSITION_CONTROL_E_SUCCESS;
 }
@@ -284,7 +284,7 @@ int moveStartCell(float max_speed, float end_speed)
 	while(hasMoveEnded() != TRUE);
 	move(0, ((CELL_LENGTH - (Z3_CENTER_BACK_DIST + HALF_WALL_THICKNESS)) - OFFSET_DIST), max_speed, end_speed);
 	while(hasMoveEnded() != TRUE);
-	move(0, (OFFSET_DIST * 2.00), max_speed, end_speed);
+	move(0, (OFFSET_DIST * 2.00) + speedMaintainCompute(), max_speed, end_speed);
 
 	return POSITION_CONTROL_E_SUCCESS;
 }
@@ -457,10 +457,10 @@ void followWallTest()
 {
 	ledPowerBlink(0, 0, 0);
 	mainControlInit();
-	//	telemetersStart();
+	telemetersStart();
 
 	positionControlSetPositionType(GYRO);
-	control_params.wall_follow_state = FALSE;
+	control_params.wall_follow_state = TRUE;
 
 	//	setCellState();
 	HAL_Delay(2000);
@@ -472,22 +472,39 @@ void followWallTest()
 	expanderLedState(3,0);
 
 	int Vmin, Vmax, Vrotate;
-	Vmin = 100;
-	Vmax = 100;
-	Vrotate = 200;
+	Vmin = 400;
+	Vmax = 400;
+	Vrotate = 400;
 
-	moveRotateCCW90(Vmin, Vmin);
-	while(1)
-	{
-		ssd1306ClearScreen(MAIN_AREA);
-		ssd1306PrintInt(10,  5,  "Angle =  ", (int32_t) GyroGetAngle(), &Font_5x8);
-		ssd1306Refresh(MAIN_AREA);
-		HAL_Delay(100);
-	}
+//	moveRotateCCW90(Vmin, Vmin);
+//	while(1)
+//	{
+//		ssd1306ClearScreen(MAIN_AREA);
+//		ssd1306PrintInt(10,  5,  "Angle =  ", (int32_t) GyroGetAngle(), &Font_5x8);
+//		ssd1306Refresh(MAIN_AREA);
+//		HAL_Delay(100);
+//	}
 
 	moveStartCell(Vmax, Vmax);
-	moveCell(4, Vmax, Vmin);
-
+	moveCell(1, Vmax, Vmin);
+	moveRotateCW90(Vmin, Vmin);
+	moveCell(2, Vmax, Vmin);
+	moveRotateCW90(Vmin, Vmin);
+	moveRotateCCW90(Vmin, Vmin);
+	moveRotateCCW90(Vmin, Vmin);
+	moveCell(2, Vmax, Vmin);
+	moveRotateCW90(Vmin, Vmin);
+	moveCell(1, Vmax, Vmin);
+	moveRotateCCW90(Vmin, Vmin);
+	moveRotateCCW90(Vmin, Vmin);
+	moveCell(1, Vmax, Vmin);
+	moveRotateCW90(Vmin, Vmin);
+	moveRotateCW90(Vmin, Vmin);
+	moveRotateCCW90(Vmin, Vmin);
+	moveRotateCW90(Vmin, Vmin);
+	moveRotateCCW90(Vmin, Vmin);
+	moveRotateCW90(Vmin, Vmin);
+	moveCell(1, Vmax, Vmin);
 	//	moveCell(5, Vmax, Vmin);
 	//	moveRotateCW90(Vmin, Vmin);
 	//	moveCell(2, Vmax, Vmin);

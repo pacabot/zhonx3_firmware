@@ -215,7 +215,7 @@ void ledPowerBlink(unsigned int off_time, unsigned int on_time, unsigned int rep
 
 void ledBlink_IT(void)
 {
-	static unsigned int cnt_led = 0;
+	static int cnt_led = 0;
 
 	if (Blink[0] == 0 && Blink[1] == 0)
 	{

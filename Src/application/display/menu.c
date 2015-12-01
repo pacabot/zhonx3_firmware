@@ -597,16 +597,14 @@ void printGraphMotor (float acceleration, float maxSpeed, float deceleration)
 	ssd1306DrawString((point2[0]+128)/2-27,(point2[1]+64)/2,str,&Font_3x6);
 	ssd1306Refresh(MAIN_AREA);
 }
-void welcomDisplay()
+void welcomeDisplay()
 {
 
 	ssd1306ClearScreen(MAIN_AREA);
-
 	ssd1306DrawBmp(Pacabot_bmp, 1, 1, 128, 40);
 	ssd1306Refresh(MAIN_AREA);
 	while (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY);
 
-	HAL_Delay(5);
 	for (int i = 0; i <= 100; i+=1)
 	{
 		ssd1306ProgressBar(10, 35, i);
@@ -616,7 +614,6 @@ void welcomDisplay()
 	ssd1306ClearScreen(MAIN_AREA);
 	ssd1306DrawBmp(five_years, 1, 1, 128, 54);
 	ssd1306Refresh(MAIN_AREA);
-	HAL_Delay(300);
 }
 
 void powerOffConfirmation()
