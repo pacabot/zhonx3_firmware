@@ -40,7 +40,7 @@ extern ADC_HandleTypeDef hadc3;
 #include "peripherals/multimeter/multimeter.h"
 #include "peripherals/lineSensors/lineSensors.h"
 #include "peripherals/encoders/ie512.h"
-#include "middleware/controls/pidController/pidController.h"
+#include "middleware/controls/motionControl/mainControl.h"
 #include "peripherals/times_base/times_base.h"
 
 /* Application declarations */
@@ -62,7 +62,8 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 	  }
 	  if (htim == &htim7)
 	  {
-		  highFreq_IT();
+//		  highFreq_IT();
+		  mainControl_IT();
 	  }
 	  if (htim == &htim6)
 	  {

@@ -30,7 +30,7 @@ enum mainControlFollowType {LINE_FOLLOW, WALL_FOLLOW, NO_FOLLOW};
 extern double ROTATION_DIAMETER;
 
 int mainControlInit(void);
-int mainControlLoop(void);
+int mainControl_IT(void);
 /**
  * @brief compute and start a new movement
  *

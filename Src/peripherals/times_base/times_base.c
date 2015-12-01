@@ -70,7 +70,7 @@ void timesBaseInit(void)
 	    Prescaler = ((SystemCoreClock /2) /10 KHz) - 1
 	      ----------------------------------------------------------------------- */
 
-	/* Compute the prescaler value to have TIM7 counter clock equal to 10 KHz */
+	/* Compute the prescaler value to have TIM7 counter clock equal to 1 KHz */
 	uwPrescalerValue = (uint32_t) ((SystemCoreClock /2) / (HI_TIME_FREQ * 2));
 	htim7.Instance = TIM7;
 	htim7.Init.Prescaler =  uwPrescalerValue;
@@ -110,7 +110,7 @@ void timesBaseInit(void)
 	 	    Use TIM5 for start Injected conversion on ADC3 (not use).
 	 	     ----------------------------------------------------------------------- */
 
-	/* Compute the prescaler value to have TIM5 counter clock equal to 10 KHz */
+	/* Compute the prescaler value to have TIM5 counter clock equal to 4 KHz */
 	uwPrescalerValue = (uint32_t) ((SystemCoreClock /2) / (GYRO_TIME_FREQ * 100));
 
 	htim5.Instance = TIM5;
@@ -136,7 +136,7 @@ void timesBaseInit(void)
 	 	    Use TIM2 for start Regular conversion on ADC3 (not use).
 	 	     ----------------------------------------------------------------------- */
 
-	/* Compute the prescaler value to have TIM2 counter clock equal to 10 KHz */
+	/* Compute the prescaler value to have TIM2 counter clock equal to 16 KHz */
 	uwPrescalerValue = (uint32_t) ((SystemCoreClock /2) / (TELEMETERS_TIME_FREQ * 100));
 
 	htim2.Instance = TIM2;
@@ -271,7 +271,6 @@ void sleep_mode_IT()//todo move this function
 
 void highFreq_IT(void)
 {
-	pidController_IT();
 }
 
 void lowFreq_IT(void)

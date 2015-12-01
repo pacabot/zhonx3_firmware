@@ -93,8 +93,13 @@ int mainControlInit(void)
 	return MAIN_CONTROL_E_SUCCESS;
 }
 
-int mainControlLoop(void)
+int mainControl_IT(void)
 {
+    if (pid_loop.start_state == FALSE)
+    {
+        return MAIN_CONTROL_E_SUCCESS;
+    }
+
 	if (control_params.line_follow_state == TRUE)
 	{
 		lineFollowControlLoop();
@@ -164,12 +169,12 @@ int move(double angle, double radius_or_distance, double max_speed, double end_s
 	radius_or_distance = fabsf(radius_or_distance);
 
 	positionControlSetSign((double)SIGN(angle));
-	angle = fabsf(angle);
+	angle = fabsl(angle);
 
 	/* Apply the correction factor, delete function with the future gyro compensation */
 	slip_compensation = 1; //0.9;
 
-	if (angle == 0)
+	if (lround(angle) == 0)
 	{
 		move_params.moveType = STRAIGHT;
 
@@ -216,12 +221,14 @@ double mouveGetInitialPosition(void)
  */
 int moveCell(unsigned long nb_cell, float max_speed, float end_speed)
 {
+    unsigned int i;
+
 	if (nb_cell == 0)
 		return POSITION_CONTROL_E_SUCCESS;
 
 	move_params.initial_position = OFFSET_DIST;
 
-	for(int i = 0; i < (nb_cell - 1); i++)
+	for(i = 0; i < (nb_cell - 1); i++)
 	{
 		while(hasMoveEnded() != TRUE);
 		move(0, (CELL_LENGTH), max_speed, max_speed);

@@ -248,7 +248,7 @@ double speedProfileCompute(double distance, double max_speed, double end_speed)
 	speed_control.speed_command 	= 0;
 	speed_control.speed_consign 	= 0;
 
-	if (distance == 0)
+	if (lround(distance) == 0)
 	{
 		speed_params.initial_speed = 0;
 		speed_control.end_control = 1;
