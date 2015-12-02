@@ -234,6 +234,8 @@ int speedCompute(void)
 /**************************************************************************/
 double speedProfileCompute(double distance, double max_speed, double end_speed)
 {
+	static int i = 0; // debug variable
+	char str[50];
 	speed_params.end_speed  = end_speed;
 	speed_params.max_speed 	= max_speed;
 	speed_params.accel 		= MAX_ACCEL;
@@ -266,9 +268,10 @@ double speedProfileCompute(double distance, double max_speed, double end_speed)
 	speed_params.decel_dist = -0.5 * ((speed_params.end_speed - speed_params.max_speed) * (speed_params.end_speed + speed_params.max_speed)) / speed_params.decel;
 
 	speed_params.accel_dist_per_loop = speed_params.accel / pow(HI_TIME_FREQ, 2);
-	bluetoothPrintf("speedProfileCompute -- speed_params.accel_dist_per_loop = %d\n",speed_params.accel_dist_per_loop);
+	//sprintf(str,)
+//	bluetoothPrintf("speed_params.accel_dist_per_loop = %d",speed_params.accel_dist_per_loop);
 	speed_params.decel_dist_per_loop = speed_params.decel / pow(HI_TIME_FREQ, 2);
-	bluetoothPrintf("speedProfileCompute -- speed_params.decel_dist_per_loop = %d\n",speed_params.decel_dist_per_loop);
+//	bluetoothPrintf("speed_params.decel_dist_per_loop = %d",speed_params.decel_dist_per_loop);
 
 
 	speed_control.speed_consign = (speed_params.initial_speed / HI_TIME_FREQ);
@@ -310,9 +313,11 @@ double speedProfileCompute(double distance, double max_speed, double end_speed)
 	speed_params.distance_consign = distance;
 
 	double result;
+	telemetersStop();
 	result = ((speed_params.nb_loop_accel + speed_params.nb_loop_decel + speed_params.nb_loop_maint)) / HI_TIME_FREQ;
-	bluetoothPrintf("speedProfileCompute -- speed_params.nb_loop_accel = %d, speed_params.nb_loop_decel = %d, \nspeed_params.nb_loop_maint = %d",1,2,3);//speed_params.nb_loop_accel, speed_params.nb_loop_decel, speed_params.nb_loop_maint);
+	bluetoothPrintf("nombre de deplacement: %d,nb_loop_accel = %d, nb_loop_decel = %d, nb_loop_maint = %d \r\n", i, (int)speed_params.nb_loop_accel, (int)speed_params.nb_loop_decel, (int)speed_params.nb_loop_maint);
 	//bluetoothPrintf("speedProfileCompute -- Return:%d\n",result);
+	i++;
 	return result;
 }
 

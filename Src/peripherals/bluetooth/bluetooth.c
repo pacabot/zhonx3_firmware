@@ -39,7 +39,8 @@
 int bluetoothSend(unsigned char *data, int length)
 {
     // TODO: Use DMA to transmit data
-	//return HAL_UART_Transmit_DMA(&huart3, data, length);
+
+	return HAL_UART_Transmit_DMA(&huart3, data, length);
 }
 
 int bluetoothReceive(unsigned char *data, int length)

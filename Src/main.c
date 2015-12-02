@@ -120,7 +120,7 @@ int main(void)
     cmd_context.out = bluetoothPrintf;
     // Initialize Commandline module
     cmdline_init(&cmd_context);
-    welcomeDisplay();
+
     while (1)
     {
         menu(mainMenu);

@@ -58,7 +58,7 @@ void MX_USART3_UART_Init(void)
   huart3.Init.Parity = UART_PARITY_NONE;
   huart3.Init.Mode = UART_MODE_TX_RX;
   huart3.Init.HwFlowCtl = UART_HWCONTROL_NONE;
-  huart3.Init.OverSampling = UART_OVERSAMPLING_16;
+  huart3.Init.OverSampling = UART_OVERSAMPLING_8;
   HAL_UART_Init(&huart3);
 
 }
@@ -113,8 +113,8 @@ void HAL_UART_MspInit(UART_HandleTypeDef* huart)
     hdma_usart3_tx.Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
     hdma_usart3_tx.Init.MemDataAlignment = DMA_MDATAALIGN_BYTE;
     hdma_usart3_tx.Init.Mode = DMA_NORMAL;
-    hdma_usart3_tx.Init.Priority = DMA_PRIORITY_LOW;
-    hdma_usart3_tx.Init.FIFOMode = DMA_FIFOMODE_ENABLE;
+    hdma_usart3_tx.Init.Priority = DMA_PRIORITY_VERY_HIGH;
+    hdma_usart3_tx.Init.FIFOMode = DMA_FIFOMODE_DISABLE;
     hdma_usart3_tx.Init.FIFOThreshold = DMA_FIFO_THRESHOLD_FULL;
     hdma_usart3_tx.Init.MemBurst = DMA_MBURST_SINGLE;
     hdma_usart3_tx.Init.PeriphBurst = DMA_PBURST_SINGLE;
