@@ -125,7 +125,8 @@ const menuItem parameters_menu=
 };
 const menuItem peripheral_test_menu=
 {
-		"peripherals test menu"
+		"peripherals test menu",
+        {0}
 };
 const menuItem tests_menu=
 {

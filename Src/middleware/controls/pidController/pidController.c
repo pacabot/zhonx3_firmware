@@ -49,9 +49,3 @@ float32_t pidController(arm_pid_instance_f32 * instance, float32_t error)
 {
 	return (arm_pid_f32(instance, error));
 }
-
-void pidController_IT(void)
-{
-	if (pid_loop.start_state == TRUE)
-		mainControlLoop();
-}

@@ -29,6 +29,5 @@ extern pid_loop_struct pid_loop;
 void pidControllerInit(arm_pid_instance_f32 * instance);
 void pidControllerReset(arm_pid_instance_f32 * instance);
 float32_t pidController(arm_pid_instance_f32 * instance, float32_t error);
-void pidController_IT(void);
 
 #endif

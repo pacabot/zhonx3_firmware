@@ -85,11 +85,11 @@ void encodersInit(void)
 	sConfig.IC1Polarity = TIM_ICPOLARITY_RISING;
 	sConfig.IC1Selection = TIM_ICSELECTION_DIRECTTI;
 	sConfig.IC1Prescaler = TIM_ICPSC_DIV8;
-	sConfig.IC1Filter = 3;
+	sConfig.IC1Filter = 0;
 	sConfig.IC2Polarity = TIM_ICPOLARITY_RISING;
 	sConfig.IC2Selection = TIM_ICSELECTION_DIRECTTI;
 	sConfig.IC2Prescaler = TIM_ICPSC_DIV8;
-	sConfig.IC2Filter = 3;
+	sConfig.IC2Filter = 0;
 	HAL_TIM_Encoder_Init(&htim3, &sConfig);
 
 	htim1.Instance = TIM1;
@@ -102,11 +102,11 @@ void encodersInit(void)
 	sConfig.IC1Polarity = TIM_ICPOLARITY_RISING;
 	sConfig.IC1Selection = TIM_ICSELECTION_DIRECTTI;
 	sConfig.IC1Prescaler = TIM_ICPSC_DIV8;
-	sConfig.IC1Filter = 3;
+	sConfig.IC1Filter = 0;
 	sConfig.IC2Polarity = TIM_ICPOLARITY_RISING;
 	sConfig.IC2Selection = TIM_ICSELECTION_DIRECTTI;
 	sConfig.IC2Prescaler = TIM_ICPSC_DIV8;
-	sConfig.IC2Filter = 3;
+	sConfig.IC2Filter = 0;
 	HAL_TIM_Encoder_Init(&htim1, &sConfig);
 
 	sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;

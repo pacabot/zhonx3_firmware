@@ -759,7 +759,7 @@ void ssd1306DrawLine(unsigned char x0, unsigned char y0, unsigned char x1, unsig
 void ssd1306ProgressBar(unsigned char x, unsigned char y, unsigned char state)
 {
 	ssd1306DrawRect(x, y, 104, 8);
-	if (state > 0 || state <= 100)
+	if ((state > 0) && (state <= 100))
 		ssd1306FillRect(x + 2, y + 2, state, 4);
 
 }

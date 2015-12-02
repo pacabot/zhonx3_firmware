@@ -260,7 +260,7 @@ double positionProfileCompute(double distance, double time, double max_speed)
 	position_control.position_consign 	= 0;
 	position_control.end_control 		= 0;
 
-	if (distance == 0)
+	if (lround(distance) == 0)
 	{
 		position_control.end_control = 1;
 		position_params.nb_loop_accel = 0;
@@ -269,7 +269,7 @@ double positionProfileCompute(double distance, double time, double max_speed)
 		position_params.distance_consign = 0;
 		return (0);
 	}
-	if (time == 0.00)
+	if (lround(time) == 0)
 	{
 		time = distance / max_speed;
 	}

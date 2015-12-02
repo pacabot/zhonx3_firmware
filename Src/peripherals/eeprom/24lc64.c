@@ -82,7 +82,7 @@ int eepromWriteBuffer(unsigned int eeaddress, unsigned char *data, unsigned int 
     // Write pages
     for (i = 0; i < page_count; i++)
     {
-        eepromWritePage(eeaddress, data[i * 32], 32);
+        eepromWritePage(eeaddress, &data[i * 32], 32);
         eeaddress += 32;
     }
 
@@ -92,7 +92,7 @@ int eepromWriteBuffer(unsigned int eeaddress, unsigned char *data, unsigned int 
     // Write the remaining bytes
     if (remaining_bytes > 0)
     {
-        eepromWritePage(eeaddress, data[i * 32], remaining_bytes);
+        eepromWritePage(eeaddress, &data[i * 32], remaining_bytes);
     }
 
     return E24LC64_DRIVER_E_SUCCESS;
