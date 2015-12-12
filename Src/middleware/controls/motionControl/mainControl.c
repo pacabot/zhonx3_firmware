@@ -483,14 +483,7 @@ void followWallTest()
 	Vmax = 400;
 	Vrotate = 400;
 
-//	moveRotateCCW90(Vmin, Vmin);
-//	while(1)
-//	{
-//		ssd1306ClearScreen(MAIN_AREA);
-//		ssd1306PrintInt(10,  5,  "Angle =  ", (int32_t) GyroGetAngle(), &Font_5x8);
-//		ssd1306Refresh(MAIN_AREA);
-//		HAL_Delay(100);
-//	}
+
 
 	moveStartCell(Vmax, Vmax);
 	moveCell(1, Vmax, Vmin);
