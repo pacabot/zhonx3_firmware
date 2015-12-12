@@ -10,16 +10,12 @@
 #ifndef __MISC_UTILS_H__
 #define __MISC_UTILS_H__
 
-#ifndef uintptr_t
-    typedef unsigned int uintptr_t;
-#endif
-
 #define _inline_ inline
 
 /** @NOTE: alignment MUST be a power of 2 */
-_inline_ uintptr_t    ptr_align(uintptr_t ptr, size_t alignment);
-_inline_ int          is_ptr_aligned(uintptr_t ptr, size_t alignment);
-_inline_ uintptr_t    get_align_mask(size_t alignment);
+unsigned int    ptr_align(unsigned int ptr, size_t alignment);
+int          is_ptr_aligned(unsigned int ptr, size_t alignment);
+unsigned int    get_align_mask(size_t alignment);
 
 #endif // __MISC_UTILS_H__
 

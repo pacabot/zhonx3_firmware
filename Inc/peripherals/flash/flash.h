@@ -10,9 +10,6 @@
 #ifndef _FLASH_H_
 #define _FLASH_H_
 
-#ifndef uintptr_t
-typedef unsigned int uintptr_t;
-#endif
 
 /**
  *
@@ -97,11 +94,11 @@ typedef struct
     } ops;
     struct props
     {
-        unsigned int FLASH_DRIVER_SECTOR_SIZE;
-        unsigned int FLASH_DRIVER_QUANTUM_SIZE;
-        uint8_t FLASH_DRIVER_VIRGIN_BYTE; // should be 0xFF
-        uintptr_t FLASH_DRIVER_FLASH_BASE;
-        unsigned int FLASH_DRIVER_FLASH_SIZE;
+        unsigned int  sector_size;
+        unsigned int  quantum_size;
+        unsigned char virgin_byte; // should be 0xFF
+        unsigned int  flash_base;
+        unsigned int  flash_size;
     } props;
 } FLASH_DRIVER_DESC;
 

@@ -20,23 +20,11 @@
 /* STM32 hal library declarations */
 #include "stm32f4xx_hal.h"
 
+static uint32_t GetSector(uint32_t Address);
+
+
 void flash_driver_init(void)
 {
-    FLASH_DRIVER_DESC flash_driver_desc;
-
-    /* Internal flash */
-    flash_driver_desc.props.FLASH_DRIVER_FLASH_BASE = FLASH_DRIVER_FLASH_BASE;
-    flash_driver_desc.props.FLASH_DRIVER_FLASH_SIZE = FLASH_DRIVER_FLASH_SIZE;
-    flash_driver_desc.props.FLASH_DRIVER_QUANTUM_SIZE = FLASH_DRIVER_QUANTUM_SIZE;
-    flash_driver_desc.props.FLASH_DRIVER_SECTOR_SIZE = FLASH_DRIVER_SECTOR_SIZE;
-    flash_driver_desc.props.FLASH_DRIVER_VIRGIN_BYTE = FLASH_DRIVER_VIRGIN_BYTE;
-    flash_driver_desc.ops.flash_driver_init = flash_driver_init;
-    flash_driver_desc.ops.flash_driver_terminate = flash_driver_terminate;
-    flash_driver_desc.ops.flash_driver_sector_erase = flash_driver_sector_erase;
-    flash_driver_desc.ops.flash_driver_sector_check_blank = NULL; // XXX TODO not implemented yet, not used yet
-    flash_driver_desc.ops.flash_driver_sector_read_buf = flash_driver_sector_read_buf;
-    flash_driver_desc.ops.flash_driver_sector_write_buf = flash_driver_sector_write_buf;
-    return;
 }
 
 void flash_driver_terminate(void)
@@ -52,25 +40,49 @@ int flash_driver_sector_write_buf(unsigned long addr, unsigned long offset,
 
     // Add offset to base address
     addr += offset;
+    unsigned long data = 0;
+    unsigned int words;
+    unsigned int remain_bytes;
+
+    // Compute the number of words to write
+    words = length / 4;
+    // Compute the number of remaining byes
+    remain_bytes = length % 4;
 
     /* Unlock the Flash to enable the Flash control register access */
     HAL_FLASH_Unlock();
 
     // Loop to write into the Flash
-    while (length > 0)
+    if (words > 0)
     {
-        rv = HAL_FLASH_Program(TYPEPROGRAM_WORD, addr, (unsigned long)p_src);
-        if (rv != HAL_OK)
+        while (length > 0)
         {
-            rv = FLASH_DRIVER_E_ERROR;
+            data = (p_src[3] << 24) |
+                   (p_src[2] << 16) |
+                   (p_src[1] << 8)  |
+                   (p_src[0] << 0);
+            rv = HAL_FLASH_Program(TYPEPROGRAM_WORD, addr, data);
+            if (rv != HAL_OK)
+            {
+                rv = FLASH_DRIVER_E_ERROR;
+            }
+            else
+            {
+                rv = FLASH_DRIVER_E_SUCCESS;
+            }
+            length -= 4;
+            addr += 4;
+            p_src += 4;
         }
-        else
-        {
-            rv = FLASH_DRIVER_E_SUCCESS;
-        }
-        length -= 4;
-        addr += 4;
     }
+
+    while (remain_bytes > 0)
+    {
+        rv = HAL_FLASH_Program(TYPEPROGRAM_BYTE, addr, *p_src++);
+        remain_bytes--;
+        addr++;
+    }
+
     HAL_FLASH_Lock();
 
     return rv;
@@ -81,7 +93,7 @@ int flash_driver_sector_read_buf(unsigned long addr, unsigned long offset,
 {
     int rv = FLASH_DRIVER_E_SUCCESS;
 
-    memcpy(p_dst, (unsigned int *) (addr + offset), length);
+    memcpy(p_dst, (unsigned char *) (addr + offset), length);
 
     return rv;
 }
@@ -96,7 +108,7 @@ int flash_driver_sector_erase(unsigned long addr)
     /* Fill EraseInit structure*/
     EraseInitStruct.TypeErase = TYPEERASE_SECTORS;
     EraseInitStruct.VoltageRange = VOLTAGE_RANGE_3;
-    EraseInitStruct.Sector = addr;
+    EraseInitStruct.Sector = GetSector(addr);
     EraseInitStruct.NbSectors = 1;
 
     /* Unlock the Flash to enable the Flash control register access */
@@ -125,4 +137,65 @@ int flash_driver_sector_erase(unsigned long addr)
     HAL_FLASH_Lock();
 
     return rv;
+}
+
+/**
+  * @brief  Gets the sector of a given address
+  * @param  None
+  * @retval The sector of a given address
+  */
+static uint32_t GetSector(uint32_t Address)
+{
+  uint32_t sector = 0;
+
+  if((Address < ADDR_FLASH_SECTOR_1) && (Address >= ADDR_FLASH_SECTOR_0))
+  {
+    sector = FLASH_SECTOR_0;
+  }
+  else if((Address < ADDR_FLASH_SECTOR_2) && (Address >= ADDR_FLASH_SECTOR_1))
+  {
+    sector = FLASH_SECTOR_1;
+  }
+  else if((Address < ADDR_FLASH_SECTOR_3) && (Address >= ADDR_FLASH_SECTOR_2))
+  {
+    sector = FLASH_SECTOR_2;
+  }
+  else if((Address < ADDR_FLASH_SECTOR_4) && (Address >= ADDR_FLASH_SECTOR_3))
+  {
+    sector = FLASH_SECTOR_3;
+  }
+  else if((Address < ADDR_FLASH_SECTOR_5) && (Address >= ADDR_FLASH_SECTOR_4))
+  {
+    sector = FLASH_SECTOR_4;
+  }
+  else if((Address < ADDR_FLASH_SECTOR_6) && (Address >= ADDR_FLASH_SECTOR_5))
+  {
+    sector = FLASH_SECTOR_5;
+  }
+  else if((Address < ADDR_FLASH_SECTOR_7) && (Address >= ADDR_FLASH_SECTOR_6))
+  {
+    sector = FLASH_SECTOR_6;
+  }
+  else if((Address < ADDR_FLASH_SECTOR_8) && (Address >= ADDR_FLASH_SECTOR_7))
+  {
+    sector = FLASH_SECTOR_7;
+  }
+  else if((Address < ADDR_FLASH_SECTOR_9) && (Address >= ADDR_FLASH_SECTOR_8))
+  {
+    sector = FLASH_SECTOR_8;
+  }
+  else if((Address < ADDR_FLASH_SECTOR_10) && (Address >= ADDR_FLASH_SECTOR_9))
+  {
+    sector = FLASH_SECTOR_9;
+  }
+  else if((Address < ADDR_FLASH_SECTOR_11) && (Address >= ADDR_FLASH_SECTOR_10))
+  {
+    sector = FLASH_SECTOR_10;
+  }
+  else /* (Address < FLASH_END_ADDR) && (Address >= ADDR_FLASH_SECTOR_11) */
+  {
+    sector = FLASH_SECTOR_11;
+  }
+
+  return sector;
 }
