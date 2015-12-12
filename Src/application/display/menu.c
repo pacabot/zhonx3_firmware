@@ -60,6 +60,7 @@ extern void curveRotateTest(void);
 extern void expenderLedTest();
 extern int	wallSensorsCalibrationFront(void);
 extern int	wallSensorsCalibrationDiag (void);
+extern void testFlash(void);
 
 /*
  * to create a new menu you have to create a new variable of type "const menuItem" like this :
@@ -177,6 +178,7 @@ const menuItem mainMenu =
 				{"Line menu",'m', 			(void*)&follower_menu},
 				{"Parameters menu",'m',		(void*)&parameters_menu},
 				{"Test graph",'m',			(void*)&testGraphicMenu},
+				{"Test flash",'f',          (void*)&testFlash},
 				{0,0,0}
 		}
 };
