@@ -26,12 +26,13 @@
 
 extern unsigned int joy_activ_old_time;
 
+void expanderInit(void);
+
 void expanderLedState(char led, char val);
 char expanderJoyState(void);
 
 void expanderSetbit(char pin, char val);
 char expanderGetbit(char pin);
-void expanderReset(void);
 
 void joystickTest(void);
 void antiBounceJoystick(void);

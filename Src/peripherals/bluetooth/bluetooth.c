@@ -51,7 +51,7 @@ int bluetoothReceive(unsigned char *data, int length)
 
 void bluetoothPrintf(const char *format, ...)
 {
-    char buffer[BLUETOOTH_BUFFER_SIZE];
+    static char buffer[BLUETOOTH_BUFFER_SIZE];
     va_list va_args;
 
     va_start(va_args, format);

@@ -282,7 +282,7 @@ void motorsBrake(void)
 	HAL_TIM_PWM_Start(&MOTORS_TIMER, right_motor.IN2);
 }
 
-int motorSet_DF(enum motorName motor_name, int pwm)
+int motorSet_DF(enum motorName motor_name, int pwm) //Decay Fast
 {
 	if (motor_name == MOTOR_L)
 		motorSet((motor*)&left_motor, pwm, DECAY_FAST);
@@ -292,7 +292,7 @@ int motorSet_DF(enum motorName motor_name, int pwm)
 	return MOTORS_DRIVER_E_SUCCESS;
 }
 
-int motorSet_DS(enum motorName motor_name, int pwm)
+int motorSet_DS(enum motorName motor_name, int pwm) //Decay Slow
 {
 	if (motor_name == MOTOR_L)
 		motorSet((motor*)&left_motor, pwm, DECAY_SLOW);

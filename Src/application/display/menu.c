@@ -187,12 +187,12 @@ int menu(const menuItem Menu)
 {
 	signed char line_screen = 1;
 	signed char line_menu = 0;
-	while (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY);
 	displayMenu(Menu, line_menu);
 	ssd1306InvertArea(0, MARGIN, HIGHLIGHT_LENGHT, HIGHLIGHT_HEIGHT);
 	ssd1306Refresh(MAIN_AREA);
 	while (true)
 	{
+		HAL_Delay(100);
 		int joystick = expanderJoyFiltered();
 		killOnLowBattery();
 		switch (joystick)

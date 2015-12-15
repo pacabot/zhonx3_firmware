@@ -331,6 +331,9 @@ void ssd1306ClearScreen(enum refreshTypeEnum clearType)
 /**************************************************************************/
 void ssd1306Refresh(enum refreshTypeEnum refreshType)
 {
+
+	if (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY)
+		return;
 	main_aera_buffer[0] = 0x40;
 	DATA(main_aera_buffer, SSD1306_MAINSIZE);
 }
