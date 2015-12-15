@@ -126,19 +126,19 @@ char expanderJoyState(void)
 	switch (~(getData() | 0xF0))
 	{
 	case 4:
-		bluetoothPrintf("Joystick UP\n");
+//		bluetoothPrintf("Joystick UP\n");
 		return JOY_UP;
 		break;
 	case 1:
-		bluetoothPrintf("Joystick DOWN\n");
+//		bluetoothPrintf("Joystick DOWN\n");
 		return JOY_DOWN;
 		break;
 	case 8:
-		bluetoothPrintf("Joystick LEFT\n");
+//		bluetoothPrintf("Joystick LEFT\n");
 		return JOY_LEFT;
 		break;
 	case 2:
-		bluetoothPrintf("Joystick RIGHT\n");
+//		bluetoothPrintf("Joystick RIGHT\n");
 		return JOY_RIGHT;
 		break;
 	default :
