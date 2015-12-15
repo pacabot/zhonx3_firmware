@@ -10,6 +10,10 @@
 /* dependencies */
 #include "config/module_id.h"
 
+/*********************** ZHONX generation and version *********************************/
+#define ZHONX_GENERATION          "ZHONX III"
+#define ZHONX_VERSION             "0.2"
+
 /* Error codes */
 #define SETTING_MODULE_E_SUCCESS	0
 #define SETTING_MODULE_E_ERROR	MAKE_ERROR(SETTIING_MODULE_ID, 1)

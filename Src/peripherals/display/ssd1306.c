@@ -126,7 +126,10 @@ static void DATA(uint8_t c[], uint16_t size)
 /**************************************************************************/
 static void ssd1306DrawChar(unsigned int x, unsigned int y, unsigned char c, const FONT_DEF *font)
 {
-	unsigned char col, column[font->u8Width];
+    unsigned int    xoffset;
+    unsigned char   yoffset;
+	unsigned char   col;
+	unsigned char   column[font->u8Width];
 
 	// Check if the requested character is available
 	if ((c >= font->u8FirstChar) && (c <= font->u8LastChar))
@@ -147,7 +150,6 @@ static void ssd1306DrawChar(unsigned int x, unsigned int y, unsigned char c, con
 	}
 
 	// Render each column
-	unsigned int xoffset, yoffset;
 	for (xoffset = 0; xoffset < font->u8Width; xoffset++)
 	{
 		for (yoffset = 0; yoffset < (font->u8Height + 1); yoffset++)

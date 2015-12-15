@@ -42,8 +42,14 @@
 #include "gpio.h"
 
 /* USER CODE BEGIN Includes */
-#include "middleware/settings/settings.h"
+#include <string.h>
+
+#include "config/config.h"
+
 #include "peripherals/bluetooth/bluetooth.h"
+#include "peripherals/flash/flash.h"
+
+#include "middleware/settings/settings.h"
 #include "middleware/cmdline/cmdline_parser.h"
 #include "middleware/cmdline/commands/commads.h"
 #include "middleware/ring_buffer/ring_buffer.h"
@@ -53,7 +59,9 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-
+static char zhonxName[24];
+static int setZhonxName(void);
+static FLASH_HANDLE h_flash;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -65,7 +73,8 @@ void SystemClock_Config(void);
 
 /* USER CODE BEGIN 0 */
 #include "main.h"
-extern menuItem mainMenu;
+extern const menuItem mainMenu;
+extern const menuItem zhonxNameMenu;
 
 /* USER CODE END 0 */
 
@@ -73,8 +82,8 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
-	CMDLINE_CONTEXT cmd_context;
-
+    CMDLINE_CONTEXT cmd_context;
+    const char *zhonx_info = CONFIG_ZHONX_INFO_ADDR;
   /* USER CODE END 1 */
 
   /* MCU Configuration----------------------------------------------------------*/
@@ -116,10 +125,28 @@ int main(void)
 	settingsInit();
 	mulimeterInit();
 
+	// Flash Initialization
+	// TODO: Check returned values of the following functions
+	flash_init();
+	flash_open(NULL /* XXX: Not used */, &h_flash);
+
     // Register Output callback
     cmd_context.out = bluetoothPrintf;
     // Initialize Commandline module
-    cmdline_init(&cmd_context);
+//    cmdline_init(&cmd_context);
+
+    // Check if robot name is populated in Flash
+    memset(zhonxName, 0, sizeof(zhonxName));
+    // Retrieve ZHONX information from flash is any
+    if (zhonx_info[0] == 'Z')
+    {
+        strcpy(zhonxName, zhonx_info);
+    }
+
+    while(zhonxName[0] == 0)
+    {
+        menu(zhonxNameMenu);
+    }
 
     while (1)
     {
@@ -183,7 +210,40 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
+int setMeddle(void)
+{
+    strcpy(zhonxName, ZHONX_GENERATION);
+    strcat(zhonxName, " Meddle V");
+    strcat(zhonxName, ZHONX_VERSION);
+    // Set Bluetooth device name
+    bluetoothCmd("at+ab config DeviceName=Meddle");
+    bluetoothCmd("AT+AB Reset");
+    return setZhonxName();
+}
 
+int setDark(void)
+{
+    strcpy(zhonxName, ZHONX_GENERATION);
+    strcat(zhonxName, " Dark V");
+    strcat(zhonxName, ZHONX_VERSION);
+    // Set Bluetooth device name
+    bluetoothCmd("at+ab config DeviceName=Dark");
+    bluetoothCmd("AT+AB Reset");
+    return setZhonxName();
+}
+
+static int setZhonxName(void)
+{
+    int rv;
+
+    // Write Name in flash
+    rv = flash_write(h_flash, CONFIG_ZHONX_INFO_ADDR, zhonxName, strlen(zhonxName) + 1);
+    if (rv != FLASH_E_SUCCESS)
+    {
+        // TODO: handle this error
+    }
+    return 0;
+}
 /* USER CODE END 4 */
 
 #ifdef USE_FULL_ASSERT

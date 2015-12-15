@@ -32,7 +32,7 @@ void bluetoothInit(void);
  *
  * @param format formatted string to output
  *
- * @retval none
+ * @return none
  */
 void bluetoothPrintf(const char *format, ...);
 
@@ -42,7 +42,7 @@ void bluetoothPrintf(const char *format, ...);
  * @param data		The buffer to be sent
  * @param length	Length of data parameter
  *
- * @retval HAL status
+ * @return HAL status
  */
 int bluetoothSend(unsigned char *data, int length);
 
@@ -53,11 +53,20 @@ int bluetoothSend(unsigned char *data, int length);
  * 					the received data
  * @param   length  Required length
  *
- * @retval			Received data length (in bytes) if successful
+ * @return			Received data length (in bytes) if successful
  * 					BLUETOOTH_DRIVER_E_ERROR otherwise
  */
 int bluetoothReceive(unsigned char *data, int length);
 
+
+/**
+ * @brief Send an AT command to Bluetooth module
+ *
+ * @param cmd       The command to send
+ *
+ * @return          The response of bluetooth module
+ */
+char *bluetoothCmd(const char *cmd);
 
 /*****************************************************************************
  * TEST FUNCTIONS
