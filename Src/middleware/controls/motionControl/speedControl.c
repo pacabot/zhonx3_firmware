@@ -93,9 +93,9 @@ int speedControlInit(void)
 	memset(&speed_control, 0, sizeof(speed_control_struct));
 	memset(&speed_params, 0, sizeof(speed_params_struct));
 
-	encoder_pid_instance.Kp = 300;//400
+	encoder_pid_instance.Kp = 400;//400
 	encoder_pid_instance.Ki = 0;
-	encoder_pid_instance.Kd = 1000;
+	encoder_pid_instance.Kd = 400;
 
 	speed_control.speed_pid.instance = &encoder_pid_instance;
 

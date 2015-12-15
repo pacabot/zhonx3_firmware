@@ -35,12 +35,16 @@
 
 #define BLUETOOTH_BUFFER_SIZE 512
 
+void bluetoothInit(void)
+{
+
+}
 
 int bluetoothSend(unsigned char *data, int length)
 {
     // TODO: Use DMA to transmit data
 
-	return HAL_UART_Transmit_DMA(&huart3, data, length);
+	return HAL_UART_Transmit(&huart3, data, length, 1000);
 }
 
 int bluetoothReceive(unsigned char *data, int length)
@@ -59,6 +63,30 @@ void bluetoothPrintf(const char *format, ...)
     va_end(va_args);
 
     bluetoothSend((unsigned char *)buffer, strlen(buffer));
+}
+
+char *bluetoothCmd(const char *cmd)
+{
+    HAL_StatusTypeDef rv;
+    static char response[255];
+    char *p_response = response;
+
+    bluetoothSend((char *)cmd, strlen(cmd));
+    bluetoothSend("\r\n", 2);
+    // Wait until UART becomes ready
+    while (HAL_UART_GetState(&huart3) != HAL_UART_STATE_READY);
+
+    // Wait until end of reception
+    do
+    {
+        rv = HAL_UART_Receive(&huart3, p_response++, 1, 10);
+    }
+    while (rv != HAL_TIMEOUT);
+
+    // Put a NULL character at the end of the response string
+    *p_response = '\0';
+
+    return response;
 }
 
 

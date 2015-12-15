@@ -61,6 +61,8 @@ extern void expenderLedTest();
 extern int	wallSensorsCalibrationFront(void);
 extern int	wallSensorsCalibrationDiag (void);
 extern void testFlash(void);
+extern int setMeddle(void);
+extern int setDark(void);
 
 /*
  * to create a new menu you have to create a new variable of type "const menuItem" like this :
@@ -78,7 +80,6 @@ extern void testFlash(void);
 float toto=4.0;
 float titi=4.0;
 float tata=4.0;
-
 
 const menuItem testGraphicMenu =
 {
@@ -163,13 +164,24 @@ const menuItem control_menu=
 		}
 };
 
+const menuItem zhonxNameMenu =
+{
+        "Choose ZHONX III Name",
+        {
+                {"Meddle", 'f', setMeddle},
+                {"Dark", 'f', setDark},
+                {NULL, 0, NULL}
+        }
+};
+
 const menuItem mainMenu =
 {
-#ifdef MEDDLE
-		"ZHONX III meddle V0.2",
-#else
-		"ZHONX III dark   V0.2",
-#endif
+//#ifdef MEDDLE
+//		"ZHONX III meddle V0.2",
+//#else
+//		"ZHONX III dark   V0.2",
+//#endif
+        CONFIG_ZHONX_INFO_ADDR,
 		{
 			//	{"telemeters calibration",'f',		(void*)telemeterFrontCalibration},
 				{"Maze menu",'m',			(void*)&maze_menu},
@@ -179,6 +191,7 @@ const menuItem mainMenu =
 				{"Parameters menu",'m',		(void*)&parameters_menu},
 				{"Test graph",'m',			(void*)&testGraphicMenu},
 				{"Test flash",'f',          (void*)&testFlash},
+				{"Zhonx Name",'m',          (void*)&zhonxNameMenu},
 				{0,0,0}
 		}
 };
@@ -189,6 +202,13 @@ int menu(const menuItem Menu)
 {
 	signed char line_screen = 1;
 	signed char line_menu = 0;
+<<<<<<< HEAD
+=======
+
+	while (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY);
+
+	// Display main menu
+>>>>>>> 7343cdf04f7cef60e11e03d255793d5c7366a1c9
 	displayMenu(Menu, line_menu);
 	ssd1306InvertArea(0, MARGIN, HIGHLIGHT_LENGHT, HIGHLIGHT_HEIGHT);
 	ssd1306Refresh(MAIN_AREA);
@@ -201,7 +221,6 @@ int menu(const menuItem Menu)
 		{
 		case JOY_LEFT:
 			return SUCCESS;
-			break;
 			// Joystick down
 		case JOY_DOWN:
 			//beeper
@@ -291,7 +310,7 @@ int menu(const menuItem Menu)
 				menu(*(const menuItem*) Menu.line[line_menu].param);
 				break;
 			case 'f':
-				if (Menu.line[line_menu].param != null)
+				if (Menu.line[line_menu].param != NULL)
 				{
 					ssd1306ClearScreen(MAIN_AREA);
 					ssd1306Refresh(MAIN_AREA);

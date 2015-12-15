@@ -39,8 +39,8 @@
 #define GYRO_OUT_SENSITIVITY	(GYRO_OUTPUT_RATIO*(GYRO_VRATIO/5000.00)*GYRO_SENSITIVITY) 	//1,32mV/deg/sec (3.3v Req 60K)
 #define GYRO_A_COEFF		    (GYRO_VRATIO/(4095.00*GYRO_OUT_SENSITIVITY*GYRO_TIME_FREQ)) //integration multiplier coeff
 
-#define GYRO_T_SENSITIVITY 		9.00   //The temperature coefficient is ~9 mV/Â°C at 25Â°C
-#define GYRO_T_OUT_SENSITIVITY	(GYRO_T_SENSITIVITY*(GYRO_VRATIO/5000.00)) // ~3,564 mV/Â°C at 25Â°C (3.3v)
+#define GYRO_T_SENSITIVITY 		9.00   //The temperature coefficient is ~9 mV/°C at 25°C
+#define GYRO_T_OUT_SENSITIVITY	(GYRO_T_SENSITIVITY*(GYRO_VRATIO/5000.00)) // ~3,564 mV/°C at 25Â°C (3.3v)
 #define GYRO_T_COEFF_A			(GYRO_VRATIO/(4095.00*GYRO_T_OUT_SENSITIVITY))
 #define GYRO_T_COEFF_B			(-GYRO_VRATIO/(2.00*GYRO_T_OUT_SENSITIVITY)+25.00)
 
@@ -51,8 +51,8 @@
 /***************                 Temperature STM32                 ********************/
 /**************************************************************************************/
 #define STM32_VREFINT			3300.00	//1210.00 if use Vrefint
-#define STM32_T_SENSITIVITY		2.50	//The temperature coefficient is ~2.5 mV/Â°C at 25Â°C
-#define STM32_T_V25				760.00	//Voltage at 25 Â°C
+#define STM32_T_SENSITIVITY		2.50	//The temperature coefficient is ~2.5 mV/°C at 25°C
+#define STM32_T_V25				760.00	//Voltage at 25 °C
 #define STM32_T_COEFF_A			(STM32_VREFINT/(4095.00*STM32_T_SENSITIVITY))
 #define STM32_T_COEFF_B			((-STM32_T_V25/STM32_T_SENSITIVITY)+25)
 
@@ -129,26 +129,43 @@
 /***************                 Physical Constants                ********************/
 /**************************************************************************************/
 #define MAX_SPEED				4000.0	//mm/s
-#define MAX_ACCEL				4000.0	//mm/sÂ²
-//#define MAX_DECEL				8000.0	//mm/sÂ²
+#define MAX_ACCEL				4000.0	//mm/s²
+//#define MAX_DECEL				8000.0	//mm/s²
 
 #define MAX_TURN_SPEED			500.0	//mm/s
-#define MAX_TURN_ACCEL			8000.0	//mm/sÂ²
+#define MAX_TURN_ACCEL			8000.0	//mm/s²
 
 /**************************************************************************************/
 /***************                 Motors Constants                  ********************/
 /**************************************************************************************/
 
 #define PWM_RATIO_COEFF_A		(-0.50/6000.00)	//compute pwm ratio for limit motor voltage
-#define PWM_RATIO_COEFF_B		1.50				//PWM_RATIO_COEFF_A * battery voltage + PWM_RATIO_COEFF_B = TRUE MOTOR PWM
+#define PWM_RATIO_COEFF_B		1.50			//PWM_RATIO_COEFF_A * battery voltage + PWM_RATIO_COEFF_B = TRUE MOTOR PWM
 
 #define MOTORS_PERIOD			1000
 
 /**************************************************************************************/
 /***************                  Flash Constants                  ********************/
 /**************************************************************************************/
+/* Base address of the Flash sectors */
+#define ADDR_FLASH_SECTOR_0     (0x08000000) /* Base @ of Sector 0, 16 Kbytes */
+#define ADDR_FLASH_SECTOR_1     (0x08004000) /* Base @ of Sector 1, 16 Kbytes */
+#define ADDR_FLASH_SECTOR_2     (0x08008000) /* Base @ of Sector 2, 16 Kbytes */
+#define ADDR_FLASH_SECTOR_3     (0x0800C000) /* Base @ of Sector 3, 16 Kbytes */
+#define ADDR_FLASH_SECTOR_4     (0x08010000) /* Base @ of Sector 4, 64 Kbytes */
+#define ADDR_FLASH_SECTOR_5     (0x08020000) /* Base @ of Sector 5, 128 Kbytes */
+#define ADDR_FLASH_SECTOR_6     (0x08040000) /* Base @ of Sector 6, 128 Kbytes */
+#define ADDR_FLASH_SECTOR_7     (0x08060000) /* Base @ of Sector 7, 128 Kbytes */
+#define ADDR_FLASH_SECTOR_8     (0x08080000) /* Base @ of Sector 8, 128 Kbytes */
+#define ADDR_FLASH_SECTOR_9     (0x080A0000) /* Base @ of Sector 9, 128 Kbytes */
+#define ADDR_FLASH_SECTOR_10    (0x080C0000) /* Base @ of Sector 10, 128 Kbytes */
+#define ADDR_FLASH_SECTOR_11    (0x080E0000) /* Base @ of Sector 11, 128 Kbytes */
+
 #define CONFIG_FLASH_SECTOR_BUFFER_SIZE		(16 * 1024)
 #define CONFIG_FLASH_NB_FLASH_DEVICES		(1)
+
+// Address in flash for ZHONX informations
+#define CONFIG_ZHONX_INFO_ADDR           ((unsigned char *)ADDR_FLASH_SECTOR_11)
 
 /**************************************************************************************/
 /***************                 EEPROM Constants                  ********************/

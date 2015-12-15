@@ -261,12 +261,12 @@ void sleep_mode_IT()//todo move this function
 //			break;
 //	}
 
-	if((zhonxSettings.sleep_delay_s != 0) && (time_ > (joy_activ_old_time + zhonxSettings.sleep_delay_s*1000)))
-	{
-		int i = 0;
-		i++;
-		halt();
-	}
+//	if((zhonxSettings.sleep_delay_s != 0) && (time_ > (joy_activ_old_time + zhonxSettings.sleep_delay_s*1000)))
+//	{
+//		int i = 0;
+//		i++;
+//		halt();
+//	}
 }
 
 void highFreq_IT(void)

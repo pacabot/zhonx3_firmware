@@ -94,9 +94,9 @@ int positionControlInit(void)
 	memset(&position_control, 0, sizeof(position_control_struct));
 	memset(&position_params, 0, sizeof(position_params_struct));
 
-	encoder_or_gyro_pid_instance.Kp = 40;
+	encoder_or_gyro_pid_instance.Kp = 200;
 	encoder_or_gyro_pid_instance.Ki = 0;
-	encoder_or_gyro_pid_instance.Kd = 1000;
+	encoder_or_gyro_pid_instance.Kd = 400;
 
 	position_control.position_pid.instance = &encoder_or_gyro_pid_instance;
 
