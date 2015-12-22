@@ -7,8 +7,10 @@
 
 #ifndef SETTING_H_
 #define SETTING_H_
+
 /* dependencies */
 #include "config/module_id.h"
+#include "peripherals/flash/flash.h"
 
 /*********************** ZHONX generation and version *********************************/
 #define ZHONX_GENERATION          "ZHONX III"
@@ -35,8 +37,11 @@ typedef struct
 	unsigned int sleep_delay_s;
 	unsigned long threshold_color;
 	unsigned long threshold_greater;
+	FLASH_HANDLE h_flash;
 }settings;
-settings zhonxSettings;
+
+extern settings zhonxSettings;
+
 int settingsInit (void);
 void halt(void);
 #endif /* SETTING_H_ */

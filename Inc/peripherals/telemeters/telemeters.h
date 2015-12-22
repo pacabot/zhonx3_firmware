@@ -23,17 +23,36 @@
 
 enum telemeterName {TELEMETER_FL, TELEMETER_DL, TELEMETER_DR, TELEMETER_FR};
 
-extern int telemeter_FR_profile[TELEMETER_PROFILE_ARRAY_LENGTH + 1];
-extern int telemeter_FL_profile[TELEMETER_PROFILE_ARRAY_LENGTH + 1];
-extern int telemeter_DR_profile[TELEMETER_PROFILE_ARRAY_LENGTH + 1];
-extern int telemeter_DL_profile[TELEMETER_PROFILE_ARRAY_LENGTH + 1];
+typedef struct
+{
+    int right[TELEMETER_PROFILE_ARRAY_LENGTH + 1];
+    int left [TELEMETER_PROFILE_ARRAY_LENGTH + 1];
+} FRONT_TELEMETERS_PROFILE;
+
+typedef struct
+{
+    int right [TELEMETER_PROFILE_ARRAY_LENGTH + 1];
+    int left  [TELEMETER_PROFILE_ARRAY_LENGTH + 1];
+} DIAG_TELEMETERS_PROFILE;
+
+typedef struct
+{
+    FRONT_TELEMETERS_PROFILE front;
+    DIAG_TELEMETERS_PROFILE diag;
+} TELEMETERS_PROFILE;
+
+//extern int telemeter_FR_profile[TELEMETER_PROFILE_ARRAY_LENGTH + 1];
+//extern int telemeter_FL_profile[TELEMETER_PROFILE_ARRAY_LENGTH + 1];
+//extern int telemeter_DR_profile[TELEMETER_PROFILE_ARRAY_LENGTH + 1];
+//extern int telemeter_DL_profile[TELEMETER_PROFILE_ARRAY_LENGTH + 1];
+extern TELEMETERS_PROFILE *telemeters_profile;
 
 /* Exported functions */
 void   telemetersInit(void);
 void   telemetersStart(void);
 void   telemetersStop(void);
 double getTelemeterDist(enum telemeterName telemeter_name);
-double getTelemeterAvrg(enum telemeterName telemeter_name);
+int    getTelemeterAvrg(enum telemeterName telemeter_name);
 double getTelemeterSpeed(enum telemeterName telemeter_name);
 void   telemeters_IT(void);
 void   telemeters_DMA_IT(void);

@@ -59,9 +59,9 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-static char zhonxName[24];
 static int setZhonxName(void);
-static FLASH_HANDLE h_flash;
+
+static char zhonxName[24];
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -124,11 +124,6 @@ int main(void)
     ledPowerBlink(990, 10, 0);
 	settingsInit();
 	mulimeterInit();
-
-	// Flash Initialization
-	// TODO: Check returned values of the following functions
-	flash_init();
-	flash_open(NULL /* XXX: Not used */, &h_flash);
 
     // Register Output callback
     cmd_context.out = bluetoothPrintf;
@@ -237,7 +232,8 @@ static int setZhonxName(void)
     int rv;
 
     // Write Name in flash
-    rv = flash_write(h_flash, CONFIG_ZHONX_INFO_ADDR, zhonxName, strlen(zhonxName) + 1);
+    rv = flash_write(zhonxSettings.h_flash,
+                     CONFIG_ZHONX_INFO_ADDR, zhonxName, strlen(zhonxName) + 1);
     if (rv != FLASH_E_SUCCESS)
     {
         // TODO: handle this error

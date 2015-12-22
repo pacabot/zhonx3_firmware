@@ -63,6 +63,7 @@ extern int	wallSensorsCalibrationDiag (void);
 extern void testFlash(void);
 extern int setMeddle(void);
 extern int setDark(void);
+extern void telemetersGetCalibrationValues(void);
 
 /*
  * to create a new menu you have to create a new variable of type "const menuItem" like this :
@@ -122,7 +123,8 @@ const menuItem parameters_menu=
 		"Parameters menu",
 		{
 				{"calibration front",'f',(void*)wallSensorsCalibrationFront},
-				{"calibration diag",'f',(void*)wallSensorsCalibrationDiag}
+				{"calibration diag",'f',(void*)wallSensorsCalibrationDiag},
+				{"Get Calibration values", 'f', (void *)telemetersGetCalibrationValues}
 		}
 };
 const menuItem peripheral_test_menu=

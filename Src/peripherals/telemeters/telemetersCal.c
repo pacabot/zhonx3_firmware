@@ -33,6 +33,7 @@
 #include "peripherals/motors/motors.h"
 
 #include "peripherals/eeprom/24lc64.h"
+#include "peripherals/flash/flash.h"
 
 /* Middleware declarations */
 #include "middleware/controls/motionControl/mainControl.h"
@@ -41,90 +42,157 @@
 #include "peripherals/telemeters/telemetersCal.h"
 
 //int telemetersWithOutNoise//TODO this function
-int wallSensorsCalibrationFront (void)
+
+int wallSensorsCalibrationFront(void)
 {
-	ssd1306ClearScreen(MAIN_AREA);
-	ssd1306DrawString(0,0,"Place the robot front",&Font_5x8);
-	ssd1306DrawString(0,10,"of wall and press 'RIGHT'",&Font_5x8);
-	ssd1306Refresh(MAIN_AREA);
-	while(expanderJoyFiltered()!=JOY_RIGHT);
+    FRONT_TELEMETERS_PROFILE front_telemeters;
+    int i;
+    int rv;
 
-	ssd1306ClearScreen(MAIN_AREA);
-	ssd1306Printf(0,0,&Font_5x8,"Calibrating front sensors");
-	ssd1306Refresh(MAIN_AREA);
+    ssd1306ClearScreen(MAIN_AREA);
+    ssd1306DrawString(0, 0, "Place the robot front", &Font_5x8);
+    ssd1306DrawString(0, 10, "of wall and press 'RIGHT'", &Font_5x8);
+    ssd1306Refresh(MAIN_AREA);
+    while(expanderJoyFiltered() != JOY_RIGHT);
 
-	mainControlInit();
-	motorsDriverSleep(OFF);
+    ssd1306ClearScreen(MAIN_AREA);
+    ssd1306Printf(0, 0, &Font_5x8, "Calibrating front sensors");
+    ssd1306Refresh(MAIN_AREA);
 
-	telemetersStart();
-	mainControlSetFollowType(FALSE);
+    mainControlInit();
+    motorsDriverSleep(OFF);
 
-	move(0,0,0,0);
-	HAL_Delay(3000);
-	for(int i = 0; i < TELEMETER_PROFILE_ARRAY_LENGTH; i++)
-	{
-//		ssd1306ProgressBar(10,10,(i*100)/NUMBER_OF_CELL);
-//		ssd1306ProgressBar(10,40,(i*50)/NUMBER_OF_CELL);
-//		ssd1306Refresh(MAIN_AERA);
+    telemetersStart();
+    mainControlSetFollowType(FALSE);
 
-		telemeter_FL_profile[i]=getTelemeterAvrg(TELEMETER_FL);
-		telemeter_FR_profile[i]=getTelemeterAvrg(TELEMETER_FR);
+    move(0, 0, 0, 0);
+    HAL_Delay(3000);
+    for(i = 0; i < TELEMETER_PROFILE_ARRAY_LENGTH; i++)
+    {
+//        ssd1306ProgressBar(10,10,(i*100)/NUMBER_OF_CELL);
+//        ssd1306ProgressBar(10,40,(i*50)/NUMBER_OF_CELL);
+//        ssd1306Refresh(MAIN_AERA);
 
+//        telemeter_FL_profile[i]=getTelemeterAvrg(TELEMETER_FL);
+        front_telemeters.left[i]  = getTelemeterAvrg(TELEMETER_FL);
+//        telemeter_FR_profile[i]=getTelemeterAvrg(TELEMETER_FR);
+        front_telemeters.right[i] = getTelemeterAvrg(TELEMETER_FR);
 
-		move(0,-NUMBER_OF_MILLIMETER_BY_LOOP,5,5);
-		while(hasMoveEnded() != TRUE);
-	}
-	telemetersStop();
-	motorsDriverSleep(ON);
+        move(0, -NUMBER_OF_MILLIMETER_BY_LOOP, 5, 5);
+        while(hasMoveEnded() != TRUE);
+    }
 
-	bluetoothPrintf("\n\n\nfilterd measures :\n");
-	for (int i = 0; i < TELEMETER_PROFILE_ARRAY_LENGTH; ++i)
-	{
-		bluetoothPrintf("%2d|%10d|%d\n",i,telemeter_FL_profile[i],telemeter_FR_profile[i]);
-	}
-	return TELEMETERS_DRIVER_E_SUCCESS;
+    telemetersStop();
+    motorsDriverSleep(ON);
+
+    bluetoothPrintf("\n\n\nfilterd measures :\n");
+    for (int i = 0; i < TELEMETER_PROFILE_ARRAY_LENGTH; ++i)
+    {
+//        bluetoothPrintf("%2d|%10d|%d\n",i,telemeter_FL_profile[i],telemeter_FR_profile[i]);
+        bluetoothPrintf("%d|%d|%d\n", i,
+                        front_telemeters.left[i], front_telemeters.right[i]);
+    }
+
+    bluetoothPrintf("Saving Front telemeters profile into Flash memory...\n");
+    // Write telemeters profiles in Flash memory
+    rv = flash_write(zhonxSettings.h_flash,
+                     (unsigned char *)&telemeters_profile->front,
+                     (unsigned char *)&front_telemeters,
+                     sizeof(FRONT_TELEMETERS_PROFILE));
+    if (rv == FLASH_E_SUCCESS)
+    {
+        bluetoothPrintf("Values saved into Flash Memory\n");
+        ssd1306ClearScreen(MAIN_AREA);
+        ssd1306Printf(0, 0, &Font_5x8, "FLASH memory updated");
+        ssd1306Refresh(MAIN_AREA);
+    }
+    else
+    {
+        bluetoothPrintf("Failed to write Flash Memory (%d)\n", rv);
+        ssd1306ClearScreen(MAIN_AREA);
+        ssd1306Printf(0, 0, &Font_5x8, "FLASH write error (%d)", rv);
+        ssd1306Refresh(MAIN_AREA);
+    }
+
+    return TELEMETERS_DRIVER_E_SUCCESS;
 }
+
 int wallSensorsCalibrationDiag (void)
 {
-	ssd1306ClearScreen(MAIN_AREA);
-	ssd1306DrawString(0,0,"Place the robot front",&Font_5x8);
-	ssd1306DrawString(0,10,"of wall and press 'RIGHT'",&Font_5x8);
-	ssd1306Refresh(MAIN_AREA);
+    DIAG_TELEMETERS_PROFILE diag_telemeters;
+    int i;
+    int rv;
 
-	while(expanderJoyFiltered()!=JOY_RIGHT);
+    ssd1306ClearScreen(MAIN_AREA);
+    ssd1306DrawString(0, 0, "Place the robot front", &Font_5x8);
+    ssd1306DrawString(0, 10, "of wall and press 'RIGHT'", &Font_5x8);
+    ssd1306Refresh(MAIN_AREA);
 
-	ssd1306ProgressBar(10,10,0);
-	ssd1306ClearScreen(MAIN_AREA);
-	ssd1306Printf(0,0,&Font_5x8,"Calibrating front sensors");
-	ssd1306Refresh(MAIN_AREA);
+    while(expanderJoyFiltered()!=JOY_RIGHT);
 
-	mainControlInit();
-	motorsDriverSleep(OFF);
+    ssd1306ProgressBar(10, 10, 0);
+    ssd1306ClearScreen(MAIN_AREA);
+    ssd1306Printf(0, 0, &Font_5x8, "Calibrating front sensors");
+    ssd1306Refresh(MAIN_AREA);
 
-	telemetersStart();
-	mainControlSetFollowType(FALSE);
+    mainControlInit();
+    motorsDriverSleep(OFF);
 
-	move(0,0,0,0);
-	HAL_Delay(3000);
+    telemetersStart();
+    mainControlSetFollowType(FALSE);
 
-	for(int i=0;i<TELEMETER_PROFILE_ARRAY_LENGTH;i++)
-	{
-//		ssd1306ProgressBar(10,10,(i*100)/NUMBER_OF_CELL);
-//		ssd1306Refresh(MAIN_AERA);
-		move(0,-sqrtf(2*powf(NUMBER_OF_MILLIMETER_BY_LOOP,2)),5,5);
-		while(hasMoveEnded() != TRUE);
-		telemeter_DL_profile[i]=getTelemeterAvrg(TELEMETER_DL);
-		telemeter_DR_profile[i]=getTelemeterAvrg(TELEMETER_DR);
-	}
-	telemetersStop();
-	motorsDriverSleep(ON);
+    move(0, 0, 0, 0);
+    HAL_Delay(3000);
 
-	bluetoothPrintf("\n\n\nfilterd diag measures :\n");
-	for (int i = 0; i < TELEMETER_PROFILE_ARRAY_LENGTH; ++i)
-	{
-		bluetoothPrintf("%2d|%10d|%d\n",i,telemeter_DL_profile[i],telemeter_DR_profile[i]);
-	}
-	return TELEMETERS_DRIVER_E_SUCCESS;
+    for(i = 0; i < TELEMETER_PROFILE_ARRAY_LENGTH; i++)
+    {
+//        ssd1306ProgressBar(10,10,(i*100)/NUMBER_OF_CELL);
+//        ssd1306Refresh(MAIN_AERA);
+        move(0, -sqrtf(2 * powf(NUMBER_OF_MILLIMETER_BY_LOOP, 2)), 5, 5);
+        while(hasMoveEnded() != TRUE);
+
+//        telemeter_DL_profile[i]=getTelemeterAvrg(TELEMETER_DL);
+//        telemeter_DR_profile[i]=getTelemeterAvrg(TELEMETER_DR);
+        diag_telemeters.left[i]  = getTelemeterAvrg(TELEMETER_DL);
+        diag_telemeters.right[i] = getTelemeterAvrg(TELEMETER_DR);
+    }
+    telemetersStop();
+    motorsDriverSleep(ON);
+
+    bluetoothPrintf("\n\n\nfilterd diag measures :\n");
+    for (int i = 0; i < TELEMETER_PROFILE_ARRAY_LENGTH; ++i)
+    {
+//        bluetoothPrintf("%2d|%10d|%d\n",i,telemeter_DL_profile[i],telemeter_DR_profile[i]);
+        bluetoothPrintf("%d|%d|%d\n", i,
+                        diag_telemeters.left[i], diag_telemeters.right[i]);
+    }
+
+    ssd1306ClearScreen(MAIN_AREA);
+    ssd1306Printf(0, 0, &Font_5x8, "Writing FLASH...");
+    ssd1306Refresh(MAIN_AREA);
+
+    bluetoothPrintf("Saving Diagonal telemeters profile into Flash memory...\n");
+    // Write telemeters profiles in Flash memory
+    rv = flash_write(zhonxSettings.h_flash,
+                     (unsigned char *)&telemeters_profile->diag,
+                     (unsigned char *)&diag_telemeters,
+                     sizeof(DIAG_TELEMETERS_PROFILE));
+    if (rv == FLASH_E_SUCCESS)
+    {
+        bluetoothPrintf("Values saved into Flash Memory\n");
+        ssd1306ClearScreen(MAIN_AREA);
+        ssd1306Printf(0, 0, &Font_5x8, "FLASH memory updated");
+        ssd1306Refresh(MAIN_AREA);
+    }
+    else
+    {
+        bluetoothPrintf("Failed to write Flash Memory (%d)\n", rv);
+        ssd1306ClearScreen(MAIN_AREA);
+        ssd1306Printf(0, 0, &Font_5x8, "FLASH write error (%d)", rv);
+        ssd1306Refresh(MAIN_AREA);
+    }
+
+    return TELEMETERS_DRIVER_E_SUCCESS;
 }
 
 void testTelemeterDistance()
@@ -146,7 +214,6 @@ void testTelemeterDistance()
 		ssd1306Printf(60,10,&Font_5x8,"V f r=%d",(int)(getTelemeterAvrg(TELEMETER_FR)));
 		ssd1306Printf(60,20,&Font_5x8,"V d l=%d",(int)(getTelemeterAvrg(TELEMETER_DL)));
 		ssd1306Printf(60,30,&Font_5x8,"V d r=%d",(int)(getTelemeterAvrg(TELEMETER_DR)));
-
 
 		ssd1306Refresh(MAIN_AREA);
 	}
