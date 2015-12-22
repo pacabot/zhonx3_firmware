@@ -93,9 +93,9 @@ int speedControlInit(void)
 	memset(&speed_control, 0, sizeof(speed_control_struct));
 	memset(&speed_params, 0, sizeof(speed_params_struct));
 
-	encoder_pid_instance.Kp = 300;//400
+	encoder_pid_instance.Kp = 400;//400
 	encoder_pid_instance.Ki = 0;
-	encoder_pid_instance.Kd = 1000;
+	encoder_pid_instance.Kd = 400;
 
 	speed_control.speed_pid.instance = &encoder_pid_instance;
 
@@ -161,6 +161,8 @@ int speedControlLoop(void)
 
 	speed_control.speed_error = speed_control.current_distance_consign - speed_control.current_distance;		//for distance control
 	speed_control.speed_command = pidController(speed_control.speed_pid.instance, speed_control.speed_error) * (float)speed_params.sign;
+
+//	bluetoothPrintf("speed error: %d \r\n", (int)(speed_control.speed_error * 100.00));
 
 	speed_control.old_distance = speed_control.current_distance;
 
@@ -260,7 +262,6 @@ double speedProfileCompute(double distance, double max_speed, double end_speed)
 		speed_params.nb_loop_maint = 0;
 		speed_params.end_speed = 0;
 		speed_params.distance_consign = 0;
-		//bluetoothPrintf("speedProfileCompute -- if distance == 0\n");
 		return 0.0;
 	}
 
@@ -268,11 +269,7 @@ double speedProfileCompute(double distance, double max_speed, double end_speed)
 	speed_params.decel_dist = -0.5 * ((speed_params.end_speed - speed_params.max_speed) * (speed_params.end_speed + speed_params.max_speed)) / speed_params.decel;
 
 	speed_params.accel_dist_per_loop = speed_params.accel / pow(HI_TIME_FREQ, 2);
-	//sprintf(str,)
-//	bluetoothPrintf("speed_params.accel_dist_per_loop = %d",speed_params.accel_dist_per_loop);
 	speed_params.decel_dist_per_loop = speed_params.decel / pow(HI_TIME_FREQ, 2);
-//	bluetoothPrintf("speed_params.decel_dist_per_loop = %d",speed_params.decel_dist_per_loop);
-
 
 	speed_control.speed_consign = (speed_params.initial_speed / HI_TIME_FREQ);
 	speed_control.current_distance_consign = 0.00;
@@ -286,7 +283,6 @@ double speedProfileCompute(double distance, double max_speed, double end_speed)
 		speed_params.accel_dist *= clipping_ratio;
 		speed_params.decel_dist *= clipping_ratio;
 		speed_params.max_speed  = sqrt(pow(speed_params.initial_speed, 2) + 2.0 * speed_params.accel * speed_params.accel_dist);
-		//bluetoothPrintf("speedProfileCompute -- FIRST if ((speed_params.accel_dist + speed_params.decel_dist) > distance)\n");
 	}
 
 	speed_params.nb_loop_accel = (((-1.0 * speed_params.initial_speed) + sqrt(pow(speed_params.initial_speed, 2) +
@@ -296,13 +292,11 @@ double speedProfileCompute(double distance, double max_speed, double end_speed)
 
 	if ((speed_params.accel_dist + speed_params.decel_dist) > distance)
 	{
-		//bluetoothPrintf("speedProfileCompute -- SECOND if ((speed_params.accel_dist + speed_params.decel_dist) > distance)");
 		speed_params.maintain_dist = 0;
 		speed_params.nb_loop_maint = 0;
 	}
 	else
 	{
-		//bluetoothPrintf("speedProfileCompute -- SECOND if ((speed_params.accel_dist + speed_params.decel_dist) > distance) ELSE\n");
 		speed_params.maintain_dist = distance - (speed_params.accel_dist + speed_params.decel_dist);
 		speed_params.nb_loop_maint = ((speed_params.maintain_dist / speed_params.max_speed) * HI_TIME_FREQ);
 	}
@@ -313,10 +307,9 @@ double speedProfileCompute(double distance, double max_speed, double end_speed)
 	speed_params.distance_consign = distance;
 
 	double result;
-	telemetersStop();
 	result = ((speed_params.nb_loop_accel + speed_params.nb_loop_decel + speed_params.nb_loop_maint)) / HI_TIME_FREQ;
-	bluetoothPrintf("nombre de deplacement: %d,nb_loop_accel = %d, nb_loop_decel = %d, nb_loop_maint = %d \r\n", i, (int)speed_params.nb_loop_accel, (int)speed_params.nb_loop_decel, (int)speed_params.nb_loop_maint);
-	//bluetoothPrintf("speedProfileCompute -- Return:%d\n",result);
+//	bluetoothPrintf("nombre de deplacement: %d,nb_loop_accel = %d, nb_loop_decel = %d, nb_loop_maint = %d \r\n", i, (int)speed_params.nb_loop_accel, (int)speed_params.nb_loop_decel, (int)speed_params.nb_loop_maint);
+
 	i++;
 	return result;
 }

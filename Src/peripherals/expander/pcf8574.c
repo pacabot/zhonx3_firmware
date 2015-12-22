@@ -26,6 +26,7 @@
 /* Peripheral declarations */
 #include "peripherals/display/ssd1306.h"
 #include "peripherals/display/smallfonts.h"
+#include "peripherals/bluetooth/bluetooth.h"
 
 /* Middleware declarations */
 
@@ -43,24 +44,48 @@ unsigned int joy_activ_old_time;
 static void sendData(uint8_t aTxBuffer)
 {
 	// I2C
+	if (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY)
+		return;
 	HAL_I2C_Master_Transmit_DMA(&hi2c1, (uint16_t)64, (uint8_t*)&aTxBuffer, 1);
+
+//	while (HAL_I2C_Master_Transmit(&hi2c1, (uint16_t)64, (uint8_t *)&aTxBuffer, 1, 1000) != HAL_OK)
+//	{
+//		/* Error_Handler() function is called when Timout error occurs.
+//	       When Acknowledge failure ocucurs (Slave don't acknowledge it's address)
+//	       Master restarts communication */
+//		if (HAL_I2C_GetError(&hi2c1) != HAL_I2C_ERROR_AF)
+//		{
+//			bluetoothPrintf("I2C setExpander error \r\n");
+//		}
+//	}
 }
 
 //get DATA
 static char getData(void)
 {
 	// I2C
-	uint8_t aRxBuffer[1];
+	static uint8_t aRxBuffer;
 
-	while (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY)
+	if (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY)
+		return 0;
+
+	while (HAL_I2C_Master_Receive(&hi2c1, (uint16_t)65, (uint8_t *)&aRxBuffer, 1, 1000) != HAL_OK)
 	{
-	}
-	HAL_I2C_Master_Receive_DMA(&hi2c1, (uint16_t)65, (uint8_t *)aRxBuffer, 1);
-	while (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY)
-	{
+		/* Error_Handler() function is called when Timout error occurs.
+	       When Acknowledge failure ocucurs (Slave don't acknowledge it's address)
+	       Master restarts communication */
+		if (HAL_I2C_GetError(&hi2c1) != HAL_I2C_ERROR_AF)
+		{
+			bluetoothPrintf("I2C getExpander error \r\n");
+		}
 	}
 
-	return aRxBuffer[0];
+	return aRxBuffer;
+}
+
+void expanderInit(void)
+{
+	sendData(0xFF);
 }
 
 void expanderSetbit(char pin, char val)
@@ -80,52 +105,46 @@ char expanderGetbit(char pin)
 	return getData(); //todo return bit
 }
 
-void expanderReset(void)
-{
-	sendData(0xF);
-}
-
 void expanderLedState(char led, char val)
 {
 	switch (led)
 	{
-		case 1:
-			expanderSetbit(4, reverse_bit(val));
-			break;
-		case 2:
-			expanderSetbit(5, reverse_bit(val));
-			break;
-		case 3:
-			expanderSetbit(6, reverse_bit(val));
-			break;
+	case 1:
+		expanderSetbit(4, reverse_bit(val));
+		break;
+	case 2:
+		expanderSetbit(5, reverse_bit(val));
+		break;
+	case 3:
+		expanderSetbit(6, reverse_bit(val));
+		break;
 	}
 }
 
 char expanderJoyState(void)
 {
-	char key = 0;
-	key = ~(getData() | 0xF0);
-	switch (key)
+	switch (~(getData() | 0xF0))
 	{
-		case 4:
-			return JOY_UP;
-			break;
-		case 1:
-			return JOY_DOWN;
-			break;
-		case 8:
-			return JOY_LEFT;
-			break;
-		case 2:
-			return JOY_RIGHT;
-			break;
-		case 0:
-			return 0;
-			break;
-		default :
-			return JOY_SEVERAL;
+	case 4:
+//		bluetoothPrintf("Joystick UP\n");
+		return JOY_UP;
+		break;
+	case 1:
+//		bluetoothPrintf("Joystick DOWN\n");
+		return JOY_DOWN;
+		break;
+	case 8:
+//		bluetoothPrintf("Joystick LEFT\n");
+		return JOY_LEFT;
+		break;
+	case 2:
+//		bluetoothPrintf("Joystick RIGHT\n");
+		return JOY_RIGHT;
+		break;
+	default :
+		//bluetoothPrintf("Joystick ERROR\n");
+		return 0;
 	}
-	return 0;
 }
 char expanderJoyFiltered(void)
 {
@@ -189,18 +208,18 @@ void joystickTest(void)
 		ssd1306DrawCircle(70,20, 3);
 		switch (state)
 		{
-			case JOY_UP:
-				ssd1306FillCircle(60,10, 3);
-				break;
-			case JOY_DOWN:
-				ssd1306FillCircle(60,30, 3);
-				break;
-			case JOY_LEFT:
-				ssd1306FillCircle(50,20, 3);
-				break;
-			case JOY_RIGHT:
-				ssd1306FillCircle(70,20, 3);
-				break;
+		case JOY_UP:
+			ssd1306FillCircle(60,10, 3);
+			break;
+		case JOY_DOWN:
+			ssd1306FillCircle(60,30, 3);
+			break;
+		case JOY_LEFT:
+			ssd1306FillCircle(50,20, 3);
+			break;
+		case JOY_RIGHT:
+			ssd1306FillCircle(70,20, 3);
+			break;
 		}
 
 		ssd1306Refresh(MAIN_AREA);
@@ -213,28 +232,28 @@ void joystickTest(void)
 
 void expenderLedTest ()
 {
-//	char i=0;
-//	while(expanderJoyState()!=JOY_LEFT)
-//	{
-//		if ((HAL_GetTick() % 200) == 0)
-//		{
-//			expanderSetbit(i,0);
-//			i = (i % 3)+1;
-//			expanderLedState(i,1);
-//			ssd1306ClearScreen(MAIN_AERA);
-//			ssd1306Printf(0,0,&Font_5x8,"i : %d", i);
-//			ssd1306Refresh(MAIN_AERA);
-//		}
-//	}
-//	for (i=1; i<4; i++)
-//	{
-//		expanderLedState(i,1);
-//	}
-//	HAL_Delay(500);
-//	for (i=1; i<4; i++)
-//	{
-//		expanderLedState(i,0);
-//	}
+	//	char i=0;
+	//	while(expanderJoyState()!=JOY_LEFT)
+	//	{
+	//		if ((HAL_GetTick() % 200) == 0)
+	//		{
+	//			expanderSetbit(i,0);
+	//			i = (i % 3)+1;
+	//			expanderLedState(i,1);
+	//			ssd1306ClearScreen(MAIN_AERA);
+	//			ssd1306Printf(0,0,&Font_5x8,"i : %d", i);
+	//			ssd1306Refresh(MAIN_AERA);
+	//		}
+	//	}
+	//	for (i=1; i<4; i++)
+	//	{
+	//		expanderLedState(i,1);
+	//	}
+	//	HAL_Delay(500);
+	//	for (i=1; i<4; i++)
+	//	{
+	//		expanderLedState(i,0);
+	//	}
 	expanderLedState(2,1);
 	joystickTest();
 	HAL_Delay(500);

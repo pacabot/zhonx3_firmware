@@ -80,5 +80,6 @@ int transfertFunctionLoop(void)
 	transfertFunctionLimiter();
 	motorSet_DF(MOTOR_R, transfert_function.right_motor_pwm);
 	motorSet_DF(MOTOR_L, transfert_function.left_motor_pwm);
+	bluetoothPrintf("pwmR: %d \r\n", (transfert_function.right_motor_pwm));
 	return TRANSFERT_FUNCTION_E_SUCCESS;
 }
