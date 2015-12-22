@@ -1,6 +1,6 @@
 /**************************************************************************/
 /*!
-    @file     ADXRS620.h
+    @file     telemeter.h
     @author   PLF Pacabot.com
     @date     03 August 2014
     @version  0.10

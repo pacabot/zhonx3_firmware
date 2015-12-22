@@ -18,7 +18,7 @@
 
 
 int wallFollowControlInit(void);
-double wallFollowGetFollowCommand(void);
+double wallFollowGetCommand(void);
 char isDeadZone(void);
 int wallFollowControlLoop(void);
 

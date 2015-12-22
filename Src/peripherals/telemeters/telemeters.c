@@ -231,30 +231,30 @@ double getTelemeterAvrg(enum telemeterName telemeter_name)
 	switch (telemeter_name)
 	{
 	case TELEMETER_DL:
-		return getTelemeterAvrg(TELEMETER_DL);
+		return telemeters.DL.avrg;
 	case TELEMETER_DR:
-		return getTelemeterAvrg(TELEMETER_DR);
+		return telemeters.DR.avrg;
 	case TELEMETER_FL:
-		return getTelemeterAvrg(TELEMETER_FL);
+		return telemeters.FL.avrg;
 	case TELEMETER_FR:
-		return getTelemeterAvrg(TELEMETER_FR);
+		return telemeters.FR.avrg;
 	}
 	return 0.00; //todo return correct error ID
 }
 
 double getTelemeterSpeed(enum telemeterName telemeter_name)
 {
-	switch (telemeter_name)
-	{
-	case TELEMETER_DL:
-		return getTelemeterSpeed(TELEMETER_DL);
-	case TELEMETER_DR:
-		return getTelemeterSpeed(TELEMETER_DR);
-	case TELEMETER_FL:
-		return getTelemeterSpeed(TELEMETER_FL);
-	case TELEMETER_FR:
-		return getTelemeterSpeed(TELEMETER_FR);
-	}
+//	switch (telemeter_name)
+//	{
+//	case TELEMETER_DL:
+////		return getTelemeterSpeed(TELEMETER_DL);
+//	case TELEMETER_DR:
+////		return getTelemeterSpeed(TELEMETER_DR);
+//	case TELEMETER_FL:
+////		return getTelemeterSpeed(TELEMETER_FL);
+//	case TELEMETER_FR:
+////		return getTelemeterSpeed(TELEMETER_FR);
+//	}
 	return 0.00; //todo return correct error ID
 }
 
@@ -497,6 +497,7 @@ void telemetersTest(void)
 	while (joy != JOY_LEFT)	//todo make a generic test menu (unit test)
 	{
 		joy = expanderJoyFiltered();
+
 		ssd1306ClearScreen(MAIN_AREA);
 
 		ssd1306DrawString(1,0, "   AVRG 1/10mm", &Font_5x8);
@@ -517,6 +518,7 @@ void telemetersTest(void)
 
 		if (joy == JOY_RIGHT)
 		{
+			HAL_Delay(1000);
 			while (joy != JOY_LEFT)
 			{
 				joy = expanderJoyFiltered();
@@ -528,15 +530,10 @@ void telemetersTest(void)
 				ssd1306PrintInt(1, 27, "DR ", (int32_t) telemeters.DR.adc, &Font_5x8);
 				ssd1306PrintInt(1, 36, "FR ", (int32_t) telemeters.FR.adc, &Font_5x8);
 
-				ssd1306PrintInt(45, 9 , "", (int32_t) getTelemeterAvrg(TELEMETER_FL), &Font_5x8);
-				ssd1306PrintInt(45, 18, "", (int32_t) getTelemeterAvrg(TELEMETER_DL), &Font_5x8);
-				ssd1306PrintInt(45, 27, "", (int32_t) getTelemeterAvrg(TELEMETER_DR), &Font_5x8);
-				ssd1306PrintInt(45, 36, "", (int32_t) getTelemeterAvrg(TELEMETER_FR), &Font_5x8);
-
-				//				ssd1306PrintInt(75, 9 , "", (int32_t) (telemeters.FL.delta_avrg), &Font_5x8);
-				//				ssd1306PrintInt(75, 18, "", (int32_t) (telemeters.DL.delta_avrg), &Font_5x8);
-				//				ssd1306PrintInt(75, 27, "", (int32_t) telemeters.DR.delta_mm_avrg, &Font_5x8);
-				//				ssd1306PrintInt(75, 36, "", (int32_t) telemeters.FR.delta_mm_avrg, &Font_5x8);
+//				ssd1306PrintInt(45, 9 , "", (int32_t) getTelemeterAvrg(TELEMETER_FL), &Font_5x8);
+//				ssd1306PrintInt(45, 18, "", (int32_t) getTelemeterAvrg(TELEMETER_DL), &Font_5x8);
+//				ssd1306PrintInt(45, 27, "", (int32_t) getTelemeterAvrg(TELEMETER_DR), &Font_5x8);
+//				ssd1306PrintInt(45, 36, "", (int32_t) getTelemeterAvrg(TELEMETER_FR), &Font_5x8);
 
 				ssd1306PrintInt(75, 9 , "", (int32_t) getTelemeterSpeed(TELEMETER_FL), &Font_5x8);
 				ssd1306PrintInt(75, 18, "", (int32_t) getTelemeterSpeed(TELEMETER_DL), &Font_5x8);

@@ -98,12 +98,12 @@ double adxrs620Calibrate(int nb_ech)
 	return sample_sum / (double)nb_ech;
 }
 
-double GyroGetAngle(void)
+double gyroGetAngle(void)
 {
 	return gyro.current_angle;
 }
 
-void GyroResetAngle(void)
+void gyroResetAngle(void)
 {
 	gyro.current_angle = 0;
 //	adxrs620Calibrate(10);
@@ -112,11 +112,11 @@ void GyroResetAngle(void)
 void adxrs620Test(void)
 {
 	adxrs620Init();
-	GyroResetAngle();
+	gyroResetAngle();
 	while(expanderJoyFiltered()!=JOY_LEFT)
 	{
 		ssd1306ClearScreen(MAIN_AREA);
-		ssd1306PrintInt(10,  5,  "Angle =  ", (int32_t) GyroGetAngle(), &Font_5x8);
+		ssd1306PrintInt(10,  5,  "Angle =  ", (int32_t) gyroGetAngle(), &Font_5x8);
 		ssd1306PrintInt(10,  15,  "cnt =  ", (int32_t) gyro.callback_cnt/1000, &Font_5x8);
 
 		ssd1306PrintInt(10,  45,  "ADC val =  ", (int32_t) gyro.adc_value, &Font_5x8);

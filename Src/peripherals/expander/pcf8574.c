@@ -44,8 +44,7 @@ unsigned int joy_activ_old_time;
 static void sendData(uint8_t aTxBuffer)
 {
 	// I2C
-	if (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY)
-		return;
+	while (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY);
 	HAL_I2C_Master_Transmit_DMA(&hi2c1, (uint16_t)64, (uint8_t*)&aTxBuffer, 1);
 
 //	while (HAL_I2C_Master_Transmit(&hi2c1, (uint16_t)64, (uint8_t *)&aTxBuffer, 1, 1000) != HAL_OK)
@@ -66,9 +65,7 @@ static char getData(void)
 	// I2C
 	static uint8_t aRxBuffer;
 
-	if (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY)
-		return 0;
-
+	while (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY);
 	while (HAL_I2C_Master_Receive(&hi2c1, (uint16_t)65, (uint8_t *)&aRxBuffer, 1, 1000) != HAL_OK)
 	{
 		/* Error_Handler() function is called when Timout error occurs.
@@ -148,9 +145,8 @@ char expanderJoyState(void)
 }
 char expanderJoyFiltered(void)
 {
-	char joystick=expanderJoyState();
-	if (antiBounceJoystick2(joystick)==DONE)
-		return joystick;
+	if (antiBounceJoystick2(expanderJoyState())==DONE)
+		return expanderJoyState();
 	return 0;
 }
 
