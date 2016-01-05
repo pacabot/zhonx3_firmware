@@ -19,6 +19,7 @@
 
 #include "usart.h"
 #include "stm32f4xx_hal_uart.h"
+#include "stm32f4xx_hal_def.h"
 
 /* Declarations for this module */
 #include "middleware/cmdline/cmdline_parser.h"
@@ -27,7 +28,14 @@
 #define MAX_COMMAND_LEN 100 + 1
 
 /* Context of this module */
-CMDLINE_CONTEXT cmdline_ctxt;
+CMDLINE_CONTEXT cmdline_ctxt =
+{
+    NULL,   // output callback
+    FALSE,  // cmd_received flag
+    NULL,   // Pointer to command line
+    0,      // command line length
+    FALSE   // is_initialized flag
+};
 // Buffer used for Command line parser
 extern char serial_buffer[100];
 
@@ -37,6 +45,7 @@ static CMD_HANDLER *cmdline_check_cmd(const char *cmd);
 
 int cmdline_init(CMDLINE_CONTEXT *context)
 {
+#ifdef CONFIG_USE_CMDLINE
     // Initialize Command line context
     cmdline_ctxt.cmdline = serial_buffer;
     cmdline_ctxt.cmd_received = FALSE;
@@ -51,20 +60,11 @@ int cmdline_init(CMDLINE_CONTEXT *context)
         cmdline_ctxt.out = cmd_output;
     }
     cmd_displayPrompt();
-    __HAL_LOCK(&huart3);
-    // Enable interrupts on UART3
-    while (huart3.State != HAL_UART_STATE_READY);
-    huart3.ErrorCode = HAL_UART_ERROR_NONE;
 
-    /* Enable the UART Parity Error Interrupt */
-//	__HAL_UART_ENABLE_IT(&huart3, UART_IT_PE);
-
-	/* Enable the UART Error Interrupt: (Frame error, noise error, overrun error) */
-	__HAL_UART_ENABLE_IT(&huart3, UART_IT_ERR);
-
-    __HAL_UNLOCK(&huart3);
-
-    __HAL_UART_ENABLE_IT(&huart3, UART_IT_RXNE);
+    cmdline_ctxt.is_initialized = TRUE;
+#else
+    UNUSED(context);
+#endif
 
     return CMDLINE_PARSER_E_SUCCESS;
 }
@@ -86,11 +86,11 @@ int cmdline_parse(void)
     // Reset fields
     cmdline_ctxt.cmd_received = FALSE;
 
-    // Search SPACE character
+    // Search for SPACE character
     cmd_end = strchr(cmdline_ctxt.cmdline, ' ');
     if (cmd_end == NULL)
     {
-        // SPACE character not found. Search Carriage Return
+        // SPACE character not found. Search for Carriage Return
         cmd_end = strchr(cmdline_ctxt.cmdline, CMDLINE_CR);
         if (cmd_end == NULL)
         {

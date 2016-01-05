@@ -68,6 +68,11 @@ int bluetoothReceive(unsigned char *data, int length);
  */
 char *bluetoothCmd(const char *cmd);
 
+
+void bluetoothWaitReady(void);
+
+int bluetoothSetBaudrate(int baudrate, void *param);
+
 /*****************************************************************************
  * TEST FUNCTIONS
  *****************************************************************************/

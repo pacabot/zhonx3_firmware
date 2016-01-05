@@ -93,6 +93,10 @@ int wallSensorsCalibrationFront(void)
                         front_telemeters.left[i], front_telemeters.right[i]);
     }
 
+    front_telemeters.left[0]  = 4095;
+    front_telemeters.right[0] = 4095;
+    front_telemeters.left[TELEMETER_PROFILE_ARRAY_LENGTH]  = 0;
+    front_telemeters.right[TELEMETER_PROFILE_ARRAY_LENGTH] = 0;
     bluetoothPrintf("Saving Front telemeters profile into Flash memory...\n");
     // Write telemeters profiles in Flash memory
     rv = flash_write(zhonxSettings.h_flash,
@@ -151,11 +155,13 @@ int wallSensorsCalibrationDiag (void)
         move(0, -sqrtf(2 * powf(NUMBER_OF_MILLIMETER_BY_LOOP, 2)), 5, 5);
         while(hasMoveEnded() != TRUE);
 
-//        telemeter_DL_profile[i]=getTelemeterAvrg(TELEMETER_DL);
-//        telemeter_DR_profile[i]=getTelemeterAvrg(TELEMETER_DR);
         diag_telemeters.left[i]  = getTelemeterAvrg(TELEMETER_DL);
         diag_telemeters.right[i] = getTelemeterAvrg(TELEMETER_DR);
     }
+    diag_telemeters.left[0]  = 4095;
+    diag_telemeters.right[0] = 4095;
+    diag_telemeters.left[TELEMETER_PROFILE_ARRAY_LENGTH]  = 0;
+    diag_telemeters.right[TELEMETER_PROFILE_ARRAY_LENGTH] = 0;
     telemetersStop();
     motorsDriverSleep(ON);
 
@@ -163,6 +169,7 @@ int wallSensorsCalibrationDiag (void)
     for (int i = 0; i < TELEMETER_PROFILE_ARRAY_LENGTH; ++i)
     {
 //        bluetoothPrintf("%2d|%10d|%d\n",i,telemeter_DL_profile[i],telemeter_DR_profile[i]);
+        bluetoothWaitReady();
         bluetoothPrintf("%d|%d|%d\n", i,
                         diag_telemeters.left[i], diag_telemeters.right[i]);
     }

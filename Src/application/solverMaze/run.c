@@ -5,12 +5,13 @@
  *      Author: Colin
  */
 
+#include "config/basetypes.h"
+
 #include "middleware/settings/settings.h"
 
 #ifndef codeblocks
 
 #include "stm32f4xx_hal.h"
-#include "config/basetypes.h"
 
 /* peripherale inlcudes*/
 #include "peripherals/motors/motors.h"

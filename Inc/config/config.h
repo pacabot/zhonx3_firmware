@@ -96,16 +96,6 @@
 #define MM_PER_WHEEL_REV		((M_PI) * (WHEEL_DIAMETER))		//Number of millimeters per wheel revolution
 #define STEPS_PER_MM			((STEPS_PER_WHEEL_REV) / (MM_PER_WHEEL_REV))	//Number of steps per millimeter
 
-//#define DARK
-#define MEDDLE
-
-#if defined MEDDLE && defined DARK
-#error you must define only one robot
-#endif
-#if (!defined MEDDLE) && (!defined DARK)
-#error  you must define one robot
-#endif
-
 /**************************************************************************************/
 /***************                  Robot Dimensions                 ********************/
 /******** you can see also Inc/application/solverMaze.h for more properties ***********/
@@ -173,6 +163,13 @@
 #define CONFIG_EEPROM_SIZE              8192
 #define CONFIG_EEPROM_PAGE_SIZE         32
 #define CONFIG_EEPROM_MAX_PAGE_COUNT    ((CONFIG_EEPROM_SIZE) / (CONFIG_EEPROM_PAGE_SIZE))
+
+/**************************************************************************************/
+/***************                   Misc Constants                  ********************/
+/**************************************************************************************/
+// Define this variable to enable Command Line mode
+// Note: If not defined, Hexadecimal Command mode is used by default
+#define CONFIG_USE_CMDLINE
 
 #endif // __CONFIG_H__
 

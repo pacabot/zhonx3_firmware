@@ -42,6 +42,9 @@ typedef struct
 
 extern settings zhonxSettings;
 
+/* Exported Bluetooth parameters */
+extern presetParam BTpresetBaudRate;
+
 int settingsInit (void);
 void halt(void);
 #endif /* SETTING_H_ */

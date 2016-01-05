@@ -49,6 +49,8 @@ typedef struct
     char *cmdline;
     /* Length of received command */
     int cmd_len;
+    /* Flag that indicates whether context is initialized or not */
+    int is_initialized;
 } CMDLINE_CONTEXT;
 
 extern CMDLINE_CONTEXT cmdline_ctxt;

@@ -63,6 +63,7 @@ extern int	wallSensorsCalibrationDiag (void);
 extern void testFlash(void);
 extern int setMeddle(void);
 extern int setDark(void);
+extern int pidCalculator(void);
 extern void telemetersGetCalibrationValues(void);
 
 /*
@@ -124,7 +125,8 @@ const menuItem parameters_menu=
 		{
 				{"calibration front",'f',(void*)wallSensorsCalibrationFront},
 				{"calibration diag",'f',(void*)wallSensorsCalibrationDiag},
-				{"Get Calibration values", 'f', (void *)telemetersGetCalibrationValues}
+				{"Send calib values", 'f', (void *)telemetersGetCalibrationValues},
+				{"Set BT baudrate", 'p', (void *)&BTpresetBaudRate}
 		}
 };
 const menuItem peripheral_test_menu=
@@ -163,6 +165,7 @@ const menuItem control_menu=
 				{"follow the line",'f',		(void*)followLineTest},
 				{"rotate",'f',				(void*)rotateTest},
 				{"curve rotate",'f',		(void*)curveRotateTest},
+				{"PIDstep Response",'f',	(void*)pidCalculator},
 		}
 };
 
@@ -178,11 +181,6 @@ const menuItem zhonxNameMenu =
 
 const menuItem mainMenu =
 {
-//#ifdef MEDDLE
-//		"ZHONX III meddle V0.2",
-//#else
-//		"ZHONX III dark   V0.2",
-//#endif
         CONFIG_ZHONX_INFO_ADDR,
 		{
 			//	{"telemeters calibration",'f',		(void*)telemeterFrontCalibration},
@@ -204,19 +202,13 @@ int menu(const menuItem Menu)
 {
 	signed char line_screen = 1;
 	signed char line_menu = 0;
-<<<<<<< HEAD
-=======
-
-	while (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY);
-
 	// Display main menu
->>>>>>> 7343cdf04f7cef60e11e03d255793d5c7366a1c9
 	displayMenu(Menu, line_menu);
 	ssd1306InvertArea(0, MARGIN, HIGHLIGHT_LENGHT, HIGHLIGHT_HEIGHT);
 	ssd1306Refresh(MAIN_AREA);
 	while (true)
 	{
-		HAL_Delay(100);
+		HAL_Delay(50);
 		int joystick = expanderJoyFiltered();
 		killOnLowBattery();
 		switch (joystick)
@@ -325,6 +317,10 @@ int menu(const menuItem Menu)
 						(float*) Menu.line[line_menu - 2].param,
 						(float*) Menu.line[line_menu - 1].param);
 				break;
+			case 'p':
+			    modifyPresetParam(Menu.line[line_menu].name,
+                                  Menu.line[line_menu].param);
+			    break;
 			default:
 				break;
 			}
@@ -416,6 +412,7 @@ void displayMenu(const menuItem menu,int line)
 	}
 	ssd1306Refresh(MAIN_AREA);
 }
+
 int modifyBoolParam( char *param_name, unsigned char *param)
 {
 	char str[4];
@@ -559,6 +556,135 @@ int modifyLongParam( char *param_name,long *param)
 	}
 
 	return SUCCESS;
+}
+
+
+int modifyPresetParam(char *param_name, void *param)
+{
+    char str[40];
+    presetParam *preset = param;
+    int param_copy = 0;
+    int preset_val = 0;
+    int *p_preset_val;
+    int presetBufferLen = 0;
+    int *p_presetBuffer = (int *)(preset->presetBuffer);
+    int rv;
+
+    preset_val = *(p_presetBuffer);
+
+    // Check if the current value is present into the preset buffer
+    while (preset_val != -0x7FFFFFFF)
+    {
+        if (preset_val == *((int *)preset->p_value))
+        {
+            // Current value has been found into preset buffer
+            param_copy = preset_val;
+            // Keep a pointer toward the value in preset buffer
+            p_preset_val = p_presetBuffer;
+            // Don't break here, in order to count until end of the buffer
+        }
+        p_presetBuffer++;
+        presetBufferLen++;
+        preset_val = *p_presetBuffer;
+    }
+
+    // Decrement presetBufferLen by 1, as the last element is not used
+    presetBufferLen--;
+
+    if (presetBufferLen <= 0)
+    {
+        // This should never happen!
+        return ERROR;
+    }
+
+    if (param_copy == 0)
+    {
+        // Current value is not into preset buffer
+        param_copy = *((int *)preset->p_value);
+        p_presetBuffer = (int *)(preset->presetBuffer);
+        *((int *)(preset->p_value)) = *p_presetBuffer;
+    }
+    else
+    {
+        // Set back the stored pointer
+        p_presetBuffer = p_preset_val;
+    }
+
+    ssd1306ClearScreen(MAIN_AREA);
+
+    // Write the parameter name
+    ssd1306DrawString(0, 0, param_name, &Font_5x8);
+    ssd1306DrawLine(0, 9, 128, 9);
+
+    // Write parameter's current value
+    sprintf(str, "%10i", param_copy);
+    ssd1306DrawString(0, 28, str, &Font_8x8);
+    ssd1306DrawString(0, 50, "PRESS 'RIGHT' TO VALIDATE", &Font_3x6);
+    ssd1306DrawString(0, 57, "      'LEFT'  TO RETURN.", &Font_3x6);
+
+    // TODO: Draw images instead of text here
+    ssd1306DrawString(5 * 8, 20, "^", &Font_8x8);
+    ssd1306DrawString(5 * 8, 36, "v", &Font_8x8);
+
+    ssd1306Refresh(MAIN_AREA);
+
+    while (1)
+    {
+        int joystick = expanderJoyFiltered();
+
+        switch (joystick)
+        {
+            case JOY_LEFT:
+                // Exit button
+                return SUCCESS;
+
+            case JOY_UP:
+                p_presetBuffer++;
+                if ((*p_presetBuffer) == -0x7FFFFFFF)
+                {
+                    // Reset pointer to the first element of preset buffer
+                    p_presetBuffer = (int *)(preset->presetBuffer);
+                }
+                param_copy = *((int *)p_presetBuffer);
+
+                ssd1306ClearRect(0, 28, 164, 8);
+                sprintf(str, "%10i", (int) param_copy);
+                ssd1306DrawString(0, 28, str, &Font_8x8);
+                ssd1306Refresh(MAIN_AREA);
+                break;
+
+            case JOY_DOWN:
+                p_presetBuffer--;
+                if (p_presetBuffer == (int *)(preset->presetBuffer))
+                {
+                    // Set pointer to the last element of the preset buffer
+                    p_presetBuffer = &(((int *)preset->presetBuffer)[presetBufferLen]);
+                }
+                param_copy = *((int *)p_presetBuffer);
+                ssd1306ClearRect(0, 28, 164, 8);
+                sprintf(str, "%10i", (int) param_copy);
+                ssd1306DrawString(0, 28, str, &Font_8x8);
+                ssd1306Refresh(MAIN_AREA);
+                break;
+
+            case JOY_RIGHT:
+                // Validate button
+                *((int *)(preset->p_value)) = param_copy;
+                if (preset->callback != NULL)
+                {
+                    // Call the callback function
+                    preset->callback(param_copy, NULL);
+                    // TODO: Check returned value if needed
+                }
+                ssd1306Refresh(MAIN_AREA);
+                return SUCCESS;
+
+            default:
+                break;
+        }
+    }
+
+    return SUCCESS;
 }
 
 void graphMotorSettings (float *acceleration, float *maxSpeed, float *deceleration)

@@ -1,6 +1,13 @@
 #ifndef __BASETYPES_H__
 #define __BASETYPES_H__
 
+typedef struct
+{
+    void *p_value;        // Parameter to modify
+    void *presetBuffer;   // Preset buffer for the the parameter
+    int (*callback)(int param1 ,void *param2);
+} presetParam;
+
 /** This constant defines an empty pointer value */
 #ifndef null
 # define null	((void *)0)

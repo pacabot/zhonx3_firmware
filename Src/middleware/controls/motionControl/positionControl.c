@@ -94,9 +94,9 @@ int positionControlInit(void)
 	memset(&position_control, 0, sizeof(position_control_struct));
 	memset(&position_params, 0, sizeof(position_params_struct));
 
-	encoder_or_gyro_pid_instance.Kp = 200;
+	encoder_or_gyro_pid_instance.Kp = 80;
 	encoder_or_gyro_pid_instance.Ki = 0;
-	encoder_or_gyro_pid_instance.Kd = 400;
+	encoder_or_gyro_pid_instance.Kd = 2000;
 
 	position_control.position_pid.instance = &encoder_or_gyro_pid_instance;
 
@@ -156,9 +156,9 @@ int positionControlLoop(void)
 	else if (position_control.position_type == GYRO)
 	{
 		if (position_params.sign > 0)
-			position_control.current_diff_dist = (2.00 * PI * ROTATION_DIAMETER * ((GyroGetAngle()) / 360.00));
+			position_control.current_diff_dist = (2.00 * PI * ROTATION_DIAMETER * ((gyroGetAngle()) / 360.00));
 		else
-			position_control.current_diff_dist = (-2.00 * PI * ROTATION_DIAMETER * ((GyroGetAngle()) / 360.00));
+			position_control.current_diff_dist = (-2.00 * PI * ROTATION_DIAMETER * ((gyroGetAngle()) / 360.00));
 	}
 	else
 	{

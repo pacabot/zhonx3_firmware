@@ -45,6 +45,7 @@
 #include <string.h>
 
 #include "config/config.h"
+#include "config/basetypes.h"
 
 #include "peripherals/bluetooth/bluetooth.h"
 #include "peripherals/flash/flash.h"
@@ -125,15 +126,16 @@ int main(void)
     ledPowerBlink(990, 10, 0);
 	settingsInit();
 	mulimeterInit();
+	bluetoothInit();
 
     // Register Output callback
     cmd_context.out = bluetoothPrintf;
-    // Initialize Commandline module
-//    cmdline_init(&cmd_context);
+    // Initialize Command Line module
+    cmdline_init(&cmd_context);
 
     // Check if robot name is populated in Flash
     memset(zhonxName, 0, sizeof(zhonxName));
-    // Retrieve ZHONX information from flash is any
+    // Retrieve ZHONX information from flash if any
     if (zhonx_info[0] == 'Z')
     {
         strcpy(zhonxName, zhonx_info);

@@ -158,8 +158,7 @@ int move(double angle, double radius_or_distance, double max_speed, double end_s
 	//	pid_loop.start_state = FALSE; //todo optimize
 
 	encodersReset();
-
-	GyroResetAngle();
+	gyroResetAngle();
 
 	float distance;
 	float slip_compensation;
@@ -430,9 +429,9 @@ void mainControlDisplayTest(void)
 	{
 		ssd1306ClearScreen(MAIN_AREA);
 		ssd1306PrintInt(10,  5,  "speed dist =  ",(int) (speedControlGetCurrentDist() * 100), &Font_5x8);
-		ssd1306PrintInt(10,  15, "follow err =  ",(int) (wallFollowGetFollowCommand()), &Font_5x8);
+		ssd1306PrintInt(10,  15, "follow err =  ",(int) (wallFollowGetCommand()), &Font_5x8);
 		ssd1306PrintInt(10,  25, "right_dist =  ",(int) (positionControlHasMoveEnded()), &Font_5x8);
-		ssd1306PrintInt(10,  35, "gyro =  ",(int16_t) GyroGetAngle(), &Font_5x8);
+		ssd1306PrintInt(10,  35, "gyro =  ",(int16_t) gyroGetAngle(), &Font_5x8);
 		ssd1306PrintInt(10,  45, "left PWM =  ",(int16_t) transfert_function.left_motor_pwm, &Font_5x8);
 		ssd1306PrintInt(10,  55, "right PWM =  ",(int16_t) transfert_function.right_motor_pwm, &Font_5x8);
 

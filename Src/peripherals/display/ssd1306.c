@@ -131,6 +131,12 @@ static void ssd1306DrawChar(unsigned int x, unsigned int y, unsigned char c, con
 	unsigned char   col;
 	unsigned char   column[font->u8Width];
 
+	// Capitalize character if lower case is not available
+	if ((c > font->u8LastChar) && (font->u8LastChar < 128))
+	{
+	    c -= 32;
+	}
+
 	// Check if the requested character is available
 	if ((c >= font->u8FirstChar) && (c <= font->u8LastChar))
 	{
@@ -378,6 +384,11 @@ void ssd1306DrawString(unsigned int x, unsigned int y, const char *text, const F
 	unsigned char l;
 	for (l = 0; l < strlen((const char *)text); l++)
 	{
+	    // Do not send non-printable characters
+	    if ((text[l] <= 0x0E) || (text[l] == 0x7F))
+	    {
+	        continue;
+	    }
 		ssd1306DrawChar(x + (l * (font->u8Width + 1)), y, text[l], font);
 	}
 }
