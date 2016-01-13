@@ -19,7 +19,7 @@ typedef struct
 	float zp;
 }kalman_filter_params;
 
-void Kalman_filter_init (kalman_filter_params *params, float p, float q, float r);
-float Kalman_filter (kalman_filter_params *params, float value_to_filtre);
-void Kalman_filter_reset_to_value (kalman_filter_params *params, float value);
+void kalman_filter_init (kalman_filter_params *params, float p, float q, float r);
+float kalman_filter (kalman_filter_params *params, float value_to_filtre);
+void kalman_filter_reset_to_value (kalman_filter_params *params, float value);
 #endif /* KALMAN_FILTER_H_ */

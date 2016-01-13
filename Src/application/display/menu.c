@@ -100,7 +100,6 @@ const menuItem maze_menu=
 		"maze menu",
 		{
 				{"new maze",'f',		(void*)maze},
-				//			{"test maze",'f',		(void*)test_maze},
 				{"calibration",'b',		(void*)&zhonxSettings.calibration_enabled},
 				{"color finish",'b',	(void*)&zhonxSettings.color_sensor_enabled},
 				{"x finish",'i',		(void*)&zhonxSettings.maze_end_coordinate.x},
@@ -395,9 +394,9 @@ void displayMenu(const menuItem menu,int line)
 		case 'm':
 			ssd1306DrawString(115,i*MARGIN+MARGIN+1,">",&Font_3x6);
 			break;
-			//		case 'a':
-			//			sprintf(str,"%f.2",*(float*)menu.line[i+line].param);
-			//			ssd1306DrawString(110,i*MARGIN+MARGIN+1,str,&Font_3x6);
+		case 'p':
+			ssd1306PrintInt(90,MARGIN*i+MARGIN+1," ",(long)((presetParam*)menu.line[i+line].param)->p_value,&Font_3x6);
+			break;
 		}
 	}
 	uint8_t nmbr_item = 0;

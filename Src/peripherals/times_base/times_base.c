@@ -241,32 +241,12 @@ void ledBlink_IT(void)
 
 void sleep_mode_IT()//todo move this function
 {
-	int time_ = HAL_GetTick();
-//	static unsigned int count = 0;
-//	count ++;
-//	switch (count) {
-//		case 1:
-//			ssd1306ClearScreen();
-//			break;
-//		case 10:
-//			ssd1306Printf(0,0,&Font_5x8,"hello world");
-//			break;
-//		case 20:
-//			ssd1306Refresh();
-//			break;
-//		case 30:
-//			count = 0;
-//			break;
-//		default:
-//			break;
-//	}
-
-//	if((zhonxSettings.sleep_delay_s != 0) && (time_ > (joy_activ_old_time + zhonxSettings.sleep_delay_s*1000)))
-//	{
-//		int i = 0;
-//		i++;
-//		halt();
-//	}
+#ifdef KILL_WEN_UNUSED
+	if((zhonxSettings.sleep_delay_s != 0) && (HAL_GetTick() > (joy_activ_old_time + zhonxSettings.sleep_delay_s*1000)))
+	{
+		halt();
+	}
+#endif
 }
 
 void highFreq_IT(void)
