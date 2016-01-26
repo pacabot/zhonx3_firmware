@@ -14,7 +14,7 @@
 #include "config/config.h"
 #include "config/errors.h"
 
-#include <arm_math.h>
+//#include <arm_math.h>
 #include <math.h>
 #include <string.h>
 #include <stdio.h>
@@ -42,14 +42,11 @@ void bluetoothInit(void)
 
 int bluetoothSend(unsigned char *data, int length)
 {
-    // TODO: Use DMA to transmit data
-
 	return HAL_UART_Transmit_DMA(&huart3, data, length);
 }
 
 int bluetoothReceive(unsigned char *data, int length)
 {
-    // TODO: Use DMA to receive data
 	return HAL_UART_Receive_DMA(&huart3, data, length);
 }
 
@@ -99,7 +96,8 @@ void bluetoothTest(void)
 	int i = 0;
 	while(expanderJoyFiltered()!=JOY_LEFT)
 	{
-		bluetoothPrintf("hello ZHONX_III, nb send = %d\r\n", i);
+//		bluetoothPrintf("hello ZHONX_III, nb send = %d\r\n", i);
+		bluetoothPrintf("%d\r\n", i);
 		ssd1306ClearScreen(MAIN_AREA);
 		ssd1306DrawString(10, 5, "send hello ZHONX III", &Font_5x8);
 		ssd1306PrintInt(10, 15, "nb send = ", i, &Font_5x8);

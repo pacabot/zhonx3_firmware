@@ -244,17 +244,17 @@ double getTelemeterAvrg(enum telemeterName telemeter_name)
 
 double getTelemeterSpeed(enum telemeterName telemeter_name)
 {
-//	switch (telemeter_name)
-//	{
-//	case TELEMETER_DL:
-////		return getTelemeterSpeed(TELEMETER_DL);
-//	case TELEMETER_DR:
-////		return getTelemeterSpeed(TELEMETER_DR);
-//	case TELEMETER_FL:
-////		return getTelemeterSpeed(TELEMETER_FL);
-//	case TELEMETER_FR:
-////		return getTelemeterSpeed(TELEMETER_FR);
-//	}
+	switch (telemeter_name)
+	{
+	case TELEMETER_DL: //todo
+		return 0;
+	case TELEMETER_DR:
+		return 0;
+	case TELEMETER_FL:
+		return 0;
+	case TELEMETER_FR:
+		return 0;
+	}
 	return 0.00; //todo return correct error ID
 }
 
