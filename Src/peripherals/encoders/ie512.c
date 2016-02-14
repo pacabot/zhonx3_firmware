@@ -120,6 +120,7 @@ void encodersInit(void)
 	HAL_TIM_Base_Start_IT(&htim1);
 	HAL_TIM_Base_Start_IT(&htim3);
 
+	HAL_TIM_Encoder_Start(&htim1, TIM_CHANNEL_1);
 	HAL_TIM_Encoder_Start(&htim3, TIM_CHANNEL_1);
 
 	left_encoder.mot_rev_cnt = 0;

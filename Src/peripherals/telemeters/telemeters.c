@@ -244,7 +244,7 @@ double getTelemeterSpeed(enum telemeterName telemeter_name)
 {
 	switch (telemeter_name)
 	{
-	case TELEMETER_DL: //todo
+	case TELEMETER_DL: //todo add speed compute
 		return 0;
 	case TELEMETER_DR:
 		return 0;

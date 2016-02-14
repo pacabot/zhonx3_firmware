@@ -95,10 +95,10 @@ int mainControlInit(void)
 
 int mainControl_IT(void)
 {
-    if (pid_loop.start_state == FALSE)
-    {
-        return MAIN_CONTROL_E_SUCCESS;
-    }
+	if (pid_loop.start_state == FALSE)
+	{
+		return MAIN_CONTROL_E_SUCCESS;
+	}
 
 	if (control_params.line_follow_state == TRUE)
 	{
@@ -155,23 +155,18 @@ enum mainControlWallFollowType mainControlGetWallFollowType()
 
 int move(double angle, double radius_or_distance, double max_speed, double end_speed)
 {
-	//	pid_loop.start_state = FALSE; //todo optimize
+	pid_loop.start_state = FALSE; //stop contol loop
 
 	encodersReset();
 	gyroResetAngle();
 
-	float distance;
-	float slip_compensation;
-	float distance_per_wheel;
+	double distance;
 
 	speedControlSetSign((double)SIGN(radius_or_distance));
 	radius_or_distance = fabsf(radius_or_distance);
 
 	positionControlSetSign((double)SIGN(angle));
 	angle = fabsl(angle);
-
-	/* Apply the correction factor, delete function with the future gyro compensation */
-	slip_compensation = 1; //0.9;
 
 	if (lround(angle) == 0)
 	{
@@ -183,14 +178,12 @@ int move(double angle, double radius_or_distance, double max_speed, double end_s
 	else
 	{
 		move_params.moveType = CURVE;
-
-		distance_per_wheel = (2.00 * PI * ROTATION_DIAMETER * (angle / 360.00)) * slip_compensation;
 		distance = fabsf((PI * (2.00 * radius_or_distance) * (angle / 360.00)));
 
-		positionProfileCompute(distance_per_wheel, speedProfileCompute(distance, max_speed, end_speed), max_speed);
+		positionProfileCompute(angle, speedProfileCompute(distance, max_speed, end_speed), max_speed);
 	}
 
-	//	pid_loop.start_state = TRUE;
+	pid_loop.start_state = TRUE;
 	return POSITION_CONTROL_E_SUCCESS;
 }
 
@@ -220,7 +213,7 @@ double mouveGetInitialPosition(void)
  */
 int moveCell(unsigned long nb_cell, float max_speed, float end_speed)
 {
-    unsigned int i;
+	unsigned int i;
 
 	if (nb_cell == 0)
 		return POSITION_CONTROL_E_SUCCESS;
@@ -363,21 +356,21 @@ int frontCal(float max_speed)
 	float relative_dist = 0.0;
 
 	move(0, 0, 0, 0);
-//	while (wall_follow_control.succes != TRUE)
-//	{
-//		if (timeOut(1, i) == TRUE)
-//			return POSITION_CONTROL_E_ERROR;
-//		i++;
-//	}
+	//	while (wall_follow_control.succes != TRUE)
+	//	{
+	//		if (timeOut(1, i) == TRUE)
+	//			return POSITION_CONTROL_E_ERROR;
+	//		i++;
+	//	}
 
 	/**************************************************************************/
 
 	relative_dist = (getTelemeterDist(TELEMETER_FL) + getTelemeterDist(TELEMETER_FR)) / 2;
-//	if (relative_dist < MAX_DIST_FOR_ALIGN)
-//	{
-//		move(0, relative_dist - CENTER_DISTANCE, max_speed, 0);
-//		while(hasMoveEnded() != TRUE);
-//	}
+	//	if (relative_dist < MAX_DIST_FOR_ALIGN)
+	//	{
+	//		move(0, relative_dist - CENTER_DISTANCE, max_speed, 0);
+	//		while(hasMoveEnded() != TRUE);
+	//	}
 
 
 	return POSITION_CONTROL_E_SUCCESS;
@@ -548,18 +541,38 @@ void followLineTest()
 void rotateTest()
 {
 	mainControlInit();
-	//	telemetersStart();
-	motorsDriverSleep(OFF);
+	telemetersStart();
 
-	//	position_control.position_type = GYRO;
+	positionControlSetPositionType(GYRO);
 	control_params.wall_follow_state = TRUE;
 
+	//	setCellState();
 	HAL_Delay(2000);
 	move(0, 0, 0, 0);
-	moveRotateCCW90(100, 100);
+	//motorsDriverSleep(OFF);
 
-	//	while(1);
-	//	while(isEndMove() != TRUE);
+	//	position_control.position_type = GYRO;
+	control_params.wall_follow_state = FALSE;
+
+	move(-90, (HALF_CELL_LENGTH - OFFSET_DIST), 8, 8);
+
+	while(hasMoveEnded() != TRUE){
+		while(expanderJoyFiltered()!=JOY_LEFT)
+		{
+			ssd1306ClearScreen(MAIN_AREA);
+
+			ssd1306PrintInt(0, 5,  "L_DIST_REL =  ",(signed int) encoderGetDist(ENCODER_L), &Font_5x8);
+			ssd1306PrintInt(0, 25, "R_DIST_REL =  ",(signed int) encoderGetDist(ENCODER_R), &Font_5x8);
+			ssd1306DrawString(1, 53, "PRESS 'RIGHT' TO RESET REL. DIST.", &Font_3x6);
+			if (expanderJoyFiltered() == JOY_RIGHT)
+			{
+				encodersReset();
+			}
+			ssd1306Refresh(MAIN_AREA);
+			HAL_Delay(10);
+		}
+	}
+
 	//	move(0, 180, 100, 0);
 	//	while(isEndMove() != TRUE);
 	//	move(0, 0, 0, 0);

@@ -28,6 +28,6 @@ double 	positionControlGetCurrentAngle(void);
 double 	positionControlGetPositionCommand(void);
 char 	positionControlSetPositionType(enum position_type position_type);
 int 	positionControlLoop(void);
-double 	positionProfileCompute(double distance, double time, double max_speed);
+double 	positionProfileCompute(double angle, double loop_time, double max_speed);
 
 #endif

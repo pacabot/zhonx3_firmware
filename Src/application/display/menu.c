@@ -782,10 +782,10 @@ void powerOffConfirmation()
 }
 void killOnLowBattery()
 {
-	if(multimeterGetBatVoltage() < (BATTERY_LOWER_VOLTAGE_NO_LOAD)*1000)
-	{
-		tone(A2,500);
-		HAL_Delay(400);
-		halt();
-	}
+//	if(multimeterGetBatVoltage() < (BATTERY_LOWER_VOLTAGE_NO_LOAD)*1000)
+//	{
+//		tone(A2,500);
+//		HAL_Delay(400);
+//		halt();
+//	}
 }

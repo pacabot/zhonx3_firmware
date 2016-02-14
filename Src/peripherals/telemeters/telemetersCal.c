@@ -31,12 +31,14 @@
 #include "peripherals/expander/pcf8574.h"
 #include "peripherals/bluetooth/bluetooth.h"
 #include "peripherals/motors/motors.h"
+#include "peripherals/encoders/ie512.h"
 
 #include "peripherals/eeprom/24lc64.h"
 #include "peripherals/flash/flash.h"
 
 /* Middleware declarations */
 #include "middleware/controls/motionControl/mainControl.h"
+#include "middleware/math/kalman_filter.h"
 
 /* Declarations for this module */
 #include "peripherals/telemeters/telemetersCal.h"
@@ -62,23 +64,28 @@ int wallSensorsCalibrationFront(void)
     mainControlInit();
     motorsDriverSleep(OFF);
 
-    telemetersStart();
-    mainControlSetFollowType(FALSE);
+//    telemetersStart();
+    mainControlSetFollowType(NO_FOLLOW);
 
     move(0, 0, 0, 0);
-    HAL_Delay(3000);
+//    HAL_Delay(3000);
+
     // take the measures
-    for(i = 0; i < TELEMETER_PROFILE_ARRAY_LENGTH; i++)
-    {
-        front_telemeters.left[i]  = getTelemeterAvrg(TELEMETER_FL);
-        front_telemeters.right[i] = getTelemeterAvrg(TELEMETER_FR);
-
-        move(0, -NUMBER_OF_MILLIMETER_BY_LOOP, 5, 5);
-		ssd1306ProgressBar(10,10,(i*100)/TELEMETER_PROFILE_ARRAY_LENGTH);
-		ssd1306Refresh(MAIN_AREA);
-        while(hasMoveEnded() != TRUE);
-    }
-
+    move(0, -MEASURED_DISTANCE, 5, 5);
+//    for(i = 0; i < TELEMETER_PROFILE_ARRAY_LENGTH; i++)
+//    {
+//    	while((((int)(encoderGetDist(ENCODER_L) + encoderGetDist(ENCODER_R)) >= -(NUMBER_OF_MILLIMETER_BY_LOOP * 2 * i))) &&
+//    			(hasMoveEnded() != TRUE));
+//
+//        front_telemeters.left[i]  = getTelemeterAvrg(TELEMETER_FL);
+//        front_telemeters.right[i] = getTelemeterAvrg(TELEMETER_FR);
+//
+//        ssd1306ProgressBar(10,10,(i*100)/TELEMETER_PROFILE_ARRAY_LENGTH);
+//		ssd1306Refresh(MAIN_AREA);
+//
+//    	HAL_Delay(10);
+//    }
+while(hasMoveEnded() != TRUE);
     telemetersStop();
     motorsDriverSleep(ON);
 
