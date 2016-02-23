@@ -21,6 +21,10 @@
 #include "stm32f4xx_hal_uart.h"
 #include "stm32f4xx_hal_def.h"
 
+#include "peripherals/bluetooth/bluetooth.h"
+#include "peripherals/display/ssd1306.h"
+#include "peripherals/display/smallfonts.h"
+
 /* Declarations for this module */
 #include "middleware/cmdline/cmdline_parser.h"
 #include "middleware/cmdline/commands/commads.h"
@@ -85,6 +89,19 @@ int cmdline_parse(void)
 
     // Reset fields
     cmdline_ctxt.cmd_received = FALSE;
+
+    // Checks whether this is a Bluetooth event
+    if (isBluetoothEvent(cmdline_ctxt.cmdline))
+    {
+//        static int line = 0;
+//
+//        ssd1306ClearScreen(MAIN_AREA);
+//        ssd1306Printf(0, line * 6, &Font_3x6, "%s", cmdline_ctxt.cmdline);
+//        ssd1306Refresh(MAIN_AREA);
+//        line++;
+//        line %= 10;
+        return CMDLINE_PARSER_E_SUCCESS;
+    }
 
     // Search for SPACE character
     cmd_end = strchr(cmdline_ctxt.cmdline, ' ');

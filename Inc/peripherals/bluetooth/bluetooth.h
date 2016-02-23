@@ -69,9 +69,30 @@ int bluetoothReceive(unsigned char *data, int length);
 char *bluetoothCmd(const char *cmd);
 
 
+/**
+ * @brief Waits until Bluetooth UART becomes ready
+ */
 void bluetoothWaitReady(void);
 
+/**
+ * @brief Sets a new baudrate for bluetooth device communication
+ *
+ * @param baudrate
+ * @param param
+ *
+ * @return
+ */
 int bluetoothSetBaudrate(int baudrate, void *param);
+
+/**
+ * @brief Checks whether an event is a Bluetooth event or not
+ *
+ * @param evnt      The event to check
+ *
+ * @return          TRUE if evnt is a Bluetooth event
+ *                  FALSE otherwise
+ */
+int isBluetoothEvent(char *evnt);
 
 /*****************************************************************************
  * TEST FUNCTIONS
