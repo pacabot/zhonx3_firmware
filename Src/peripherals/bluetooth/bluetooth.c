@@ -64,20 +64,6 @@ presetParam BTpresetBaudRate =
 
 static inline int bluetoothInit_IT(void)
 {
-//    __HAL_LOCK(&huart3);
-
-    // Resume DMA transfer on UART3
-    // Enable interrupts on UART3
-//    while (huart3.State != HAL_UART_STATE_READY);
-    huart3.ErrorCode = HAL_UART_ERROR_NONE;
-
-    /* Enable the UART Parity Error Interrupt */
-//    __HAL_UART_ENABLE_IT(&huart3, UART_IT_PE);
-    /* Enable the UART Error Interrupt: (Frame error, noise error, overrun error) */
-    __HAL_UART_ENABLE_IT(&huart3, UART_IT_ERR);
-
-//    __HAL_UNLOCK(&huart3);
-
     __HAL_UART_ENABLE_IT(&huart3, UART_IT_RXNE);
 
     return HAL_OK;
@@ -85,24 +71,7 @@ static inline int bluetoothInit_IT(void)
 
 static inline int bluetoothDeInit_IT(void)
 {
-//    __HAL_LOCK(&huart3);
-
-    //while (huart3.State != HAL_UART_STATE_READY);
-    huart3.ErrorCode = HAL_UART_ERROR_NONE;
-
-    /* Disable the UART Parity Error Interrupt */
-//    __HAL_UART_DISABLE_IT(&huart3, UART_IT_PE);
-    /* Disable the UART Error Interrupt: (Frame error, noise error, overrun error) */
-    __HAL_UART_DISABLE_IT(&huart3, UART_IT_ERR);
-
-//    __HAL_UNLOCK(&huart3);
-
     __HAL_UART_DISABLE_IT(&huart3, UART_IT_RXNE);
-
-    // Pause DMA transfer on UART3
-//    HAL_UART_DMAPause(&huart3);
-
-    huart3.State = HAL_UART_STATE_READY;
 
     return HAL_OK;
 }
@@ -113,15 +82,6 @@ void bluetoothInit(void)
     unsigned char c;
     int rv;
 
-//    bluetoothCmd("AT+AB Version");
-
-    // Flush previously received data
-    do
-    {
-        rv = HAL_UART_Receive(&huart3, &c, 1, 200);
-    }
-    while (rv != HAL_TIMEOUT);
-
     ssd1306ClearScreen(MAIN_AREA);
     ssd1306Printf(12, 30, &Font_3x6, "%s", "Initializing Bluetooth...");
     ssd1306Refresh(MAIN_AREA);
@@ -129,22 +89,14 @@ void bluetoothInit(void)
     // Allow Remote Escape Sequence
     bluetoothCmd("AT+AB Config RmtEscapeSequence = true");
 
-//    ssd1306Printf(1, 10, &Font_3x6, "1: %s", resp);
-//    ssd1306Refresh(MAIN_AREA);
-
     // TODO: Check if this delay is necessary
     //HAL_Delay(100);
 
     // Reset the bluetooth peripheral
     bluetoothCmd("AT+AB Reset");
 
-//    ssd1306Printf(1, 20, &Font_3x6, "2: %s", resp);
-//    ssd1306Refresh(MAIN_AREA);
-
     // Initialize USART Interrupts
     bluetoothInit_IT();
-
-//    HAL_Delay(5000);
 }
 
 int bluetoothSend(unsigned char *data, int length)
@@ -189,17 +141,13 @@ char *bluetoothCmd(const char *cmd)
 
     strcpy(command, cmd);
     strcat(command, "\r\n");
-    //bluetoothSend(command, strlen(command));
-
-    // Wait until UART becomes ready
-//    while (HAL_UART_GetState(&huart3) != HAL_UART_STATE_READY);
 
     HAL_UART_Transmit(&huart3, command, strlen(command), 5000);
 
     // Wait until end of reception
     do
     {
-        rv = HAL_UART_Receive(&huart3, p_response++, 1, 2000);
+        rv = HAL_UART_Receive(&huart3, p_response++, 1, 200);
     }
     while (rv != HAL_TIMEOUT);
 
@@ -222,13 +170,6 @@ int bluetoothSetBaudrate(int baudrate, void *param)
     // Send command to Bluetooth module
     sprintf(cmd, "AT+AB ChangeBaud %i", baudrate);
     response = bluetoothCmd(cmd);
-
-    // Check Command response
-//    if (strcmp(response, "AT-AB Baudrate Changed\r\n") != 0)
-//    {
-//        // Failed to set baudrate in BT module
-//        return BLUETOOTH_DRIVER_E_ERROR;
-//    }
 
     // Set baudrate of CPU USART
     __HAL_UART_DISABLE(&huart3);
@@ -254,6 +195,15 @@ int bluetoothSetBaudrate(int baudrate, void *param)
     return rv;
 }
 
+
+int isBluetoothEvent(char *evnt)
+{
+    if (strncmp(evnt, "AT-AB ", 6) == 0)
+    {
+        return TRUE;
+    }
+    return FALSE;
+}
 
 /*****************************************************************************
  * TEST FUNCTIONS

@@ -69,6 +69,7 @@ static char zhonxName[24];
 void SystemClock_Config(void);
 
 /* USER CODE BEGIN PFP */
+static inline void blockingPrintf(const char *format, ...);
 
 /* USER CODE END PFP */
 
@@ -76,6 +77,12 @@ void SystemClock_Config(void);
 #include "main.h"
 extern const menuItem mainMenu;
 extern const menuItem zhonxNameMenu;
+
+static inline void blockingPrintf(const char *format, ...)
+{
+    bluetoothPrintf(format);
+    bluetoothWaitReady();
+}
 
 /* USER CODE END 0 */
 
@@ -129,7 +136,7 @@ int main(void)
 	bluetoothInit();
 
     // Register Output callback
-    cmd_context.out = bluetoothPrintf;
+    cmd_context.out = blockingPrintf;
     // Initialize Command Line module
     cmdline_init(&cmd_context);
 

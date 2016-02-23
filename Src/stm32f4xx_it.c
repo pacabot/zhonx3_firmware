@@ -344,6 +344,8 @@ void DMA2_Stream0_IRQHandler(void)
 
 /* USER CODE BEGIN 1 */
 
+#ifdef CONFIG_USE_CMDLINE
+// Command Line mode enabled
 static inline void parseReceivedByte(void)
 {
     static char   *pBuffer = serial_buffer;
@@ -351,8 +353,6 @@ static inline void parseReceivedByte(void)
 
     // Get the character received
     c = (uint16_t) (huart3.Instance->DR & (uint16_t) 0x01FF);
-
-#ifdef CONFIG_USE_CMDLINE
 
     if (cmdline_ctxt.is_initialized == FALSE)
     {
@@ -362,45 +362,144 @@ static inline void parseReceivedByte(void)
     // Command Line mode is enabled
     switch (c)
     {
-//        case CMDLINE_CR:
-//            // Carriage Return
-//            cmdline_ctxt.cmd_len = (pBuffer - serial_buffer) + 1;
-//            cmdline_ctxt.cmd_received = TRUE;
-//            *pBuffer = c;
-//            pBuffer = serial_buffer;
-//            return;
-//
-//        case CMDLINE_LF:
-//            // Line Feed
-//            pBuffer = serial_buffer;
-//            break;
-//
-//        case CMDLINE_BS:
-//            // Backspace
-//            if (pBuffer == serial_buffer)
-//            {
+        case CMDLINE_CR:
+            // Carriage Return
+            cmdline_ctxt.cmd_len = (pBuffer - serial_buffer) + 1;
+            cmdline_ctxt.cmd_received = TRUE;
+            *pBuffer = c;
+            pBuffer = serial_buffer;
+            return;
+
+        case CMDLINE_LF:
+            // Line Feed
+            pBuffer = serial_buffer;
+            break;
+
+        case CMDLINE_BS:
+            // Backspace
+            if (pBuffer == serial_buffer)
+            {
 //                HAL_UART_Transmit(&huart3, (unsigned char *) "\x07", 1,
-//                        100);
-//            }
-//            else
-//            {
+//                        10);
+            }
+            else
+            {
 //                HAL_UART_Transmit(&huart3, (unsigned char *) "\x08\x7F",
-//                        2, 100);
-//                pBuffer--;
-//            }
-//            break;
+//                        2, 20);
+                pBuffer--;
+            }
+            break;
 
         default:
-            /* Echo received character */
-//            HAL_UART_Transmit(&huart3, &c, 1, 100);
-//            *pBuffer = c;
-//            pBuffer++;
+            *pBuffer = c;
+            pBuffer++;
             break;
     }
-#else
-            // TODO: Hexadecimal Command mode
-#endif
 }
+
+#else
+
+// States used by the state machine
+#define CMD_STATE_WAIT_STX              0
+#define CMD_STATE_WAIT_LEN_MSB          1
+#define CMD_STATE_WAIT_LEN_LSB          2
+#define CMD_STATE_WAIT_INSTRUCTION      3
+#define CMD_STATE_WAIT_DATA             4
+
+#define CMD_STX                 0x02
+#define CMD_ETX                 0x03
+
+// Hexadecimal Command mode enabled
+static inline void parseReceivedByte(void)
+{
+    static char   *pBuffer = serial_buffer;
+    unsigned char c;
+    static int    catch_BT_events = TRUE;
+    static int    cmd_state = CMD_STATE_WAIT_STX;
+    static int    cmd_len = 0;
+
+    // Get the character received
+    c = (uint16_t) (huart3.Instance->DR & (uint16_t) 0x01FF);
+
+    // Bluetooth events manager
+    if (catch_BT_events == TRUE)
+    {
+        switch (c)
+        {
+            case CMDLINE_CR:
+                // Carriage Return
+                cmdline_ctxt.cmd_len = (pBuffer - serial_buffer) + 1;
+                cmdline_ctxt.cmd_received = TRUE;
+                *pBuffer = c;
+                pBuffer = serial_buffer;
+                return;
+
+            case CMDLINE_LF:
+                // Line Feed
+                pBuffer = serial_buffer;
+                break;
+
+            default:
+                *pBuffer = c;
+                pBuffer++;
+                break;
+        }
+    }
+
+    // State machine
+    switch(cmd_state)
+    {
+        // Receive STX
+        case CMD_STATE_WAIT_STX:
+            if (c == CMD_STX)
+            {
+                cmd_state = CMD_STATE_WAIT_LEN_MSB;
+                // Disable bluetooth events manager
+                catch_BT_events = FALSE;
+            }
+            break;
+
+        // Receive length - MSB
+        case CMD_STATE_WAIT_LEN_MSB:
+            *pBuffer = c;
+            pBuffer++;
+            cmd_len = (c << 8);
+            cmd_state = CMD_STATE_WAIT_LEN_LSB;
+            break;
+
+        // Receive length - LSB
+        case CMD_STATE_WAIT_LEN_LSB:
+            *pBuffer = c;
+            pBuffer++;
+            cmd_len |= c;
+            cmd_state = CMD_STATE_WAIT_INSTRUCTION;
+            break;
+
+        // Receive instruction
+        case CMD_STATE_WAIT_INSTRUCTION:
+            *pBuffer = c;
+            pBuffer++;
+            cmd_state = CMD_STATE_WAIT_DATA;
+            break;
+
+        // Receive data
+        case CMD_STATE_WAIT_DATA:
+            *pBuffer = c;
+            pBuffer++;
+            cmd_len--;
+            if (cmd_len == 0)
+            {
+                // TODO: Set command received flag
+
+                // Enable bluetooth events manager
+                catch_BT_events = TRUE;
+                // Reset state machine
+                cmd_state = CMD_STATE_WAIT_STX;
+            }
+            break;
+    }
+}
+#endif
 
 /* USER CODE END 1 */
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

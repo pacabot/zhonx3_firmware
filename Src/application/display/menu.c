@@ -210,7 +210,7 @@ int menu(const menuItem Menu)
 	{
 		HAL_Delay(50);
 		int joystick = expanderJoyFiltered();
-		killOnLowBattery();
+//		killOnLowBattery();
 		switch (joystick)
 		{
 		case JOY_LEFT:
@@ -640,12 +640,12 @@ int modifyPresetParam(char *param_name, void *param)
 
             case JOY_UP:
                 p_presetBuffer++;
-                if ((*p_presetBuffer) == -0x7FFFFFFF)
+                if (*p_presetBuffer == -0x7FFFFFFF)
                 {
                     // Reset pointer to the first element of preset buffer
                     p_presetBuffer = (int *)(preset->presetBuffer);
                 }
-                param_copy = *((int *)p_presetBuffer);
+                param_copy = *p_presetBuffer;
 
                 ssd1306ClearRect(0, 28, 164, 8);
                 sprintf(str, "%10i", (int) param_copy);
@@ -660,9 +660,9 @@ int modifyPresetParam(char *param_name, void *param)
                     // Set pointer to the last element of the preset buffer
                     p_presetBuffer = &(((int *)preset->presetBuffer)[presetBufferLen]);
                 }
-                param_copy = *((int *)p_presetBuffer);
+                param_copy = *(p_presetBuffer);
                 ssd1306ClearRect(0, 28, 164, 8);
-                sprintf(str, "%10i", (int) param_copy);
+                sprintf(str, "%10i", param_copy);
                 ssd1306DrawString(0, 28, str, &Font_8x8);
                 ssd1306Refresh(MAIN_AREA);
                 break;
