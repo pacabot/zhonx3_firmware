@@ -131,6 +131,7 @@ extern ADC_HandleTypeDef hadc3;
 
 void telemetersInit(void)
 {
+	  HAL_SYSTICK_Config(HAL_RCC_GetHCLKFreq()/1000000);
 	//	ADC_InjectionConfTypeDef sConfigInjected;
 	HAL_ADC_Stop_IT(&hadc2);
 	HAL_ADC_Stop_IT(&hadc3);
@@ -276,7 +277,7 @@ void telemetersAdc3Start(void)
 void telemeters_IT(void)
 {
 	if (telemeters.active_state == FALSE)
-		return;
+		goto end;
 
 	telemeters.selector++;
 
@@ -297,23 +298,23 @@ void telemeters_IT(void)
 	{
 	case 1:
 		HAL_GPIO_WritePin(GPIOB, TX_FL, SET);
-		return;
+		goto end;
 	case 2:
 		telemeters.FL.isActivated = TX_ON;
 		sConfig.Channel = RX_FL;
 		telemetersAdc2Start();
-		return;
+		goto end;
 	case 3:
 		HAL_GPIO_WritePin(GPIOB, TX_FR, SET);
-		return;
+		goto end;
 	case 4:
 		telemeters.FR.isActivated = TX_ON;
 		sConfig.Channel = RX_FR;
 		telemetersAdc2Start();
-		return;
+		goto end;
 	case 5:
 		HAL_GPIO_WritePin(GPIOB, TX_DUAL_DIAG, SET);
-		return;
+		goto end;
 	case 6:
 		telemeters.DL.isActivated = TX_ON;
 		sConfig.Channel = RX_DL;
@@ -321,19 +322,19 @@ void telemeters_IT(void)
 		telemeters.DR.isActivated = TX_ON;
 		sConfig.Channel = RX_DR;
 		telemetersAdc3Start();
-		return;
+		goto end;
 	case 7:
-		return;
+		goto end;
 	case 8:
 		telemeters.FR.isActivated = TX_OFF;
 		sConfig.Channel = RX_FR;
 		telemetersAdc2Start();
-		return;
+		goto end;
 	case 9:
 		telemeters.FL.isActivated = TX_OFF;
 		sConfig.Channel = RX_FL;
 		telemetersAdc2Start();
-		return;
+		goto end;
 	case 10:
 		telemeters.DL.isActivated = TX_OFF;
 		sConfig.Channel = RX_DL;
@@ -341,8 +342,10 @@ void telemeters_IT(void)
 		telemeters.DR.isActivated = TX_OFF;
 		sConfig.Channel = RX_DR;
 		telemetersAdc3Start();
-		return;
+		goto end;
 	}
+	end :
+	return;
 }
 
 void telemeters_ADC2_IT(void)
