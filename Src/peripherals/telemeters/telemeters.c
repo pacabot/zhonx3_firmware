@@ -131,7 +131,6 @@ extern ADC_HandleTypeDef hadc3;
 
 void telemetersInit(void)
 {
-	  HAL_SYSTICK_Config(HAL_RCC_GetHCLKFreq()/1000000);
 	//	ADC_InjectionConfTypeDef sConfigInjected;
 	HAL_ADC_Stop_IT(&hadc2);
 	HAL_ADC_Stop_IT(&hadc3);

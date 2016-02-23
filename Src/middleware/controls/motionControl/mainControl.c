@@ -90,6 +90,8 @@ int mainControlInit(void)
 	control_params.wall_follow_state = 0;
 	control_params.line_follow_state = 0;
 
+	move(0, 0, 0, 0);
+
 	return MAIN_CONTROL_E_SUCCESS;
 }
 
@@ -103,7 +105,9 @@ int mainControl_IT(void)
 	if (control_params.line_follow_state == TRUE)
 	{
 		lineFollowControlLoop();
-		control_params.wall_follow_state = FALSE;
+		speedControlLoop();
+		transfertFunctionLoop();
+		return 0;
 	}
 	else if (control_params.wall_follow_state == TRUE)
 	{
@@ -544,17 +548,13 @@ void rotateTest()
 	telemetersStart();
 
 	positionControlSetPositionType(GYRO);
-	control_params.wall_follow_state = TRUE;
+	mainControlSetFollowType(NO_FOLLOW);
 
-	//	setCellState();
 	HAL_Delay(2000);
-	move(0, 0, 0, 0);
-	//motorsDriverSleep(OFF);
+	motorsDriverSleep(OFF);
 
-	//	position_control.position_type = GYRO;
-	control_params.wall_follow_state = FALSE;
-
-	move(-90, (HALF_CELL_LENGTH - OFFSET_DIST), 8, 8);
+	move(-90, 0, 8, 8);
+	//move(-90, (HALF_CELL_LENGTH - OFFSET_DIST), 8, 8);
 
 	while(hasMoveEnded() != TRUE){
 		while(expanderJoyFiltered()!=JOY_LEFT)

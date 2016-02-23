@@ -65,7 +65,9 @@ extern int setMeddle(void);
 extern int setDark(void);
 extern int pidCalculator(void);
 extern void telemetersGetCalibrationValues(void);
-
+extern void lineSensorSendBluetooth(void);
+extern int _Factor;
+extern int _KP;
 /*
  * to create a new menu you have to create a new variable of type "const menuItem" like this :
  * const menuItem name =
@@ -114,6 +116,9 @@ const menuItem follower_menu=
 		{
 				{"line follower",'f',	(void*)lineFollower},
 				{"calibration",'f',		(void*)lineSensorsCalibration},
+				//{"Sensor Bluetooth",'f', (void*)lineSensorSendBluetooth},
+				{"Set Factor",'i', (void*)&_Factor},
+				{"Set Factor KP",'i', (void*)&_KP},
 		}
 };
 
