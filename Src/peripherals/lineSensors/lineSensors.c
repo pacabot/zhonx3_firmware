@@ -187,7 +187,7 @@ void lineSensors_ADC_IT(ADC_HandleTypeDef *hadc)
 		lineSensors.left.average_value = (lineSensors.left.average_value + lineSensors.left.adc_value)/2;
 		lineSensors.active_ADC2	= FALSE;
 	}
-	else
+	if (hadc == &hadc3)
 	{
 		lineSensors.left_ext.adc_value  	= HAL_ADCEx_InjectedGetValue(&hadc3, ADC_INJECTED_RANK_1);
 		lineSensors.front.adc_value 		= HAL_ADCEx_InjectedGetValue(&hadc3, ADC_INJECTED_RANK_2);

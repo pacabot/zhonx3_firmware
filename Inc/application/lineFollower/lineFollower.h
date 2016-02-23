@@ -16,27 +16,28 @@ typedef struct
 }line_follower_struct;
 extern line_follower_struct line_follower;
 
-#define MAXTAB 5000
+#define MAXTAB 4500
 #define LEFTEXT 1
-#define LEFT 2
-#define FRONT 3
-#define RIGHT 4
+#define LEFT_ 2
+#define FRONT_ 3
+#define RIGHT_ 4
 #define RIGHTEXT 5
 
-#define MAXSPEED 800
-#define MINSPEED 500
+#define MAXSPEED 600
+#define MINSPEED 100
 #define SPEED_COEFF 1.00
 
 typedef struct
 {
-	int left;
-	int front;
-	int right;
-	int leftExt;
-	int rightExt;
+	unsigned short int left;
+	unsigned short int front;
+	unsigned short int right;
+	unsigned short int leftExt;
+	unsigned short int rightExt;
 } ground_sensors_struct;
 
 void lineSensorsCalibration(void);
+int EstAGauche();
 void lineFollower(void);
 void lineFollower_IT(void);
 void controlLoop(void);

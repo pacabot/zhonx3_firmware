@@ -81,7 +81,9 @@ int mainControlLoop(void)
 	if (control_params.line_follow_state == TRUE)
 	{
 		lineFollowControlLoop();
-		control_params.wall_follow_state = FALSE;
+		speedControlLoop();
+		transfertFunctionLoop();
+		return 0;
 	}
 	else if (control_params.wall_follow_state == TRUE)
 	{
