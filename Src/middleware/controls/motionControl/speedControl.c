@@ -52,9 +52,9 @@ typedef struct
 	double decel_dist;
 	double accel_dist_per_loop;
 	double decel_dist_per_loop;
-	double nb_loop_accel;
-	double nb_loop_decel;
-	double nb_loop_maint;
+	int nb_loop_accel;
+	int nb_loop_decel;
+	int nb_loop_maint;
 	double maintain_dist;
 	double sign;
 }speed_params_struct;
@@ -63,6 +63,9 @@ typedef struct
 
 typedef struct
 {
+	int    nb_loop_accel;
+	int    nb_loop_maint;
+	int    nb_loop_decel;
 	double current_distance;			//distance (mm) since the control start
 	double gap_distance_per_loop;	//distance between two control loop call
 	double current_distance_consign;		//distance consign for current loop
@@ -93,9 +96,9 @@ int speedControlInit(void)
 	memset(&speed_control, 0, sizeof(speed_control_struct));
 	memset(&speed_params, 0, sizeof(speed_params_struct));
 
-	encoder_pid_instance.Kp = 400;//400
-	encoder_pid_instance.Ki = 0;
-	encoder_pid_instance.Kd = 400;
+	encoder_pid_instance.Kp = 638.00;
+	encoder_pid_instance.Ki = 0,02666 / 1000.00;
+	encoder_pid_instance.Kd = 0,00666 * 1000.00;
 
 	speed_control.speed_pid.instance = &encoder_pid_instance;
 
@@ -136,33 +139,32 @@ int speedControlLoop(void)
 
 	//	speedCompute();
 
-	if (speed_params.nb_loop_accel > 0.00)
+	if (speed_control.nb_loop_accel < speed_params.nb_loop_accel)
 	{
-		speed_params.nb_loop_accel--;
+		speed_control.nb_loop_accel++;
 		speed_control.speed_consign += speed_params.accel_dist_per_loop;
 		speed_control.current_distance_consign += speed_control.speed_consign;
 	}
-	else if (speed_params.nb_loop_maint > 0.00)//(speed_control.current_distance < (speed_params.accel_dist + speed_params.maintain_dist)))//speed_params.nb_loop_maint > 0))//speed_control.current_distance < (speed_params.accel_dist + speed_params.maintain_dist)))
+	else if (speed_control.nb_loop_maint < speed_params.nb_loop_maint)
 	{
-		speed_params.nb_loop_maint--;
+		speed_control.nb_loop_maint++;
 		speed_control.current_distance_consign += speed_control.speed_consign;
 	}
-	else if (speed_params.nb_loop_decel > 0.00)
+	else if (speed_control.nb_loop_decel < speed_params.nb_loop_decel)
 	{
-		speed_params.nb_loop_decel--;
+		speed_control.nb_loop_decel++;
 		speed_control.speed_consign -= speed_params.decel_dist_per_loop;
 		speed_control.current_distance_consign += speed_control.speed_consign;
 	}
-	else if (speed_params.nb_loop_decel <= 0.00)
+	else if (speed_params.nb_loop_decel <= 0)
 	{
-		speed_control.current_distance_consign = speed_params.distance_consign;
 		speed_control.end_control = TRUE;
 	}
 
 	speed_control.speed_error = speed_control.current_distance_consign - speed_control.current_distance;		//for distance control
 	speed_control.speed_command = pidController(speed_control.speed_pid.instance, speed_control.speed_error) * (float)speed_params.sign;
 
-//	bluetoothPrintf("speed error: %d \r\n", (int)(speed_control.speed_error * 100.00));
+	//bluetoothPrintf("speed error: %d \r\n", (int)(speed_control.speed_error * 100.00));
 
 	speed_control.old_distance = speed_control.current_distance;
 
@@ -181,9 +183,9 @@ int speedCompute(void)
 /*!
  ***BASICS FORMULAS***
 
-		      ___   _________
-			 / 2 x / Acc x d
-		t = v_____v__________	//without initial speed
+		      _____________
+			 / 2 x  Acc x d
+		t = v______________	//without initial speed
 				  Acc
 
 			        __________________
@@ -236,27 +238,29 @@ int speedCompute(void)
 /**************************************************************************/
 double speedProfileCompute(double distance, double max_speed, double end_speed)
 {
-	static int i = 0; // debug variable
 	char str[50];
 	speed_params.end_speed  = end_speed;
 	speed_params.max_speed 	= max_speed;
 	speed_params.accel 		= MAX_ACCEL;
 	speed_params.decel 		= MAX_ACCEL;
 
-	speed_control.current_distance 	= 0;
+	speed_control.nb_loop_accel 			= 0;
+	speed_control.nb_loop_maint 			= 0;
+	speed_control.nb_loop_decel 			= 0;
+	speed_control.current_distance 			= 0;
 	speed_control.gap_distance_per_loop 	= 0;
 	speed_control.current_distance_consign 	= 0;
-	speed_control.old_distance 		= 0;
-	speed_control.current_speed 	= 0;
-	speed_control.end_control 		= 0;
-	speed_control.speed_error 		= 0;
-	speed_control.speed_command 	= 0;
-	speed_control.speed_consign 	= 0;
+	speed_control.old_distance 				= 0;
+	speed_control.current_speed 			= 0;
+	speed_control.end_control 				= FALSE;
+	speed_control.speed_error 				= 0;
+	speed_control.speed_command 			= 0;
+	speed_control.speed_consign 			= 0;
 
 	if (lround(distance) == 0)
 	{
 		speed_params.initial_speed = 0;
-		speed_control.end_control = 1;
+		speed_control.end_control = TRUE;
 		speed_params.nb_loop_accel = 0;
 		speed_params.nb_loop_decel = 0;
 		speed_params.nb_loop_maint = 0;
@@ -265,8 +269,8 @@ double speedProfileCompute(double distance, double max_speed, double end_speed)
 		return 0.0;
 	}
 
-	speed_params.accel_dist = 0.5 * (( (-1.0 * pow(speed_params.initial_speed, 2)) + pow(speed_params.max_speed, 2)) / speed_params.accel);
-	speed_params.decel_dist = -0.5 * ((speed_params.end_speed - speed_params.max_speed) * (speed_params.end_speed + speed_params.max_speed)) / speed_params.decel;
+	speed_params.accel_dist = 0.50 * (( (-1.00 * pow(speed_params.initial_speed, 2)) + pow(speed_params.max_speed, 2)) / speed_params.accel);
+	speed_params.decel_dist = -0.50 * ((speed_params.end_speed - speed_params.max_speed) * (speed_params.end_speed + speed_params.max_speed)) / speed_params.decel;
 
 	speed_params.accel_dist_per_loop = speed_params.accel / pow(HI_TIME_FREQ, 2);
 	speed_params.decel_dist_per_loop = speed_params.decel / pow(HI_TIME_FREQ, 2);
@@ -282,13 +286,11 @@ double speedProfileCompute(double distance, double max_speed, double end_speed)
 		clipping_ratio =  (distance / (speed_params.accel_dist + speed_params.decel_dist));
 		speed_params.accel_dist *= clipping_ratio;
 		speed_params.decel_dist *= clipping_ratio;
-		speed_params.max_speed  = sqrt(pow(speed_params.initial_speed, 2) + 2.0 * speed_params.accel * speed_params.accel_dist);
+		speed_params.max_speed  = sqrt(pow(speed_params.initial_speed, 2) + 2.00 * speed_params.accel * speed_params.accel_dist);
 	}
 
-	speed_params.nb_loop_accel = (((-1.0 * speed_params.initial_speed) + sqrt(pow(speed_params.initial_speed, 2) +
-			2.0 * speed_params.accel * speed_params.accel_dist )) / speed_params.accel) * HI_TIME_FREQ;
-	speed_params.nb_loop_decel = (((speed_params.max_speed) - sqrt(pow(speed_params.max_speed, 2) -
-			2.0 * speed_params.decel * speed_params.decel_dist )) / speed_params.decel) * HI_TIME_FREQ;
+	speed_params.nb_loop_accel = (((-1.00 * speed_params.initial_speed) + sqrt(pow(speed_params.initial_speed, 2) + 2.00 * speed_params.accel * speed_params.accel_dist )) / speed_params.accel) * HI_TIME_FREQ;
+	speed_params.nb_loop_decel = (((speed_params.max_speed) - sqrt(pow(speed_params.max_speed, 2) - 2.00 * speed_params.decel * speed_params.decel_dist )) / speed_params.decel) * HI_TIME_FREQ;
 
 	if ((speed_params.accel_dist + speed_params.decel_dist) > distance)
 	{
@@ -298,7 +300,9 @@ double speedProfileCompute(double distance, double max_speed, double end_speed)
 	else
 	{
 		speed_params.maintain_dist = distance - (speed_params.accel_dist + speed_params.decel_dist);
-		speed_params.nb_loop_maint = ((speed_params.maintain_dist / speed_params.max_speed) * HI_TIME_FREQ);
+		speed_params.nb_loop_maint = ((speed_params.maintain_dist /
+				(speed_params.initial_speed + (speed_params.accel * ((double)speed_params.nb_loop_accel / HI_TIME_FREQ)))) * //compute Speed
+				HI_TIME_FREQ);
 	}
 
 	speed_params.initial_speed = speed_params.initial_speed + (((speed_params.nb_loop_accel / HI_TIME_FREQ) * speed_params.accel) -
@@ -306,12 +310,9 @@ double speedProfileCompute(double distance, double max_speed, double end_speed)
 
 	speed_params.distance_consign = distance;
 
-	double result;
-	result = ((speed_params.nb_loop_accel + speed_params.nb_loop_decel + speed_params.nb_loop_maint)) / HI_TIME_FREQ;
+	double move_loop_time = (speed_params.nb_loop_accel + speed_params.nb_loop_decel + speed_params.nb_loop_maint);
 //	bluetoothPrintf("nombre de deplacement: %d,nb_loop_accel = %d, nb_loop_decel = %d, nb_loop_maint = %d \r\n", i, (int)speed_params.nb_loop_accel, (int)speed_params.nb_loop_decel, (int)speed_params.nb_loop_maint);
-
-	i++;
-	return result;
+	return move_loop_time;
 }
 
 double speedMaintainCompute(void)

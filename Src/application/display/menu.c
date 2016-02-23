@@ -65,7 +65,9 @@ extern int setMeddle(void);
 extern int setDark(void);
 extern int pidCalculator(void);
 extern void telemetersGetCalibrationValues(void);
-
+extern void lineSensorSendBluetooth(void);
+extern int _Factor;
+extern int _KP;
 /*
  * to create a new menu you have to create a new variable of type "const menuItem" like this :
  * const menuItem name =
@@ -100,7 +102,6 @@ const menuItem maze_menu=
 		"maze menu",
 		{
 				{"new maze",'f',		(void*)maze},
-				//			{"test maze",'f',		(void*)test_maze},
 				{"calibration",'b',		(void*)&zhonxSettings.calibration_enabled},
 				{"color finish",'b',	(void*)&zhonxSettings.color_sensor_enabled},
 				{"x finish",'i',		(void*)&zhonxSettings.maze_end_coordinate.x},
@@ -115,6 +116,9 @@ const menuItem follower_menu=
 		{
 				{"line follower",'f',	(void*)lineFollower},
 				{"calibration",'f',		(void*)lineSensorsCalibration},
+				//{"Sensor Bluetooth",'f', (void*)lineSensorSendBluetooth},
+				{"Set Factor",'i', (void*)&_Factor},
+				{"Set Factor KP",'i', (void*)&_KP},
 		}
 };
 
@@ -395,9 +399,9 @@ void displayMenu(const menuItem menu,int line)
 		case 'm':
 			ssd1306DrawString(115,i*MARGIN+MARGIN+1,">",&Font_3x6);
 			break;
-			//		case 'a':
-			//			sprintf(str,"%f.2",*(float*)menu.line[i+line].param);
-			//			ssd1306DrawString(110,i*MARGIN+MARGIN+1,str,&Font_3x6);
+		case 'p':
+			ssd1306PrintInt(90,MARGIN*i+MARGIN+1," ",(long)((presetParam*)menu.line[i+line].param)->p_value,&Font_3x6);
+			break;
 		}
 	}
 	uint8_t nmbr_item = 0;
@@ -783,10 +787,10 @@ void powerOffConfirmation()
 }
 void killOnLowBattery()
 {
-	if(multimeterGetBatVoltage() < (BATTERY_LOWER_VOLTAGE_NO_LOAD)*1000)
-	{
-		tone(A2,500);
-		HAL_Delay(400);
-		halt();
-	}
+//	if(multimeterGetBatVoltage() < (BATTERY_LOWER_VOLTAGE_NO_LOAD)*1000)
+//	{
+//		tone(A2,500);
+//		HAL_Delay(400);
+//		halt();
+//	}
 }

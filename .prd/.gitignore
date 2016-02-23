@@ -1,0 +1,23 @@
+# Les ligne commençant par '#' sont des commentaires.
+# Ignorer tous les fichiers eclipse
+.project
+.cproject
+.project
+/.settings/
+/.settings/*
+*.xml
+*.elf
+*.map
+
+# Ignorer tous les fichiers intermédiares de construction
+*.o
+*.a
+*.so
+
+*~
+*.swp
+*.swo
+*.orig
+/Debug/
+/Release/
+

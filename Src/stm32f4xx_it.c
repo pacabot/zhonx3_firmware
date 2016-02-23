@@ -4,7 +4,7 @@
   * @brief   Interrupt Service Routines.
   ******************************************************************************
   *
-  * COPYRIGHT(c) 2015 STMicroelectronics
+  * COPYRIGHT(c) 2016 STMicroelectronics
   *
   * Redistribution and use in source and binary forms, with or without modification,
   * are permitted provided that the following conditions are met:
@@ -60,7 +60,6 @@ extern ADC_HandleTypeDef hadc2;
 extern ADC_HandleTypeDef hadc3;
 extern DMA_HandleTypeDef hdma_i2c1_tx;
 extern DMA_HandleTypeDef hdma_i2c1_rx;
-extern RTC_HandleTypeDef hrtc;
 extern TIM_HandleTypeDef htim1;
 extern TIM_HandleTypeDef htim2;
 extern TIM_HandleTypeDef htim3;
@@ -68,7 +67,6 @@ extern TIM_HandleTypeDef htim4;
 extern TIM_HandleTypeDef htim5;
 extern TIM_HandleTypeDef htim6;
 extern TIM_HandleTypeDef htim7;
-extern TIM_HandleTypeDef htim10;
 extern DMA_HandleTypeDef hdma_usart3_rx;
 extern DMA_HandleTypeDef hdma_usart3_tx;
 extern UART_HandleTypeDef huart3;
@@ -100,20 +98,6 @@ void SysTick_Handler(void)
 /******************************************************************************/
 
 /**
-* @brief This function handles RTC Wakeup interrupt through the EXTI Line22 interrupt.
-*/
-void RTC_WKUP_IRQHandler(void)
-{
-  /* USER CODE BEGIN RTC_WKUP_IRQn 0 */
-
-  /* USER CODE END RTC_WKUP_IRQn 0 */
-  HAL_RTCEx_WakeUpTimerIRQHandler(&hrtc);
-  /* USER CODE BEGIN RTC_WKUP_IRQn 1 */
-
-  /* USER CODE END RTC_WKUP_IRQn 1 */
-}
-
-/**
 * @brief This function handles RCC global interrupt.
 */
 void RCC_IRQHandler(void)
@@ -127,7 +111,7 @@ void RCC_IRQHandler(void)
 }
 
 /**
-* @brief This function handles DMA1 Stream1 global interrupt.
+* @brief This function handles DMA1 stream1 global interrupt.
 */
 void DMA1_Stream1_IRQHandler(void)
 {
@@ -141,7 +125,7 @@ void DMA1_Stream1_IRQHandler(void)
 }
 
 /**
-* @brief This function handles DMA1 Stream3 global interrupt.
+* @brief This function handles DMA1 stream3 global interrupt.
 */
 void DMA1_Stream3_IRQHandler(void)
 {
@@ -155,7 +139,7 @@ void DMA1_Stream3_IRQHandler(void)
 }
 
 /**
-* @brief This function handles DMA1 Stream5 global interrupt.
+* @brief This function handles DMA1 stream5 global interrupt.
 */
 void DMA1_Stream5_IRQHandler(void)
 {
@@ -169,7 +153,7 @@ void DMA1_Stream5_IRQHandler(void)
 }
 
 /**
-* @brief This function handles DMA1 Stream6 global interrupt.
+* @brief This function handles DMA1 stream6 global interrupt.
 */
 void DMA1_Stream6_IRQHandler(void)
 {
@@ -199,7 +183,7 @@ void ADC_IRQHandler(void)
 }
 
 /**
-* @brief This function handles TIM1 Update interrupt and TIM10 global interrupt.
+* @brief This function handles TIM1 update interrupt and TIM10 global interrupt.
 */
 void TIM1_UP_TIM10_IRQHandler(void)
 {
@@ -207,7 +191,6 @@ void TIM1_UP_TIM10_IRQHandler(void)
 
   /* USER CODE END TIM1_UP_TIM10_IRQn 0 */
   HAL_TIM_IRQHandler(&htim1);
-  HAL_TIM_IRQHandler(&htim10);
   /* USER CODE BEGIN TIM1_UP_TIM10_IRQn 1 */
 
   /* USER CODE END TIM1_UP_TIM10_IRQn 1 */
@@ -265,9 +248,7 @@ void USART3_IRQHandler(void)
   uint32_t      uart_it_flag;
 
   /* USER CODE END USART3_IRQn 0 */
-
   HAL_UART_IRQHandler(&huart3);
-
   /* USER CODE BEGIN USART3_IRQn 1 */
 
   // Get UART flags
@@ -329,7 +310,7 @@ void TIM7_IRQHandler(void)
 }
 
 /**
-* @brief This function handles DMA2 Stream0 global interrupt.
+* @brief This function handles DMA2 stream0 global interrupt.
 */
 void DMA2_Stream0_IRQHandler(void)
 {

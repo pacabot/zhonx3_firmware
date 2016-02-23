@@ -6,7 +6,7 @@
  */
 
 #include <math.h>
-#include "middleware/controls/bezierCurves/bezierCurves.h"
+#include "middleware/math/bezierCurves.h"
 
 void courbe_de_bezier (int pointA[2],int pointB[2],int pointC[2],int pointD[2],point *tableOfPoint,int numberOfStep)
 {

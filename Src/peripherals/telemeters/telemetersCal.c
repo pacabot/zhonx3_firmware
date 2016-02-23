@@ -31,12 +31,14 @@
 #include "peripherals/expander/pcf8574.h"
 #include "peripherals/bluetooth/bluetooth.h"
 #include "peripherals/motors/motors.h"
+#include "peripherals/encoders/ie512.h"
 
 #include "peripherals/eeprom/24lc64.h"
 #include "peripherals/flash/flash.h"
 
 /* Middleware declarations */
 #include "middleware/controls/motionControl/mainControl.h"
+#include "middleware/math/kalman_filter.h"
 
 /* Declarations for this module */
 #include "peripherals/telemeters/telemetersCal.h"
@@ -62,41 +64,51 @@ int wallSensorsCalibrationFront(void)
     mainControlInit();
     motorsDriverSleep(OFF);
 
-    telemetersStart();
-    mainControlSetFollowType(FALSE);
+//    telemetersStart();
+    mainControlSetFollowType(NO_FOLLOW);
 
     move(0, 0, 0, 0);
-    HAL_Delay(3000);
-    for(i = 0; i < TELEMETER_PROFILE_ARRAY_LENGTH; i++)
-    {
-//        ssd1306ProgressBar(10,10,(i*100)/NUMBER_OF_CELL);
-//        ssd1306ProgressBar(10,40,(i*50)/NUMBER_OF_CELL);
-//        ssd1306Refresh(MAIN_AERA);
+//    HAL_Delay(3000);
 
-//        telemeter_FL_profile[i]=getTelemeterAvrg(TELEMETER_FL);
-        front_telemeters.left[i]  = getTelemeterAvrg(TELEMETER_FL);
-//        telemeter_FR_profile[i]=getTelemeterAvrg(TELEMETER_FR);
-        front_telemeters.right[i] = getTelemeterAvrg(TELEMETER_FR);
-
-        move(0, -NUMBER_OF_MILLIMETER_BY_LOOP, 5, 5);
-        while(hasMoveEnded() != TRUE);
-    }
-
+    // take the measures
+    move(0, -MEASURED_DISTANCE, 5, 5);
+//    for(i = 0; i < TELEMETER_PROFILE_ARRAY_LENGTH; i++)
+//    {
+//    	while((((int)(encoderGetDist(ENCODER_L) + encoderGetDist(ENCODER_R)) >= -(NUMBER_OF_MILLIMETER_BY_LOOP * 2 * i))) &&
+//    			(hasMoveEnded() != TRUE));
+//
+//        front_telemeters.left[i]  = getTelemeterAvrg(TELEMETER_FL);
+//        front_telemeters.right[i] = getTelemeterAvrg(TELEMETER_FR);
+//
+//        ssd1306ProgressBar(10,10,(i*100)/TELEMETER_PROFILE_ARRAY_LENGTH);
+//		ssd1306Refresh(MAIN_AREA);
+//
+//    	HAL_Delay(10);
+//    }
+while(hasMoveEnded() != TRUE);
     telemetersStop();
     motorsDriverSleep(ON);
 
-    bluetoothPrintf("\n\n\nfilterd measures :\n");
-    for (int i = 0; i < TELEMETER_PROFILE_ARRAY_LENGTH; ++i)
-    {
-//        bluetoothPrintf("%2d|%10d|%d\n",i,telemeter_FL_profile[i],telemeter_FR_profile[i]);
-        bluetoothPrintf("%d|%d|%d\n", i,
-                        front_telemeters.left[i], front_telemeters.right[i]);
-    }
+    // filter the measure
+    kalman_filter_array(front_telemeters.left, TELEMETER_PROFILE_ARRAY_LENGTH);
+    kalman_filter_array(front_telemeters.right, TELEMETER_PROFILE_ARRAY_LENGTH);
 
+    /*
+     * this four line are for make sure in search for convert in millimeter we don't go outside
+     * of the array because we have stronger or smaller value than during the calibration
+     */
     front_telemeters.left[0]  = 4095;
     front_telemeters.right[0] = 4095;
     front_telemeters.left[TELEMETER_PROFILE_ARRAY_LENGTH]  = 0;
     front_telemeters.right[TELEMETER_PROFILE_ARRAY_LENGTH] = 0;
+
+    // save the measures
+    bluetoothPrintf("\nfilterd measures :\n");
+    for (int i = 0; i < TELEMETER_PROFILE_ARRAY_LENGTH; ++i)
+    {
+        bluetoothPrintf("%d|%d|%d\n", i,
+                        front_telemeters.left[i], front_telemeters.right[i]);
+    }
     bluetoothPrintf("Saving Front telemeters profile into Flash memory...\n");
     // Write telemeters profiles in Flash memory
     rv = flash_write(zhonxSettings.h_flash,
@@ -148,27 +160,38 @@ int wallSensorsCalibrationDiag (void)
     move(0, 0, 0, 0);
     HAL_Delay(3000);
 
+    // take the measures
     for(i = 0; i < TELEMETER_PROFILE_ARRAY_LENGTH; i++)
     {
-//        ssd1306ProgressBar(10,10,(i*100)/NUMBER_OF_CELL);
-//        ssd1306Refresh(MAIN_AERA);
-        move(0, -sqrtf(2 * powf(NUMBER_OF_MILLIMETER_BY_LOOP, 2)), 5, 5);
-        while(hasMoveEnded() != TRUE);
-
         diag_telemeters.left[i]  = getTelemeterAvrg(TELEMETER_DL);
         diag_telemeters.right[i] = getTelemeterAvrg(TELEMETER_DR);
+
+        move(0, -sqrtf(2 * powf(NUMBER_OF_MILLIMETER_BY_LOOP, 2)), 5, 5);
+		ssd1306ProgressBar(10,10,(i*100)/NUMBER_OF_MILLIMETER_BY_LOOP);
+		ssd1306Refresh(MAIN_AREA);
+        while(hasMoveEnded() != TRUE);
     }
+
+    telemetersStop();
+    motorsDriverSleep(ON);
+
+    // filter the measure
+	kalman_filter_array(diag_telemeters.left, TELEMETER_PROFILE_ARRAY_LENGTH);
+	kalman_filter_array(diag_telemeters.right, TELEMETER_PROFILE_ARRAY_LENGTH);
+
+	/*
+	 * this four line are for make sure in search for convert in millimeter we don't go outside
+	 * of the array because we have stronger or smaller value than during the calibration
+	 */
     diag_telemeters.left[0]  = 4095;
     diag_telemeters.right[0] = 4095;
     diag_telemeters.left[TELEMETER_PROFILE_ARRAY_LENGTH]  = 0;
     diag_telemeters.right[TELEMETER_PROFILE_ARRAY_LENGTH] = 0;
-    telemetersStop();
-    motorsDriverSleep(ON);
 
-    bluetoothPrintf("\n\n\nfilterd diag measures :\n");
+    // save the measures
+    bluetoothPrintf("\nfilterd diag measures :\n");
     for (int i = 0; i < TELEMETER_PROFILE_ARRAY_LENGTH; ++i)
     {
-//        bluetoothPrintf("%2d|%10d|%d\n",i,telemeter_DL_profile[i],telemeter_DR_profile[i]);
         bluetoothWaitReady();
         bluetoothPrintf("%d|%d|%d\n", i,
                         diag_telemeters.left[i], diag_telemeters.right[i]);

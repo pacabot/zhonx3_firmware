@@ -242,17 +242,17 @@ int getTelemeterAvrg(enum telemeterName telemeter_name)
 
 double getTelemeterSpeed(enum telemeterName telemeter_name)
 {
-//	switch (telemeter_name)
-//	{
-//	case TELEMETER_DL:
-////		return getTelemeterSpeed(TELEMETER_DL);
-//	case TELEMETER_DR:
-////		return getTelemeterSpeed(TELEMETER_DR);
-//	case TELEMETER_FL:
-////		return getTelemeterSpeed(TELEMETER_FL);
-//	case TELEMETER_FR:
-////		return getTelemeterSpeed(TELEMETER_FR);
-//	}
+	switch (telemeter_name)
+	{
+	case TELEMETER_DL: //todo add speed compute
+		return 0;
+	case TELEMETER_DR:
+		return 0;
+	case TELEMETER_FL:
+		return 0;
+	case TELEMETER_FR:
+		return 0;
+	}
 	return 0.00; //todo return correct error ID
 }
 
@@ -276,7 +276,7 @@ void telemetersAdc3Start(void)
 void telemeters_IT(void)
 {
 	if (telemeters.active_state == FALSE)
-		return;
+		goto end;
 
 	telemeters.selector++;
 
@@ -297,23 +297,23 @@ void telemeters_IT(void)
 	{
 	case 1:
 		HAL_GPIO_WritePin(GPIOB, TX_FL, SET);
-		return;
+		goto end;
 	case 2:
 		telemeters.FL.isActivated = TX_ON;
 		sConfig.Channel = RX_FL;
 		telemetersAdc2Start();
-		return;
+		goto end;
 	case 3:
 		HAL_GPIO_WritePin(GPIOB, TX_FR, SET);
-		return;
+		goto end;
 	case 4:
 		telemeters.FR.isActivated = TX_ON;
 		sConfig.Channel = RX_FR;
 		telemetersAdc2Start();
-		return;
+		goto end;
 	case 5:
 		HAL_GPIO_WritePin(GPIOB, TX_DUAL_DIAG, SET);
-		return;
+		goto end;
 	case 6:
 		telemeters.DL.isActivated = TX_ON;
 		sConfig.Channel = RX_DL;
@@ -321,19 +321,19 @@ void telemeters_IT(void)
 		telemeters.DR.isActivated = TX_ON;
 		sConfig.Channel = RX_DR;
 		telemetersAdc3Start();
-		return;
+		goto end;
 	case 7:
-		return;
+		goto end;
 	case 8:
 		telemeters.FR.isActivated = TX_OFF;
 		sConfig.Channel = RX_FR;
 		telemetersAdc2Start();
-		return;
+		goto end;
 	case 9:
 		telemeters.FL.isActivated = TX_OFF;
 		sConfig.Channel = RX_FL;
 		telemetersAdc2Start();
-		return;
+		goto end;
 	case 10:
 		telemeters.DL.isActivated = TX_OFF;
 		sConfig.Channel = RX_DL;
@@ -341,8 +341,10 @@ void telemeters_IT(void)
 		telemeters.DR.isActivated = TX_OFF;
 		sConfig.Channel = RX_DR;
 		telemetersAdc3Start();
-		return;
+		goto end;
 	}
+	end :
+	return;
 }
 
 void telemeters_ADC2_IT(void)

@@ -6,7 +6,7 @@ Comment installer votre environnement de développement Eclipse sur linux
 # Détails #
 
 ## 1 - Telecharger Eclipse Luna C/C++ 64bits pour Linux ##
-http://www.eclipse.org/downloads/download.php?file=/technology/epp/downloads/release/luna/SR1a/eclipse-cpp-luna-SR1a-linux-gtk-x86_64.tar.gz&mirror_id=96
+http://www.eclipse.org/downloads/download.php?file=/technology/epp/downloads/release/mars/1/eclipse-cpp-mars-1-linux-gtk-x86_64.tar.gz&mirror_id=1099
 ## 2 - Installer ##
 
 ```

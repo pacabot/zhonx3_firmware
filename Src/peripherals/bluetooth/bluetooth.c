@@ -73,6 +73,11 @@ static inline int bluetoothDeInit_IT(void)
 {
     __HAL_UART_DISABLE_IT(&huart3, UART_IT_RXNE);
 
+    // Pause DMA transfer on UART3
+//    HAL_UART_DMAPause(&huart3);
+
+    huart3.gState = HAL_UART_STATE_READY;
+
     return HAL_OK;
 }
 
