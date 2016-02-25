@@ -553,8 +553,8 @@ void rotateTest()
 	HAL_Delay(2000);
 	motorsDriverSleep(OFF);
 
-	move(-90, 0, 8, 8);
-	//move(-90, (HALF_CELL_LENGTH - OFFSET_DIST), 8, 8);
+	//move(-90, 0, 8, 8);
+	move(-90, (HALF_CELL_LENGTH - OFFSET_DIST), 8, 8);
 
 	while(hasMoveEnded() != TRUE){
 		while(expanderJoyFiltered()!=JOY_LEFT)
