@@ -26,6 +26,8 @@
 #include "peripherals/display/ssd1306.h"
 #include "peripherals/display/smallfonts.h"
 #include "peripherals/expander/pcf8574.h"
+#include "peripherals/encoders/ie512.h"
+#include "peripherals/gyroscope/adxrs620.h"
 
 /* Middleware declarations */
 
@@ -126,6 +128,8 @@ void motorsInit(void)
 
 void motorsDriverSleep(int isOn)
 {
+	encodersReset();
+	gyroResetAngle();
 	if (isOn == 1)
 		HAL_GPIO_WritePin(GPIOA, MOTORS_STANDBY, RESET);
 	else

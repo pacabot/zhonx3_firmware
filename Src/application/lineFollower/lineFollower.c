@@ -144,7 +144,6 @@ void lineSensorsCalibration(void)
 	positionControlSetPositionType(GYRO);
 	mainControlSetFollowType(NO_FOLLOW);
 
-	motorsDriverSleep(OFF);
 	HAL_Delay(1000);
 
 	double cdg=0;
@@ -155,6 +154,7 @@ void lineSensorsCalibration(void)
 	lineSensorsStart();
 
 	tone(e, 500);
+	motorsDriverSleep(OFF);
 	move(40, 0, 100, 100);
 	while(hasMoveEnded() != TRUE);
 	move(-80, 0, 150, 150);

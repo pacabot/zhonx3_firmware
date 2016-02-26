@@ -73,6 +73,7 @@
 
 /* extern variables ---------------------------------------------------------*/
 extern I2C_HandleTypeDef hi2c1;
+extern DMA_HandleTypeDef hdma_i2c1_tx;
 
 /* Private variables ---------------------------------------------------------*/
 //static unsigned char banner_aera_buffer[SSD1306_BANNERSIZE];
@@ -341,6 +342,7 @@ void ssd1306Refresh(enum refreshTypeEnum refreshType)
 {
 
 	if (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY)
+//	if (HAL_DMA_GetState(&hdma_i2c1_tx) == HAL_DMA_STATE_BUSY) //todo add frequency limiter based on systick
 		return;
 	main_aera_buffer[0] = 0x40;
 	DATA(main_aera_buffer, SSD1306_MAINSIZE);
