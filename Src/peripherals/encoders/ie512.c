@@ -31,6 +31,8 @@
 /* Declarations for this module */
 #include "peripherals/encoders/ie512.h"
 
+#define WELL_TURN_NB	10
+
 // Machine Definitions
 typedef struct
 {
@@ -79,39 +81,39 @@ void encodersInit(void)
 	htim3.Instance = TIM3;
 	htim3.Init.Prescaler = 0;
 	htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
-	htim3.Init.Period = ENCODER_RESOLUTION;
-	htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+	htim3.Init.Period = 2047 * WELL_TURN_NB;
+	htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV4;
 	sConfig.EncoderMode = TIM_ENCODERMODE_TI12;
 	sConfig.IC1Polarity = TIM_ICPOLARITY_RISING;
 	sConfig.IC1Selection = TIM_ICSELECTION_DIRECTTI;
-	sConfig.IC1Prescaler = TIM_ICPSC_DIV8;
-	sConfig.IC1Filter = 0;
+	sConfig.IC1Prescaler = TIM_ICPSC_DIV4;
+	sConfig.IC1Filter = 8;
 	sConfig.IC2Polarity = TIM_ICPOLARITY_RISING;
 	sConfig.IC2Selection = TIM_ICSELECTION_DIRECTTI;
-	sConfig.IC2Prescaler = TIM_ICPSC_DIV8;
-	sConfig.IC2Filter = 0;
+	sConfig.IC2Prescaler = TIM_ICPSC_DIV4;
+	sConfig.IC2Filter = 8;
 	HAL_TIM_Encoder_Init(&htim3, &sConfig);
-
-	htim1.Instance = TIM1;
-	htim1.Init.Prescaler = 0;
-	htim1.Init.CounterMode = TIM_COUNTERMODE_UP;
-	htim1.Init.Period = ENCODER_RESOLUTION;
-	htim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-	htim1.Init.RepetitionCounter = 0;
-	sConfig.EncoderMode = TIM_ENCODERMODE_TI12;
-	sConfig.IC1Polarity = TIM_ICPOLARITY_RISING;
-	sConfig.IC1Selection = TIM_ICSELECTION_DIRECTTI;
-	sConfig.IC1Prescaler = TIM_ICPSC_DIV8;
-	sConfig.IC1Filter = 0;
-	sConfig.IC2Polarity = TIM_ICPOLARITY_RISING;
-	sConfig.IC2Selection = TIM_ICSELECTION_DIRECTTI;
-	sConfig.IC2Prescaler = TIM_ICPSC_DIV8;
-	sConfig.IC2Filter = 0;
-	HAL_TIM_Encoder_Init(&htim1, &sConfig);
 
 	sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
 	sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
 	HAL_TIMEx_MasterConfigSynchronization(&htim3, &sMasterConfig);
+
+	htim1.Instance = TIM1;
+	htim1.Init.Prescaler = 0;
+	htim1.Init.CounterMode = TIM_COUNTERMODE_UP;
+	htim1.Init.Period = 2047 * WELL_TURN_NB;
+	htim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV4;
+	htim1.Init.RepetitionCounter = 0;
+	sConfig.EncoderMode = TIM_ENCODERMODE_TI12;
+	sConfig.IC1Polarity = TIM_ICPOLARITY_RISING;
+	sConfig.IC1Selection = TIM_ICSELECTION_DIRECTTI;
+	sConfig.IC1Prescaler = TIM_ICPSC_DIV4;
+	sConfig.IC1Filter = 8;
+	sConfig.IC2Polarity = TIM_ICPOLARITY_RISING;
+	sConfig.IC2Selection = TIM_ICSELECTION_DIRECTTI;
+	sConfig.IC2Prescaler = TIM_ICPSC_DIV4;
+	sConfig.IC2Filter = 8;
+	HAL_TIM_Encoder_Init(&htim1, &sConfig);
 
 	sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
 	sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
@@ -120,8 +122,8 @@ void encodersInit(void)
 	HAL_TIM_Base_Start_IT(&htim1);
 	HAL_TIM_Base_Start_IT(&htim3);
 
-	HAL_TIM_Encoder_Start(&htim1, TIM_CHANNEL_1);
-	HAL_TIM_Encoder_Start(&htim3, TIM_CHANNEL_1);
+	HAL_TIM_Encoder_Start(&htim1, TIM_CHANNEL_ALL);
+	HAL_TIM_Encoder_Start(&htim3, TIM_CHANNEL_ALL);
 
 	left_encoder.mot_rev_cnt = 0;
 	right_encoder.mot_rev_cnt = 0;
@@ -132,10 +134,10 @@ void encoderLeft_IT(void)
 	switch (__HAL_TIM_DIRECTION_STATUS(&htim1))
 	{
 	case 1 :
-		--left_encoder.mot_rev_cnt;
+		left_encoder.mot_rev_cnt--;
 		break;
 	case 0 :
-		++left_encoder.mot_rev_cnt;
+		left_encoder.mot_rev_cnt++;
 		break;
 	}
 }
@@ -145,10 +147,10 @@ void encoderRight_IT(void)
 	switch (__HAL_TIM_DIRECTION_STATUS(&htim3))
 	{
 	case 1 :
-		--right_encoder.mot_rev_cnt;
+		right_encoder.mot_rev_cnt--;
 		break;
 	case 0 :
-		++right_encoder.mot_rev_cnt;
+		right_encoder.mot_rev_cnt++;
 		break;
 	}
 }
@@ -159,7 +161,7 @@ void encoderRight_IT(void)
  */
 int encoderResetDistance(encoder *enc)
 {
-	enc->offset_dist = 	((((double)enc->mot_rev_cnt * ENCODER_RESOLUTION) +
+	enc->offset_dist = 	((((double)enc->mot_rev_cnt * ENCODER_RESOLUTION * (double)WELL_TURN_NB) +
 			((double)__HAL_TIM_GetCounter(enc->timer))) /
 			STEPS_PER_MM);
 	return IE512_DRIVER_E_SUCCESS;
@@ -171,11 +173,11 @@ int encoderResetDistance(encoder *enc)
  */
 double encoderGetDistance(encoder *enc)
 {
-	enc->rel_dist = (((((double)enc->mot_rev_cnt * ENCODER_RESOLUTION) +
+	enc->rel_dist = (((((double)enc->mot_rev_cnt * ENCODER_RESOLUTION * (double)WELL_TURN_NB) +
 			((double)__HAL_TIM_GetCounter(enc->timer))) /
 			STEPS_PER_MM) -
 			(double)enc->offset_dist);
-	enc->abs_dist = ((((double)enc->mot_rev_cnt * ENCODER_RESOLUTION) +
+	enc->abs_dist = ((((double)enc->mot_rev_cnt * ENCODER_RESOLUTION * (double)WELL_TURN_NB) +
 			((double)__HAL_TIM_GetCounter(enc->timer))) /
 			STEPS_PER_MM);
 	return enc->rel_dist;
@@ -183,7 +185,7 @@ double encoderGetDistance(encoder *enc)
 
 int encodersReset(void)
 {
-    encoderResetDistance((encoder*)&left_encoder);
+	encoderResetDistance((encoder*)&left_encoder);
 	encoderResetDistance((encoder*)&right_encoder);
 	return IE512_DRIVER_E_SUCCESS;
 }
