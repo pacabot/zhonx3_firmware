@@ -338,7 +338,7 @@ void ssd1306ClearScreen(enum refreshTypeEnum clearType)
     @brief Renders the contents of the pixel buffer on the LCD
  */
 /**************************************************************************/
-void ssd1306Refresh(enum refreshTypeEnum refreshType)
+void ssd1306Refresh(void)
 {
 
 	if (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY)
@@ -788,7 +788,7 @@ void ssd1306Test(void)
 
 	ssd1306ClearScreen(MAIN_AREA);
 	ssd1306DrawDashedLine(0,9,128,9);
-	ssd1306Refresh(MAIN_AREA);
+	ssd1306Refresh();
 
 
 	for(i = 0; i < 59; i++)
@@ -884,7 +884,7 @@ void ssd1306Test(void)
 		ssd1306PrintInt(0, 0, "", 0, &Font_3x6);
 		ssd1306DrawString(8, 0, ":", &Font_3x6);
 
-		ssd1306Refresh(BANNER_AREA);
+		ssd1306Refresh();
 		HAL_Delay(1000);
 	}
 
@@ -892,19 +892,19 @@ void ssd1306Test(void)
 
 	//////////////////////////////////////////////////////////////////////////
 	ssd1306DrawBmp(Pacabot_bmp, 1, 1, 128, 40);
-	ssd1306Refresh(MAIN_AREA);
+	ssd1306Refresh();
 
 	for (i = 0; i <= 100; i+=1)
 	{
 		ssd1306ProgressBar(10, 35, i);
 		HAL_Delay(100);
-		ssd1306Refresh(MAIN_AREA);
+		ssd1306Refresh();
 	}
 
-	ssd1306Refresh(MAIN_AREA);
+	ssd1306Refresh();
 	HAL_Delay(500);
 	ssd1306ClearScreen(MAIN_AREA);
-	ssd1306Refresh(MAIN_AREA);
+	ssd1306Refresh();
 	// miniature bitmap display
 	ssd1306DrawCircle(40, 30, 20);
 	//  ssd1306DrawCircle(50, 20, 10);
@@ -913,7 +913,7 @@ void ssd1306Test(void)
 	ssd1306FillRect(1, 60, 10, 20);
 	ssd1306DrawDashedLine(5, 45, 70, 45);
 	ssd1306DrawLine(70, 45, 20, 6);
-	ssd1306Refresh(MAIN_AREA);
+	ssd1306Refresh();
 	HAL_Delay(5500);
 	ssd1306ClearScreen(MAIN_AREA);
 
@@ -921,25 +921,25 @@ void ssd1306Test(void)
 	{
 		ssd1306ProgressBar(10, 20, i);
 		HAL_Delay(10);
-		ssd1306Refresh(MAIN_AREA);
+		ssd1306Refresh();
 	}
 
 	ssd1306ShiftFrameBuffer(8);
 	ssd1306DrawString(13, 1, "Oled 128x64", &Font_8x8); // 3x6 is UPPER CASE only
-	ssd1306Refresh(MAIN_AREA);
+	ssd1306Refresh();
 	HAL_Delay(1500);
 	ssd1306DrawString(1, 25, "Driver for STM32f4xx", &Font_5x8); // 3x6 is UPPER CASE only
-	ssd1306Refresh(MAIN_AREA);
+	ssd1306Refresh();
 	HAL_Delay(500);
 	ssd1306DrawString(1, 35, "I2C mode", &Font_5x8); // 3x6 is UPPER CASE only
-	ssd1306Refresh(MAIN_AREA);
+	ssd1306Refresh();
 	HAL_Delay(1500);
 	ssd1306DrawString(10, 55, "BY PLF, PACABOT TEAM", &Font_3x6); // 3x6 is UPPER CASE only
-	ssd1306Refresh(MAIN_AREA);
+	ssd1306Refresh();
 	HAL_Delay(5000);
 
 	ssd1306ClearScreen(MAIN_AREA);
-	ssd1306Refresh(MAIN_AREA);
+	ssd1306Refresh();
 }
 
 

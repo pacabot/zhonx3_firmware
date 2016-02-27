@@ -437,7 +437,7 @@ void mainControlDisplayTest(void)
 		//		transfert_function.right_motor_pwm = (speed_control.speed_command - (position_control.position_command + follow_control.follow_command)) * transfert_function.pwm_ratio;
 		//		transfert_function.left_motor_pwm  = (speed_control.speed_command + (position_control.position_command + follow_control.follow_command)) * transfert_function.pwm_ratio;
 
-		ssd1306Refresh(MAIN_AREA);
+		ssd1306Refresh();
 	}
 	pid_loop.start_state = FALSE;
 	telemetersStop();
@@ -568,7 +568,7 @@ void rotateTest()
 			{
 				encodersReset();
 			}
-			ssd1306Refresh(MAIN_AREA);
+			ssd1306Refresh();
 			HAL_Delay(10);
 		}
 	}

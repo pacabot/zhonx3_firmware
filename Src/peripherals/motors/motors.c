@@ -318,7 +318,7 @@ void motorsTest(void)
 
 	ssd1306ClearScreen(MAIN_AREA);
 	ssd1306DrawString(1,  20,  "FWD FAST DECAY 0->20%", &Font_5x8);
-	ssd1306Refresh(MAIN_AREA);
+	ssd1306Refresh();
 	for (i = 0; i < 150; i += 1)
 	{
 		motorSet_DF(MOTOR_L, i);
@@ -327,11 +327,11 @@ void motorsTest(void)
 	}
 	ssd1306ClearScreen(MAIN_AREA);
 	ssd1306DrawString(1,  20,  "FWD FAST DECAY 20%", &Font_5x8);
-	ssd1306Refresh(MAIN_AREA);
+	ssd1306Refresh();
 	HAL_Delay(500);
 	ssd1306ClearScreen(MAIN_AREA);
 	ssd1306DrawString(1,  20,  "FWD FAST DECAY 20->0%", &Font_5x8);
-	ssd1306Refresh(MAIN_AREA);
+	ssd1306Refresh();
 	for (i = 150; i > 0; i -= 1)
 	{
 		motorSet_DF(MOTOR_L, i);
@@ -340,12 +340,12 @@ void motorsTest(void)
 	}
 	ssd1306ClearScreen(MAIN_AREA);
 	ssd1306DrawString(1,  20,  "BRAKE FAST DECAY 0%", &Font_5x8);
-	ssd1306Refresh(MAIN_AREA);
+	ssd1306Refresh();
 	motorsBrake();
 	HAL_Delay(4000);
 	ssd1306ClearScreen(MAIN_AREA);
 	ssd1306DrawString(1,  20,  "BWD FAST DECAY 0->20%", &Font_5x8);
-	ssd1306Refresh(MAIN_AREA);
+	ssd1306Refresh();
 	for (i = 0; i > -150; i -= 1)
 	{
 		motorSet_DF(MOTOR_L, i);
@@ -354,11 +354,11 @@ void motorsTest(void)
 	}
 	ssd1306ClearScreen(MAIN_AREA);
 	ssd1306DrawString(1,  20,  "BWD FAST DECAY 20%", &Font_5x8);
-	ssd1306Refresh(MAIN_AREA);
+	ssd1306Refresh();
 	HAL_Delay(500);
 	ssd1306ClearScreen(MAIN_AREA);
 	ssd1306DrawString(1,  20,  "BWD FAST DECAY 20->0%", &Font_5x8);
-	ssd1306Refresh(MAIN_AREA);
+	ssd1306Refresh();
 	for (i = -150; i < 0; i += 1)
 	{
 		motorSet_DF(MOTOR_L, i);
@@ -367,13 +367,13 @@ void motorsTest(void)
 	}
 	ssd1306ClearScreen(MAIN_AREA);
 	ssd1306DrawString(1,  20,  "BRAKE FAST DECAY 0%", &Font_5x8);
-	ssd1306Refresh(MAIN_AREA);
+	ssd1306Refresh();
 	motorsBrake();
 	// Slow decay
 	HAL_Delay(1000);
 	ssd1306ClearScreen(MAIN_AREA);
 	ssd1306DrawString(1,  20,  "FWD SLOW DECAY 0->20%", &Font_5x8);
-	ssd1306Refresh(MAIN_AREA);
+	ssd1306Refresh();
 	for (i = 0; i < 150; i += 1)
 	{
 		motorSet_DS(MOTOR_L, i);
@@ -382,11 +382,11 @@ void motorsTest(void)
 	}
 	ssd1306ClearScreen(MAIN_AREA);
 	ssd1306DrawString(1,  20,  "FWD SLOW DECAY 20%", &Font_5x8);
-	ssd1306Refresh(MAIN_AREA);
+	ssd1306Refresh();
 	HAL_Delay(500);
 	ssd1306ClearScreen(MAIN_AREA);
 	ssd1306DrawString(1,  20,  "FWD SLOW DECAY 20->0%", &Font_5x8);
-	ssd1306Refresh(MAIN_AREA);
+	ssd1306Refresh();
 	for (i = 150; i > 0; i -= 1)
 	{
 		motorSet_DS(MOTOR_L, i);
@@ -395,12 +395,12 @@ void motorsTest(void)
 	}
 	ssd1306ClearScreen(MAIN_AREA);
 	ssd1306DrawString(1,  20,  "BRAKE SLOW DECAY 0%", &Font_5x8);
-	ssd1306Refresh(MAIN_AREA);
+	ssd1306Refresh();
 	motorsBrake();
 	HAL_Delay(1000);
 	ssd1306ClearScreen(MAIN_AREA);
 	ssd1306DrawString(1,  20,  "BWD SLOW DECAY 0->20%", &Font_5x8);
-	ssd1306Refresh(MAIN_AREA);
+	ssd1306Refresh();
 	for (i = 0; i > -150; i -= 1)
 	{
 		motorSet_DS(MOTOR_L, i);
@@ -409,11 +409,11 @@ void motorsTest(void)
 	}
 	ssd1306ClearScreen(MAIN_AREA);
 	ssd1306DrawString(1,  20,  "BWD SLOW DECAY 20%", &Font_5x8);
-	ssd1306Refresh(MAIN_AREA);
+	ssd1306Refresh();
 	HAL_Delay(500);
 	ssd1306ClearScreen(MAIN_AREA);
 	ssd1306DrawString(1,  20,  "BWD SLOW DECAY 20->0%", &Font_5x8);
-	ssd1306Refresh(MAIN_AREA);
+	ssd1306Refresh();
 	for (i = -150; i < 0; i += 1)
 	{
 		motorSet_DS(MOTOR_L, i);
@@ -422,7 +422,7 @@ void motorsTest(void)
 	}
 	ssd1306ClearScreen(MAIN_AREA);
 	ssd1306DrawString(1,  20,  "BRAK SLOW DECAY 0%", &Font_5x8);
-	ssd1306Refresh(MAIN_AREA);
+	ssd1306Refresh();
 	motorsBrake();
 
 	motorsDriverSleep(ON);

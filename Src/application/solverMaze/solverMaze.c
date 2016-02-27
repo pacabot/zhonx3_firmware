@@ -161,7 +161,7 @@ void moveVirtualZhonx(labyrinthe maze, positionRobot positionZhonxVirtuel,
 			{
 				printMaze(maze,positionZhonxVirtuel.cordinate);
 				ssd1306DrawString(60, 0, "no solution", &Font_5x8);
-				ssd1306Refresh(MAIN_AREA);
+				ssd1306Refresh();
 				motorsDriverSleep(ON);
 				while(true)
 				{
@@ -224,7 +224,7 @@ void moveRealZhonxArc(labyrinthe *maze, positionRobot *positionZhonx, coordinate
 			HAL_Delay(200);
 			motorsDriverSleep(ON);
 			ssd1306DrawString(60, 0, "Error way", &Font_5x8);
-			ssd1306Refresh(MAIN_AREA);
+			ssd1306Refresh();
 			while(1)
 			{
 				HAL_Delay(500);
@@ -690,7 +690,7 @@ void printMaze(const labyrinthe maze, coordinate robot_coordinate)
 	}
 	printLength(maze, robot_coordinate.x, robot_coordinate.y);
 	ssd1306DrawRect((robot_coordinate.x * size_cell_on_oled) +1,(robot_coordinate.y * size_cell_on_oled)+1, 2, 2);
-	ssd1306Refresh(MAIN_AREA);
+	ssd1306Refresh();
 #endif
 }
 
@@ -799,7 +799,7 @@ char miniwayFind(labyrinthe *maze, coordinate start_coordinate, coordinate end_c
 			ssd1306DrawString(0, 20, "2 way = : no", &Font_5x8);
 			break;
 	}
-	ssd1306Refresh(MAIN_AREA);
+	ssd1306Refresh();
 	HAL_Delay(3000);
 	return(waySame);
 }
@@ -829,13 +829,13 @@ void waitStart()
 	while(HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY)
 	{
 	}
-	ssd1306Refresh(MAIN_AREA);
+	ssd1306Refresh();
 	while(expanderJoyFiltered() != JOY_RIGHT)
 	{
 		HAL_Delay(20);
 	}
 	ssd1306ClearRect(SSD1306_LCDWIDTH/2,0,SSD1306_LCDWIDTH/2,SSD1306_LCDHEIGHT);
-	ssd1306Refresh(MAIN_AREA);
+	ssd1306Refresh();
 //TODO : wait start with front sensors
 //	unsigned char sensors_state = hal_sensor_get_state(app_context.sensors);
 //	while(check_bit(sensors_state, SENSOR_F10_POS)==true)

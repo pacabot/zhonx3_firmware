@@ -32,7 +32,8 @@
 /* Declarations for this module */
 #include "peripherals/tone/tone.h"
 
-void imperialMarch(void);
+static void imperialMarch(void);
+static void happyBirthday(void);
 
 /* extern variables ---------------------------------------------------------*/
 extern TIM_HandleTypeDef htim11;

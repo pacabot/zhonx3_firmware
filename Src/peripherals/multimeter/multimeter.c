@@ -159,6 +159,6 @@ void mulimeterTest(void)
 		ssd1306PrintInt(10,  35,  "Temp. Gyro =  ", (int)multimeterGyroTemp() * 10, &Font_5x8);
 		ssd1306PrintInt(10,  45,  "Temp. STM32 =  ", (int)multimeterSTM32Temp() * 10, &Font_5x8);
 		ssd1306PrintInt(10,  55,  "vbat (mV) =  ", (int)multimeterGetBatVoltage(), &Font_5x8);
-		ssd1306Refresh(MAIN_AREA);
+		ssd1306Refresh();
 	}
 }

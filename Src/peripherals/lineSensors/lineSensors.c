@@ -216,7 +216,7 @@ void lineSensorsTest(void)
 		ssd1306PrintInt(10, 25, "FRONT     =  ", (uint16_t) lineSensors.front.adc_value, &Font_5x8);
 		ssd1306PrintInt(10, 35, "RIGHT     =  ", (uint16_t) lineSensors.right.adc_value, &Font_5x8);
 		ssd1306PrintInt(10, 45, "RIGHT_EXT =  ", (uint16_t) lineSensors.right_ext.adc_value, &Font_5x8);
-		ssd1306Refresh(MAIN_AREA);
+		ssd1306Refresh();
 	}
 	lineSensorsStop();
 }

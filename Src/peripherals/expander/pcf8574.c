@@ -218,10 +218,10 @@ void joystickTest(void)
 			break;
 		}
 
-		ssd1306Refresh(MAIN_AREA);
+		ssd1306Refresh();
 	}
 	ssd1306FillCircle(50,20, 3);
-	ssd1306Refresh(MAIN_AREA);
+	ssd1306Refresh();
 	HAL_Delay(1000);
 	antiBounceJoystick();
 }

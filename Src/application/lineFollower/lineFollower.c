@@ -122,7 +122,7 @@ void lineSensorSendBluetooth(void)
 			ssd1306PrintInt(10, 35, ",",current.front, &Font_5x8);
 			ssd1306PrintInt(10, 45, ",",current.right, &Font_5x8);
 			ssd1306PrintInt(10, 55, ",",current.rightExt, &Font_5x8);
-			ssd1306Refresh(MAIN_AREA); */
+			ssd1306Refresh(); */
 		}
 	}
 	move(40, 0, 100, 0);
@@ -221,7 +221,7 @@ void lineSensorsCalibration(void)
 
 		ssd1306PrintInt(10, 40,  "Centre= ", (uint16_t)cdg, &Font_5x8);
 		ssd1306PrintInt(10, 50,  "milieu= ", (uint16_t)D-B, &Font_5x8);
-		ssd1306Refresh(MAIN_AREA);
+		ssd1306Refresh();
 	}
 
 	// desactivate PID
@@ -286,7 +286,7 @@ void lineSensorsCalibration(void)
 	{
 		ssd1306PrintInt(10, 50,  "milieu=-", (uint16_t)-cdg2, &Font_5x8);
 	}
-	ssd1306Refresh(MAIN_AREA);
+	ssd1306Refresh();
 
 	}
 }
@@ -331,7 +331,7 @@ void lineFollower(void)
 	ssd1306PrintInt(10, 25, "FRONT --  =  ", (uint16_t) min_Floor.front, &Font_5x8);
 	ssd1306PrintInt(10, 35, "RIGHT     =  ", (uint16_t) min_Floor.right, &Font_5x8);
 	ssd1306PrintInt(10, 45, "RIGHT_EXT =  ", (uint16_t) min_Floor.rightExt, &Font_5x8);
-	ssd1306Refresh(MAIN_AREA);
+	ssd1306Refresh();
 	HAL_Delay(1000);
 	tone(c, 100);
 
@@ -341,7 +341,7 @@ void lineFollower(void)
 	ssd1306PrintInt(10, 25, "FRONT --  =  ", (uint16_t) max_Floor.front, &Font_5x8);
 	ssd1306PrintInt(10, 35, "RIGHT     =  ", (uint16_t) max_Floor.right, &Font_5x8);
 	ssd1306PrintInt(10, 45, "RIGHT_EXT =  ", (uint16_t) max_Floor.rightExt, &Font_5x8);
-	ssd1306Refresh(MAIN_AREA);
+	ssd1306Refresh();
 	HAL_Delay(1000);
 
 
@@ -401,7 +401,7 @@ void lineFollower(void)
 
 
 		ssd1306PrintInt(70, 55, "error=", error, &Font_5x8);
-		ssd1306Refresh(MAIN_AREA);
+		ssd1306Refresh();
 
 
 // -----------------------------------------------------------------------

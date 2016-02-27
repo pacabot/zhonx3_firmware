@@ -209,7 +209,7 @@ int menu(const menuItem Menu)
 	// Display main menu
 	displayMenu(Menu, line_menu);
 	ssd1306InvertArea(0, MARGIN, HIGHLIGHT_LENGHT, HIGHLIGHT_HEIGHT);
-	ssd1306Refresh(MAIN_AREA);
+	ssd1306Refresh();
 	while (true)
 	{
 		HAL_Delay(50);
@@ -230,7 +230,7 @@ int menu(const menuItem Menu)
 					displayMenu(Menu, line_menu - (line_screen - 1));
 					ssd1306InvertArea(0, line_screen * MARGIN,
 							HIGHLIGHT_LENGHT, HIGHLIGHT_HEIGHT);
-					ssd1306Refresh(MAIN_AREA);
+					ssd1306Refresh();
 				}
 				else
 				{
@@ -245,7 +245,7 @@ int menu(const menuItem Menu)
 				line_screen = 1;displayMenu(Menu, line_menu - (line_screen - 1));
 				ssd1306InvertArea(0, line_screen * MARGIN,
 						HIGHLIGHT_LENGHT, HIGHLIGHT_HEIGHT);
-				ssd1306Refresh(MAIN_AREA);
+				ssd1306Refresh();
 			}
 			break;
 		case JOY_UP:
@@ -258,7 +258,7 @@ int menu(const menuItem Menu)
 					displayMenu(Menu, line_menu);
 					ssd1306InvertArea(0, MARGIN, HIGHLIGHT_LENGHT,
 							HIGHLIGHT_HEIGHT);
-					ssd1306Refresh(MAIN_AREA);
+					ssd1306Refresh();
 				}
 				else
 				{
@@ -285,7 +285,7 @@ int menu(const menuItem Menu)
 				}
 				ssd1306InvertArea(0, MARGIN * line_screen, HIGHLIGHT_LENGHT,
 									HIGHLIGHT_HEIGHT);
-				ssd1306Refresh(MAIN_AREA);
+				ssd1306Refresh();
 			}
 			break;
 		case JOY_RIGHT: // Validate button joystick right
@@ -311,7 +311,7 @@ int menu(const menuItem Menu)
 				if (Menu.line[line_menu].param != NULL)
 				{
 					ssd1306ClearScreen(MAIN_AREA);
-					ssd1306Refresh(MAIN_AREA);
+					ssd1306Refresh();
 					Menu.line[line_menu].param();
 				}
 				break;
@@ -331,7 +331,7 @@ int menu(const menuItem Menu)
 			displayMenu(Menu, line_menu - (line_screen - 1));
 			ssd1306InvertArea(0, MARGIN * line_screen, HIGHLIGHT_LENGHT,
 					HIGHLIGHT_HEIGHT);
-			ssd1306Refresh(MAIN_AREA);
+			ssd1306Refresh();
 			break;
 			default:
 				break;
@@ -350,7 +350,7 @@ void menuHighlightedMove(unsigned char y, unsigned char max_y)
 		{
 			ssd1306InvertArea(0, y - 1, HIGHLIGHT_LENGHT, HIGHLIGHT_HEIGHT);
 			ssd1306InvertArea(0, y, HIGHLIGHT_LENGHT, HIGHLIGHT_HEIGHT);
-			ssd1306Refresh(MAIN_AREA);
+			ssd1306Refresh();
 			while (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY);
 		}
 	}
@@ -361,7 +361,7 @@ void menuHighlightedMove(unsigned char y, unsigned char max_y)
 		{
 			ssd1306InvertArea(0, y + 1, HIGHLIGHT_LENGHT, HIGHLIGHT_HEIGHT);
 			ssd1306InvertArea(0, y, HIGHLIGHT_LENGHT, HIGHLIGHT_HEIGHT);
-			ssd1306Refresh(MAIN_AREA);
+			ssd1306Refresh();
 			HAL_Delay(5);
 			while (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY);
 		}
@@ -414,7 +414,7 @@ void displayMenu(const menuItem menu,int line)
 		//int heightOneItem=54/nmbr_item;
 		ssd1306DrawRect(123,(54*line)/nmbr_item+MARGIN,3,(54*MAX_LINE_SCREEN)/nmbr_item);
 	}
-	ssd1306Refresh(MAIN_AREA);
+	ssd1306Refresh();
 }
 
 int modifyBoolParam( char *param_name, unsigned char *param)
@@ -439,7 +439,7 @@ int modifyBoolParam( char *param_name, unsigned char *param)
 	ssd1306DrawString(0, 28, str, &Font_8x8);
 	ssd1306DrawString(0, 50, "PRESS 'RIGHT' TO VALIDATE", &Font_3x6);
 	ssd1306DrawString(0, 57, "      'LEFT'  TO RETURN.", &Font_3x6);
-	ssd1306Refresh(MAIN_AREA);
+	ssd1306Refresh();
 
 	while (1)
 	{
@@ -464,14 +464,14 @@ int modifyBoolParam( char *param_name, unsigned char *param)
 			}
 			ssd1306ClearRect(0, 28, 164, 8);
 			ssd1306DrawString(0, 28, str, &Font_8x8);
-			ssd1306Refresh(MAIN_AREA);
+			ssd1306Refresh();
 			break;
 
 		case JOY_RIGHT:
 
 			*param = param_copy;
 			ssd1306ClearScreen(MAIN_AREA);
-			ssd1306Refresh(MAIN_AREA);
+			ssd1306Refresh();
 			return SUCCESS;
 			break;
 		}
@@ -498,7 +498,7 @@ int modifyLongParam( char *param_name,long *param)
 	ssd1306DrawString(0, 57, "      'LEFT'  TO RETURN.", &Font_3x6);
 	ssd1306DrawString((10-collone)*8,20,"^",&Font_8x8);
 	ssd1306DrawString((10-collone)*8,36,"v",&Font_8x8);
-	ssd1306Refresh(MAIN_AREA);
+	ssd1306Refresh();
 
 	while (1)
 	{
@@ -516,7 +516,7 @@ int modifyLongParam( char *param_name,long *param)
 				ssd1306ClearRect(0,36,128,8);
 				ssd1306DrawString((9-collone)*9,20,"^",&Font_8x8);
 				ssd1306DrawString((9-collone)*9,36,"v",&Font_8x8);
-				ssd1306Refresh(MAIN_AREA);
+				ssd1306Refresh();
 			}
 			break;
 		case JOY_UP:
@@ -526,7 +526,7 @@ int modifyLongParam( char *param_name,long *param)
 			ssd1306ClearRect(0, 28, 164, 8);
 			sprintf(str, "%10i", (int)param_copy);
 			ssd1306DrawString(0, 28, str, &Font_8x8);
-			ssd1306Refresh(MAIN_AREA);
+			ssd1306Refresh();
 			break;
 		case JOY_DOWN :
 
@@ -535,13 +535,13 @@ int modifyLongParam( char *param_name,long *param)
 			ssd1306ClearRect(0, 28, 164, 8);
 			sprintf(str, "%10i", (int)param_copy);
 			ssd1306DrawString(0, 28, str, &Font_8x8);
-			ssd1306Refresh(MAIN_AREA);
+			ssd1306Refresh();
 			break;
 		case JOY_RIGHT :
 			if(collone==0)
 			{
 				*param = param_copy;
-				ssd1306Refresh(MAIN_AREA);
+				ssd1306Refresh();
 				return SUCCESS;
 			}
 			else
@@ -551,7 +551,7 @@ int modifyLongParam( char *param_name,long *param)
 				ssd1306ClearRect(0,36,128,8);
 				ssd1306DrawString((9-collone)*9,20,"^",&Font_8x8);
 				ssd1306DrawString((9-collone)*9,36,"v",&Font_8x8);
-				ssd1306Refresh(MAIN_AREA);
+				ssd1306Refresh();
 			}
 			break;
 		default:
@@ -630,7 +630,7 @@ int modifyPresetParam(char *param_name, void *param)
     ssd1306DrawString(5 * 8, 20, "^", &Font_8x8);
     ssd1306DrawString(5 * 8, 36, "v", &Font_8x8);
 
-    ssd1306Refresh(MAIN_AREA);
+    ssd1306Refresh();
 
     while (1)
     {
@@ -654,7 +654,7 @@ int modifyPresetParam(char *param_name, void *param)
                 ssd1306ClearRect(0, 28, 164, 8);
                 sprintf(str, "%10i", (int) param_copy);
                 ssd1306DrawString(0, 28, str, &Font_8x8);
-                ssd1306Refresh(MAIN_AREA);
+                ssd1306Refresh();
                 break;
 
             case JOY_DOWN:
@@ -668,7 +668,7 @@ int modifyPresetParam(char *param_name, void *param)
                 ssd1306ClearRect(0, 28, 164, 8);
                 sprintf(str, "%10i", param_copy);
                 ssd1306DrawString(0, 28, str, &Font_8x8);
-                ssd1306Refresh(MAIN_AREA);
+                ssd1306Refresh();
                 break;
 
             case JOY_RIGHT:
@@ -680,7 +680,7 @@ int modifyPresetParam(char *param_name, void *param)
                     preset->callback(param_copy, NULL);
                     // TODO: Check returned value if needed
                 }
-                ssd1306Refresh(MAIN_AREA);
+                ssd1306Refresh();
                 return SUCCESS;
 
             default:
@@ -749,25 +749,25 @@ void printGraphMotor (float acceleration, float maxSpeed, float deceleration)
 
 	sprintf(str,"%.2fM.S^2",deceleration);
 	ssd1306DrawString((point2[0]+128)/2-27,(point2[1]+64)/2,str,&Font_3x6);
-	ssd1306Refresh(MAIN_AREA);
+	ssd1306Refresh();
 }
 void welcomeDisplay()
 {
 
 	ssd1306ClearScreen(MAIN_AREA);
 	ssd1306DrawBmp(Pacabot_bmp, 1, 1, 128, 40);
-	ssd1306Refresh(MAIN_AREA);
+	ssd1306Refresh();
 	while (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY);
 
 	for (int i = 0; i <= 100; i+=1)
 	{
 		ssd1306ProgressBar(10, 35, i);
-		ssd1306Refresh(MAIN_AREA);
+		ssd1306Refresh();
 		HAL_Delay(5);
 	}
 	ssd1306ClearScreen(MAIN_AREA);
 	ssd1306DrawBmp(five_years, 1, 1, 128, 54);
-	ssd1306Refresh(MAIN_AREA);
+	ssd1306Refresh();
 }
 
 void powerOffConfirmation()

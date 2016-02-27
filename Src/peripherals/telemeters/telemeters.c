@@ -515,7 +515,7 @@ void telemetersTest(void)
 
 		//		ssd1306PrintInt(1, 45, "IT TIME  =  ", (int32_t) telemeters.it_time, &Font_5x8);
 		ssd1306PrintInt(1, 54, "IT ERROR =  ", (telemeters.it_cnt - telemeters.end_of_conversion), &Font_5x8);
-		ssd1306Refresh(MAIN_AREA);
+		ssd1306Refresh();
 
 		if (joy == JOY_RIGHT)
 		{
@@ -541,7 +541,7 @@ void telemetersTest(void)
 				ssd1306PrintInt(75, 27, "", (int32_t) getTelemeterSpeed(TELEMETER_DR), &Font_5x8);
 				ssd1306PrintInt(75, 36, "", (int32_t) getTelemeterSpeed(TELEMETER_FR), &Font_5x8);
 
-				ssd1306Refresh(MAIN_AREA);
+				ssd1306Refresh();
 			}
 			while (joy == JOY_LEFT)
 			{

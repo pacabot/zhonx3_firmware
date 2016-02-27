@@ -31,7 +31,7 @@ void ssd1306ClearPixel(unsigned char x, unsigned char y);
 void ssd1306InvertPixel(unsigned char x, unsigned char y);
 unsigned char ssd1306GetPixel(unsigned char x, unsigned char y);
 void ssd1306ClearScreen(enum refreshTypeEnum refreshType);
-void ssd1306Refresh(enum refreshTypeEnum refreshType);
+void ssd1306Refresh(void);
 void ssd1306DrawString(unsigned int x, unsigned int y, const char *text, const FONT_DEF *font);
 void ssd1306PrintInt(unsigned int x,unsigned int y, const char *text, unsigned int val, const FONT_DEF *font);
 void ssd1306Printf(int x, int y, const FONT_DEF *font, const char *format, ...);

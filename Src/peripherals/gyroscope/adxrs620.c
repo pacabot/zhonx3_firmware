@@ -121,7 +121,7 @@ void adxrs620Test(void)
 
 		ssd1306PrintInt(10,  45,  "ADC val =  ", (int32_t) gyro.adc_value, &Font_5x8);
 
-		ssd1306Refresh(MAIN_AREA);
+		ssd1306Refresh();
 	}
 }
 
@@ -131,14 +131,14 @@ void adxrs620Cal(void)
 	adxrs620Init();
 	ssd1306ClearScreen(MAIN_AREA);
 	ssd1306DrawString(0, 50, "DON'T TOUTCH Z3!!", &Font_3x6);
-	ssd1306Refresh(MAIN_AREA);
+	ssd1306Refresh();
 	HAL_Delay(3000);
 	cal = adxrs620Calibrate(5000);
 	while(expanderJoyFiltered()!=JOY_LEFT)
 	{
 		ssd1306ClearScreen(MAIN_AREA);
 		ssd1306PrintInt(10,  5,  "B =", (int32_t)(cal * 100000.00), &Font_5x8);
-		ssd1306Refresh(MAIN_AREA);
+		ssd1306Refresh();
 	}
 }
 

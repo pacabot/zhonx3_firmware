@@ -220,7 +220,7 @@ void encoderTest(void)
 		{
 			encodersReset();
 		}
-		ssd1306Refresh(MAIN_AREA);
+		ssd1306Refresh();
 		HAL_Delay(10);
 	}
 	antiBounceJoystick();
