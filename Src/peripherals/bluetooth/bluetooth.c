@@ -200,7 +200,6 @@ int bluetoothSetBaudrate(int baudrate, void *param)
 	return rv;
 }
 
-
 int isBluetoothEvent(char *evnt)
 {
 	if (strncmp(evnt, "AT-AB ", 6) == 0)
@@ -221,8 +220,8 @@ void bluetoothTest(void)
 	{
 		bluetoothPrintf("hello ZHONX_III, nb send = %d\r\n", i);
 		ssd1306ClearScreen(MAIN_AREA);
-		ssd1306DrawString(10, 5, "send hello ZHONX III", &Font_5x8);
-		ssd1306PrintInt(10, 15, "nb send = ", i, &Font_5x8);
+		ssd1306DrawStringAtLine(0, 0, "send hello ZHONX III", &Font_5x8);
+		ssd1306PrintIntAtLine(0, 1, "nb send = ", i, &Font_5x8);
 		ssd1306Refresh();
 		i++;
 	}

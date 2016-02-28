@@ -28,6 +28,7 @@
 #include "peripherals/multimeter/multimeter.h"
 
 /* Middleware declarations */
+#include "middleware/display/banner.h"
 
 /* Declarations for this module */
 #include "peripherals/gyroscope/adxrs620.h"
@@ -57,8 +58,7 @@ GPIO_InitTypeDef GPIO_InitStruct;
 void adxrs620Init(void)
 {
 	ADC_InjectionConfTypeDef sConfigInjected;
-
-	mulimeterInit();
+	bannerSetIcon(GYROMETER, TRUE);
 
 	/**Configures for the selected ADC injected channel its corresponding rank in the sequencer and its sample time
 	 */
@@ -116,10 +116,10 @@ void adxrs620Test(void)
 	while(expanderJoyFiltered()!=JOY_LEFT)
 	{
 		ssd1306ClearScreen(MAIN_AREA);
-		ssd1306PrintInt(10,  5,  "Angle =  ", (int32_t) gyroGetAngle(), &Font_5x8);
-		ssd1306PrintInt(10,  15,  "cnt =  ", (int32_t) gyro.callback_cnt/1000, &Font_5x8);
+		ssd1306PrintIntAtLine(0,  0,  "Angle =  ", (int32_t) gyroGetAngle(), &Font_5x8);
+		ssd1306PrintIntAtLine(0,  1,  "cnt =  ", (int32_t) gyro.callback_cnt/1000, &Font_5x8);
 
-		ssd1306PrintInt(10,  45,  "ADC val =  ", (int32_t) gyro.adc_value, &Font_5x8);
+		ssd1306PrintIntAtLine(0,  3,  "ADC val =  ", (int32_t) gyro.adc_value, &Font_5x8);
 
 		ssd1306Refresh();
 	}
@@ -130,14 +130,14 @@ void adxrs620Cal(void)
 	double cal;
 	adxrs620Init();
 	ssd1306ClearScreen(MAIN_AREA);
-	ssd1306DrawString(0, 50, "DON'T TOUTCH Z3!!", &Font_3x6);
+	ssd1306DrawStringAtLine(0, 5, "DON'T TOUTCH Z3!!", &Font_3x6);
 	ssd1306Refresh();
 	HAL_Delay(3000);
 	cal = adxrs620Calibrate(5000);
 	while(expanderJoyFiltered()!=JOY_LEFT)
 	{
 		ssd1306ClearScreen(MAIN_AREA);
-		ssd1306PrintInt(10,  5,  "B =", (int32_t)(cal * 100000.00), &Font_5x8);
+		ssd1306PrintIntAtLine(10,  1,  "B =", (int32_t)(cal * 100000.00), &Font_5x8);
 		ssd1306Refresh();
 	}
 }

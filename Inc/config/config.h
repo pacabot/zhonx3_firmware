@@ -19,7 +19,7 @@
 #define TELEMETERS_TIME_FREQ	1600 * 10  		//each telemeter use 1/10 of TELEMETERS_TIME_FREQ
 #define GYRO_TIME_FREQ			4000.00
 #define LINESENSORS_TIME_FREQ	GYRO_TIME_FREQ 	//same timer
-#define MULTIMMETER_TIME_FREQ	0.1f
+#define MULTIMMETER_TIME_FREQ	1
 #define MOTORS_FREQ				20000	//motor pwm freq
 
 /**************************************************************************************/

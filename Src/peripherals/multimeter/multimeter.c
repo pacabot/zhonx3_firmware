@@ -81,7 +81,7 @@ void mulimeterInit(void)
 	hadc1.Init.ScanConvMode = ENABLE;
 	hadc1.Init.ContinuousConvMode = DISABLE;
 	hadc1.Init.DiscontinuousConvMode = DISABLE;
-	hadc1.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_RISING;
+	hadc1.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_RISINGFALLING;
 	hadc1.Init.ExternalTrigConv = ADC_EXTERNALTRIGCONV_T4_CC4;
 	hadc1.Init.DataAlign = ADC_DATAALIGN_RIGHT;
 	hadc1.Init.NbrOfConversion = 3;
@@ -118,9 +118,9 @@ void mulimeterInit(void)
 
 void multimeter_IT(void)
 {
-	multimeter.timer_cnt++;
 	multimeter.gpio_vbat_state = 1;
 	HAL_GPIO_WritePin(GPIOB, GET_ADC_BAT, SET);
+	multimeter.timer_cnt++;
 }
 
 void multimeter_ADC_IT(void)
@@ -150,15 +150,12 @@ float multimeterGyroTemp(void)
 
 void mulimeterTest(void)
 {
-
 	while(expanderJoyFiltered()!=JOY_LEFT)
 	{
 		ssd1306ClearScreen(MAIN_AREA);
-		ssd1306PrintInt(10,  5,  "timer count =  ", (int32_t) multimeter.timer_cnt, &Font_5x8);
-		ssd1306PrintInt(10,  15,  "get vbat =  ", (int32_t) multimeter.gpio_vbat_state, &Font_5x8);
-		ssd1306PrintInt(10,  35,  "Temp. Gyro =  ", (int)multimeterGyroTemp() * 10, &Font_5x8);
-		ssd1306PrintInt(10,  45,  "Temp. STM32 =  ", (int)multimeterSTM32Temp() * 10, &Font_5x8);
-		ssd1306PrintInt(10,  55,  "vbat (mV) =  ", (int)multimeterGetBatVoltage(), &Font_5x8);
+		ssd1306PrintIntAtLine(0,  0, "Temp. Gyro =  ", (int)(multimeterGyroTemp() * 10.00), &Font_5x8);
+		ssd1306PrintIntAtLine(0,  1, "Temp. STM32 =  ", (int)(multimeterSTM32Temp() * 10.00), &Font_5x8);
+		ssd1306PrintIntAtLine(0,  3, "vbat (mV) =  ", (int)multimeterGetBatVoltage(), &Font_5x8);
 		ssd1306Refresh();
 	}
 }

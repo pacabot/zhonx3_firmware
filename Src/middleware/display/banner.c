@@ -24,116 +24,136 @@
 /* Declarations for this module */
 #include "middleware/display/banner.h"
 
+static void SetBeeperIcon(int charge_level);
+static void SetBatIcon(int charge_level);
 void bannerExample(void);
-#define SSD1306_BANNER_REFRESH_FPS		1
 
-void banner_IT(void)
+void bannerSetIcon(enum iconType icon, int val)
 {
-//	static char cnt = 0;
-//	cnt++;
-//
-//	if ((cnt % (LOW_TIME_FREQ / SSD1306_BANNER_REFRESH_FPS)) == TRUE)
-//		bannerExample();
-//
-//	if (cnt > LOW_TIME_FREQ)
-//		cnt = 0;
+	switch (icon)
+	{
+	case LINESENSORS:
+		ssd1306ClearRect(38, -1, 13, 8);
+		if (val != FALSE)
+			ssd1306DrawBmp(IRLine_Icon, 38, -1, 13, 8);
+		break;
+	case TELEMETERS:
+		ssd1306ClearRect(55, -1, 13, 8);
+		if (val != FALSE)
+			ssd1306DrawBmp(IR_Icon3, 55, -1, 13, 8);
+		break;
+	case GYROMETER:
+		ssd1306ClearRect(72, -1, 12, 8);
+		if (val != FALSE)
+			ssd1306DrawBmp(gyro_Icon1, 72, -1, 12, 8);
+		break;
+	case BEEPER:
+		SetBeeperIcon(val);
+		break;
+	case BLUETOOTH:
+		ssd1306ClearRect(105, -1,  5, 8);
+		if (val != FALSE)
+			ssd1306DrawBmp(BT_Icon, 105, -1,  5, 8);
+		break;
+	case BATTERY:
+		SetBatIcon(val);
+		break;
+	case USB:
+		ssd1306ClearRect(115, -1, 13, 8);
+		if (val != FALSE)
+			ssd1306DrawBmp(USB_Icon, 115, -1, 13, 8);
+		break;
+	}
+
+	ssd1306Refresh();
+}
+
+static void SetBeeperIcon(int volume)
+{
+	if(volume == 0)
+	{
+		ssd1306ClearRect(89, -1, 11, 8);
+		return;
+	}
+	ssd1306DrawBmp(beeper_Icon, 89, -1, 11, 8);
+
+	if (volume > 100)
+		volume = 100;
+	if (volume < 1)
+		volume = 1;
+
+	volume = volume * 3 / 100;
+
+	switch (volume)
+	{
+	case 0:
+		ssd1306ClearRect(89 + 11 - 6, -1, 6, 8);
+		break;
+	case 1:
+		ssd1306ClearRect(89 + 11 - 4, -1, 4, 8);
+		break;
+	case 2:
+		ssd1306ClearRect(89 + 11 - 2, -1, 2, 8);
+		break;
+	}
+}
+
+static void SetBatIcon(int charge_level)
+{
+	ssd1306DrawBmp(bat_Icon, 115, -1, 13, 8);
+
+	if (charge_level > 100)
+		charge_level = 100;
+	if (charge_level < 1)
+		charge_level = 1;
+
+	charge_level = charge_level * 12 / 100;
+
+	if (charge_level >= 1)
+		ssd1306DrawPixel(117,5);
+	if (charge_level >= 2){
+		ssd1306DrawPixel(118,5);
+		ssd1306DrawPixel(117,4);}
+	if (charge_level >= 3){
+		ssd1306DrawPixel(118,4);
+		ssd1306DrawPixel(117,3);}
+	if (charge_level >= 4)
+		ssd1306DrawPixel(118,3);
+	if (charge_level >= 5)
+		ssd1306DrawPixel(120,5);
+	if (charge_level >= 6){
+		ssd1306DrawPixel(121,5);
+		ssd1306DrawPixel(120,4);}
+	if (charge_level >= 7){
+		ssd1306DrawPixel(121,4);
+		ssd1306DrawPixel(120,3);}
+	if (charge_level >= 8)
+		ssd1306DrawPixel(121,3);
+	if (charge_level >= 9)
+		ssd1306DrawPixel(123,5);
+	if (charge_level >= 10){
+		ssd1306DrawPixel(124,5);
+		ssd1306DrawPixel(123,4);}
+	if (charge_level >= 11){
+		ssd1306DrawPixel(124,4);
+		ssd1306DrawPixel(123,3);}
+	if (charge_level >= 12)
+		ssd1306DrawPixel(124,3);
 }
 
 void bannerExample(void)
 {
-	static char i = 0;
-	i++;
+	bannerSetIcon(LINESENSORS, TRUE);
+	bannerSetIcon(TELEMETERS, TRUE);
+	bannerSetIcon(GYROMETER, TRUE);
+	bannerSetIcon(BLUETOOTH, TRUE);
+	bannerSetIcon(USB, TRUE);
 
-//	ssd1306ClearScreen(BANNER_AREA);
-
-	if (i > 12)
+	for (int i = 0; i <= 100; i++)
 	{
-		ssd1306DrawBmp(USB_Icon, 115, 0, 13, 8);
+		bannerSetIcon(BEEPER, i);
+		bannerSetIcon(BATTERY, i);
+		HAL_Delay(50);
 	}
-	else
-	{
-		ssd1306DrawBmp(bat_Icon, 115, 0, 13, 8);
-		if (i >= 1)
-		{
-			ssd1306DrawPixel(117,5);
-		}
-
-		if (i >= 2)
-		{
-			ssd1306DrawPixel(118,5);
-			ssd1306DrawPixel(117,4);
-		}
-
-		if (i >= 3)
-		{
-			ssd1306DrawPixel(118,4);
-			ssd1306DrawPixel(117,3);
-		}
-
-		if (i >= 4)
-		{
-			ssd1306DrawPixel(118,3);
-		}
-
-		if (i >= 5)
-		{
-			ssd1306DrawPixel(120,5);
-		}
-
-		if (i >= 6)
-		{
-			ssd1306DrawPixel(121,5);
-			ssd1306DrawPixel(120,4);
-		}
-
-		if (i >= 7)
-		{
-			ssd1306DrawPixel(121,4);
-			ssd1306DrawPixel(120,3);
-		}
-
-		if (i >= 8)
-		{
-			ssd1306DrawPixel(121,3);
-		}
-
-		if (i >= 9)
-		{
-			ssd1306DrawPixel(123,5);
-		}
-
-		if (i >= 10)
-		{
-			ssd1306DrawPixel(124,5);
-			ssd1306DrawPixel(123,4);
-		}
-
-		if (i >= 11)
-		{
-			ssd1306DrawPixel(124,4);
-			ssd1306DrawPixel(123,3);
-		}
-
-		if (i >= 12)
-		{
-			ssd1306DrawPixel(124,3);
-		}
-
-		if (i > 40)
-			ssd1306DrawBmp(BT_Icon,  105, 0,  5, 8);
-		if (i < 50)
-			ssd1306DrawBmp(beeper_Icon, 89, 0, 11, 8);
-		if (i > 10)
-			ssd1306DrawBmp(gyro_Icon1, 72, 0, 12, 8);
-		if (i < 48)
-			ssd1306DrawBmp(IR_Icon3, 55, 0, 13, 8);
-		if (i > 24)
-			ssd1306DrawBmp(IRLine_Icon, 38, 0, 13, 8);
-
-		ssd1306PrintInt(10, 0, "", (char) i, &Font_3x6);
-		ssd1306PrintInt(0, 0, "", 0, &Font_3x6);
-		ssd1306DrawString(8, 0, ":", &Font_3x6);
-
-//		ssd1306Refresh(BANNER_AREA);
-	}
+	HAL_Delay(5000);
 }

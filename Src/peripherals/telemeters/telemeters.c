@@ -29,6 +29,7 @@
 #include "peripherals/bluetooth/bluetooth.h"
 
 /* Middleware declarations */
+#include "middleware/display/banner.h"
 
 /*application include */
 #include "application/solverMaze/solverMaze.h"
@@ -198,6 +199,7 @@ void telemetersInit(void)
 void telemetersStart(void)
 {
 	telemeters.active_state = TRUE;
+	bannerSetIcon(TELEMETERS, TRUE);
 }
 
 void telemetersStop(void)
@@ -206,6 +208,7 @@ void telemetersStop(void)
 	HAL_GPIO_WritePin(GPIOB, TX_FR, RESET);
 	HAL_GPIO_WritePin(GPIOB, TX_DUAL_DIAG, RESET);
 	telemeters.active_state = FALSE;
+	bannerSetIcon(TELEMETERS, FALSE);
 }
 
 double getTelemeterDist(enum telemeterName telemeter_name)
@@ -501,53 +504,44 @@ void telemetersTest(void)
 
 		ssd1306ClearScreen(MAIN_AREA);
 
-		ssd1306DrawString(1,0, "   AVRG 1/10mm", &Font_5x8);
+		ssd1306DrawStringAtLine(0,0, " ADC  REF  AVG  DIST", &Font_5x8);
 
-		ssd1306PrintInt(1, 9 , "FL ", (int32_t) getTelemeterAvrg(TELEMETER_FL), &Font_5x8);
-		ssd1306PrintInt(1, 18, "DL ", (int32_t) getTelemeterAvrg(TELEMETER_DL), &Font_5x8);
-		ssd1306PrintInt(1, 27, "DR ", (int32_t) getTelemeterAvrg(TELEMETER_DR), &Font_5x8);
-		ssd1306PrintInt(1, 36, "FR ", (int32_t) getTelemeterAvrg(TELEMETER_FR), &Font_5x8);
+		ssd1306PrintIntAtLine(0, 1, "", (uint32_t)telemeters.FL.adc, &Font_5x8);
+		ssd1306PrintIntAtLine(0, 2, "", (uint32_t)telemeters.DL.adc, &Font_5x8);
+		ssd1306PrintIntAtLine(0, 3, "", (uint32_t)telemeters.DR.adc, &Font_5x8);
+		ssd1306PrintIntAtLine(0, 4, "", (uint32_t)telemeters.FR.adc, &Font_5x8);
 
-		ssd1306PrintInt(45, 9 ,"", (int32_t) (telemeters.FL.dist_mm * 10), &Font_5x8);
-		ssd1306PrintInt(45, 18,"", (int32_t) (telemeters.DL.dist_mm * 10), &Font_5x8);
-		ssd1306PrintInt(45, 27,"", (int32_t) (telemeters.DR.dist_mm * 10), &Font_5x8);
-		ssd1306PrintInt(45, 36,"", (int32_t) (telemeters.FR.dist_mm * 10), &Font_5x8);
+		ssd1306PrintIntAtLine(30, 1, "", (uint32_t)telemeters.FL.adc_ref, &Font_5x8);
+		ssd1306PrintIntAtLine(30, 2, "", (uint32_t)telemeters.DL.adc_ref, &Font_5x8);
+		ssd1306PrintIntAtLine(30, 3, "", (uint32_t)telemeters.DR.adc_ref, &Font_5x8);
+		ssd1306PrintIntAtLine(30, 4, "", (uint32_t)telemeters.FR.adc_ref, &Font_5x8);
 
-		//		ssd1306PrintInt(1, 45, "IT TIME  =  ", (int32_t) telemeters.it_time, &Font_5x8);
-		ssd1306PrintInt(1, 54, "IT ERROR =  ", (telemeters.it_cnt - telemeters.end_of_conversion), &Font_5x8);
+		ssd1306PrintIntAtLine(60, 1, "", (uint32_t)getTelemeterAvrg(TELEMETER_FL), &Font_5x8);
+		ssd1306PrintIntAtLine(60, 2, "", (uint32_t)getTelemeterAvrg(TELEMETER_DL), &Font_5x8);
+		ssd1306PrintIntAtLine(60, 3, "", (uint32_t)getTelemeterAvrg(TELEMETER_DR), &Font_5x8);
+		ssd1306PrintIntAtLine(60, 4, "", (uint32_t)getTelemeterAvrg(TELEMETER_FR), &Font_5x8);
+
+		ssd1306PrintIntAtLine(90, 1, "", (uint32_t)getTelemeterDist((TELEMETER_FL)*10.00), &Font_5x8);
+		ssd1306PrintIntAtLine(90, 2, "", (uint32_t)getTelemeterDist((TELEMETER_DL)*10.00), &Font_5x8);
+		ssd1306PrintIntAtLine(90, 3, "", (uint32_t)getTelemeterDist((TELEMETER_DR)*10.00), &Font_5x8);
+		ssd1306PrintIntAtLine(90, 4, "", (uint32_t)getTelemeterDist((TELEMETER_FR)*10.00), &Font_5x8);
 		ssd1306Refresh();
 
-		if (joy == JOY_RIGHT)
-		{
-			HAL_Delay(1000);
-			while (joy != JOY_LEFT)
-			{
-				joy = expanderJoyFiltered();
-				ssd1306ClearScreen(MAIN_AREA);
-				ssd1306DrawString(1,0, "   ADC  REF  VAR", &Font_5x8);
-
-				ssd1306PrintInt(1, 9 , "FL ", (int32_t) telemeters.FL.adc, &Font_5x8);
-				ssd1306PrintInt(1, 18, "DL ", (int32_t) telemeters.DL.adc, &Font_5x8);
-				ssd1306PrintInt(1, 27, "DR ", (int32_t) telemeters.DR.adc, &Font_5x8);
-				ssd1306PrintInt(1, 36, "FR ", (int32_t) telemeters.FR.adc, &Font_5x8);
-
-//				ssd1306PrintInt(45, 9 , "", (int32_t) getTelemeterAvrg(TELEMETER_FL), &Font_5x8);
-//				ssd1306PrintInt(45, 18, "", (int32_t) getTelemeterAvrg(TELEMETER_DL), &Font_5x8);
-//				ssd1306PrintInt(45, 27, "", (int32_t) getTelemeterAvrg(TELEMETER_DR), &Font_5x8);
-//				ssd1306PrintInt(45, 36, "", (int32_t) getTelemeterAvrg(TELEMETER_FR), &Font_5x8);
-
-				ssd1306PrintInt(75, 9 , "", (int32_t) getTelemeterSpeed(TELEMETER_FL), &Font_5x8);
-				ssd1306PrintInt(75, 18, "", (int32_t) getTelemeterSpeed(TELEMETER_DL), &Font_5x8);
-				ssd1306PrintInt(75, 27, "", (int32_t) getTelemeterSpeed(TELEMETER_DR), &Font_5x8);
-				ssd1306PrintInt(75, 36, "", (int32_t) getTelemeterSpeed(TELEMETER_FR), &Font_5x8);
-
-				ssd1306Refresh();
-			}
-			while (joy == JOY_LEFT)
-			{
-				joy = expanderJoyFiltered();
-			}
-		}
+//		if (joy == JOY_RIGHT)	//if add one page
+//		{
+//			HAL_Delay(100);
+//			while (joy != JOY_LEFT)
+//			{
+//				joy = expanderJoyFiltered();
+//				ssd1306ClearScreen(MAIN_AREA);
+//
+//				ssd1306Refresh();
+//			}
+//			while (joy == JOY_LEFT)
+//			{
+//				joy = expanderJoyFiltered();
+//			}
+//		}
 	}
 	telemetersStop();
 }

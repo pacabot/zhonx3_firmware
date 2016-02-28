@@ -131,6 +131,10 @@ int main(void)
 	settingsInit();
 	mulimeterInit();
 	bluetoothInit();
+	toneInit();
+
+	tone(F3, 50);
+	toneItMode(A3, 50);
 
     // Register Output callback
     cmd_context.out = blockingPrintf;
@@ -211,8 +215,7 @@ void SystemClock_Config(void)
 int setMeddle(void)
 {
     strcpy(zhonxName, ZHONX_GENERATION);
-    strcat(zhonxName, " Meddle V");
-    strcat(zhonxName, ZHONX_VERSION);
+    strcat(zhonxName, " MEDDLE");
     // Set Bluetooth device name
     bluetoothCmd("at+ab config DeviceName=Meddle");
     bluetoothCmd("AT+AB Reset");
@@ -222,8 +225,7 @@ int setMeddle(void)
 int setDark(void)
 {
     strcpy(zhonxName, ZHONX_GENERATION);
-    strcat(zhonxName, " Dark V");
-    strcat(zhonxName, ZHONX_VERSION);
+    strcat(zhonxName, " DARK");
     // Set Bluetooth device name
     bluetoothCmd("at+ab config DeviceName=Dark");
     bluetoothCmd("AT+AB Reset");

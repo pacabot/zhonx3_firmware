@@ -87,7 +87,7 @@ float tata=4.0;
 
 const menuItem testGraphicMenu =
 {
-		"test graphic menu",
+		"GRAPHICS",
 		{
 				{"Default accel :",'a',			(void*)&toto},
 				{"Max speed dist:",'a',			(void*)&titi},
@@ -99,7 +99,7 @@ const menuItem testGraphicMenu =
 
 const menuItem maze_menu=
 {
-		"maze menu",
+		"MAZE",
 		{
 				{"new maze",'f',		(void*)maze},
 				{"calibration",'b',		(void*)&zhonxSettings.calibration_enabled},
@@ -112,7 +112,7 @@ const menuItem maze_menu=
 
 const menuItem follower_menu=
 {
-		"line menu",
+		"LINE FOLL",
 		{
 				{"line follower",'f',	(void*)lineFollower},
 				{"calibration",'f',		(void*)lineSensorsCalibration},
@@ -125,7 +125,7 @@ const menuItem follower_menu=
 
 const menuItem parameters_menu=
 {
-		"Parameters menu",
+		"PARAMS",
 		{
 				{"calibration front",'f',(void*)wallSensorsCalibrationFront},
 				{"calibration diag",'f',(void*)wallSensorsCalibrationDiag},
@@ -135,14 +135,13 @@ const menuItem parameters_menu=
 };
 const menuItem peripheral_test_menu=
 {
-		"peripherals test menu",
+		"PERIPH.",
         {0}
 };
 const menuItem tests_menu=
 {
-		"UNIT TEST",
+		"TESTS",
 		{
-				{"distance",		'f', (void*)testTelemeterDistance},
 				{"wall sensor",		'f', (void*)testWallsSensors},
 				{"bluetooth",		'f', (void*)bluetoothTest},
 				{"multimeter",		'f', (void*)mulimeterTest},
@@ -162,7 +161,7 @@ const menuItem tests_menu=
 
 const menuItem control_menu=
 {
-		"control menu",
+		"CONTROL",
 		{
 				{"control test",'f',		(void*)mainControlTest},
 				{"follow the wall",'f',		(void*)followWallTest},
@@ -175,7 +174,7 @@ const menuItem control_menu=
 
 const menuItem zhonxNameMenu =
 {
-        "Choose ZHONX III Name",
+        "SET MAME",
         {
                 {"Meddle", 'f', setMeddle},
                 {"Dark", 'f', setDark},
@@ -212,6 +211,7 @@ int menu(const menuItem Menu)
 	ssd1306Refresh();
 	while (true)
 	{
+		//ssd1306ClearRect(0, -1,  38, 8); //clear title name
 		HAL_Delay(50);
 		int joystick = expanderJoyFiltered();
 //		killOnLowBattery();
@@ -221,7 +221,7 @@ int menu(const menuItem Menu)
 			return SUCCESS;
 			// Joystick down
 		case JOY_DOWN:
-			//beeper
+			toneItMode(100, 10);
 			if (Menu.line[line_menu + 1].name != null)
 			{
 				line_menu++;
@@ -249,7 +249,7 @@ int menu(const menuItem Menu)
 			}
 			break;
 		case JOY_UP:
-			//beeper
+			toneItMode(100, 10);
 			if (line_menu > 0)
 			{
 				line_menu--;
@@ -289,7 +289,7 @@ int menu(const menuItem Menu)
 			}
 			break;
 		case JOY_RIGHT: // Validate button joystick right
-			//hal_beeper_beep(app_context.beeper, 4000, 10);
+			toneItMode(8000, 20);
 			switch (Menu.line[line_menu].type)
 			{
 			case 'b':
@@ -305,6 +305,7 @@ int menu(const menuItem Menu)
 						(long*) Menu.line[line_menu].param);
 				break;
 			case 'm':
+				ssd1306ClearRect(0, -1,  38, 8); //clear title name
 				menu(*(const menuItem*) Menu.line[line_menu].param);
 				break;
 			case 'f':
@@ -328,6 +329,7 @@ int menu(const menuItem Menu)
 			default:
 				break;
 			}
+			ssd1306ClearRect(0, -1,  38, 8); //clear title name
 			displayMenu(Menu, line_menu - (line_screen - 1));
 			ssd1306InvertArea(0, MARGIN * line_screen, HIGHLIGHT_LENGHT,
 					HIGHLIGHT_HEIGHT);
@@ -373,34 +375,33 @@ void displayMenu(const menuItem menu,int line)
 {
 	//char str[5];
 	ssd1306ClearScreen(MAIN_AREA);
-	ssd1306DrawString(0,0,menu.name,&Font_5x8);
-	ssd1306DrawLine(0,8,128,8);
+	ssd1306DrawString(0,-1,menu.name,&Font_3x6);
 	for (int i=0;i<MAX_LINE_SCREEN;i++)
 	{
 		if(menu.line[i].name!=null)
-			ssd1306DrawString(0,MARGIN*i+MARGIN+1,menu.line[line+i].name,&Font_5x8);
+			ssd1306DrawStringAtLine(1,i,menu.line[line+i].name,&Font_5x8);
 		switch (menu.line[line+i].type)
 		{
 		case 'b':
 			if(*((bool*)menu.line[i+line].param)==true)
-				ssd1306DrawString(90,MARGIN*i+MARGIN+1,"yes",&Font_5x8);
+				ssd1306DrawStringAtLine(90,i,"yes",&Font_5x8);
 			else
-				ssd1306DrawString(90,MARGIN*i+MARGIN+1,"no",&Font_5x8);
+				ssd1306DrawStringAtLine(90,i,"no",&Font_5x8);
 			break;
 		case 'i':
-			ssd1306PrintInt(90,MARGIN*i+MARGIN+1," ",*((unsigned int*)menu.line[i+line].param),&Font_3x6);
+			ssd1306PrintIntAtLine(90,i," ",*((unsigned int*)menu.line[i+line].param),&Font_3x6);
 			break;
 		case 'l':
-			ssd1306PrintInt(90,MARGIN*i+MARGIN+1," ",*((unsigned long*)menu.line[i+line].param),&Font_3x6);
+			ssd1306PrintIntAtLine(90,i," ",*((unsigned long*)menu.line[i+line].param),&Font_3x6);
 			break;
 		case 'f':
-			ssd1306DrawString(110,i*MARGIN+MARGIN+1,"->",&Font_3x6);
+			ssd1306DrawStringAtLine(110,i,"->",&Font_3x6);
 			break;
 		case 'm':
-			ssd1306DrawString(115,i*MARGIN+MARGIN+1,">",&Font_3x6);
+			ssd1306DrawStringAtLine(115,i,">",&Font_3x6);
 			break;
 		case 'p':
-			ssd1306PrintInt(90,MARGIN*i+MARGIN+1," ",(long)((presetParam*)menu.line[i+line].param)->p_value,&Font_3x6);
+			ssd1306PrintIntAtLine(90,i," ",(long)((presetParam*)menu.line[i+line].param)->p_value,&Font_3x6);
 			break;
 		}
 	}
@@ -425,8 +426,8 @@ int modifyBoolParam( char *param_name, unsigned char *param)
 	ssd1306ClearScreen(MAIN_AREA);
 
 	// Write the parameter name
-	ssd1306DrawString(0, 0,param_name, &Font_5x8);
-	ssd1306DrawLine(0, 9, 128, 9);
+	ssd1306DrawStringAtLine(0, 0,param_name, &Font_5x8);
+	ssd1306DrawLine(0, 1, 128, 9);
 
 	if (param_copy == true)
 	{
@@ -436,9 +437,9 @@ int modifyBoolParam( char *param_name, unsigned char *param)
 	{
 		sprintf(str, "NO");
 	}
-	ssd1306DrawString(0, 28, str, &Font_8x8);
-	ssd1306DrawString(0, 50, "PRESS 'RIGHT' TO VALIDATE", &Font_3x6);
-	ssd1306DrawString(0, 57, "      'LEFT'  TO RETURN.", &Font_3x6);
+	ssd1306DrawStringAtLine(0, 3, str, &Font_8x8);
+	ssd1306DrawStringAtLine(0, 5, "PRESS 'RIGHT' TO VALIDATE", &Font_3x6);
+	ssd1306DrawStringAtLine(0, 6, "      'LEFT'  TO RETURN.", &Font_3x6);
 	ssd1306Refresh();
 
 	while (1)

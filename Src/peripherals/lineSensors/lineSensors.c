@@ -27,6 +27,7 @@
 #include "peripherals/expander/pcf8574.h"
 
 /* Middleware declarations */
+#include "middleware/display/banner.h"
 
 /* Declarations for this module */
 #include "peripherals/lineSensors/lineSensors.h"
@@ -138,6 +139,7 @@ void lineSensorsStart(void)
 	lineSensors.front.average_value = 0;
 	HAL_ADCEx_InjectedStart_IT(&hadc2);
 	HAL_ADCEx_InjectedStart_IT(&hadc3);
+	bannerSetIcon(LINESENSORS, TRUE);
 }
 
 void lineSensorsStop(void)
@@ -146,6 +148,7 @@ void lineSensorsStop(void)
 	HAL_GPIO_WritePin(GPIOA, TX_LINESENSORS, RESET);
 	HAL_ADCEx_InjectedStop_IT(&hadc2);
 	HAL_ADCEx_InjectedStop_IT(&hadc3);
+	bannerSetIcon(LINESENSORS, FALSE);
 }
 
 void lineSensorsCalibrate(void)
@@ -211,11 +214,11 @@ void lineSensorsTest(void)
 	while(expanderJoyFiltered()!=JOY_LEFT)
 	{
 		ssd1306ClearScreen(MAIN_AREA);
-		ssd1306PrintInt(10, 5,  "LEFT_EXT  =  ", (uint16_t) lineSensors.left_ext.adc_value, &Font_5x8);
-		ssd1306PrintInt(10, 15, "LEFT      =  ", (uint16_t) lineSensors.left.adc_value, &Font_5x8);
-		ssd1306PrintInt(10, 25, "FRONT     =  ", (uint16_t) lineSensors.front.adc_value, &Font_5x8);
-		ssd1306PrintInt(10, 35, "RIGHT     =  ", (uint16_t) lineSensors.right.adc_value, &Font_5x8);
-		ssd1306PrintInt(10, 45, "RIGHT_EXT =  ", (uint16_t) lineSensors.right_ext.adc_value, &Font_5x8);
+		ssd1306PrintIntAtLine(0, 0, "LEFT_EXT  =  ", (uint16_t) lineSensors.left_ext.adc_value, &Font_5x8);
+		ssd1306PrintIntAtLine(0, 1, "LEFT      =  ", (uint16_t) lineSensors.left.adc_value, &Font_5x8);
+		ssd1306PrintIntAtLine(0, 2, "FRONT     =  ", (uint16_t) lineSensors.front.adc_value, &Font_5x8);
+		ssd1306PrintIntAtLine(0, 3, "RIGHT     =  ", (uint16_t) lineSensors.right.adc_value, &Font_5x8);
+		ssd1306PrintIntAtLine(0, 4, "RIGHT_EXT =  ", (uint16_t) lineSensors.right_ext.adc_value, &Font_5x8);
 		ssd1306Refresh();
 	}
 	lineSensorsStop();

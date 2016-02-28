@@ -43,6 +43,7 @@
 
 #define SSD1306_CMDSIZE					1
 
+#define SSD1306_BANNERSIZE				(SSD1306_CMDSIZE + SSD1306_LCDWIDTH)
 #define SSD1306_MAINSIZE				(SSD1306_CMDSIZE + (SSD1306_LCDWIDTH * SSD1306_LCDPAGEHEIGHT))
 
 // Commands
@@ -71,13 +72,16 @@
 #define SSD1306_EXTERNALVCC             0x01
 #define SSD1306_SWITCHCAPVCC            0x02
 
+#define LINE_SPACING 					10
+#define HEAD_MARGIN						11
+
 /* extern variables ---------------------------------------------------------*/
 extern I2C_HandleTypeDef hi2c1;
 extern DMA_HandleTypeDef hdma_i2c1_tx;
 
 /* Private variables ---------------------------------------------------------*/
 //static unsigned char banner_aera_buffer[SSD1306_BANNERSIZE];
-static unsigned char main_aera_buffer[SSD1306_MAINSIZE];
+static unsigned char display_buffer[SSD1306_MAINSIZE];
 
 /**************************************************************************/
 /*  Private Function Prototypes                                           */
@@ -127,15 +131,15 @@ static void DATA(uint8_t c[], uint16_t size)
 /**************************************************************************/
 static void ssd1306DrawChar(unsigned int x, unsigned int y, unsigned char c, const FONT_DEF *font)
 {
-    unsigned int    xoffset;
-    unsigned char   yoffset;
+	unsigned int    xoffset;
+	unsigned char   yoffset;
 	unsigned char   col;
 	unsigned char   column[font->u8Width];
 
 	// Capitalize character if lower case is not available
 	if ((c > font->u8LastChar) && (font->u8LastChar < 128))
 	{
-	    c -= 32;
+		c -= 32;
 	}
 
 	// Check if the requested character is available
@@ -264,7 +268,7 @@ void ssd1306DrawPixel(unsigned char x, unsigned char y)
 	if ((x >= SSD1306_LCDWIDTH) || (y >= SSD1306_LCDHEIGHT))
 		return;
 
-	main_aera_buffer[x + ((y/8)*SSD1306_LCDWIDTH) + SSD1306_CMDSIZE] |= (1 << y%8);
+	display_buffer[x + ((y/8)*SSD1306_LCDWIDTH) + SSD1306_CMDSIZE] |= (1 << y%8);
 }
 
 /**************************************************************************/
@@ -282,7 +286,7 @@ void ssd1306ClearPixel(unsigned char x, unsigned char y)
 	if ((x >= SSD1306_LCDWIDTH) || (y >= SSD1306_LCDHEIGHT))
 		return;
 
-	main_aera_buffer[x + ((y/8)*SSD1306_LCDWIDTH) + SSD1306_CMDSIZE] &= (1 << y%8);
+	display_buffer[x + ((y/8)*SSD1306_LCDWIDTH) + SSD1306_CMDSIZE] &= (1 << y%8);
 }
 
 /**************************************************************************/
@@ -300,7 +304,7 @@ void ssd1306InvertPixel(unsigned char x, unsigned char y)
 	if ((x >= SSD1306_LCDWIDTH) || (y >= SSD1306_LCDHEIGHT))
 		return;
 
-	main_aera_buffer[x + ((y/8)*SSD1306_LCDWIDTH) + SSD1306_CMDSIZE] ^= (1 << y%8);
+	display_buffer[x + ((y/8)*SSD1306_LCDWIDTH) + SSD1306_CMDSIZE] ^= (1 << y%8);
 }
 
 /**************************************************************************/
@@ -320,7 +324,7 @@ unsigned char ssd1306GetPixel(unsigned char x, unsigned char y)
 	if ((x >= SSD1306_LCDWIDTH) || (y >=SSD1306_LCDHEIGHT))
 		return 0;
 
-	return main_aera_buffer[(x + (y/8)*SSD1306_LCDWIDTH) + SSD1306_CMDSIZE] & (1 << y%8) ? 1 : 0;
+	return display_buffer[(x + (y/8)*SSD1306_LCDWIDTH) + SSD1306_CMDSIZE] & (1 << y%8) ? 1 : 0;
 }
 
 /**************************************************************************/
@@ -330,22 +334,30 @@ unsigned char ssd1306GetPixel(unsigned char x, unsigned char y)
 /**************************************************************************/
 void ssd1306ClearScreen(enum refreshTypeEnum clearType)
 {
-	memset(main_aera_buffer, 0, SSD1306_MAINSIZE);
+	switch (clearType)
+	{
+	case BANNER_AREA:
+		memset(display_buffer, 0, SSD1306_BANNERSIZE);
+		break;
+	case MAIN_AREA:
+		memset(display_buffer + SSD1306_BANNERSIZE, 0, SSD1306_MAINSIZE - SSD1306_BANNERSIZE);
+		break;
+	}
 }
 
 /**************************************************************************/
-/*! 
+/*!
     @brief Renders the contents of the pixel buffer on the LCD
  */
 /**************************************************************************/
 void ssd1306Refresh(void)
 {
-
+	ssd1306DrawDashedLine(0,8,128,8);
 	if (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY)
-//	if (HAL_DMA_GetState(&hdma_i2c1_tx) == HAL_DMA_STATE_BUSY) //todo add frequency limiter based on systick
+		//	if (HAL_DMA_GetState(&hdma_i2c1_tx) == HAL_DMA_STATE_BUSY) //todo add frequency limiter based on systick
 		return;
-	main_aera_buffer[0] = 0x40;
-	DATA(main_aera_buffer, SSD1306_MAINSIZE);
+	display_buffer[0] = 0x40;
+	DATA(display_buffer, SSD1306_MAINSIZE);
 }
 
 /**************************************************************************/
@@ -386,19 +398,24 @@ void ssd1306DrawString(unsigned int x, unsigned int y, const char *text, const F
 	unsigned char l;
 	for (l = 0; l < strlen((const char *)text); l++)
 	{
-	    // Do not send non-printable characters
-	    if ((text[l] <= 0x0E) || (text[l] == 0x7F))
-	    {
-	        continue;
-	    }
+		// Do not send non-printable characters
+		if ((text[l] <= 0x0E) || (text[l] == 0x7F))
+		{
+			continue;
+		}
 		ssd1306DrawChar(x + (l * (font->u8Width + 1)), y, text[l], font);
 	}
 }
+
+void ssd1306DrawStringAtLine(unsigned int x, unsigned int line, const char *text, const FONT_DEF *font)
+{
+	ssd1306DrawString(x, line * LINE_SPACING + HEAD_MARGIN, text, font);
+}
+
 /**************************************************************************/
 //Print a text and value.
 void ssd1306PrintInt(unsigned int x, unsigned int y, const char *text, unsigned int val, const FONT_DEF *font)
 {
-	//int i = 0;
 	char str[10];
 	unsigned int nb_char;
 
@@ -411,8 +428,27 @@ void ssd1306PrintInt(unsigned int x, unsigned int y, const char *text, unsigned 
 	//i = (x + ((nb_char + 1) * font->u8Width));
 	ssd1306DrawString((x + ((nb_char + 1) * font->u8Width)), y, str ,font);
 }
+
+void ssd1306PrintIntAtLine(unsigned int x, unsigned int line, const char *text, unsigned int val, const FONT_DEF *font)
+{
+	ssd1306PrintInt(x, line * LINE_SPACING + HEAD_MARGIN, text, val, font);
+}
+
 void ssd1306Printf(int x, int y, const FONT_DEF *font, const char *format, ...)
 {
+	char temp_buffer[43];
+	va_list va_args;
+
+	va_start(va_args, format);
+	vsnprintf(temp_buffer, 43, format, va_args);
+	va_end(va_args);
+
+	ssd1306DrawString(x,y,(char *)temp_buffer, font);
+}
+
+void ssd1306PrintfAtLine(int x, int line, const FONT_DEF *font, const char *format, ...)
+{
+	int y = line * LINE_SPACING + HEAD_MARGIN;
 	char temp_buffer[43];
 	va_list va_args;
 
@@ -786,118 +822,13 @@ void ssd1306Test(void)
 {
 	int i;
 
-	ssd1306ClearScreen(MAIN_AREA);
-	ssd1306DrawDashedLine(0,9,128,9);
-	ssd1306Refresh();
-
-
-	for(i = 0; i < 59; i++)
-	{
-		ssd1306ClearScreen(BANNER_AREA);
-
-		if (i > 12)
-		{
-			ssd1306DrawBmp(USB_Icon, 115, 0, 13, 8);
-		}
-		else
-		{
-			ssd1306DrawBmp(bat_Icon, 115, 0, 13, 8);
-			if (i >= 1)
-			{
-				ssd1306DrawPixel(117,5);
-			}
-
-			if (i >= 2)
-			{
-				ssd1306DrawPixel(118,5);
-				ssd1306DrawPixel(117,4);
-			}
-
-			if (i >= 3)
-			{
-				ssd1306DrawPixel(118,4);
-				ssd1306DrawPixel(117,3);
-			}
-
-			if (i >= 4)
-			{
-				ssd1306DrawPixel(118,3);
-			}
-
-			if (i >= 5)
-			{
-				ssd1306DrawPixel(120,5);
-			}
-
-			if (i >= 6)
-			{
-				ssd1306DrawPixel(121,5);
-				ssd1306DrawPixel(120,4);
-			}
-
-			if (i >= 7)
-			{
-				ssd1306DrawPixel(121,4);
-				ssd1306DrawPixel(120,3);
-			}
-
-			if (i >= 8)
-			{
-				ssd1306DrawPixel(121,3);
-			}
-
-			if (i >= 9)
-			{
-				ssd1306DrawPixel(123,5);
-			}
-
-			if (i >= 10)
-			{
-				ssd1306DrawPixel(124,5);
-				ssd1306DrawPixel(123,4);
-			}
-
-			if (i >= 11)
-			{
-				ssd1306DrawPixel(124,4);
-				ssd1306DrawPixel(123,3);
-			}
-
-			if (i >= 12)
-			{
-				ssd1306DrawPixel(124,3);
-			}
-		}
-
-		if (i > 40)
-			ssd1306DrawBmp(BT_Icon,  105, 0,  5, 8);
-		if (i < 50)
-			ssd1306DrawBmp(beeper_Icon, 89, 0, 11, 8);
-		if (i > 10)
-			ssd1306DrawBmp(gyro_Icon1, 72, 0, 12, 8);
-		if (i < 48)
-			ssd1306DrawBmp(IR_Icon3, 55, 0, 13, 8);
-		if (i > 24)
-			ssd1306DrawBmp(IRLine_Icon, 38, 0, 13, 8);
-
-		ssd1306PrintInt(10, 0, "", (char) i, &Font_3x6);
-		ssd1306PrintInt(0, 0, "", 0, &Font_3x6);
-		ssd1306DrawString(8, 0, ":", &Font_3x6);
-
-		ssd1306Refresh();
-		HAL_Delay(1000);
-	}
-
-	HAL_Delay(20000);
-
-	//////////////////////////////////////////////////////////////////////////
-	ssd1306DrawBmp(Pacabot_bmp, 1, 1, 128, 40);
+	ssd1306DrawBmp(Pacabot_bmp, 1, 10, 128, 40);
 	ssd1306Refresh();
 
 	for (i = 0; i <= 100; i+=1)
 	{
-		ssd1306ProgressBar(10, 35, i);
-		HAL_Delay(100);
+		ssd1306ProgressBar(10, 55, i);
+		HAL_Delay(1);
 		ssd1306Refresh();
 	}
 
@@ -906,37 +837,29 @@ void ssd1306Test(void)
 	ssd1306ClearScreen(MAIN_AREA);
 	ssd1306Refresh();
 	// miniature bitmap display
-	ssd1306DrawCircle(40, 30, 20);
+	ssd1306DrawCircle(40, 40, 20);
 	//  ssd1306DrawCircle(50, 20, 10);
-	ssd1306FillCircle(100, 40, 15);
-	ssd1306DrawRect(110, 3, 15, 6);
+	ssd1306FillCircle(100, 50, 15);
+	ssd1306DrawRect(110, 30, 15, 6);
 	ssd1306FillRect(1, 60, 10, 20);
 	ssd1306DrawDashedLine(5, 45, 70, 45);
-	ssd1306DrawLine(70, 45, 20, 6);
+	ssd1306DrawLine(70, 45, 20, 10);
 	ssd1306Refresh();
-	HAL_Delay(5500);
+	HAL_Delay(3000);
 	ssd1306ClearScreen(MAIN_AREA);
 
-	for (i = 0; i <= 100; i+=2)
-	{
-		ssd1306ProgressBar(10, 20, i);
-		HAL_Delay(10);
-		ssd1306Refresh();
-	}
-
-	ssd1306ShiftFrameBuffer(8);
-	ssd1306DrawString(13, 1, "Oled 128x64", &Font_8x8); // 3x6 is UPPER CASE only
+	ssd1306DrawStringAtLine(13, 0, "Oled 128x64", &Font_8x8); // 3x6 is UPPER CASE only
 	ssd1306Refresh();
 	HAL_Delay(1500);
-	ssd1306DrawString(1, 25, "Driver for STM32f4xx", &Font_5x8); // 3x6 is UPPER CASE only
+	ssd1306DrawStringAtLine(1, 1, "Driver for STM32f4xx", &Font_5x8); // 3x6 is UPPER CASE only
 	ssd1306Refresh();
 	HAL_Delay(500);
-	ssd1306DrawString(1, 35, "I2C mode", &Font_5x8); // 3x6 is UPPER CASE only
+	ssd1306DrawStringAtLine(1, 2, "I2C mode", &Font_5x8); // 3x6 is UPPER CASE only
 	ssd1306Refresh();
 	HAL_Delay(1500);
-	ssd1306DrawString(10, 55, "BY PLF, PACABOT TEAM", &Font_3x6); // 3x6 is UPPER CASE only
+	ssd1306DrawStringAtLine(10, 4, "BY PLF, PACABOT TEAM", &Font_3x6); // 3x6 is UPPER CASE only
 	ssd1306Refresh();
-	HAL_Delay(5000);
+	HAL_Delay(3000);
 
 	ssd1306ClearScreen(MAIN_AREA);
 	ssd1306Refresh();

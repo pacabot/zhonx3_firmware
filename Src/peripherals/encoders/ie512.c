@@ -210,16 +210,11 @@ void encoderTest(void)
 	{
 		ssd1306ClearScreen(MAIN_AREA);
 
-		ssd1306PrintInt(0, 5,  "L_DIST_REL =  ",(signed int) encoderGetDist(ENCODER_L), &Font_5x8);
-		ssd1306PrintInt(0, 15, "L_DIST_ABS =  ",(signed int) left_encoder.abs_dist, &Font_5x8);
+		ssd1306PrintIntAtLine(0, 0,  "L_DIST_REL =  ",(signed int) encoderGetDist(ENCODER_L), &Font_5x8);
+		ssd1306PrintIntAtLine(0, 1, "L_DIST_ABS =  ",(signed int) left_encoder.abs_dist, &Font_5x8);
 
-		ssd1306PrintInt(0, 25, "R_DIST_REL =  ",(signed int) encoderGetDist(ENCODER_R), &Font_5x8);
-		ssd1306PrintInt(0, 35, "R_DIST_ABS =  ",(signed int) right_encoder.abs_dist, &Font_5x8);
-		ssd1306DrawString(1, 53, "PRESS 'RIGHT' TO RESET REL. DIST.", &Font_3x6);
-		if (expanderJoyFiltered() == JOY_RIGHT)
-		{
-			encodersReset();
-		}
+		ssd1306PrintIntAtLine(0, 2, "R_DIST_REL =  ",(signed int) encoderGetDist(ENCODER_R), &Font_5x8);
+		ssd1306PrintIntAtLine(0, 3, "R_DIST_ABS =  ",(signed int) right_encoder.abs_dist, &Font_5x8);
 		ssd1306Refresh();
 		HAL_Delay(10);
 	}

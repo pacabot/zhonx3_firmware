@@ -13,8 +13,7 @@
 #include "peripherals/flash/flash.h"
 
 /*********************** ZHONX generation and version *********************************/
-#define ZHONX_GENERATION          "ZHONX III"
-#define ZHONX_VERSION             "0.2"
+#define ZHONX_GENERATION          "Z3"
 
 /* Error codes */
 #define SETTING_MODULE_E_SUCCESS	0

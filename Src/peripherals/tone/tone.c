@@ -28,6 +28,7 @@
 #include "peripherals/telemeters/telemeters.h"
 
 /* Middleware declarations */
+#include "middleware/display/banner.h"
 
 /* Declarations for this module */
 #include "peripherals/tone/tone.h"
@@ -37,11 +38,12 @@ static void happyBirthday(void);
 
 /* extern variables ---------------------------------------------------------*/
 extern TIM_HandleTypeDef htim11;
-static unsigned int tone_duration = 0;
+static int tone_duration = 0;
 
 void toneInit(void)
 {
-
+	toneSetVolulme(100);
+	bannerSetIcon(BEEPER, 100);
 }
 
 void tonesplayer(int *note, int *duration, int size, int tempo)
@@ -88,10 +90,10 @@ void tone(int note, int duration)
 	HAL_TIM_PWM_Stop(&htim11, TIM_CHANNEL_1);
 }
 
-void toneItMode(int note, int duration)
+void toneItMode(int note, int duration_ms)
 {
 	int uwPrescalerValue = 1800;
-	tone_duration = (duration * LOW_TIME_FREQ) + 1;
+	tone_duration = (duration_ms / (1000 / LOW_TIME_FREQ)) + 1;
 
 	uwPrescalerValue = (uint32_t) ((SystemCoreClock /2) / (note * 1000)) - 1;
 	htim11.Instance = TIM11;
@@ -106,7 +108,7 @@ void toneItMode(int note, int duration)
 
 void tone_IT(void)
 {
-	if (tone_duration >= 1)
+	if (tone_duration > 1)
 		tone_duration--;
 	if (tone_duration == 1)
 		HAL_TIM_PWM_Stop(&htim11, TIM_CHANNEL_1);
@@ -136,12 +138,15 @@ void toneStop(void)
 void toneSetVolulme(int volume)
 {
 	TIM_OC_InitTypeDef sConfigOC;
+	bannerSetIcon(BEEPER, volume);
 
 	if (volume >= 100)
 		volume = 100;
 
 	if (volume <= 0)
-		volume = 1;
+		volume = 0;
+
+	volume = volume * 50 / 100; //change scale
 
 	sConfigOC.OCMode = TIM_OCMODE_PWM1;
 	sConfigOC.Pulse = volume;
@@ -152,20 +157,9 @@ void toneSetVolulme(int volume)
 
 void toneTest(void)
 {
-	toneSetVolulme(500);
+	toneSetVolulme(5);
 
-	happyBirthday();
-
-	toneStart(c);
-	HAL_Delay(1000);
-	toneStop();
-	toneItMode(a, 500);
-	HAL_Delay(500);
-	toneItMode(b, 500);
-	HAL_Delay(500);
-	toneItMode(c, 500);
-	HAL_Delay(500);
-	telemetersInit();
+//	happyBirthday();
 	imperialMarch();
 }
 
@@ -207,8 +201,8 @@ void happyBirthday()
 	tone(A2*2, 1000*2);
 	while(1)
 	{
-	tone(A2*2, 1*2);
-	tone(A3*2, 1*2);
+		tone(A2*2, 1*2);
+		tone(A3*2, 1*2);
 	}
 }
 

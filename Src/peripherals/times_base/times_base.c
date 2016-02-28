@@ -256,7 +256,6 @@ void highFreq_IT(void)
 void lowFreq_IT(void)
 {
 	tone_IT();
-	banner_IT();
 	//sleep_mode_IT();
 	ledBlink_IT();
 }
