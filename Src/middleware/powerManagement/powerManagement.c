@@ -17,6 +17,7 @@
 #include "stdbool.h"
 #include <arm_math.h>
 #include <math.h>
+#include <middleware/powerManagement/powerManagement.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdint.h>
@@ -31,7 +32,6 @@
 #include "middleware/display/banner.h"
 
 /* Declarations for this module */
-#include "middleware/powerManagment/powerManagment.h"
 
 void batteryGauge_IT(void)
 {
