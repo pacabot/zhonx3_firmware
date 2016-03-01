@@ -20,8 +20,6 @@ void timesBaseInit(void);
 void ledPowerBlink(unsigned int off_time, unsigned int on_time, unsigned int repeat);
 char timeOut(unsigned char second, int loop_nb);
 void ledBlink_IT(void);
-void highFreq_IT(void);
-void lowFreq_IT(void);
 
 
 #endif

@@ -23,7 +23,7 @@ extern line_follower_struct line_follower;
 #define RIGHT_ 4
 #define RIGHTEXT 5
 
-#define MAXSPEED 600
+#define MAXSPEED 1000
 #define MINSPEED 100
 #define SPEED_COEFF 1.00
 

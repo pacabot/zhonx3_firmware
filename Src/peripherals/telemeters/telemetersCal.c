@@ -61,13 +61,11 @@ int wallSensorsCalibrationFront(void)
 	ssd1306PrintfAtLine(0, 1, &Font_5x8, "Calibrating front sensors");
 	ssd1306Refresh();
 
-	mainControlInit();
-	motorsDriverSleep(OFF);
-
 	telemetersStart();
+	HAL_Delay(1000);
+	mainControlInit();
 	mainControlSetFollowType(NO_FOLLOW);
-
-	HAL_Delay(3000);
+	motorsDriverSleep(OFF);
 
 	// take the measures
 	move(0, -MEASURED_DISTANCE, 5, 5);

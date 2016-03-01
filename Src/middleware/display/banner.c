@@ -64,8 +64,7 @@ void bannerSetIcon(enum iconType icon, int val)
 			ssd1306DrawBmp(USB_Icon, 115, -1, 13, 8);
 		break;
 	}
-
-	ssd1306Refresh();
+	//ssd1306Refresh();
 }
 
 static void SetBeeperIcon(int volume)
@@ -100,6 +99,7 @@ static void SetBeeperIcon(int volume)
 
 static void SetBatIcon(int charge_level)
 {
+	ssd1306ClearRect(115, -1, 13, 8);
 	ssd1306DrawBmp(bat_Icon, 115, -1, 13, 8);
 
 	if (charge_level > 100)
@@ -110,35 +110,35 @@ static void SetBatIcon(int charge_level)
 	charge_level = charge_level * 12 / 100;
 
 	if (charge_level >= 1)
-		ssd1306DrawPixel(117,5);
+		ssd1306DrawPixel(117,4);
 	if (charge_level >= 2){
-		ssd1306DrawPixel(118,5);
-		ssd1306DrawPixel(117,4);}
-	if (charge_level >= 3){
 		ssd1306DrawPixel(118,4);
 		ssd1306DrawPixel(117,3);}
-	if (charge_level >= 4)
+	if (charge_level >= 3){
 		ssd1306DrawPixel(118,3);
+		ssd1306DrawPixel(117,2);}
+	if (charge_level >= 4)
+		ssd1306DrawPixel(118,2);
 	if (charge_level >= 5)
-		ssd1306DrawPixel(120,5);
+		ssd1306DrawPixel(120,4);
 	if (charge_level >= 6){
-		ssd1306DrawPixel(121,5);
-		ssd1306DrawPixel(120,4);}
-	if (charge_level >= 7){
 		ssd1306DrawPixel(121,4);
 		ssd1306DrawPixel(120,3);}
-	if (charge_level >= 8)
+	if (charge_level >= 7){
 		ssd1306DrawPixel(121,3);
+		ssd1306DrawPixel(120,2);}
+	if (charge_level >= 8)
+		ssd1306DrawPixel(121,2);
 	if (charge_level >= 9)
-		ssd1306DrawPixel(123,5);
+		ssd1306DrawPixel(123,4);
 	if (charge_level >= 10){
-		ssd1306DrawPixel(124,5);
-		ssd1306DrawPixel(123,4);}
-	if (charge_level >= 11){
 		ssd1306DrawPixel(124,4);
 		ssd1306DrawPixel(123,3);}
-	if (charge_level >= 12)
+	if (charge_level >= 11){
 		ssd1306DrawPixel(124,3);
+		ssd1306DrawPixel(123,2);}
+	if (charge_level >= 12)
+		ssd1306DrawPixel(124,2);
 }
 
 void bannerExample(void)

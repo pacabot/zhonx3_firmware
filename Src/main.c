@@ -79,8 +79,8 @@ extern const menuItem zhonxNameMenu;
 
 static inline void blockingPrintf(const char *format, ...)
 {
-    bluetoothPrintf(format);
-    bluetoothWaitReady();
+	bluetoothPrintf(format);
+	bluetoothWaitReady();
 }
 
 /* USER CODE END 0 */
@@ -89,8 +89,8 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
-    CMDLINE_CONTEXT cmd_context;
-    const char *zhonx_info = CONFIG_ZHONX_INFO_ADDR;
+	CMDLINE_CONTEXT cmd_context;
+	const char *zhonx_info = CONFIG_ZHONX_INFO_ADDR;
   /* USER CODE END 1 */
 
   /* MCU Configuration----------------------------------------------------------*/
@@ -121,13 +121,13 @@ int main(void)
   MX_USART3_UART_Init();
 
   /* USER CODE BEGIN 2 */
-    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, SET);
+	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, SET);
 
-    expanderInit();
-    HAL_Delay(100);
-    ssd1306Init(0);
-    timesBaseInit();
-    ledPowerBlink(990, 10, 0);
+	expanderInit();
+	HAL_Delay(100);
+	ssd1306Init(0);
+	timesBaseInit();
+	ledPowerBlink(990, 10, 0);
 	settingsInit();
 	mulimeterInit();
 	bluetoothInit();
@@ -136,35 +136,35 @@ int main(void)
 	tone(F3, 50);
 	toneItMode(A3, 50);
 
-    // Register Output callback
-    cmd_context.out = blockingPrintf;
-    // Initialize Command Line module
-    cmdline_init(&cmd_context);
+	// Register Output callback
+	cmd_context.out = blockingPrintf;
+	// Initialize Command Line module
+	cmdline_init(&cmd_context);
 
-    // Check if robot name is populated in Flash
-    memset(zhonxName, 0, sizeof(zhonxName));
-    // Retrieve ZHONX information from flash if any
-    if (zhonx_info[0] == 'Z')
-    {
-        strcpy(zhonxName, zhonx_info);
-    }
+	// Check if robot name is populated in Flash
+	memset(zhonxName, 0, sizeof(zhonxName));
+	// Retrieve ZHONX information from flash if any
+	if (zhonx_info[0] == 'Z')
+	{
+		strcpy(zhonxName, zhonx_info);
+	}
 
-    while(zhonxName[0] == 0)
-    {
-        menu(zhonxNameMenu);
-    }
+	while(zhonxName[0] == 0)
+	{
+		menu(zhonxNameMenu);
+	}
 
-    while (1)
-    {
-        menu(mainMenu);
-        powerOffConfirmation();
-    }
+	while (1)
+	{
+		menu(mainMenu);
+		powerOffConfirmation();
+	}
 
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  while (1);
+	while (1);
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */
@@ -214,36 +214,36 @@ void SystemClock_Config(void)
 /* USER CODE BEGIN 4 */
 int setMeddle(void)
 {
-    strcpy(zhonxName, ZHONX_GENERATION);
-    strcat(zhonxName, " MEDDLE");
-    // Set Bluetooth device name
-    bluetoothCmd("at+ab config DeviceName=Meddle");
-    bluetoothCmd("AT+AB Reset");
-    return setZhonxName();
+	strcpy(zhonxName, ZHONX_GENERATION);
+	strcat(zhonxName, " MEDDLE");
+	// Set Bluetooth device name
+	bluetoothCmd("at+ab config DeviceName=Meddle");
+	bluetoothCmd("AT+AB Reset");
+	return setZhonxName();
 }
 
 int setDark(void)
 {
-    strcpy(zhonxName, ZHONX_GENERATION);
-    strcat(zhonxName, " DARK");
-    // Set Bluetooth device name
-    bluetoothCmd("at+ab config DeviceName=Dark");
-    bluetoothCmd("AT+AB Reset");
-    return setZhonxName();
+	strcpy(zhonxName, ZHONX_GENERATION);
+	strcat(zhonxName, " DARK");
+	// Set Bluetooth device name
+	bluetoothCmd("at+ab config DeviceName=Dark");
+	bluetoothCmd("AT+AB Reset");
+	return setZhonxName();
 }
 
 static int setZhonxName(void)
 {
-    int rv;
+	int rv;
 
-    // Write Name in flash
-    rv = flash_write(zhonxSettings.h_flash,
-                     CONFIG_ZHONX_INFO_ADDR, zhonxName, strlen(zhonxName) + 1);
-    if (rv != FLASH_E_SUCCESS)
-    {
-        // TODO: handle this error
-    }
-    return 0;
+	// Write Name in flash
+	rv = flash_write(zhonxSettings.h_flash,
+			CONFIG_ZHONX_INFO_ADDR, zhonxName, strlen(zhonxName) + 1);
+	if (rv != FLASH_E_SUCCESS)
+	{
+		// TODO: handle this error
+	}
+	return 0;
 }
 /* USER CODE END 4 */
 

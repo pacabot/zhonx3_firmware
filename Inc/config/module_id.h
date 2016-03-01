@@ -22,7 +22,8 @@
 #define MULTIMETER_DRIVER_MODULE_ID  			10
 #define TELEMETERS_DRIVER_MODULE_ID  			12
 #define CALIBRATION_TELEMETERS_DRIVER_MODULE_ID	13
-#define TIMESBASE_DRIVER_MODULE_Id				14	//todo : verify if the number 14 is good (old number 13)
+#define TIMESBASE_DRIVER_MODULE_ID				14	//todo : verify if the number 14 is good (old number 13)
+#define POWERMANAGMENT_DRIVER_MODULE_ID			15
 
 /* middleware 1xx */
 

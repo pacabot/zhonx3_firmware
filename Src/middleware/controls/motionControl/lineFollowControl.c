@@ -63,7 +63,7 @@ int lineFollowControlInit(void)
 
 	line_follow_pid_instance.Kp = 151+_KP;
 	line_follow_pid_instance.Ki = 0;
-	line_follow_pid_instance.Kd = 1500;//810
+	line_follow_pid_instance.Kd = 6000;//810
 
 	line_follow_control.line_follow_pid.instance = &line_follow_pid_instance;
 

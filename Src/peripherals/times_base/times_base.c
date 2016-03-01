@@ -248,15 +248,3 @@ void sleep_mode_IT()//todo move this function
 	}
 #endif
 }
-
-void highFreq_IT(void)
-{
-}
-
-void lowFreq_IT(void)
-{
-	tone_IT();
-	//sleep_mode_IT();
-	ledBlink_IT();
-}
-

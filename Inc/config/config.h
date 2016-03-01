@@ -78,10 +78,12 @@
 /**************************************************************************************/
 /***************                       Battery                     ********************/
 /**************************************************************************************/
-#define BATTERY_CELL_NUMBER					2	//2S
-#define BATTERY_LOWER_VOLTAGE_NO_LOAD		(3.6f * BATTERY_CELL_NUMBER)
-#define BATTERY_UPPER_VOLTAGE_NO_LOAD		(4.2f * BATTERY_CELL_NUMBER)
-#define BATTERY_LOWER_VOLTAGE_OFFSET		(-0.1f * BATTERY_CELL_NUMBER)	//-0.1V/A
+#define BATTERY_CELL_NUMBER					2.00	//2S
+#define BATTERY_LOWER_VOLTAGE_NO_LOAD		(3000 * BATTERY_CELL_NUMBER)	//https://learn.sparkfun.com/tutorials/battery-technologies/lithium-polymer
+#define BATTERY_UPPER_VOLTAGE_NO_LOAD		(3700 * BATTERY_CELL_NUMBER)
+#define BATTERY_LOWER_VOLTAGE_OFFSET		(-0.10 * BATTERY_CELL_NUMBER)	//-0.1V/A
+#define BATTERY_COEFF_A						((BATTERY_UPPER_VOLTAGE_NO_LOAD - BATTERY_LOWER_VOLTAGE_NO_LOAD) / 100.00)
+#define BATTERY_COEFF_B						(BATTERY_LOWER_VOLTAGE_NO_LOAD / BATTERY_COEFF_A)
 
 /**************************************************************************************/
 /***************                 Mechanical Constants              ********************/

@@ -60,14 +60,15 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 		  if (line_follower.active_state == TRUE)
 			  lineFollower_IT();
 	  }
-	  if (htim == &htim7)
+	  if (htim == &htim7)	//hight time freq
 	  {
-//		  highFreq_IT();
 		  mainControl_IT();
 	  }
-	  if (htim == &htim6)
+	  if (htim == &htim6)	//low time freq
 	  {
-		  lowFreq_IT();
+			tone_IT();
+			//sleep_mode_IT();
+			ledBlink_IT();
 	  }
 	  if (htim == &htim1)
 	  {
@@ -84,6 +85,7 @@ void HAL_TIM_OC_DelayElapsedCallback(TIM_HandleTypeDef *htim)
 	  if( htim == &htim4)
 	  {
 		  multimeter_IT();
+		  batteryGauge_IT();
 	  }
 }
 
