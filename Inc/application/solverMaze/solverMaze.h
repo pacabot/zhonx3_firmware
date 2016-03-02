@@ -48,6 +48,9 @@
 //#define END_SPEED_TRANSLATION 10
 #endif
 #define END_OF_LIST 255
+
+#define DISPLAY_OFFSET	12	//offset for maze print on ssd1306
+
 #include <stdlib.h>
 
 //Structures typedef

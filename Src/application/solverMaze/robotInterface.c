@@ -231,18 +231,18 @@ void newCell(walls new_walls, labyrinthe *maze, positionRobot positionZhonx)
 	/*print walls position*/
 	static char i=1;
 	i++;
-	ssd1306ClearRect(64,0,64,64);
+	ssd1306ClearRect(64,DISPLAY_OFFSET,64,64);
 	if (new_walls.front == WALL_PRESENCE)
 	{
-		ssd1306FillRect(64,0,54,5);
+		ssd1306FillRect(64,DISPLAY_OFFSET,54,5);
 	}
 	if (new_walls.left == WALL_PRESENCE)
 	{
-		ssd1306FillRect(64,0,5,54);
+		ssd1306FillRect(64,DISPLAY_OFFSET,5,54);
 	}
 	if (new_walls.right == WALL_PRESENCE)
 	{
-		ssd1306FillRect(113,0,5,54);
+		ssd1306FillRect(113,DISPLAY_OFFSET,5,54);
 	}
 	/*end print wall position*/
 #endif

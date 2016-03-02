@@ -40,7 +40,6 @@ int maze(void)
 	positionRobot positionZhonx;
 
 	mainControlInit();
-	telemetersStart();
 
 	mainControlSetFollowType(WALL_FOLLOW);
 
@@ -80,17 +79,14 @@ int maze(void)
 //	}
 //	move(0, -CELL_LENGTH/2, 50, 0);
 //	while(isEndMove() != true);
-	mainControlSetFollowType(WALL_FOLLOW);
-//	motorsSleepDriver(ON);
 
 	printMaze(maze,positionZhonx.cordinate);
 	do
 	{
 		waitStart();
 
-		HAL_Delay(3000);
-		motorsDriverSleep(OFF);
-		move(0, 0, 0, 0);
+		telemetersStart();
+		HAL_Delay(2000);
 
 		exploration(&maze, &positionZhonx, zhonxSettings.maze_end_coordinate);
 //		if(zhonxSettings.calibration_enabled == true)
@@ -159,10 +155,12 @@ void moveVirtualZhonx(labyrinthe maze, positionRobot positionZhonxVirtuel,
 			}
 			else
 			{
+				ssd1306ClearScreen(MAIN_AREA);
 				printMaze(maze,positionZhonxVirtuel.cordinate);
-				ssd1306DrawString(60, 0, "no solution", &Font_5x8);
+				ssd1306DrawStringAtLine(60, 1, "no solution", &Font_5x8);
 				ssd1306Refresh();
 				motorsDriverSleep(ON);
+				telemetersStop();
 				while(true)
 				{
 					HAL_Delay(200);
@@ -223,7 +221,8 @@ void moveRealZhonxArc(labyrinthe *maze, positionRobot *positionZhonx, coordinate
 					positionZhonx->cordinate.x,positionZhonx->cordinate.y, way[i].x, way[i].y);
 			HAL_Delay(200);
 			motorsDriverSleep(ON);
-			ssd1306DrawString(60, 0, "Error way", &Font_5x8);
+			ssd1306ClearScreen(MAIN_AREA);
+			ssd1306DrawStringAtLine(60, 1, "Error way", &Font_5x8);
 			ssd1306Refresh();
 			while(1)
 			{
@@ -636,7 +635,7 @@ void mazeInit(labyrinthe *maze)
 void printMaze(const labyrinthe maze, coordinate robot_coordinate)
 {
 #ifdef DEBUG
-	ssd1306ClearRect(0,0,64,64);
+	ssd1306ClearRect(0, DISPLAY_OFFSET, 64, 64);
 	int size_cell_on_oled =((63) / MAZE_SIZE);
 	int x, y;
 	for(y = 0; y < MAZE_SIZE; y++)
@@ -645,51 +644,51 @@ void printMaze(const labyrinthe maze, coordinate robot_coordinate)
 		{
 			if(maze.cell[x][y].wall_north == WALL_PRESENCE)
 			{
-				ssd1306DrawLine(x * size_cell_on_oled, y * size_cell_on_oled,
-		x * size_cell_on_oled + size_cell_on_oled + 1, y * size_cell_on_oled);
+				ssd1306DrawLine(x * size_cell_on_oled, (y + DISPLAY_OFFSET / 4) * size_cell_on_oled,
+		x * size_cell_on_oled + size_cell_on_oled + 1, (y + DISPLAY_OFFSET / 4) * size_cell_on_oled);
 			}
 			else if(maze.cell[x][y].wall_north == NO_KNOWN)
 			{
 //                ssd1306DrawLine(x * size_cell_on_oled, y * size_cell_on_oled,
 //                x * size_cell_on_oled + size_cell_on_oled + 1, y * size_cell_on_oled);
-				ssd1306DrawDashedLine(x * size_cell_on_oled, y * size_cell_on_oled,
-			   x * size_cell_on_oled + size_cell_on_oled + 1, y * size_cell_on_oled);
+				ssd1306DrawDashedLine(x * size_cell_on_oled, (y + DISPLAY_OFFSET / 4) * size_cell_on_oled,
+			   x * size_cell_on_oled + size_cell_on_oled + 1, (y + DISPLAY_OFFSET / 4) * size_cell_on_oled);
 			}
 			if(maze.cell[x][y].wall_west == WALL_PRESENCE)
 			{
-				ssd1306DrawLine(x * size_cell_on_oled, y * size_cell_on_oled,
-								 x * size_cell_on_oled, y * size_cell_on_oled + size_cell_on_oled + 1);
+				ssd1306DrawLine(x * size_cell_on_oled, (y + DISPLAY_OFFSET / 4) * size_cell_on_oled,
+								 x * size_cell_on_oled, (y + DISPLAY_OFFSET /4) * size_cell_on_oled + size_cell_on_oled + 1);
 			}
 			else if(maze.cell[x][y].wall_west == NO_KNOWN)
 			{
-				ssd1306DrawDashedLine(x * size_cell_on_oled, y * size_cell_on_oled,
-									   x * size_cell_on_oled, y * size_cell_on_oled + size_cell_on_oled + 1);
+				ssd1306DrawDashedLine(x * size_cell_on_oled, (y + DISPLAY_OFFSET / 4) * size_cell_on_oled,
+									   x * size_cell_on_oled, (y + DISPLAY_OFFSET / 4) * size_cell_on_oled + size_cell_on_oled + 1);
 			}
 
 			if(maze.cell[x][y].wall_south == WALL_PRESENCE)
 			{
-				ssd1306DrawLine(x * size_cell_on_oled,(y + 1) * size_cell_on_oled,
-			 size_cell_on_oled + x * size_cell_on_oled,(y + 1) * size_cell_on_oled);
+				ssd1306DrawLine(x * size_cell_on_oled,((y + DISPLAY_OFFSET / 4) + 1) * size_cell_on_oled,
+			 size_cell_on_oled + x * size_cell_on_oled,((y + DISPLAY_OFFSET / 4) + 1) * size_cell_on_oled);
 			}
 			else if(maze.cell[x][y].wall_south == NO_KNOWN)
 			{
-				ssd1306DrawDashedLine(x * size_cell_on_oled,(y + 1) * size_cell_on_oled,
-				   size_cell_on_oled + x * size_cell_on_oled,(y + 1) * size_cell_on_oled);
+				ssd1306DrawDashedLine(x * size_cell_on_oled,((y + DISPLAY_OFFSET / 4) + 1) * size_cell_on_oled,
+				   size_cell_on_oled + x * size_cell_on_oled,((y + DISPLAY_OFFSET / 4) + 1) * size_cell_on_oled);
 			}
 			if(maze.cell[x][y].wall_east == WALL_PRESENCE)
 			{
-				ssd1306DrawLine((x + 1) * size_cell_on_oled, y * size_cell_on_oled,
-								(x + 1) * size_cell_on_oled, y * size_cell_on_oled + size_cell_on_oled + 1);
+				ssd1306DrawLine((x + 1) * size_cell_on_oled, (y + DISPLAY_OFFSET / 4) * size_cell_on_oled,
+								(x + 1) * size_cell_on_oled, (y + DISPLAY_OFFSET / 4) * size_cell_on_oled + size_cell_on_oled + 1);
 			}
 			else if(maze.cell[x][y].wall_east == NO_KNOWN)
 			{
-				ssd1306DrawDashedLine ((x + 1) * size_cell_on_oled, y * size_cell_on_oled,
-										(x + 1) * size_cell_on_oled, y * size_cell_on_oled + size_cell_on_oled + 1);
+				ssd1306DrawDashedLine ((x + 1) * size_cell_on_oled, (y + DISPLAY_OFFSET / 4) * size_cell_on_oled,
+										(x + 1) * size_cell_on_oled, (y + DISPLAY_OFFSET / 4) * size_cell_on_oled + size_cell_on_oled + 1);
 			}
 		}
 	}
 	printLength(maze, robot_coordinate.x, robot_coordinate.y);
-	ssd1306DrawRect((robot_coordinate.x * size_cell_on_oled) +1,(robot_coordinate.y * size_cell_on_oled)+1, 2, 2);
+	ssd1306DrawRect((robot_coordinate.x * size_cell_on_oled) +1,((robot_coordinate.y + (DISPLAY_OFFSET / 4)) * size_cell_on_oled)+1, 2, 2);
 	ssd1306Refresh();
 #endif
 }
@@ -793,10 +792,10 @@ char miniwayFind(labyrinthe *maze, coordinate start_coordinate, coordinate end_c
 	switch(waySame)
 	{
 		case true :
-			ssd1306DrawString(0, 20, "2 way = : yes", &Font_5x8);
+			ssd1306DrawStringAtLine(0, 0, "2 way = : yes", &Font_5x8);
 			break;
 		case false :
-			ssd1306DrawString(0, 20, "2 way = : no", &Font_5x8);
+			ssd1306DrawStringAtLine(0, 1, "2 way = : no", &Font_5x8);
 			break;
 	}
 	ssd1306Refresh();
@@ -824,8 +823,8 @@ char diffway(coordinate way1[], coordinate way2[])
 
 void waitStart()
 {
-	ssd1306ClearRect(SSD1306_LCDWIDTH/2,0,SSD1306_LCDWIDTH/2,SSD1306_LCDHEIGHT);
-	ssd1306Printf(SSD1306_LCDWIDTH/2,0,&Font_5x8,"wait start");
+	ssd1306ClearRect(SSD1306_LCDWIDTH/2, DISPLAY_OFFSET, SSD1306_LCDWIDTH/2, SSD1306_LCDHEIGHT);
+	ssd1306PrintfAtLine(SSD1306_LCDWIDTH/2,0,&Font_5x8,"wait start");
 	while(HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY)
 	{
 	}
@@ -834,7 +833,7 @@ void waitStart()
 	{
 		HAL_Delay(20);
 	}
-	ssd1306ClearRect(SSD1306_LCDWIDTH/2,0,SSD1306_LCDWIDTH/2,SSD1306_LCDHEIGHT);
+	ssd1306ClearRect(SSD1306_LCDWIDTH/2, DISPLAY_OFFSET, SSD1306_LCDWIDTH/2, SSD1306_LCDHEIGHT);
 	ssd1306Refresh();
 //TODO : wait start with front sensors
 //	unsigned char sensors_state = hal_sensor_get_state(app_context.sensors);
