@@ -64,7 +64,7 @@ void bannerSetIcon(enum iconType icon, int val)
 			ssd1306DrawBmp(USB_Icon, 115, -1, 13, 8);
 		break;
 	}
-	//ssd1306Refresh();
+	ssd1306Refresh();
 }
 
 static void SetBeeperIcon(int volume)

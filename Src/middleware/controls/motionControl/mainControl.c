@@ -190,6 +190,7 @@ int move(double angle, double radius_or_distance, double max_speed, double end_s
 	}
 
 	pid_loop.start_state = TRUE;
+    motorsDriverSleep(OFF);
 	return POSITION_CONTROL_E_SUCCESS;
 }
 
@@ -448,9 +449,7 @@ void followWallTest()
 	positionControlSetPositionType(GYRO);
 	mainControlSetFollowType(WALL_FOLLOW);
 
-	//	setCellState();
 	HAL_Delay(2000);
-	motorsDriverSleep(OFF);
 
 	int Vmin, Vmax, Vrotate;
 	Vmin = 400;
@@ -501,7 +500,6 @@ void rotateTest()
 	mainControlSetFollowType(NO_FOLLOW);
 
 	HAL_Delay(2000);
-	motorsDriverSleep(OFF);
 
 	move(-90, 0, 8, 8); //rotation example
 
