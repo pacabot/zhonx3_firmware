@@ -42,7 +42,7 @@ static int tone_duration = 0;
 
 void toneInit(void)
 {
-	toneSetVolulme(100);
+	toneSetVolulme(0);
 	bannerSetIcon(BEEPER, 100);
 }
 
@@ -157,7 +157,7 @@ void toneSetVolulme(int volume)
 
 void toneTest(void)
 {
-	toneSetVolulme(5);
+	toneSetVolulme(100);
 
 //	happyBirthday();
 	imperialMarch();

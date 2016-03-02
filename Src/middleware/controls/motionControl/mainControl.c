@@ -90,8 +90,6 @@ int mainControlInit(void)
 	control_params.wall_follow_state = 0;
 	control_params.line_follow_state = 0;
 
-	move(0, 0, 0, 0);
-
 	return MAIN_CONTROL_E_SUCCESS;
 }
 
@@ -347,7 +345,7 @@ int moveUTurn(float speed_rotation, float max_speed, float end_speed)
 	moveHalfCell_IN(max_speed, 0);
 
 	while(hasMoveEnded() != TRUE);
-	move (180, 0, speed_rotation, 0);
+	move (180, 0, speed_rotation, speed_rotation);
 
 	moveHalfCell_OUT(max_speed, end_speed);
 
@@ -479,8 +477,8 @@ void followWallTest()
 	Vmax = 400;
 	Vrotate = 400;
 
-
-
+	moveUTurn(400, 400, 400);
+	return;
 	moveStartCell(Vmax, Vmax);
 	moveCell(1, Vmax, Vmin);
 	moveRotateCW90(Vmin, Vmin);
@@ -545,7 +543,6 @@ void followLineTest()
 void rotateTest()
 {
 	mainControlInit();
-	telemetersStart();
 
 	positionControlSetPositionType(GYRO);
 	mainControlSetFollowType(NO_FOLLOW);
@@ -554,7 +551,7 @@ void rotateTest()
 	motorsDriverSleep(OFF);
 
 	//move(-90, 0, 8, 8);
-	move(-90, (HALF_CELL_LENGTH - OFFSET_DIST), 8, 8);
+	moveUTurn(400, 400, 400);
 
 	while(hasMoveEnded() != TRUE){
 		while(expanderJoyFiltered()!=JOY_LEFT)
@@ -569,7 +566,7 @@ void rotateTest()
 				encodersReset();
 			}
 			ssd1306Refresh();
-			HAL_Delay(10);
+			HAL_Delay(100);
 		}
 	}
 

@@ -156,7 +156,7 @@ int speedControlLoop(void)
 		speed_control.speed_consign -= speed_params.decel_dist_per_loop;
 		speed_control.current_distance_consign += speed_control.speed_consign;
 	}
-	else if (speed_params.nb_loop_decel <= 0)
+	else
 	{
 		speed_control.end_control = TRUE;
 	}

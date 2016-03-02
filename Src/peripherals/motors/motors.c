@@ -30,6 +30,7 @@
 #include "peripherals/gyroscope/adxrs620.h"
 
 /* Middleware declarations */
+#include "middleware/controls/motionControl/mainControl.h"
 
 /* Declarations for this module */
 #include "peripherals/motors/motors.h"
@@ -128,7 +129,7 @@ void motorsInit(void)
 
 void motorsDriverSleep(int isOn)
 {
-	encodersReset();
+	move(0, 0, 0, 0);
 	gyroResetAngle();
 	if (isOn == 1)
 		HAL_GPIO_WritePin(GPIOA, MOTORS_STANDBY, RESET);
