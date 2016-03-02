@@ -104,8 +104,6 @@ int speedControlInit(void)
 
 	pidControllerInit(speed_control.speed_pid.instance);
 
-	encodersReset();
-
 	return SPEED_CONTROL_E_SUCCESS;
 }
 

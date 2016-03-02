@@ -65,7 +65,6 @@
 // ------------------------------------------------------------------------------------------------------------------------
 void tonesplayer(int *note, int *duration, int size, int tempo);
 
-
 void toneInit(void);
 void toneItMode(int note, int duration);
 void tone_IT(void);

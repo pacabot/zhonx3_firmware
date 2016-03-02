@@ -29,8 +29,16 @@ enum mainControlFollowType {LINE_FOLLOW, WALL_FOLLOW, NO_FOLLOW};
 
 extern double ROTATION_DIAMETER;
 
-int mainControlInit(void);
-int mainControl_IT(void);
+int 	mainControlInit(void);
+int 	mainControl_IT(void);
+int  	setWallFollowControl(char isActive);
+char 	hasMoveEnded(void);
+double 	mouveGetInitialPosition(void);
+int 	mainControlSetFollowType(enum mainControlFollowType follow_type);
+enum 	mainControlFollowType mainControlGetFollowType(void);
+enum 	mainControlWallFollowType mainControlGetWallFollowType(void);
+double	positionControlSetSign(double sign);
+
 /**
  * @brief compute and start a new movement
  *
@@ -42,15 +50,8 @@ int mainControl_IT(void);
  * radius_or_distance => radius in mm of rotate if angle > 0 or distance in mm if angle = 0°
  * speed_rate => speed ratio in percent of max value
  *
- * @retval HAL status
+ * @retval status
  */
-int  	setWallFollowControl(char isActive);
-char 	hasMoveEnded(void);
-double 	mouveGetInitialPosition(void);
-int 	mainControlSetFollowType(enum mainControlFollowType follow_type);
-enum 	mainControlFollowType mainControlGetFollowType(void);
-enum 	mainControlWallFollowType mainControlGetWallFollowType(void);
-double	positionControlSetSign(double sign);
 int 	move(double angle, double radius_or_distance, double max_speed, double end_speed);
 int  	frontCal(float max_speed);
 int  	rotate180WithCal(enum rotationTypeEnum rotation_type, float max_speed, float end_speed);
@@ -63,10 +64,7 @@ int  	moveStartCell(float max_speed, float end_speed);
 int  	moveRotateCW90(float max_speed, float end_speed);
 int  	moveRotateCCW90(float max_speed, float end_speed);
 int  	moveUTurn(float speed_rotation, float max_speed, float end_speed);
-void 	mainControlTest(void);
 void 	followWallTest(void);
-void 	followLineTest(void);
 void 	rotateTest(void);
-void 	curveRotate(void);
 
 #endif // __MAINCONTROL_H

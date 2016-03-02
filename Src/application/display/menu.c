@@ -48,15 +48,11 @@ extern void toneTest ();
 extern void motorsTest ();
 extern void lineSensorsTest ();
 extern void lineFollower();
-extern void mainControlTest ();
 extern int 	lineSensorsCalibration (void);
-extern void testTelemeterDistance();
 extern void maze();
 extern void testWallsSensors();
 extern void followWallTest(void);
-extern void followLineTest(void);
 extern void rotateTest(void);
-extern void curveRotateTest(void);
 extern void expenderLedTest();
 extern int	wallSensorsCalibrationFront(void);
 extern int	wallSensorsCalibrationDiag (void);
@@ -65,7 +61,6 @@ extern int setMeddle(void);
 extern int setDark(void);
 extern int pidCalculator(void);
 extern void telemetersGetCalibrationValues(void);
-extern void lineSensorSendBluetooth(void);
 extern int _Factor;
 extern int _KP;
 /*
@@ -163,11 +158,8 @@ const menuItem control_menu=
 {
 		"CONTROL",
 		{
-				{"control test",'f',		(void*)mainControlTest},
 				{"follow the wall",'f',		(void*)followWallTest},
-				{"follow the line",'f',		(void*)followLineTest},
 				{"rotate",'f',				(void*)rotateTest},
-				{"curve rotate",'f',		(void*)curveRotateTest},
 				{"PIDstep Response",'f',	(void*)pidCalculator},
 		}
 };

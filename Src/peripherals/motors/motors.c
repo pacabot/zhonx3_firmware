@@ -129,8 +129,6 @@ void motorsInit(void)
 
 void motorsDriverSleep(int isOn)
 {
-	move(0, 0, 0, 0);
-	gyroResetAngle();
 	if (isOn == 1)
 		HAL_GPIO_WritePin(GPIOA, MOTORS_STANDBY, RESET);
 	else
