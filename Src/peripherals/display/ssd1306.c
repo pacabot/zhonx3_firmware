@@ -712,6 +712,19 @@ void ssd1306ClearRect(unsigned char x, unsigned char y, unsigned char w, unsigne
 	}
 }
 /**************************************************************************/
+void ssd1306ClearRectAtLine(unsigned char x, unsigned char line, unsigned char w) {
+	int i, j;
+	int y = line * LINE_SPACING + HEAD_MARGIN - 1;
+	unsigned char h = LINE_SPACING - 1;
+	// stupidest version - just pixels - but fast with internal buffer!
+	for (i=x; i<x+w; i++) {
+		for (j=y; j<y+h; j++) {
+			ssd1306ClearPixel(i, j);
+		}
+	}
+}
+
+/**************************************************************************/
 // draw a rectangle
 void ssd1306DrawRect(unsigned char x, unsigned char y, unsigned char w, unsigned char h) {
 	int i;

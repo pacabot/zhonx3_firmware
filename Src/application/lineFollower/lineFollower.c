@@ -116,12 +116,11 @@ void lineSensorSendBluetooth(void)
 
 			bluetoothPrintf("%d , %d , %d , %d , %d \n",current.leftExt,current.left,current.front,current.right,current.rightExt);
 			/*		ssd1306ClearScreen(MAIN_AREA);
-			ssd1306DrawString(10, 5, "send hello ZHONX III", &Font_5x8);
-			ssd1306PrintInt(10, 15, "",current.leftExt, &Font_5x8);
-			ssd1306PrintInt(10, 25, ",",current.left, &Font_5x8);
-			ssd1306PrintInt(10, 35, ",",current.front, &Font_5x8);
-			ssd1306PrintInt(10, 45, ",",current.right, &Font_5x8);
-			ssd1306PrintInt(10, 55, ",",current.rightExt, &Font_5x8);
+			ssd1306PrintIntAtLine(10, 1, "",current.leftExt, &Font_5x8);
+			ssd1306PrintIntAtLine(10, 2, ",",current.left, &Font_5x8);
+			ssd1306PrintIntAtLine(10, 3, ",",current.front, &Font_5x8);
+			ssd1306PrintIntAtLine(10, 4, ",",current.right, &Font_5x8);
+			ssd1306PrintIntAtLine(10, 5, ",",current.rightExt, &Font_5x8);
 			ssd1306Refresh(); */
 		}
 	}

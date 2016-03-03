@@ -417,7 +417,6 @@ int modifyBoolParam( char *param_name, unsigned char *param)
 
 	// Write the parameter name
 	ssd1306DrawStringAtLine(0, 0,param_name, &Font_5x8);
-	ssd1306DrawLine(0, 1, 128, 9);
 
 	if (param_copy == true)
 	{
@@ -427,14 +426,15 @@ int modifyBoolParam( char *param_name, unsigned char *param)
 	{
 		sprintf(str, "NO");
 	}
-	ssd1306DrawStringAtLine(0, 3, str, &Font_8x8);
-	ssd1306DrawStringAtLine(0, 5, "PRESS 'RIGHT' TO VALIDATE", &Font_3x6);
-	ssd1306DrawStringAtLine(0, 6, "      'LEFT'  TO RETURN.", &Font_3x6);
+	ssd1306DrawStringAtLine(0, 2, str, &Font_8x8);
+	ssd1306DrawStringAtLine(0, 3, "PRESS 'RIGHT' TO VALIDATE", &Font_3x6);
+	ssd1306DrawStringAtLine(0, 4, "      'LEFT'  TO RETURN", &Font_3x6);
 	ssd1306Refresh();
 
 	while (1)
 	{
 		int joystick=expanderJoyFiltered();
+		HAL_Delay(100);
 		switch (joystick)
 		{
 		case JOY_LEFT :
@@ -454,7 +454,7 @@ int modifyBoolParam( char *param_name, unsigned char *param)
 				sprintf(str, "YES");
 			}
 			ssd1306ClearRect(0, 28, 164, 8);
-			ssd1306DrawString(0, 28, str, &Font_8x8);
+			ssd1306DrawStringAtLine(0, 2, str, &Font_8x8);
 			ssd1306Refresh();
 			break;
 
@@ -473,22 +473,25 @@ int modifyBoolParam( char *param_name, unsigned char *param)
 
 int modifyLongParam( char *param_name,long *param)
 {
-	int step=1;
-	char str[40];
+	int step = 1;
+	char str[10];
 	long param_copy = *param;
 	char collone=0;
+
 	ssd1306ClearScreen(MAIN_AREA);
 
 	// Write the parameter name
-	ssd1306DrawString(0, 0,param_name, &Font_5x8);
-	ssd1306DrawLine(0, 9, 128, 9);
+	ssd1306ClearRect(0, -1,  38, 8); //clear title name
+	ssd1306DrawString(0, -1, param_name, &Font_3x6);
 
 	sprintf(str, "%10i", (int)param_copy);
-	ssd1306DrawString(0, 28, str, &Font_8x8);
-	ssd1306DrawString(0, 50, "PRESS 'RIGHT' TO VALIDATE", &Font_3x6);
-	ssd1306DrawString(0, 57, "      'LEFT'  TO RETURN.", &Font_3x6);
-	ssd1306DrawString((10-collone)*8,20,"^",&Font_8x8);
-	ssd1306DrawString((10-collone)*8,36,"v",&Font_8x8);
+
+	ssd1306DrawStringAtLine(0, 1, str, &Font_8x8);
+	ssd1306DrawStringAtLine(0, 3, "PRESS 'RIGHT' TO VALIDATE", &Font_3x6);
+	ssd1306DrawStringAtLine(0, 4, "      'LEFT'  TO RETURN", &Font_3x6);
+
+	ssd1306DrawStringAtLine((10-collone)*8,0,"^",&Font_8x8);
+	ssd1306DrawStringAtLine((10-collone)*8,2,"v",&Font_8x8);
 	ssd1306Refresh();
 
 	while (1)
@@ -498,38 +501,40 @@ int modifyLongParam( char *param_name,long *param)
 		switch (joystick)
 		{
 		case JOY_LEFT :
-			if (collone==10)
+			if (collone == 10)
 				return SUCCESS;
 			else
 			{
 				collone++;
-				ssd1306ClearRect(0,20,128,8);
-				ssd1306ClearRect(0,36,128,8);
-				ssd1306DrawString((9-collone)*9,20,"^",&Font_8x8);
-				ssd1306DrawString((9-collone)*9,36,"v",&Font_8x8);
+				ssd1306ClearRectAtLine(0, 0, 128);
+				ssd1306ClearRectAtLine(0, 2, 128);
+				ssd1306DrawStringAtLine((9-collone)*9, 0, "^", &Font_8x8);
+				ssd1306DrawStringAtLine((9-collone)*9, 2, "v", &Font_8x8);
+				ssd1306ClearRectAtLine(0, 1, 128);
+				ssd1306DrawStringAtLine(0, 1, str, &Font_8x8);
 				ssd1306Refresh();
 			}
 			break;
 		case JOY_UP:
 
 			//param_copy +=1;
-			param_copy += (step*pow(10,collone));
-			ssd1306ClearRect(0, 28, 164, 8);
+			param_copy += (step*pow(10, collone));
 			sprintf(str, "%10i", (int)param_copy);
-			ssd1306DrawString(0, 28, str, &Font_8x8);
+			ssd1306ClearRectAtLine(0, 1, 128);
+			ssd1306DrawStringAtLine(0, 1, str, &Font_8x8);
 			ssd1306Refresh();
 			break;
 		case JOY_DOWN :
 
 			param_copy -= (step*pow(10,collone));
 			//param_copy -= 1;
-			ssd1306ClearRect(0, 28, 164, 8);
 			sprintf(str, "%10i", (int)param_copy);
-			ssd1306DrawString(0, 28, str, &Font_8x8);
+			ssd1306ClearRectAtLine(0, 1, 128);
+			ssd1306DrawStringAtLine(0, 1, str, &Font_8x8);
 			ssd1306Refresh();
 			break;
 		case JOY_RIGHT :
-			if(collone==0)
+			if(collone == 0)
 			{
 				*param = param_copy;
 				ssd1306Refresh();
@@ -538,10 +543,12 @@ int modifyLongParam( char *param_name,long *param)
 			else
 			{
 				collone--;
-				ssd1306ClearRect(0,20,128,8);
-				ssd1306ClearRect(0,36,128,8);
-				ssd1306DrawString((9-collone)*9,20,"^",&Font_8x8);
-				ssd1306DrawString((9-collone)*9,36,"v",&Font_8x8);
+				ssd1306ClearRectAtLine(0, 0, 128);
+				ssd1306ClearRectAtLine(0, 2, 128);
+				ssd1306DrawStringAtLine((9-collone)*9, 0, "^", &Font_8x8);
+				ssd1306DrawStringAtLine((9-collone)*9, 2, "v", &Font_8x8);
+				ssd1306ClearRectAtLine(0, 1, 128);
+				ssd1306DrawStringAtLine(0, 1, str, &Font_8x8);
 				ssd1306Refresh();
 			}
 			break;
