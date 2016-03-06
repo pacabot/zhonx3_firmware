@@ -27,6 +27,8 @@
 #include "peripherals/expander/pcf8574.h"
 
 /* Middleware declarations */
+#include "middleware/controls/motionControl/mainControl.h"
+#include "middleware/controls/motionControl/positionControl.h"
 
 /* Declarations for this module */
 #include "peripherals/multimeter/multimeter.h"
@@ -76,7 +78,7 @@ void mulimeterInit(void)
 	/**Configure the global features of the ADC (Clock, Resolution, Data Alignment and number of conversion)
 	 */
 	hadc1.Instance = ADC1;
-	hadc1.Init.ClockPrescaler = ADC_CLOCKPRESCALER_PCLK_DIV2;
+	hadc1.Init.ClockPrescaler = ADC_CLOCKPRESCALER_PCLK_DIV8;
 	hadc1.Init.Resolution = ADC_RESOLUTION12b;
 	hadc1.Init.ScanConvMode = ENABLE;
 	hadc1.Init.ContinuousConvMode = DISABLE;
@@ -93,7 +95,7 @@ void mulimeterInit(void)
 	 */
 	sConfig.Channel = ADC_CHANNEL_7;
 	sConfig.Rank = 1;
-	sConfig.SamplingTime = ADC_SAMPLETIME_28CYCLES;
+	sConfig.SamplingTime = ADC_SAMPLETIME_480CYCLES;
 	HAL_ADC_ConfigChannel(&hadc1, &sConfig);
 
 	/**Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time.
@@ -118,19 +120,19 @@ void mulimeterInit(void)
 
 void multimeter_IT(void)
 {
-	multimeter.gpio_vbat_state = 1;
+	multimeter.gpio_vbat_state = TRUE;
 	HAL_GPIO_WritePin(GPIOB, GET_ADC_BAT, SET);
 	multimeter.timer_cnt++;
 }
 
 void multimeter_ADC_IT(void)
 {
-	HAL_GPIO_WritePin(GPIOB, GET_ADC_BAT, RESET);
-	multimeter.gpio_vbat_state = 0;
-
 	multimeter.gyro_temp.value = (GYRO_T_COEFF_A * (float)ADC1MultimeterConvertedValues[0]) + GYRO_T_COEFF_B;
 	multimeter.stm32_temp.value = (STM32_T_COEFF_A * (float)ADC1MultimeterConvertedValues[1]) + STM32_T_COEFF_B;
-	multimeter.vbat.value = ((float)ADC1MultimeterConvertedValues[2])*VBAT_BRIDGE_COEFF;
+	if (multimeter.gpio_vbat_state == TRUE)
+		multimeter.vbat.value = ((float)ADC1MultimeterConvertedValues[2])*VBAT_BRIDGE_COEFF;
+	multimeter.gpio_vbat_state = FALSE;
+	HAL_GPIO_WritePin(GPIOB, GET_ADC_BAT, RESET);
 }
 
 float multimeterGetBatVoltage(void)
@@ -150,6 +152,11 @@ float multimeterGyroTemp(void)
 
 void mulimeterTest(void)
 {
+//	mainControlInit();
+//	positionControlSetPositionType(GYRO);
+//	mainControlSetFollowType(NO_FOLLOW);
+//	move(-90, 0, 8, 8); //rotation example
+
 	while(expanderJoyFiltered()!=JOY_LEFT)
 	{
 		ssd1306ClearScreen(MAIN_AREA);

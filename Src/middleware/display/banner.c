@@ -104,7 +104,7 @@ static void SetBeeperIcon(int volume)
 
 static void SetBatIcon(int charge_level)
 {
-	static char old_level = 0;
+	static int old_level = 0;
 
 	if (charge_level > 100)
 		charge_level = 100;

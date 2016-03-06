@@ -69,7 +69,7 @@ int transfertFunctionLimiter(void)
 
 int transfertFunctionLoop(void)
 {
-//	if (multimeterGetBatVoltage() > 6000 && multimeterGetBatVoltage() < 9000)
+//	if (multimeterGetBatVoltage() > 5000 && multimeterGetBatVoltage() < 9000)
 //		transfert_function.pwm_ratio = (PWM_RATIO_COEFF_A * multimeterGetBatVoltage() + PWM_RATIO_COEFF_B);	//compute ratio to not exceed motor voltage
 //	else
 		transfert_function.pwm_ratio = (PWM_RATIO_COEFF_A * 8000 + PWM_RATIO_COEFF_B);						//if vbat read fail

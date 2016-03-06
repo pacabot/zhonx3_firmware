@@ -370,7 +370,7 @@ void HAL_TIM_Base_MspInit(TIM_HandleTypeDef* htim_base)
     __TIM4_CLK_ENABLE();
 
     /* Peripheral interrupt init*/
-    HAL_NVIC_SetPriority(TIM4_IRQn, 1, 2);
+    HAL_NVIC_SetPriority(TIM4_IRQn, 0, 6);
     HAL_NVIC_EnableIRQ(TIM4_IRQn);
   /* USER CODE BEGIN TIM4_MspInit 1 */
 

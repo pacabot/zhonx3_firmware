@@ -342,7 +342,7 @@ void menuHighlightedMove(unsigned char y, unsigned char max_y)
 		{
 			ssd1306InvertArea(0, y - 1, HIGHLIGHT_LENGHT, HIGHLIGHT_HEIGHT);
 			ssd1306InvertArea(0, y, HIGHLIGHT_LENGHT, HIGHLIGHT_HEIGHT);
-			if (y % 2)
+			if (y % 2)//refresh if pair, increases the refresh speed
 				ssd1306Refresh();
 			while (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY);
 		}
@@ -354,7 +354,7 @@ void menuHighlightedMove(unsigned char y, unsigned char max_y)
 		{
 			ssd1306InvertArea(0, y + 1, HIGHLIGHT_LENGHT, HIGHLIGHT_HEIGHT);
 			ssd1306InvertArea(0, y, HIGHLIGHT_LENGHT, HIGHLIGHT_HEIGHT);
-			if (y % 2)
+			if (y % 2)//refresh if pair, increases the refresh speed
 				ssd1306Refresh();
 			while (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY);
 		}
