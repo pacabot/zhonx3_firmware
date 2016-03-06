@@ -148,8 +148,8 @@ int wallSensorsCalibrationDiag (void)
 	int rv;
 
 	ssd1306ClearScreen(MAIN_AREA);
-	ssd1306DrawString(0, 9, "Place the robot front", &Font_5x8);
-	ssd1306DrawString(0, 18, "of wall and press 'RIGHT'", &Font_5x8);
+	ssd1306DrawStringAtLine(0, 0, "Place the robot front", &Font_5x8);
+	ssd1306DrawStringAtLine(0, 1, "of wall and press 'RIGHT'", &Font_5x8);
 	ssd1306Refresh();
 
 	while(expanderJoyFiltered()!=JOY_RIGHT);
@@ -248,11 +248,11 @@ void testWallsSensors()
 		ssd1306ClearScreen(MAIN_AREA);
 		if (getWallPresence(FRONT_WALL) == WALL_PRESENCE)
 		{
-			ssd1306FillRect(0,60,54,5);
+			ssd1306FillRect(0,59,54,5);
 		}
 		else
 		{
-			ssd1306DrawRect(0,60,54,5);
+			ssd1306DrawRect(0,59,54,5);
 		}
 		//		switch (cell_state.next_front) //todo add this functionality
 		//		{

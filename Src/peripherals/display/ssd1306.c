@@ -43,8 +43,8 @@
 
 #define SSD1306_CMDSIZE					1
 
-#define SSD1306_BANNERSIZE				(SSD1306_CMDSIZE + SSD1306_LCDWIDTH)
-#define SSD1306_MAINSIZE				(SSD1306_CMDSIZE + (SSD1306_LCDWIDTH * SSD1306_LCDPAGEHEIGHT))
+#define SSD1306_BANNERSIZE				(SSD1306_LCDWIDTH)
+#define SSD1306_MAINSIZE				((SSD1306_LCDWIDTH * SSD1306_LCDPAGEHEIGHT) - SSD1306_BANNERSIZE)
 
 // Commands
 #define SSD1306_SETCONTRAST             0x81
@@ -77,11 +77,11 @@
 
 /* extern variables ---------------------------------------------------------*/
 extern I2C_HandleTypeDef hi2c1;
-extern DMA_HandleTypeDef hdma_i2c1_tx;
+//extern DMA_HandleTypeDef hdma_i2c1_tx;
 
 /* Private variables ---------------------------------------------------------*/
 //static unsigned char banner_aera_buffer[SSD1306_BANNERSIZE];
-static unsigned char display_buffer[SSD1306_MAINSIZE];
+static unsigned char display_buffer[SSD1306_CMDSIZE + SSD1306_MAINSIZE + SSD1306_BANNERSIZE];
 
 /**************************************************************************/
 /*  Private Function Prototypes                                           */
@@ -111,7 +111,7 @@ static void CMD(uint8_t c)
 	//	while (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY)
 	//	{
 	//	}
-	HAL_I2C_Master_Transmit_DMA(&hi2c1, (uint16_t)120, (uint8_t*)aTxBuffer, 2);
+	HAL_I2C_Master_Transmit_DMA(&hi2c1, (uint16_t)120, (uint8_t*)aTxBuffer, 2);//, 1000);
 }
 
 //Send DATA
@@ -121,7 +121,7 @@ static void DATA(uint8_t c[], uint16_t size)
 	//	while (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY)
 	//	{
 	//	}
-	HAL_I2C_Master_Transmit_DMA(&hi2c1, (uint16_t)120, (uint8_t*)c, size);
+	HAL_I2C_Master_Transmit_DMA(&hi2c1, (uint16_t)120, (uint8_t*)c, size);//, 1000);
 }
 
 /**************************************************************************/
@@ -210,7 +210,7 @@ void ssd1306Init(unsigned char vccstate)
 		CMD(254);								// contrast (0-255)
 	}
 	CMD(SSD1306_NORMALDISPLAY);                 // 0xA6 NORMAL MODE (A7 for inverse display)
-	//	CMD(SSD1306_INVERTDISPLAY);             // 0xA6 NORMAL MODE (A7 for inverse display)
+//	CMD(SSD1306_INVERTDISPLAY);             // 0xA6 NORMAL MODE (A7 for inverse display)
 	CMD(SSD1306_DISPLAYALLON_RESUME);           // 0xA4
 	CMD(SSD1306_SETMULTIPLEX);                  // 0xA8
 	CMD(0x3F);                                  // 0x3F 1/64 duty
@@ -286,7 +286,7 @@ void ssd1306ClearPixel(unsigned char x, unsigned char y)
 	if ((x >= SSD1306_LCDWIDTH) || (y >= SSD1306_LCDHEIGHT))
 		return;
 
-	display_buffer[x + ((y/8)*SSD1306_LCDWIDTH) + SSD1306_CMDSIZE] &= (1 << y%8);
+	display_buffer[x + ((y/8)*SSD1306_LCDWIDTH) + SSD1306_CMDSIZE] &= ~(1 << y%8);
 }
 
 /**************************************************************************/
@@ -337,10 +337,10 @@ void ssd1306ClearScreen(enum refreshTypeEnum clearType)
 	switch (clearType)
 	{
 	case BANNER_AREA:
-		memset(display_buffer, 0, SSD1306_BANNERSIZE);
+		memset(display_buffer + SSD1306_CMDSIZE, 0, SSD1306_BANNERSIZE);
 		break;
 	case MAIN_AREA:
-		memset(display_buffer + SSD1306_BANNERSIZE, 0, SSD1306_MAINSIZE - SSD1306_BANNERSIZE);
+		memset(display_buffer + (SSD1306_BANNERSIZE + SSD1306_CMDSIZE), 0, SSD1306_MAINSIZE);
 		break;
 	}
 }
@@ -357,7 +357,7 @@ void ssd1306Refresh(void)
 		//	if (HAL_DMA_GetState(&hdma_i2c1_tx) == HAL_DMA_STATE_BUSY) //todo add frequency limiter based on systick
 		return;
 	display_buffer[0] = 0x40;
-	DATA(display_buffer, SSD1306_MAINSIZE);
+	DATA(display_buffer, SSD1306_MAINSIZE + SSD1306_BANNERSIZE + SSD1306_CMDSIZE);
 }
 
 /**************************************************************************/

@@ -210,14 +210,14 @@ void lineSensorsCalibration(void)
 		D=(double)(current.right-min_Floor.right)/max_Floor.right*1000;
 		E=(double)(current.rightExt-min_Floor.rightExt)/max_Floor.rightExt*1000;
 
-		ssd1306ClearScreen(MAIN_AREA);
 		cdg=(-1000*A-389*B+C+D*431+E*1000)/(A+B+C+D+E);
 		cdg=(-500*A-194.5*B+C+D*215.5+E*500)/(A+B+C+D+E);
-
-		ssd1306PrintIntAtLine(10, 1,  "Centre= ", (uint16_t)cdg, &Font_5x8);
-		ssd1306PrintIntAtLine(10, 2,  "milieu= ", (uint16_t)D-B, &Font_5x8);
+		ssd1306ClearRectAtLine(0, 1, 128);
+		ssd1306ClearRectAtLine(0, 2, 128);
+		ssd1306PrintIntAtLine(10, 1,  "Centre =  ", (uint16_t)cdg, &Font_5x8);
+		ssd1306PrintIntAtLine(10, 2,  "milieu =  ", (uint16_t)D-B, &Font_5x8);
 		ssd1306Refresh();
-		HAL_Delay(100);
+		HAL_Delay(50);
 	}
 
 	lineSensorsStop();
@@ -267,17 +267,17 @@ void lineSensorsCalibration(void)
 		ssd1306ClearScreen(MAIN_AREA);
 		if (cdg>0)
 		{
-			ssd1306PrintIntAtLine(10, 1,  "Centre= ", (uint16_t)cdg, &Font_5x8);
+			ssd1306PrintIntAtLine(10, 1,  "Centre =  ", (uint16_t)cdg, &Font_5x8);
 		} else
 		{
-			ssd1306PrintIntAtLine(10, 1,  "Centre=-", (uint16_t)-cdg, &Font_5x8);
+			ssd1306PrintIntAtLine(10, 1,  "Centre =- ", (uint16_t)-cdg, &Font_5x8);
 		}
 		if (D>B)
 		{
-			ssd1306PrintIntAtLine(10, 2,  "milieu= ", (uint16_t)cdg2, &Font_5x8);
+			ssd1306PrintIntAtLine(10, 2,  "milieu =  ", (uint16_t)cdg2, &Font_5x8);
 		} else
 		{
-			ssd1306PrintIntAtLine(10, 2,  "milieu=-", (uint16_t)-cdg2, &Font_5x8);
+			ssd1306PrintIntAtLine(10, 2,  "milieu =- ", (uint16_t)-cdg2, &Font_5x8);
 		}
 		ssd1306Refresh();
 
