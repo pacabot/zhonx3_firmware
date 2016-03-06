@@ -58,9 +58,8 @@ int maze(void)
 	positionRobot zhonx_position, start_position;
 
 	mainControlInit();
-	telemetersStart();
-	mainControlSetFollowType(WALL_FOLLOW); // initialize material
 
+	mainControlSetFollowType(WALL_FOLLOW);
 	/*init zhonx start position for different micromouse competition*/
 
 	if(zhonxSettings.nime_competition == true) // if it's the Nimes micromouse competition
@@ -81,7 +80,6 @@ int maze(void)
 	start_position = zhonx_position;
 	printMaze(maze, zhonx_position.cordinate);
 
-	mainControlSetFollowType(WALL_FOLLOW);
 
 	printMaze(maze,zhonx_position.cordinate);
 
@@ -260,26 +258,26 @@ void moveRealZhonxArc(labyrinthe *maze, positionRobot *positionZhonx, coordinate
 	while(way[i].x != END_OF_LIST)
 	{
 		length = 0;
-		if (way[i].x == (positionZhonx->cordinate.x + 1) && way[i].y == positionZhonx->cordinate.y)
+		if(way[i].x ==(positionZhonx->cordinate.x + 1) && way[i].y == positionZhonx->cordinate.y)
 		{
 			additionX = 1;
 			additionY = 0;
 			orientaionToGo = EAST;
 		}
-		else if (way[i].x == (positionZhonx->cordinate.x - 1) && way[i].y == positionZhonx->cordinate.y)
+		else if(way[i].x ==(positionZhonx->cordinate.x - 1) && way[i].y == positionZhonx->cordinate.y)
 		{
 			additionX = -1;
 			additionY = 0;
 			orientaionToGo = WEST;
 		}
-		else if (way[i].y == (positionZhonx->cordinate.y - 1) && way[i].x == positionZhonx->cordinate.x)
+		else if(way[i].y ==(positionZhonx->cordinate.y - 1) && way[i].x == positionZhonx->cordinate.x)
 		{
 
 			additionX = 0;
 			additionY = -1;
 			orientaionToGo = NORTH;
 		}
-		else if (way[i].y == (positionZhonx->cordinate.y + 1) && way[i].x == positionZhonx->cordinate.x)
+		else if(way[i].y ==(positionZhonx->cordinate.y + 1) && way[i].x == positionZhonx->cordinate.x)
 		{
 
 			additionX = 0;
@@ -292,7 +290,8 @@ void moveRealZhonxArc(labyrinthe *maze, positionRobot *positionZhonx, coordinate
 					positionZhonx->cordinate.x,positionZhonx->cordinate.y, way[i].x, way[i].y);
 			HAL_Delay(200);
 			motorsDriverSleep(ON);
-			ssd1306DrawString(60, 0, "Error way", &Font_5x8);
+			ssd1306ClearScreen(MAIN_AREA);
+			ssd1306DrawStringAtLine(60, 1, "Error way", &Font_5x8);
 			ssd1306Refresh();
 			while(1)
 			{

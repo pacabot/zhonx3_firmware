@@ -27,6 +27,7 @@
 #include "peripherals/display/smallfonts.h"
 #include "peripherals/expander/pcf8574.h"
 #include "peripherals/bluetooth/bluetooth.h"
+#include "peripherals/telemeters/telemeters.h"
 
 /* Middleware declarations */
 #include "middleware/display/banner.h"
@@ -43,10 +44,6 @@
 #define TX_OFF			2
 
 //#define MIN_TELEMETERS_SPEED 20
-
-#if (MEASURED_DISTANCE)%(TELEMETER_PROFILE_ARRAY_LENGTH) != 0
-#error  MEASURED_DISTANCE of cell must be a multiple of NUMBER_OF_CELL
-#endif
 
 /* Definition for ADCx Channel Pin */
 #define TX_FL				GPIO_PIN_1
@@ -106,7 +103,8 @@ typedef struct
 	char selector;
 } telemetersStruct;
 
-static volatile telemetersStruct telemeters;
+//static volatile telemetersStruct telemeters;
+volatile telemetersStruct telemeters;
 
 GPIO_InitTypeDef GPIO_InitStruct;
 ADC_ChannelConfTypeDef sConfig;
@@ -180,11 +178,6 @@ void telemetersInit(void)
 	telemeters.FR.mm_conv.cell_idx = TELEMETER_PROFILE_ARRAY_LENGTH - 1;
 	telemeters.DR.mm_conv.cell_idx = TELEMETER_PROFILE_ARRAY_LENGTH - 1;
 
-//	telemeters.FL.mm_conv.profile = telemeter_FL_profile;
-//	telemeters.DL.mm_conv.profile = telemeter_DL_profile;
-//	telemeters.FR.mm_conv.profile = telemeter_FR_profile;
-//	telemeters.DR.mm_conv.profile = telemeter_DR_profile;
-
 	telemeters.FL.mm_conv.profile = telemeters_profile->front.left;
     telemeters.FR.mm_conv.profile = telemeters_profile->front.right;
     telemeters.DL.mm_conv.profile = telemeters_profile->diag.left;
@@ -198,8 +191,8 @@ void telemetersInit(void)
 
 void telemetersStart(void)
 {
-	telemeters.active_state = TRUE;
 	bannerSetIcon(TELEMETERS, TRUE);
+	telemeters.active_state = TRUE;
 }
 
 void telemetersStop(void)
@@ -521,10 +514,10 @@ void telemetersTest(void)
 		ssd1306PrintIntAtLine(60, 3, "", (uint32_t)getTelemeterAvrg(TELEMETER_DR), &Font_5x8);
 		ssd1306PrintIntAtLine(60, 4, "", (uint32_t)getTelemeterAvrg(TELEMETER_FR), &Font_5x8);
 
-		ssd1306PrintIntAtLine(90, 1, "", (uint32_t)getTelemeterDist((TELEMETER_FL)*10.00), &Font_5x8);
-		ssd1306PrintIntAtLine(90, 2, "", (uint32_t)getTelemeterDist((TELEMETER_DL)*10.00), &Font_5x8);
-		ssd1306PrintIntAtLine(90, 3, "", (uint32_t)getTelemeterDist((TELEMETER_DR)*10.00), &Font_5x8);
-		ssd1306PrintIntAtLine(90, 4, "", (uint32_t)getTelemeterDist((TELEMETER_FR)*10.00), &Font_5x8);
+		ssd1306PrintIntAtLine(90, 1, "", (uint32_t)(getTelemeterDist(TELEMETER_FL)*10.00), &Font_5x8);
+		ssd1306PrintIntAtLine(90, 2, "", (uint32_t)(getTelemeterDist(TELEMETER_DL)*10.00), &Font_5x8);
+		ssd1306PrintIntAtLine(90, 3, "", (uint32_t)(getTelemeterDist(TELEMETER_DR)*10.00), &Font_5x8);
+		ssd1306PrintIntAtLine(90, 4, "", (uint32_t)(getTelemeterDist(TELEMETER_FR)*10.00), &Font_5x8);
 		ssd1306Refresh();
 
 //		if (joy == JOY_RIGHT)	//if add one page

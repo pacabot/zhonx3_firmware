@@ -41,7 +41,11 @@
 #include "middleware/math/kalman_filter.h"
 
 /* Declarations for this module */
-#include "peripherals/telemeters/telemetersCal.h"
+#include "peripherals/telemeters/telemeters.h"
+
+#if (MEASURED_DISTANCE)%(TELEMETER_PROFILE_ARRAY_LENGTH) != 0
+#error  MEASURED_DISTANCE of cell must be a multiple of NUMBER_OF_CELL
+#endif
 
 //int telemetersWithOutNoise//TODO this function
 
@@ -61,14 +65,16 @@ int wallSensorsCalibrationFront(void)
 	ssd1306PrintfAtLine(0, 1, &Font_5x8, "Calibrating front sensors");
 	ssd1306Refresh();
 
-	telemetersStart();
 	HAL_Delay(1000);
 	mainControlInit();
 	mainControlSetFollowType(NO_FOLLOW);
 	motorsDriverSleep(OFF);
 
+	telemetersStart();
+
 	// take the measures
 	move(0, -MEASURED_DISTANCE, 5, 5);
+	ssd1306Refresh();
 	for(i = 0; i < TELEMETER_PROFILE_ARRAY_LENGTH; i++)
 	{
 		while((((int)(encoderGetDist(ENCODER_L) + encoderGetDist(ENCODER_R)) >= -(NUMBER_OF_MILLIMETER_BY_LOOP * 2 * i))) &&
@@ -77,9 +83,13 @@ int wallSensorsCalibrationFront(void)
 		front_telemeters.left[i]  = getTelemeterAvrg(TELEMETER_FL);
 		front_telemeters.right[i] = getTelemeterAvrg(TELEMETER_FR);
 
+		ssd1306ClearScreen(MAIN_AREA);
+
+		ssd1306PrintIntAtLine(0, 3, "FL", (uint32_t)getTelemeterAvrg(TELEMETER_FL), &Font_5x8);
+		ssd1306PrintIntAtLine(0, 4, "FR", (uint32_t)getTelemeterAvrg(TELEMETER_FR), &Font_5x8);
+
 		ssd1306ProgressBar(10,10,(i*100)/TELEMETER_PROFILE_ARRAY_LENGTH);
 		ssd1306Refresh();
-		//	    	HAL_Delay(10);
 	}
 	while(hasMoveEnded() != TRUE);
 	telemetersStop();
@@ -99,8 +109,8 @@ int wallSensorsCalibrationFront(void)
 	front_telemeters.right[TELEMETER_PROFILE_ARRAY_LENGTH] = 0;
 
 	// save the measures
-	bluetoothPrintf("\nfilterd measures :\n");
-	for (int i = 0; i < TELEMETER_PROFILE_ARRAY_LENGTH; ++i)
+	bluetoothPrintf("\nfiltered measures :\n");
+	for (int i = 0; i < TELEMETER_PROFILE_ARRAY_LENGTH; i++)
 	{
 		bluetoothPrintf("%d|%d|%d\n", i,
 				front_telemeters.left[i], front_telemeters.right[i]);
@@ -138,8 +148,8 @@ int wallSensorsCalibrationDiag (void)
 	int rv;
 
 	ssd1306ClearScreen(MAIN_AREA);
-	ssd1306DrawString(0, 9, "Place the robot front", &Font_5x8);
-	ssd1306DrawString(0, 18, "of wall and press 'RIGHT'", &Font_5x8);
+	ssd1306DrawStringAtLine(0, 0, "Place the robot front", &Font_5x8);
+	ssd1306DrawStringAtLine(0, 1, "of wall and press 'RIGHT'", &Font_5x8);
 	ssd1306Refresh();
 
 	while(expanderJoyFiltered()!=JOY_RIGHT);
@@ -149,24 +159,30 @@ int wallSensorsCalibrationDiag (void)
 	ssd1306Printf(0, 9, &Font_5x8, "Calibrating front sensors");
 	ssd1306Refresh();
 
+	HAL_Delay(3000);
 	mainControlInit();
+	mainControlSetFollowType(NO_FOLLOW);
 	motorsDriverSleep(OFF);
 
+	double number_of_millimeter_per_loop = sqrt(2 * pow(NUMBER_OF_MILLIMETER_BY_LOOP, 2));
 	telemetersStart();
-	mainControlSetFollowType(FALSE);
-
-	HAL_Delay(3000);
-
 	// take the measures
+	move(0, -MEASURED_DISTANCE, 5, 5);
 	for(i = 0; i < TELEMETER_PROFILE_ARRAY_LENGTH; i++)
 	{
+		while((((int)(encoderGetDist(ENCODER_L) + encoderGetDist(ENCODER_R)) >= -(number_of_millimeter_per_loop * 2.00 * (double)i))) &&
+				(hasMoveEnded() != TRUE));
+
 		diag_telemeters.left[i]  = getTelemeterAvrg(TELEMETER_DL);
 		diag_telemeters.right[i] = getTelemeterAvrg(TELEMETER_DR);
 
-		move(0, -sqrtf(2 * powf(NUMBER_OF_MILLIMETER_BY_LOOP, 2)), 5, 5);
-		ssd1306ProgressBar(10,10,(i*100)/NUMBER_OF_MILLIMETER_BY_LOOP);
+		ssd1306ClearScreen(MAIN_AREA);
+
+		ssd1306PrintIntAtLine(0, 3, "DL", (uint32_t)getTelemeterAvrg(TELEMETER_DL), &Font_5x8);
+		ssd1306PrintIntAtLine(0, 4, "DR", (uint32_t)getTelemeterAvrg(TELEMETER_DR), &Font_5x8);
+
+		ssd1306ProgressBar(10,10,(i*100)/TELEMETER_PROFILE_ARRAY_LENGTH);
 		ssd1306Refresh();
-		while(hasMoveEnded() != TRUE);
 	}
 
 	telemetersStop();
@@ -232,11 +248,11 @@ void testWallsSensors()
 		ssd1306ClearScreen(MAIN_AREA);
 		if (getWallPresence(FRONT_WALL) == WALL_PRESENCE)
 		{
-			ssd1306FillRect(0,60,54,5);
+			ssd1306FillRect(0,59,54,5);
 		}
 		else
 		{
-			ssd1306DrawRect(0,60,54,5);
+			ssd1306DrawRect(0,59,54,5);
 		}
 		//		switch (cell_state.next_front) //todo add this functionality
 		//		{
@@ -271,10 +287,10 @@ void testWallsSensors()
 		default:
 			break;
 		}
-		ssd1306PrintIntAtLine(60, 1, "FL ", (uint32_t)getTelemeterDist((TELEMETER_FL)*10.00), &Font_5x8);
-		ssd1306PrintIntAtLine(60, 2, "FR ", (uint32_t)getTelemeterDist((TELEMETER_DL)*10.00), &Font_5x8);
-		ssd1306PrintIntAtLine(60, 3, "DL ", (uint32_t)getTelemeterDist((TELEMETER_DR)*10.00), &Font_5x8);
-		ssd1306PrintIntAtLine(60, 4, "DR ", (uint32_t)getTelemeterDist((TELEMETER_FR)*10.00), &Font_5x8);
+		ssd1306PrintIntAtLine(60, 1, "FL ", (uint32_t)(getTelemeterDist(TELEMETER_FL)*10.00), &Font_5x8);
+		ssd1306PrintIntAtLine(60, 2, "FR ", (uint32_t)(getTelemeterDist(TELEMETER_DL)*10.00), &Font_5x8);
+		ssd1306PrintIntAtLine(60, 3, "DL ", (uint32_t)(getTelemeterDist(TELEMETER_DR)*10.00), &Font_5x8);
+		ssd1306PrintIntAtLine(60, 4, "DR ", (uint32_t)(getTelemeterDist(TELEMETER_FR)*10.00), &Font_5x8);
 
 		ssd1306Refresh();
 	}

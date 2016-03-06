@@ -73,14 +73,18 @@ int mainControlInit(void)
 
 	motorsInit();
 	encodersInit();
-	mulimeterInit();
 	telemetersInit();
+	adxrs620Init();
+
 	speedControlInit();
 	positionControlInit();
 	wallFollowControlInit();
 	lineFollowControlInit();
 	transfertFunctionInit();
-	adxrs620Init();
+
+	move(0, 0, 0, 0);
+	gyroResetAngle();
+
 	positionControlSetPositionType(ENCODERS);
 	pid_loop.start_state = TRUE;
 	mainControlSetFollowType(FALSE);
@@ -89,8 +93,6 @@ int mainControlInit(void)
 
 	control_params.wall_follow_state = 0;
 	control_params.line_follow_state = 0;
-
-	move(0, 0, 0, 0);
 
 	return MAIN_CONTROL_E_SUCCESS;
 }
@@ -188,6 +190,7 @@ int move(double angle, double radius_or_distance, double max_speed, double end_s
 	}
 
 	pid_loop.start_state = TRUE;
+    motorsDriverSleep(OFF);
 	return POSITION_CONTROL_E_SUCCESS;
 }
 
@@ -347,7 +350,7 @@ int moveUTurn(float speed_rotation, float max_speed, float end_speed)
 	moveHalfCell_IN(max_speed, 0);
 
 	while(hasMoveEnded() != TRUE);
-	move (180, 0, speed_rotation, 0);
+	move (180, 0, speed_rotation, speed_rotation);
 
 	moveHalfCell_OUT(max_speed, end_speed);
 
@@ -356,8 +359,8 @@ int moveUTurn(float speed_rotation, float max_speed, float end_speed)
 
 int frontCal(float max_speed)
 {
-	int i = 0;
-	float relative_dist = 0.0;
+//	int i = 0;
+//	float relative_dist = 0.0;
 
 	move(0, 0, 0, 0);
 	//	while (wall_follow_control.succes != TRUE)
@@ -369,7 +372,7 @@ int frontCal(float max_speed)
 
 	/**************************************************************************/
 
-	relative_dist = (getTelemeterDist(TELEMETER_FL) + getTelemeterDist(TELEMETER_FR)) / 2;
+//	relative_dist = (getTelemeterDist(TELEMETER_FL) + getTelemeterDist(TELEMETER_FR)) / 2;
 	//	if (relative_dist < MAX_DIST_FOR_ALIGN)
 	//	{
 	//		move(0, relative_dist - CENTER_DISTANCE, max_speed, 0);
@@ -425,61 +428,33 @@ void mainControlDisplayTest(void)
 	while(expanderJoyFiltered()!=JOY_LEFT)
 	{
 		ssd1306ClearScreen(MAIN_AREA);
-		ssd1306PrintInt(10,  5,  "speed dist =  ",(int) (speedControlGetCurrentDist() * 100), &Font_5x8);
-		ssd1306PrintInt(10,  15, "follow err =  ",(int) (wallFollowGetCommand()), &Font_5x8);
-		ssd1306PrintInt(10,  25, "right_dist =  ",(int) (positionControlHasMoveEnded()), &Font_5x8);
-		ssd1306PrintInt(10,  35, "gyro =  ",(int16_t) gyroGetAngle(), &Font_5x8);
-		ssd1306PrintInt(10,  45, "left PWM =  ",(int16_t) transfert_function.left_motor_pwm, &Font_5x8);
-		ssd1306PrintInt(10,  55, "right PWM =  ",(int16_t) transfert_function.right_motor_pwm, &Font_5x8);
-
-		//		bluetoothPrintf("pwm right :%d \t %d \n",(int)transfert_function.right_motor_pwm, (int)(follow_control.follow_error*100));
-		//		bluetoothPrintInt("error", follow_control.follow_error);
-		//		transfert_function.right_motor_pwm = (speed_control.speed_command - (position_control.position_command + follow_control.follow_command)) * transfert_function.pwm_ratio;
-		//		transfert_function.left_motor_pwm  = (speed_control.speed_command + (position_control.position_command + follow_control.follow_command)) * transfert_function.pwm_ratio;
+		ssd1306PrintIntAtLine(0, 0,  "speed dist =  ",(int) (speedControlGetCurrentDist() * 100), &Font_5x8);
+		ssd1306PrintIntAtLine(0, 1, "follow err =  ",(int) (wallFollowGetCommand()), &Font_5x8);
+		ssd1306PrintIntAtLine(0, 2, "right_dist =  ",(int) (positionControlHasMoveEnded()), &Font_5x8);
+		ssd1306PrintIntAtLine(0, 3, "gyro =  ",(int16_t) gyroGetAngle(), &Font_5x8);
+//		ssd1306PrintIntAtLine(0, 4, "left PWM =  ",(int16_t) transfert_function.left_motor_pwm, &Font_5x8);
+//		ssd1306PrintIntAtLine(0, 0, "right PWM =  ",(int16_t) transfert_function.right_motor_pwm, &Font_5x8);
 
 		ssd1306Refresh();
 	}
-	pid_loop.start_state = FALSE;
 	telemetersStop();
 	motorsDriverSleep(ON);
 }
 
-void mainControlTest(void)
-{
-	mainControlInit();
-	telemetersStart();
-	HAL_Delay(500);
-
-	rotate180WithCal(CCW, 400, 0);
-
-	telemetersStop();
-	mainControlDisplayTest();
-}
-
 void followWallTest()
 {
-	ledPowerBlink(0, 0, 0);
 	mainControlInit();
 	telemetersStart();
 
 	positionControlSetPositionType(GYRO);
-	control_params.wall_follow_state = TRUE;
+	mainControlSetFollowType(WALL_FOLLOW);
 
-	//	setCellState();
 	HAL_Delay(2000);
-	move(0, 0, 0, 0);
-	motorsDriverSleep(OFF);
-
-	expanderLedState(1,0);
-	expanderLedState(2,0);
-	expanderLedState(3,0);
 
 	int Vmin, Vmax, Vrotate;
 	Vmin = 400;
 	Vmax = 400;
 	Vrotate = 400;
-
-
 
 	moveStartCell(Vmax, Vmax);
 	moveCell(1, Vmax, Vmin);
@@ -513,76 +488,34 @@ void followWallTest()
 	//	moveCell(1, Vmax, Vmin);
 	//	moveRotateCW90(Vmin, 0);
 
-	while(1);
-
-	moveRotateCW90(600, 200);
-	moveRotateCW90(600, 200);
-	moveCell(1, 600, 200);
-	moveRotateCCW90(600, 200);
-	moveRotateCCW90(600, 200);
-	HAL_Delay(1000);
-	moveCell(4, 1000, 200);
-	HAL_Delay(1000);
-	moveRotateCW90(600, 200);
-	moveRotateCCW90(600, 200);
-	moveRotateCW90(600, 200);
-	moveRotateCCW90(600, 200);
-	moveRotateCW90(600, 200);
-	moveRotateCCW90(600, 200);
-	moveRotateCW90(600, 200);
-	moveCell(1, 600, 200);
-
 	telemetersStop();
-	mainControlDisplayTest();
-	mainControlDisplayTest();
-}
-
-void followLineTest()
-{
 	mainControlDisplayTest();
 }
 
 void rotateTest()
 {
 	mainControlInit();
-	telemetersStart();
 
 	positionControlSetPositionType(GYRO);
 	mainControlSetFollowType(NO_FOLLOW);
 
 	HAL_Delay(2000);
-	motorsDriverSleep(OFF);
 
-	//move(-90, 0, 8, 8);
-	move(-90, (HALF_CELL_LENGTH - OFFSET_DIST), 8, 8);
+	move(-90, 0, 8, 8); //rotation example
 
 	while(hasMoveEnded() != TRUE){
 		while(expanderJoyFiltered()!=JOY_LEFT)
 		{
 			ssd1306ClearScreen(MAIN_AREA);
 
-			ssd1306PrintInt(0, 5,  "L_DIST_REL =  ",(signed int) encoderGetDist(ENCODER_L), &Font_5x8);
-			ssd1306PrintInt(0, 25, "R_DIST_REL =  ",(signed int) encoderGetDist(ENCODER_R), &Font_5x8);
-			ssd1306DrawString(1, 53, "PRESS 'RIGHT' TO RESET REL. DIST.", &Font_3x6);
-			if (expanderJoyFiltered() == JOY_RIGHT)
-			{
-				encodersReset();
-			}
+			ssd1306PrintIntAtLine(0, 0,  "L_DIST_REL =  ",(signed int) encoderGetDist(ENCODER_L), &Font_5x8);
+			ssd1306PrintIntAtLine(0, 1, "R_DIST_REL =  ",(signed int) encoderGetDist(ENCODER_R), &Font_5x8);
+
 			ssd1306Refresh();
-			HAL_Delay(10);
+			HAL_Delay(100);
 		}
 	}
 
-	//	move(0, 180, 100, 0);
-	//	while(isEndMove() != TRUE);
-	//	move(0, 0, 0, 0);
-	//	while(isEndMove() != TRUE);
-
-	mainControlDisplayTest();
-}
-
-void curveRotateTest()
-{
 	mainControlDisplayTest();
 }
 

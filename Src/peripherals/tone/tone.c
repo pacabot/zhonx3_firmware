@@ -42,19 +42,33 @@ static int tone_duration = 0;
 
 void toneInit(void)
 {
-	toneSetVolulme(100);
-	bannerSetIcon(BEEPER, 100);
+	TIM_OC_InitTypeDef sConfigOC;
+
+	htim11.Instance = TIM11;
+	htim11.Init.Prescaler = 1800;
+	htim11.Init.CounterMode = TIM_COUNTERMODE_UP;
+	htim11.Init.Period = 1000;
+	htim11.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+	HAL_TIM_Base_Init(&htim11);
+
+	HAL_TIM_PWM_Init(&htim11);
+
+	sConfigOC.OCMode = TIM_OCMODE_PWM1;
+	sConfigOC.Pulse = 50;
+	sConfigOC.OCPolarity = TIM_OCPOLARITY_LOW;
+	sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
+	HAL_TIM_PWM_ConfigChannel(&htim11, &sConfigOC, TIM_CHANNEL_1);
 }
 
 void tonesplayer(int *note, int *duration, int size, int tempo)
 {
-	int FREQ_NOTE=240;
-	int uwPrescalerValue=1800;
+	int note_freq;
+	int uwPrescalerValue;
 	for (int ii=0;ii<size;ii++)
 	{
-		FREQ_NOTE = note[ii];
+		note_freq = note[ii];
 
-		uwPrescalerValue = (uint32_t) ((SystemCoreClock /2) / (FREQ_NOTE * 1000)) - 1;
+		uwPrescalerValue = (uint32_t) ((SystemCoreClock /2) / (note_freq * 1000)) - 1;
 		htim11.Instance = TIM11;
 		htim11.Init.Prescaler = uwPrescalerValue;
 		htim11.Init.CounterMode = TIM_COUNTERMODE_UP;
@@ -138,7 +152,6 @@ void toneStop(void)
 void toneSetVolulme(int volume)
 {
 	TIM_OC_InitTypeDef sConfigOC;
-	bannerSetIcon(BEEPER, volume);
 
 	if (volume >= 100)
 		volume = 100;
@@ -146,7 +159,9 @@ void toneSetVolulme(int volume)
 	if (volume <= 0)
 		volume = 0;
 
-	volume = volume * 50 / 100; //change scale
+	bannerSetIcon(BEEPER, volume);
+
+	volume = volume * 20 / 100; //change scale
 
 	sConfigOC.OCMode = TIM_OCMODE_PWM1;
 	sConfigOC.Pulse = volume;
@@ -157,9 +172,9 @@ void toneSetVolulme(int volume)
 
 void toneTest(void)
 {
-	toneSetVolulme(5);
+	toneSetVolulme(100);
 
-//	happyBirthday();
+	//	happyBirthday();
 	imperialMarch();
 }
 

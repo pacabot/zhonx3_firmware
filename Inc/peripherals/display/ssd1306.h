@@ -45,6 +45,7 @@ void ssd1306FillCircle(unsigned char x0, unsigned char y0, unsigned char r);
 void ssd1306ClearCircle(unsigned char x0, unsigned char y0, unsigned char r);
 void ssd1306FillRect(unsigned char x, unsigned char y, unsigned char w, unsigned char h);
 void ssd1306ClearRect(unsigned char x, unsigned char y, unsigned char w, unsigned char h);
+void ssd1306ClearRectAtLine(unsigned char x, unsigned char line, unsigned char w);
 void ssd1306DrawRect(unsigned char x, unsigned char y, unsigned char w, unsigned char h);
 void ssd1306InvertArea(unsigned char x, unsigned char y, unsigned char w, unsigned char h);
 void ssd1306DrawDashedLine(unsigned char x0, unsigned char y0, unsigned char x1, unsigned char y1);
