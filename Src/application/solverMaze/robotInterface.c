@@ -1,3 +1,12 @@
+/*
+ * @file : robotInterface.c
+ * @author : Colin
+ * @version : V 2.0
+ * @date : 4 juin 2015
+ * @brief : this file contain all the necessary stuff for make interface
+ *          between the maze solver and the robot move function.
+ */
+
 #include "config/basetypes.h"
 #include "config/config.h"
 #include "stm32f4xx_hal.h"

@@ -103,7 +103,7 @@ const menuItem maze_menu=
 		{
 				{"new maze",'f',		(void*)maze},
 				{"calibration",'b',		(void*)&zhonxSettings.calibration_enabled},
-				{"color finish",'b',	(void*)&zhonxSettings.color_sensor_enabled},
+				{"color finish",'b',	(void*)&zhonxSettings.nime_competition},
 				{"x finish",'i',		(void*)&zhonxSettings.maze_end_coordinate.x},
 				{"y finish",'i',		(void*)&zhonxSettings.maze_end_coordinate.y}
 		}
@@ -275,7 +275,7 @@ int menu(const menuItem Menu)
 				if (line_menu < MAX_LINE_SCREEN-1)
 				{
 					displayMenu(Menu, 0);
-					line_screen = line_menu;
+					line_screen = line_menu + 1;
 				}
 				else
 				{
@@ -461,8 +461,8 @@ int modifyBoolParam( char *param_name, unsigned char *param)
 				param_copy = true;
 				sprintf(str, "YES");
 			}
-			ssd1306ClearRect(0, 28, 164, 8);
-			ssd1306DrawString(0, 28, str, &Font_8x8);
+			ssd1306ClearRect(0, 30, 164, 40);
+			ssd1306DrawStringAtLine(0, 3, str, &Font_8x8);
 			ssd1306Refresh();
 			break;
 
@@ -501,7 +501,6 @@ int modifyLongParam( char *param_name,long *param)
 
 	while (1)
 	{
-		// Exit Button
 		int joystick=expanderJoyFiltered();
 		switch (joystick)
 		{
@@ -562,7 +561,7 @@ int modifyLongParam( char *param_name,long *param)
 }
 
 
-int modifyPresetParam(char *param_name, void *param)
+int modifyPresetParam(char *param_name, presetParam *param)
 {
 	char str[40];
 	presetParam *preset = param;

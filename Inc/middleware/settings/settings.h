@@ -22,7 +22,7 @@
 /* memory address */
 
 /* structure of settings */
-typedef struct
+typedef struct coordinate
 {
   int x;
   int y;
@@ -31,7 +31,7 @@ typedef struct
 typedef struct
 {
 	char calibration_enabled;
-	char color_sensor_enabled;
+	char nime_competition;
 	coordinate maze_end_coordinate;
 	unsigned int sleep_delay_s;
 	unsigned long threshold_color;
