@@ -68,7 +68,6 @@ int wallSensorsCalibrationFront(void)
 	HAL_Delay(1000);
 	mainControlInit();
 	mainControlSetFollowType(NO_FOLLOW);
-	motorsDriverSleep(OFF);
 
 	telemetersStart();
 
@@ -162,12 +161,11 @@ int wallSensorsCalibrationDiag (void)
 	HAL_Delay(3000);
 	mainControlInit();
 	mainControlSetFollowType(NO_FOLLOW);
-	motorsDriverSleep(OFF);
 
 	double number_of_millimeter_per_loop = sqrt(2 * pow(NUMBER_OF_MILLIMETER_BY_LOOP, 2));
 	telemetersStart();
 	// take the measures
-	move(0, -MEASURED_DISTANCE, 5, 5);
+	move(0, -number_of_millimeter_per_loop * TELEMETER_PROFILE_ARRAY_LENGTH, 5, 5);
 	for(i = 0; i < TELEMETER_PROFILE_ARRAY_LENGTH; i++)
 	{
 		while((((int)(encoderGetDist(ENCODER_L) + encoderGetDist(ENCODER_R)) >= -(number_of_millimeter_per_loop * 2.00 * (double)i))) &&
@@ -288,9 +286,9 @@ void testWallsSensors()
 			break;
 		}
 		ssd1306PrintIntAtLine(60, 1, "FL ", (uint32_t)(getTelemeterDist(TELEMETER_FL)*10.00), &Font_5x8);
-		ssd1306PrintIntAtLine(60, 2, "FR ", (uint32_t)(getTelemeterDist(TELEMETER_DL)*10.00), &Font_5x8);
-		ssd1306PrintIntAtLine(60, 3, "DL ", (uint32_t)(getTelemeterDist(TELEMETER_DR)*10.00), &Font_5x8);
-		ssd1306PrintIntAtLine(60, 4, "DR ", (uint32_t)(getTelemeterDist(TELEMETER_FR)*10.00), &Font_5x8);
+		ssd1306PrintIntAtLine(60, 2, "DL ", (uint32_t)(getTelemeterDist(TELEMETER_DL)*10.00), &Font_5x8);
+		ssd1306PrintIntAtLine(60, 3, "DR ", (uint32_t)(getTelemeterDist(TELEMETER_DR)*10.00), &Font_5x8);
+		ssd1306PrintIntAtLine(60, 4, "FR ", (uint32_t)(getTelemeterDist(TELEMETER_FR)*10.00), &Font_5x8);
 
 		ssd1306Refresh();
 	}

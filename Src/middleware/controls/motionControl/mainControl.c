@@ -190,7 +190,7 @@ int move(double angle, double radius_or_distance, double max_speed, double end_s
 	}
 
 	pid_loop.start_state = TRUE;
-    motorsDriverSleep(OFF);
+	motorsDriverSleep(OFF);
 	return POSITION_CONTROL_E_SUCCESS;
 }
 
@@ -359,26 +359,32 @@ int moveUTurn(float speed_rotation, float max_speed, float end_speed)
 
 int frontCal(float max_speed)
 {
-//	int i = 0;
-//	float relative_dist = 0.0;
+	double relative_dist = 0.00;
 
-	move(0, 0, 0, 0);
-	//	while (wall_follow_control.succes != TRUE)
-	//	{
-	//		if (timeOut(1, i) == TRUE)
-	//			return POSITION_CONTROL_E_ERROR;
-	//		i++;
-	//	}
+	if (getTelemeterDist(TELEMETER_FR) > getTelemeterDist(TELEMETER_FL))
+	{
+		move(-30, 0, max_speed, max_speed);
+		while (((getTelemeterDist(TELEMETER_FR) - getTelemeterDist(TELEMETER_FL))) < 2.00 ||
+				((getTelemeterDist(TELEMETER_FR) - getTelemeterDist(TELEMETER_FL))) > -2.00)
+		{
+			if (hasMoveEnded() == TRUE)
+				return 0xFF;
+		}
+	}
+	else
+	{
+		move(30, 0, max_speed, max_speed);
+		while (((getTelemeterDist(TELEMETER_FL) - getTelemeterDist(TELEMETER_FR))) < 2.00 ||
+				((getTelemeterDist(TELEMETER_FL) - getTelemeterDist(TELEMETER_FR))) > -2.00)
+		{
+			if (hasMoveEnded() == TRUE)
+				return 0xFF;
+		}
+	}
 
-	/**************************************************************************/
-
-//	relative_dist = (getTelemeterDist(TELEMETER_FL) + getTelemeterDist(TELEMETER_FR)) / 2;
-	//	if (relative_dist < MAX_DIST_FOR_ALIGN)
-	//	{
-	//		move(0, relative_dist - CENTER_DISTANCE, max_speed, 0);
-	//		while(hasMoveEnded() != TRUE);
-	//	}
-
+	relative_dist = 15.00 - ((getTelemeterDist(TELEMETER_FL) + getTelemeterDist(TELEMETER_FR)) / 2.00);
+	move(0,relative_dist, 100, 100);
+	while(hasMoveEnded() != TRUE);
 
 	return POSITION_CONTROL_E_SUCCESS;
 }
@@ -432,8 +438,8 @@ void mainControlDisplayTest(void)
 		ssd1306PrintIntAtLine(0, 1, "follow err =  ",(int) (wallFollowGetCommand()), &Font_5x8);
 		ssd1306PrintIntAtLine(0, 2, "right_dist =  ",(int) (positionControlHasMoveEnded()), &Font_5x8);
 		ssd1306PrintIntAtLine(0, 3, "gyro =  ",(int16_t) gyroGetAngle(), &Font_5x8);
-//		ssd1306PrintIntAtLine(0, 4, "left PWM =  ",(int16_t) transfert_function.left_motor_pwm, &Font_5x8);
-//		ssd1306PrintIntAtLine(0, 0, "right PWM =  ",(int16_t) transfert_function.right_motor_pwm, &Font_5x8);
+		//		ssd1306PrintIntAtLine(0, 4, "left PWM =  ",(int16_t) transfert_function.left_motor_pwm, &Font_5x8);
+		//		ssd1306PrintIntAtLine(0, 0, "right PWM =  ",(int16_t) transfert_function.right_motor_pwm, &Font_5x8);
 
 		ssd1306Refresh();
 	}
@@ -501,6 +507,8 @@ void rotateTest()
 
 	HAL_Delay(2000);
 
+	frontCal(50);
+	while(1);
 	move(-90, 0, 8, 8); //rotation example
 
 	while(hasMoveEnded() != TRUE){

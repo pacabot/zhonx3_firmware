@@ -313,15 +313,18 @@ double speedProfileCompute(double distance, double max_speed, double end_speed)
 	return move_loop_time;
 }
 
-double speedMaintainCompute(void)
-{
 /* This function returns the maintain loop count according to front wall detection to avoid early turns leading to wall collision.
  * 	void
  */
+double speedMaintainCompute(void)
+{
+	double distance;
 	if (getWallPresence(FRONT_WALL) == WALL_PRESENCE)
 	{
+		distance = ((getTelemeterDist(TELEMETER_FL) + getTelemeterDist(TELEMETER_FR)) / 2.00) + 65.00 - (CELL_LENGTH + OFFSET_DIST);
 		// Calculating average distance detected by FR and FL Telemeters
-		return ((getTelemeterDist(TELEMETER_FL) + getTelemeterDist(TELEMETER_FR)) / 2.00) + 65.00 - (CELL_LENGTH + OFFSET_DIST);
+		if (distance > 0.00)
+			return distance;
 	}
 	else
 		return 0.00;
