@@ -1,6 +1,6 @@
 /**************************************************************************/
 /*!
-    @file    mainControl.c
+    @file    basicMoves.c
     @author  PLF (PACABOT)
     @date
     @version  0.0
@@ -21,6 +21,15 @@
 #include <stdio.h>
 #include <stdint.h>
 
+/* Middleware declarations */
+#include "middleware/controls/mazeControl/wallFollowControl.h"
+#include "middleware/controls/lineFollowerControl/lineFollowControl.h"
+#include "middleware/controls/mainControl/mainControl.h"
+#include "middleware/controls/mainControl/positionControl.h"
+#include "middleware/controls/mainControl/positionControl.h"
+#include "middleware/controls/mainControl/speedControl.h"
+#include "middleware/controls/mainControl/transfertFunction.h"
+
 /* Peripheral declarations */
 #include "peripherals/gyroscope/adxrs620.h"
 #include "peripherals/times_base/times_base.h"
@@ -36,176 +45,9 @@
 /* Middleware declarations */
 #include "middleware/wall_sensors/wall_sensors.h"
 #include "middleware/controls/pidController/pidController.h"
-#include "middleware/controls/motionControl/positionControl.h"
-#include "middleware/controls/motionControl/speedControl.h"
-#include "middleware/controls/motionControl/transfertFunction.h"
-#include "middleware/controls/motionControl/lineFollowControl.h"
-#include <middleware/controls/motionControl/wallFollowControl.h>
 
 /* Declarations for this module */
-#include "middleware/controls/motionControl/mainControl.h"
-
-typedef struct
-{
-	char wall_follow_state;
-	char line_follow_state;
-	char position_state;
-	char speed_state;
-}control_params_struct;
-
-typedef struct
-{
-	enum mainControlWallFollowType moveType;
-	walls cellState;
-	double initial_position;
-}move_params_struct;
-
-static control_params_struct control_params;
-static move_params_struct move_params;
-
-int debug_1 = 0;
-
-double ROTATION_DIAMETER;
-
-int mainControlInit(void)
-{
-	ROTATION_DIAMETER = sqrt(pow(WHEELS_DISTANCE, 2) + pow(WHEELS_SPACING, 2));
-
-	motorsInit();
-	encodersInit();
-	telemetersInit();
-	adxrs620Init();
-
-	speedControlInit();
-	positionControlInit();
-	wallFollowControlInit();
-	lineFollowControlInit();
-	transfertFunctionInit();
-
-	move(0, 0, 0, 0);
-	gyroResetAngle();
-
-	positionControlSetPositionType(ENCODERS);
-	pid_loop.start_state = TRUE;
-	mainControlSetFollowType(FALSE);
-
-	move_params.moveType = STRAIGHT;
-
-	control_params.wall_follow_state = 0;
-	control_params.line_follow_state = 0;
-
-	return MAIN_CONTROL_E_SUCCESS;
-}
-
-int mainControl_IT(void)
-{
-	if (pid_loop.start_state == FALSE)
-	{
-		return MAIN_CONTROL_E_SUCCESS;
-	}
-
-	if (control_params.line_follow_state == TRUE)
-	{
-		lineFollowControlLoop();
-		speedControlLoop();
-		transfertFunctionLoop();
-		return 0;
-	}
-	else if (control_params.wall_follow_state == TRUE)
-	{
-		wallFollowControlLoop();
-	}
-
-	positionControlLoop();
-	speedControlLoop();
-	transfertFunctionLoop();
-
-	return MAIN_CONTROL_E_SUCCESS;
-}
-
-int mainControlSetFollowType(enum mainControlFollowType follow_type)
-{
-	switch(follow_type)
-	{
-	case LINE_FOLLOW:
-		control_params.wall_follow_state = FALSE;
-		control_params.line_follow_state = TRUE;
-		return MAIN_CONTROL_E_SUCCESS;
-	case WALL_FOLLOW:
-		control_params.line_follow_state = FALSE;
-		control_params.wall_follow_state = TRUE;
-		return MAIN_CONTROL_E_SUCCESS;
-	case NO_FOLLOW:
-		control_params.line_follow_state = FALSE;
-		control_params.wall_follow_state = FALSE;
-		return MAIN_CONTROL_E_SUCCESS;
-	}
-
-	return MAIN_CONTROL_E_ERROR;
-}
-
-enum mainControlFollowType mainControlGetFollowType()
-{
-	if (control_params.wall_follow_state == TRUE)
-		return WALL_FOLLOW;
-	else if (control_params.line_follow_state == TRUE)
-		return LINE_FOLLOW;
-	else
-		return NO_FOLLOW;
-}
-
-enum mainControlWallFollowType mainControlGetWallFollowType()
-{
-	return move_params.moveType;
-}
-
-int move(double angle, double radius_or_distance, double max_speed, double end_speed)
-{
-	pid_loop.start_state = FALSE; //stop contol loop
-
-	encodersReset();
-	gyroResetAngle();
-
-	double distance;
-
-	speedControlSetSign((double)SIGN(radius_or_distance));
-	radius_or_distance = fabsf(radius_or_distance);
-
-	positionControlSetSign((double)SIGN(angle));
-	angle = fabsl(angle);
-
-	if (lround(angle) == 0)
-	{
-		move_params.moveType = STRAIGHT;
-
-		speedProfileCompute(radius_or_distance, max_speed, end_speed);
-		positionProfileCompute(0, 0, max_speed);
-	}
-	else
-	{
-		move_params.moveType = CURVE;
-		distance = fabsf((PI * (2.00 * radius_or_distance) * (angle / 360.00)));
-
-		positionProfileCompute(angle, speedProfileCompute(distance, max_speed, end_speed), max_speed);
-	}
-
-	pid_loop.start_state = TRUE;
-	motorsDriverSleep(OFF);
-	return POSITION_CONTROL_E_SUCCESS;
-}
-
-char hasMoveEnded(void)
-{
-	if (positionControlHasMoveEnded() == TRUE && speedControlHasMoveEnded() == TRUE)
-		return TRUE;
-	else
-		return FALSE;
-}
-
-double mouveGetInitialPosition(void)
-{
-	return move_params.initial_position;
-}
+#include "middleware/controls/mazeControl/basicMoves.h"
 
 /**************************************************************************************/
 /***************                    Basic Moves                    ********************/
@@ -285,7 +127,7 @@ int moveHalfCell_OUT(float max_speed, float end_speed)
  */
 int moveStartCell(float max_speed, float end_speed)
 {
-	move_params.initial_position = Z3_CENTER_BACK_DIST;
+	move_params.initial_position = Z3_CENTER_BACK_DIST + HALF_WALL_THICKNESS;
 
 	while(hasMoveEnded() != TRUE);
 	move(0, ((CELL_LENGTH - (Z3_CENTER_BACK_DIST + HALF_WALL_THICKNESS)) - OFFSET_DIST), max_speed, end_speed);
@@ -309,7 +151,7 @@ int moveRotateCW90(float max_speed, float end_speed)
 	while(hasMoveEnded() != TRUE);
 	move(90, (HALF_CELL_LENGTH - OFFSET_DIST), max_speed, max_speed);
 	while(hasMoveEnded() != TRUE);
-	move(0, (OFFSET_DIST * 2.00), max_speed, end_speed);
+	move(0, (OFFSET_DIST * 2.00) + speedMaintainCompute(), max_speed, end_speed);
 
 	return POSITION_CONTROL_E_SUCCESS;
 }
@@ -328,7 +170,7 @@ int moveRotateCCW90(float max_speed, float end_speed)
 	while(hasMoveEnded() != TRUE);
 	move(-90, (HALF_CELL_LENGTH - OFFSET_DIST), max_speed, max_speed);
 	while(hasMoveEnded() != TRUE);
-	move(0, (OFFSET_DIST * 2.00), max_speed, end_speed);
+	move(0, (OFFSET_DIST * 2.00) + speedMaintainCompute(), max_speed, end_speed);
 
 	return POSITION_CONTROL_E_SUCCESS;
 }
@@ -349,8 +191,27 @@ int moveUTurn(float speed_rotation, float max_speed, float end_speed)
 	while(hasMoveEnded() != TRUE);
 	moveHalfCell_IN(max_speed, 0);
 
+	//frontCal(speed_rotation);
+
 	while(hasMoveEnded() != TRUE);
-	move (180, 0, speed_rotation, speed_rotation);
+	if (getWallPresence(RIGHT_WALL) == WALL_PRESENCE)
+	{
+		move (90, 0, speed_rotation, speed_rotation);
+		frontCal(speed_rotation);
+		while(hasMoveEnded() != TRUE);
+		move (90, 0, speed_rotation, speed_rotation);
+	}
+	else if (getWallPresence(LEFT_WALL) == WALL_PRESENCE)
+	{
+		move (-90, 0, speed_rotation, speed_rotation);
+		frontCal(speed_rotation);
+		while(hasMoveEnded() != TRUE);
+		move (-90, 0, speed_rotation, speed_rotation);
+	}
+	else
+	{
+		move (-180, 0, speed_rotation, speed_rotation);
+	}
 
 	moveHalfCell_OUT(max_speed, end_speed);
 
@@ -361,30 +222,37 @@ int frontCal(float max_speed)
 {
 	double relative_dist = 0.00;
 
-	if (getTelemeterDist(TELEMETER_FR) > getTelemeterDist(TELEMETER_FL))
-	{
-		move(-30, 0, max_speed, max_speed);
-		while (((getTelemeterDist(TELEMETER_FR) - getTelemeterDist(TELEMETER_FL))) < 2.00 ||
-				((getTelemeterDist(TELEMETER_FR) - getTelemeterDist(TELEMETER_FL))) > -2.00)
-		{
-			if (hasMoveEnded() == TRUE)
-				return 0xFF;
-		}
-	}
-	else
-	{
-		move(30, 0, max_speed, max_speed);
-		while (((getTelemeterDist(TELEMETER_FL) - getTelemeterDist(TELEMETER_FR))) < 2.00 ||
-				((getTelemeterDist(TELEMETER_FL) - getTelemeterDist(TELEMETER_FR))) > -2.00)
-		{
-			if (hasMoveEnded() == TRUE)
-				return 0xFF;
-		}
-	}
-
-	relative_dist = 15.00 - ((getTelemeterDist(TELEMETER_FL) + getTelemeterDist(TELEMETER_FR)) / 2.00);
-	move(0,relative_dist, 100, 100);
 	while(hasMoveEnded() != TRUE);
+
+	if (getWallPresence(FRONT_WALL) == WALL_PRESENCE)
+	{
+		if (getTelemeterDist(TELEMETER_FR) > getTelemeterDist(TELEMETER_FL))
+		{
+			move(-30, 0, max_speed, max_speed);
+			while (((getTelemeterDist(TELEMETER_FR) - getTelemeterDist(TELEMETER_FL))) > 1.00)
+			{
+				if (hasMoveEnded() == TRUE)
+				{
+					move(30, 0, max_speed, max_speed);
+					return 0xFF;
+				}
+			}
+		}
+		else
+		{
+			move(30, 0, max_speed, max_speed);
+			while (((getTelemeterDist(TELEMETER_FL) - getTelemeterDist(TELEMETER_FR))) > 1.00)
+			{
+				if (hasMoveEnded() == TRUE)
+				{
+					move(-30, 0, max_speed, max_speed);
+					return 0xFF;
+				}
+			}
+		}
+		relative_dist = ((getTelemeterDist(TELEMETER_FL) + getTelemeterDist(TELEMETER_FR)) / 2.00) - 21.00;
+		move(0,relative_dist, 100, 100);
+	}
 
 	return POSITION_CONTROL_E_SUCCESS;
 }
@@ -447,7 +315,7 @@ void mainControlDisplayTest(void)
 	motorsDriverSleep(ON);
 }
 
-void followWallTest()
+void movesTest()
 {
 	mainControlInit();
 	telemetersStart();
@@ -501,14 +369,15 @@ void followWallTest()
 void rotateTest()
 {
 	mainControlInit();
+	telemetersStart();
 
 	positionControlSetPositionType(GYRO);
 	mainControlSetFollowType(NO_FOLLOW);
 
 	HAL_Delay(2000);
 
-	frontCal(50);
-	while(1);
+	moveUTurn(100, 100, 100);
+	return;
 	move(-90, 0, 8, 8); //rotation example
 
 	while(hasMoveEnded() != TRUE){

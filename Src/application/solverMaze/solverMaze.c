@@ -6,6 +6,14 @@
 #include "stm32f4xx.h"
 #include "config/basetypes.h"
 
+/* Middleware declarations */
+#include "middleware/controls/lineFollowerControl/lineFollowControl.h"
+#include "middleware/controls/mainControl/mainControl.h"
+#include "middleware/controls/mainControl/positionControl.h"
+#include "middleware/controls/mainControl/positionControl.h"
+#include "middleware/controls/mainControl/speedControl.h"
+#include "middleware/controls/mainControl/transfertFunction.h"
+
 /* peripherale inlcudes*/
 #include "peripherals/times_base/times_base.h"
 #include "peripherals/display/ssd1306.h"
@@ -19,13 +27,6 @@
 #include "middleware/settings/settings.h"
 #include "middleware/wall_sensors/wall_sensors.h"
 #include "middleware/controls/pidController/pidController.h"
-#include "middleware/controls/motionControl/positionControl.h"
-#include "middleware/controls/motionControl/speedControl.h"
-#include "middleware/controls/motionControl/transfertFunction.h"
-#include "middleware/controls/motionControl/wallFollowControl.h"
-#include "middleware/controls/motionControl/mainControl.h"
-
-/*application include */
 #include "application/solverMaze/solverMaze.h"
 #include "application/solverMaze/robotInterface.h"
 #include "application/solverMaze/run.h"

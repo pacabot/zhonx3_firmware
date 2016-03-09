@@ -15,6 +15,7 @@
 #include "stdbool.h"
 #include <arm_math.h>
 #include <math.h>
+#include <middleware/controls/mainControl/mainControl.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdint.h>
@@ -37,7 +38,6 @@
 #include "peripherals/flash/flash.h"
 
 /* Middleware declarations */
-#include "middleware/controls/motionControl/mainControl.h"
 #include "middleware/math/kalman_filter.h"
 
 /* Declarations for this module */

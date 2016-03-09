@@ -16,7 +16,7 @@
 #define LINE_FOLLOW_CONTROL_E_SUCCESS  0
 #define LINE_FOLLOW_CONTROL_E_ERROR    MAKE_ERROR(LINE_FOLLOW_CONTROL_MODULE_ID, 1)
 
-#include "middleware/controls/motionControl/speedControl.h"
+#include <middleware/controls/mainControl/speedControl.h>
 
 /* Types definitions */
 

@@ -8,12 +8,12 @@
 #include "peripherals/telemeters/telemeters.h"
 
 /* meddleware include */
-#include "middleware/controls/motionControl/mainControl.h"
-
-/*application include */
 #include "application/solverMaze/solverMaze.h"
 
 /* Middleware declarations */
+#include "middleware/controls/mazeControl/basicMoves.h"
+#include "middleware/controls/mainControl/mainControl.h"
+
 #include "application/solverMaze/robotInterface.h"
 
 void goOrientation(char *orientationZhonx, char directionToGo)

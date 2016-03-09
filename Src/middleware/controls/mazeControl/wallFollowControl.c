@@ -21,6 +21,14 @@
 #include <stdio.h>
 #include <stdint.h>
 
+/* Middleware declarations */
+#include "middleware/controls/lineFollowerControl/lineFollowControl.h"
+#include "middleware/controls/mainControl/mainControl.h"
+#include "middleware/controls/mainControl/positionControl.h"
+#include "middleware/controls/mainControl/positionControl.h"
+#include "middleware/controls/mainControl/speedControl.h"
+#include "middleware/controls/mainControl/transfertFunction.h"
+
 /* Peripheral declarations */
 #include "peripherals/display/ssd1306.h"
 #include "peripherals/display/smallfonts.h"
@@ -33,39 +41,32 @@
 /* Middleware declarations */
 #include "middleware/wall_sensors/wall_sensors.h"
 #include "middleware/controls/pidController/pidController.h"
-#include "middleware/controls/motionControl/positionControl.h"
-#include "middleware/controls/motionControl/speedControl.h"
-#include "middleware/controls/motionControl/mainControl.h"
-#include "middleware/controls/motionControl/transfertFunction.h"
-#include "middleware/controls/motionControl/positionControl.h"
-
-/* Application declarations */
 #include "application/lineFollower/lineFollower.h"
 
 /* Declarations for this module */
-#include "middleware/controls/motionControl/wallFollowControl.h"
+#include "middleware/controls/mazeControl/wallFollowControl.h"
 
 /* Types definitions */
-#define CENTER_DISTANCE 	15.0
-#define SUCCES_GAP_DIST 	2.0
+#define CENTER_DISTANCE 	 15.0
+#define SUCCES_GAP_DIST 	 2.0
 
-#define MAX_DIST_FOR_ALIGN 	160.00
-#define MIN_DIST_FOR_ALIGN 	3.00
+#define MAX_DIST_FOR_ALIGN 	 160.00
+#define MIN_DIST_FOR_ALIGN 	 3.00
 
-#define MAX_DIST_FOR_FOLLOW 120.00
-#define MIN_DIST_FOR_FOLLOW 30.00
+#define MAX_DIST_FOR_FOLLOW  120.00
+#define MIN_DIST_FOR_FOLLOW  30.00
 
-#define BOTH_WALL_DIST 		180.00
+#define BOTH_WALL_DIST 		 180.00
 
-#define DIAG_DIST_FOR_FOLLOW 87.00
+#define DIAG_DIST_FOR_FOLLOW 80.00
 
-#define SLIP_TRANSLATION	100
+#define SLIP_TRANSLATION	 100
 
-#define MAX_ANGLE_ERROR		30.00	//Degres
-#define MAX_FOLLOW_ERROR	50.00	//Millimeter
+#define MAX_ANGLE_ERROR		 30.00	//Degres
+#define MAX_FOLLOW_ERROR	 50.00	//Millimeter
 
-#define DEADZONE_DIST		100.00	//Distance between the start of the cell and doubt area
-#define DEADZONE			100.00	//doubt area
+#define DEADZONE_DIST		 100.00	//Distance between the start of the cell and doubt area
+#define DEADZONE			 100.00	//doubt area
 
 typedef struct
 {

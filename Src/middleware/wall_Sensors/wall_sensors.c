@@ -15,6 +15,7 @@
 #include "stdbool.h"
 #include <arm_math.h>
 #include <math.h>
+#include <middleware/controls/mainControl/mainControl.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdint.h>
@@ -33,9 +34,6 @@
 #include "peripherals/motors/motors.h"
 
 /* Middleware declarations */
-#include "middleware/controls/motionControl/mainControl.h"
-
-/* Declarations for this module */
 #include "middleware/wall_sensors/wall_sensors.h"
 
 walls cell_state = {NO_WALL,NO_WALL,NO_WALL,NO_WALL};

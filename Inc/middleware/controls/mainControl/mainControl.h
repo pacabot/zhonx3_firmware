@@ -9,8 +9,8 @@
 #ifndef __MAINCONTROL_H__
 #define __MAINCONTROL_H__
 
+#include <middleware/controls/mainControl/speedControl.h>
 #include "config/config.h"
-#include "middleware/controls/motionControl/speedControl.h"
 #include "middleware/wall_sensors/wall_sensors.h"
 
 /* Module Identifier */
@@ -26,6 +26,15 @@
 enum rotationTypeEnum {CW, CCW};
 enum mainControlWallFollowType {STRAIGHT, CURVE};
 enum mainControlFollowType {LINE_FOLLOW, WALL_FOLLOW, NO_FOLLOW};
+
+typedef struct
+{
+	enum mainControlWallFollowType moveType;
+	walls cellState;
+	double initial_position;
+}move_params_struct;
+
+extern move_params_struct move_params;
 
 extern double ROTATION_DIAMETER;
 
@@ -53,18 +62,5 @@ double	positionControlSetSign(double sign);
  * @retval status
  */
 int 	move(double angle, double radius_or_distance, double max_speed, double end_speed);
-int  	frontCal(float max_speed);
-int  	rotate180WithCal(enum rotationTypeEnum rotation_type, float max_speed, float end_speed);
-int  	rotate90WithCal(enum rotationTypeEnum rotation_type, float max_speed, float end_speed);
-int  	moveCell(unsigned long nb_cell, float max_speed, float end_speed);
-int  	moveHalfCell_IN(float max_speed, float end_speed);
-int  	moveHalfCell_OUT(float max_speed, float end_speed);
-int  	moveEndCell(float max_speed, float end_speed);
-int  	moveStartCell(float max_speed, float end_speed);
-int  	moveRotateCW90(float max_speed, float end_speed);
-int  	moveRotateCCW90(float max_speed, float end_speed);
-int  	moveUTurn(float speed_rotation, float max_speed, float end_speed);
-void 	followWallTest(void);
-void 	rotateTest(void);
 
 #endif // __MAINCONTROL_H

@@ -17,6 +17,8 @@
 #include "stdbool.h"
 #include <arm_math.h>
 #include <math.h>
+#include <middleware/controls/mainControl/mainControl.h>
+#include <middleware/controls/mainControl/positionControl.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdint.h>
@@ -27,10 +29,6 @@
 #include "peripherals/expander/pcf8574.h"
 
 /* Middleware declarations */
-#include "middleware/controls/motionControl/mainControl.h"
-#include "middleware/controls/motionControl/positionControl.h"
-
-/* Declarations for this module */
 #include "peripherals/multimeter/multimeter.h"
 
 /* Definition for ADCx Channel Pin */
