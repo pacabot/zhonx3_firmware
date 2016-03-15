@@ -310,20 +310,3 @@ double speedProfileCompute(double distance, double max_speed, double end_speed)
 	//	bluetoothPrintf("nombre de deplacement: %d,nb_loop_accel = %d, nb_loop_decel = %d, nb_loop_maint = %d \r\n", i, (int)speed_params.nb_loop_accel, (int)speed_params.nb_loop_decel, (int)speed_params.nb_loop_maint);
 	return move_loop_time;
 }
-
-/* This function returns the maintain loop count according to front wall detection to avoid early turns leading to wall collision.
- * 	void
- */
-double speedMaintainCompute(void)
-{
-	double distance;
-	if (getWallPresence(FRONT_WALL) == WALL_PRESENCE)
-	{
-		distance = ((getTelemeterDist(TELEMETER_FL) + getTelemeterDist(TELEMETER_FR)) / 2.00) + 65.00 - (CELL_LENGTH + OFFSET_DIST);
-		// Calculating average distance detected by FR and FL Telemeters
-		bluetoothPrintf("distance = %d \n", (int)distance);
-		return distance;
-	}
-	else
-		return 0.00;
-}

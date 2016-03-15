@@ -29,6 +29,7 @@
 #include "middleware/controls/mainControl/positionControl.h"
 #include "middleware/controls/mainControl/speedControl.h"
 #include "middleware/controls/mainControl/transfertFunction.h"
+#include "middleware/controls/mazeControl/reposition.h"
 
 /* Peripheral declarations */
 #include "peripherals/gyroscope/adxrs620.h"
@@ -77,7 +78,7 @@ int moveCell(unsigned long nb_cell, float max_speed, float end_speed)
 	while(hasMoveEnded() != TRUE);
 	move(0, (CELL_LENGTH - (OFFSET_DIST * 2.00)), max_speed, end_speed);
 	while(hasMoveEnded() != TRUE);
-	move(0, (OFFSET_DIST * 2.00) + speedMaintainCompute(), max_speed, end_speed);
+	move(0, (OFFSET_DIST * 2.00) + repositionGetPostDist(-OFFSET_DIST), max_speed, end_speed);
 
 	return POSITION_CONTROL_E_SUCCESS;
 }
@@ -113,7 +114,7 @@ int moveHalfCell_OUT(float max_speed, float end_speed)
 	while(hasMoveEnded() != TRUE);
 	move(0, HALF_CELL_LENGTH - OFFSET_DIST, max_speed, end_speed);
 	while(hasMoveEnded() != TRUE);
-	move(0, (OFFSET_DIST * 2.00) + speedMaintainCompute(), max_speed, end_speed);
+	move(0, (OFFSET_DIST * 2.00) + repositionGetPostDist(-OFFSET_DIST), max_speed, end_speed);
 
 	return POSITION_CONTROL_E_SUCCESS;
 }
@@ -132,7 +133,7 @@ int moveStartCell(float max_speed, float end_speed)
 	while(hasMoveEnded() != TRUE);
 	move(0, ((CELL_LENGTH - (Z3_CENTER_BACK_DIST + HALF_WALL_THICKNESS)) - OFFSET_DIST), max_speed, end_speed);
 	while(hasMoveEnded() != TRUE);
-	move(0, (OFFSET_DIST * 2.00) + speedMaintainCompute(), max_speed, end_speed);
+	move(0, (OFFSET_DIST * 2.00) + repositionGetPostDist(-OFFSET_DIST), max_speed, end_speed);
 
 	return POSITION_CONTROL_E_SUCCESS;
 }
@@ -151,7 +152,7 @@ int moveRotateCW90(float max_speed, float end_speed)
 	while(hasMoveEnded() != TRUE);
 	move(90, (HALF_CELL_LENGTH - OFFSET_DIST), max_speed, max_speed);
 	while(hasMoveEnded() != TRUE);
-	move(0, (OFFSET_DIST * 2.00) + speedMaintainCompute(), max_speed, end_speed);
+	move(0, (OFFSET_DIST * 2.00) + repositionGetPostDist(-OFFSET_DIST), max_speed, end_speed);
 
 	return POSITION_CONTROL_E_SUCCESS;
 }
@@ -159,7 +160,7 @@ int moveRotateCW90(float max_speed, float end_speed)
 /*
  *		 	 :
  * 		o	 :	  o
- * 	>>>    _·'	  :
+ * 	>>>    _.'	  :
  * 	>>>	          :
  * 		o_________o
  */
@@ -170,7 +171,7 @@ int moveRotateCCW90(float max_speed, float end_speed)
 	while(hasMoveEnded() != TRUE);
 	move(-90, (HALF_CELL_LENGTH - OFFSET_DIST), max_speed, max_speed);
 	while(hasMoveEnded() != TRUE);
-	move(0, (OFFSET_DIST * 2.00) + speedMaintainCompute(), max_speed, end_speed);
+	move(0, (OFFSET_DIST * 2.00) + repositionGetPostDist(-OFFSET_DIST), max_speed, end_speed);
 
 	return POSITION_CONTROL_E_SUCCESS;
 }
@@ -214,45 +215,6 @@ int moveUTurn(float speed_rotation, float max_speed, float end_speed)
 	}
 
 	moveHalfCell_OUT(max_speed, end_speed);
-
-	return POSITION_CONTROL_E_SUCCESS;
-}
-
-int frontCal(float max_speed)
-{
-	double relative_dist = 0.00;
-
-	while(hasMoveEnded() != TRUE);
-
-	if (getWallPresence(FRONT_WALL) == WALL_PRESENCE)
-	{
-		if (getTelemeterDist(TELEMETER_FR) > getTelemeterDist(TELEMETER_FL))
-		{
-			move(-30, 0, max_speed, max_speed);
-			while (((getTelemeterDist(TELEMETER_FR) - getTelemeterDist(TELEMETER_FL))) > 1.00)
-			{
-				if (hasMoveEnded() == TRUE)
-				{
-					move(30, 0, max_speed, max_speed);
-					return 0xFF;
-				}
-			}
-		}
-		else
-		{
-			move(30, 0, max_speed, max_speed);
-			while (((getTelemeterDist(TELEMETER_FL) - getTelemeterDist(TELEMETER_FR))) > 1.00)
-			{
-				if (hasMoveEnded() == TRUE)
-				{
-					move(-30, 0, max_speed, max_speed);
-					return 0xFF;
-				}
-			}
-		}
-		relative_dist = ((getTelemeterDist(TELEMETER_FL) + getTelemeterDist(TELEMETER_FR)) / 2.00) - 21.00;
-		move(0,relative_dist, 100, 100);
-	}
 
 	return POSITION_CONTROL_E_SUCCESS;
 }

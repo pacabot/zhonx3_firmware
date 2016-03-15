@@ -36,6 +36,7 @@
 #define RING_BUFFER_MODULE_ID					111
 #define CMDLINE_PARSER_MODULE_ID				112
 #define BASIC_MOVES_MODULE_ID					113
+#define REPOSITION_MODULE_ID					114
 
 /* application 2xx*/
 #define MAZE_SOLVER_MODULE_ID					201
