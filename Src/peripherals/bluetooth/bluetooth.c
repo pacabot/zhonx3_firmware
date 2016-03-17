@@ -28,7 +28,9 @@
 #include "usart.h"
 
 /* Middleware declarations */
+// TODO: Remove mmiddleware declarations, as we are in lower level here
 #include "middleware/ring_buffer/ring_buffer.h"
+#include "middleware/display/banner.h"
 
 /* Declarations for this module */
 #include "peripherals/bluetooth/bluetooth.h"
@@ -73,9 +75,6 @@ static inline int bluetoothDeInit_IT(void)
 {
 	__HAL_UART_DISABLE_IT(&huart3, UART_IT_RXNE);
 
-	// Pause DMA transfer on UART3
-	//    HAL_UART_DMAPause(&huart3);
-
 	huart3.gState = HAL_UART_STATE_READY;
 
 	return HAL_OK;
@@ -94,14 +93,29 @@ void bluetoothInit(void)
 	// Allow Remote Escape Sequence
 	bluetoothCmd("AT+AB Config RmtEscapeSequence = true");
 
-	// TODO: Check if this delay is necessary
-	//HAL_Delay(100);
-
 	// Reset the bluetooth peripheral
 	bluetoothCmd("AT+AB Reset");
 
-	// Initialize USART Interrupts
-	bluetoothInit_IT();
+	// Enable USART Interrupts
+	bluetoothEnable();
+}
+
+void bluetoothEnable(void)
+{
+    // Enable bluetooth Interrupts
+    bluetoothInit_IT();
+
+    // Display bluetooth icon on screen
+    bannerSetIcon(BLUETOOTH, TRUE);
+}
+
+void bluetoothDisable(void)
+{
+    // Disable bluetooth interrupts
+    bluetoothDeInit_IT();
+
+    // Remove bluetooth icone on screen
+    bannerSetIcon(BLUETOOTH, FALSE);
 }
 
 int bluetoothSend(unsigned char *data, int length)

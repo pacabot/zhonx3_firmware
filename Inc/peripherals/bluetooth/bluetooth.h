@@ -26,6 +26,24 @@
 void bluetoothInit(void);
 
 /**
+ * @brief Enables Bluetooth peripheral
+ *
+ * @param   none
+ *
+ * @return  none
+ */
+void bluetoothEnable(void);
+
+/**
+ * @brief Disables Bluetooth peripheral
+ *
+ * @param   none
+ *
+ * @return  none
+ */
+void bluetoothDisable(void);
+
+/**
  * @brief Prints a formatted string on Bluetooth peripheral
  *
  * This function outputs a formatted string on Bluetooth like printf would do.
@@ -61,6 +79,9 @@ int bluetoothReceive(unsigned char *data, int length);
 
 /**
  * @brief Send an AT command to Bluetooth module
+ *
+ * Note: Bluetooth module can receive AT commands only when no connection has
+ *       been established with another device.
  *
  * @param cmd       The command to send
  *
