@@ -75,12 +75,8 @@ typedef struct
 }wall_follow_control_struct;
 
 /* App definitions */
-
 /* Macros */
-
 /* Static functions */
-static double wallFollow(enum telemeterName telemeter_name);
-
 /* extern variables */
 
 /* global variables */
@@ -112,7 +108,7 @@ int wallFollowControlLoop(void)
 	if (mainControlGetWallFollowType() != STRAIGHT)
 		return WALL_FOLLOW_CONTROL_E_SUCCESS;
 
-	switch (getSensorsUsedToTrackwalls())
+	switch (getSensorsUsedToTrackWalls())
 	{
 	case NO_SIDE:
 		positionControlSetPositionType(POSITION_CTRL);
@@ -153,14 +149,4 @@ int wallFollowControlLoop(void)
 	wall_follow_control.follow_command = (pidController(wall_follow_control.follow_pid.instance, wall_follow_control.follow_error));
 
 	return WALL_FOLLOW_CONTROL_E_SUCCESS;
-}
-
-double wallFollow(enum telemeterName telemeter_name)
-{
-//	positionControlSetPositionType(NO_POSITION_CTRL);
-//	if (fabs(wall_follow_control.follow_error) < SUCCES_GAP_DIST)
-//	{
-//		wall_follow_control.succes = TRUE;
-//	}
-//	return DIAG_DIST_FOR_FOLLOW - (double)getTelemeterDist(telemeter_name);
 }

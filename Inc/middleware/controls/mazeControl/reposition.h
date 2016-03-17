@@ -18,7 +18,7 @@
 
 enum telemeters_used {NO_SIDE, ALL_SIDE, LEFT_SIDE, RIGHT_SIDE};
 
-enum telemeters_used getSensorsUsedToTrackwalls(void);
+enum telemeters_used getSensorsUsedToTrackWalls(void);
 double 	repositionGetPostDist(double offset);
 int  	frontCal(float max_speed);
 

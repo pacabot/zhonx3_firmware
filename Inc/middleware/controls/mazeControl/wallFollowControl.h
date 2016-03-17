@@ -20,6 +20,5 @@
 int 	wallFollowControlInit(void);
 double 	wallFollowGetCommand(void);
 int 	wallFollowControlLoop(void);
-double 	wallFollowMaintainCompute(void);
 
 #endif

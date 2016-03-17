@@ -48,7 +48,7 @@
 #define DEADZONE_DIST		 80.00	//Distance between the start of the cell and doubt area
 #define DEADZONE			 70.00	//doubt area
 
-enum telemeters_used getSensorsUsedToTrackwalls(void)
+enum telemeters_used getSensorsUsedToTrackWalls(void)
 {
 	static enum telemeters_used telemeter_used = NO_SIDE;
 
