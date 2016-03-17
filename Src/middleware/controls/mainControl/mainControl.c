@@ -195,8 +195,3 @@ char hasMoveEnded(void)
 	else
 		return FALSE;
 }
-
-double mouveGetInitialPosition(void)
-{
-	return move_params.initial_position;
-}

@@ -25,6 +25,7 @@
 #include "peripherals/display/ssd1306.h"
 #include "peripherals/display/smallfonts.h"
 #include "peripherals/expander/pcf8574.h"
+#include "peripherals/telemeters/telemeters.h"
 
 /* Middleware declarations */
 
@@ -72,6 +73,7 @@ volatile encoder right_encoder =
 /* Static functions */
 static int  	encoderResetDistance(encoder *enc);
 static double 	encoderGetDistance(encoder *enc);
+static double 	encoderGetAbsDistance(encoder *enc);
 
 void encodersInit(void)
 {
@@ -177,10 +179,19 @@ double encoderGetDistance(encoder *enc)
 			((double)__HAL_TIM_GetCounter(enc->timer))) /
 			STEPS_PER_MM) -
 			(double)enc->offset_dist);
+	return enc->rel_dist;
+}
+
+/*  encoderGetAbsDistance
+ *  return absolute distance and set absolute distance
+ *  distance in millimeters
+ */
+double encoderGetAbsDistance(encoder *enc)
+{
 	enc->abs_dist = ((((double)enc->mot_rev_cnt * ENCODER_RESOLUTION * (double)WELL_TURN_NB) +
 			((double)__HAL_TIM_GetCounter(enc->timer))) /
 			STEPS_PER_MM);
-	return enc->rel_dist;
+	return enc->abs_dist;
 }
 
 int encodersReset(void)
@@ -200,11 +211,23 @@ double encoderGetDist(enum encoderName encoder_name)
 	return IE512_DRIVER_E_ERROR;
 }
 
+double encoderGetAbsDist(enum encoderName encoder_name)
+{
+	if (encoder_name == ENCODER_L)
+		return encoderGetAbsDistance((encoder*)&left_encoder);
+	if (encoder_name == ENCODER_R)
+		return encoderGetAbsDistance((encoder*)&right_encoder);
+
+	return IE512_DRIVER_E_ERROR;
+}
+
 // test encoder
 void encoderTest(void)
 {
 	encodersInit();
 	encodersReset();
+	telemetersInit();
+	telemetersStart();
 
 	while(expanderJoyFiltered()!=JOY_LEFT)
 	{

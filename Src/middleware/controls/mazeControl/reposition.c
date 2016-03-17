@@ -28,6 +28,9 @@
 #include "middleware/controls/mainControl/positionControl.h"
 #include "middleware/controls/mainControl/speedControl.h"
 #include "middleware/controls/mainControl/transfertFunction.h"
+#include "middleware/wall_sensors/wall_sensors.h"
+#include "middleware/controls/pidController/pidController.h"
+#include "middleware/controls/mazeControl/basicMoves.h"
 
 /* Peripheral declarations */
 #include "peripherals/display/ssd1306.h"
@@ -39,13 +42,51 @@
 #include "peripherals/tone/tone.h"
 #include "peripherals/bluetooth/bluetooth.h"
 
-/* Middleware declarations */
-#include "middleware/wall_sensors/wall_sensors.h"
-#include "middleware/controls/pidController/pidController.h"
-#include "application/lineFollower/lineFollower.h"
-
 /* Declarations for this module */
 #include "middleware/controls/mazeControl/reposition.h"
+
+#define DEADZONE_DIST		 80.00	//Distance between the start of the cell and doubt area
+#define DEADZONE			 70.00	//doubt area
+
+enum telemeters_used getSensorsUsedToTrackwalls(void)
+{
+	static enum telemeters_used telemeter_used = NO_SIDE;
+
+	double distance = ((encoderGetDist(ENCODER_L) + encoderGetDist(ENCODER_R)) / 2.00) + mouveGetInitialPosition();
+
+	if (distance < 2.00 * OFFSET_DIST ||
+			distance > (DEADZONE_DIST + (DEADZONE / 2.00)))
+	{
+		if (distance < (2.00 * OFFSET_DIST))
+		{
+			if ((getWallPresence(LEFT_WALL) == TRUE) && (getWallPresence(RIGHT_WALL) == TRUE))
+			{
+				telemeter_used = ALL_SIDE;
+			}
+			else if ((getWallPresence(LEFT_WALL) == TRUE) || (getWallPresence(RIGHT_WALL) == TRUE))
+			{
+				if (getWallPresence(LEFT_WALL) == TRUE)
+					telemeter_used = LEFT_SIDE;
+				else
+					telemeter_used = RIGHT_SIDE;
+			}
+			else
+				telemeter_used = NO_SIDE;
+		}
+	}
+
+	if (distance > (DEADZONE_DIST - (DEADZONE / 2.00)) &&
+			distance < (DEADZONE_DIST + (DEADZONE / 2.00)))
+	{
+		toneStart(F3H);
+		return telemeter_used = NO_SIDE;
+	}
+	else
+	{
+		toneStop();
+		return telemeter_used;
+	}
+}
 
 /* This function returns the maintain loop count according to front wall detection to avoid early turns leading to wall collision.
  * 	void
