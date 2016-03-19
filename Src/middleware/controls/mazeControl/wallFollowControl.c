@@ -114,22 +114,22 @@ int wallFollowControlLoop(void)
 		positionControlSetPositionType(POSITION_CTRL);
 		wall_follow_control.follow_error = 0;
 		pidControllerReset(wall_follow_control.follow_pid.instance);
-//		bluetoothPrintf("NO_SIDE \n");
+		expanderSetLeds(0b000);
 		break;
 	case ALL_SIDE:
 		positionControlSetPositionType(NO_POSITION_CTRL);
 		wall_follow_control.follow_error = (double)getTelemeterDist(TELEMETER_DR) - (double)getTelemeterDist(TELEMETER_DL);
-//		bluetoothPrintf("ALL_SIDE \n");
+		expanderSetLeds(0b101);
 		break;
 	case LEFT_SIDE:
 		positionControlSetPositionType(NO_POSITION_CTRL);
 		wall_follow_control.follow_error = DIAG_DIST_FOR_FOLLOW - (double)getTelemeterDist(TELEMETER_DL);
-//		bluetoothPrintf("LEFT_SIDE \n");
+		expanderSetLeds(0b100);
 		break;
 	case RIGHT_SIDE:
 		positionControlSetPositionType(NO_POSITION_CTRL);
 		wall_follow_control.follow_error = -1.00 * (DIAG_DIST_FOR_FOLLOW - (double)getTelemeterDist(TELEMETER_DR));
-//		bluetoothPrintf("RIGHT_SIDE \n");
+		expanderSetLeds(0b001);
 		break;
 	}
 

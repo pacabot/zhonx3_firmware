@@ -61,6 +61,7 @@ extern int setMeddle(void);
 extern int setDark(void);
 extern int pidCalculator(void);
 extern void telemetersGetCalibrationValues(void);
+extern void spyPostCalibration(void);
 extern int _Factor;
 extern int _KP;
 /*
@@ -160,7 +161,8 @@ const menuItem control_menu=
 		{
 				{"follow the wall",'f',		(void*)movesTest},
 				{"rotate",'f',				(void*)rotateTest},
-				{"PIDstep Response",'f',	(void*)pidCalculator},
+				{"PID calculator",'f',		(void*)pidCalculator},
+				{"spy post Cal.",'f',		(void*)spyPostCalibration},
 		}
 };
 

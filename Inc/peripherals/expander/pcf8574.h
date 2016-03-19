@@ -24,11 +24,14 @@
 #define JOY_RIGHT 	4
 #define JOY_SEVERAL 255
 
+enum led_used {NO_LED, ALL_LED, LEFT_LED, RIGHT_LED, MIDDLE_LED};
+
 extern unsigned int joy_activ_old_time;
 
 void expanderInit(void);
 
 void expanderLedState(char led, char val);
+void expanderSetLeds(char leds);
 char expanderJoyState(void);
 
 void expanderSetbit(char pin, char val);

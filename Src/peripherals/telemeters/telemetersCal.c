@@ -24,7 +24,6 @@
 #include "application/statistiques/statistiques.h"
 
 /* Peripheral declarations */
-#include "peripherals/telemeters/telemeters.h"
 #include "peripherals/display/ssd1306.h"
 #include "peripherals/display/smallfonts.h"
 #include "peripherals/expander/pcf8574.h"
