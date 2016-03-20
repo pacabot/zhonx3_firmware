@@ -173,16 +173,24 @@ void spyPostPrintProfile(enum telemeterName telemeter, spyPostProfileStruct *pro
 		{
 			for (int j = SPYPOST_NBITS_SAMPLING_RESOLUTION; j > 0; j--)
 			{
-				if ((profile->left[i % SPYPOST_FIRST_CAL_DISTANCE] >> (j)) & 0x01)
+				if (telemeter == TELEMETER_DL)
 				{
-					ssd1306ClearPixel((100 * i)/80 + x, y - (j*2));
-					ssd1306ClearPixel((100 * i)/80 + x, y - (j*2) - 1);
+					if ((profile->left[i % SPYPOST_FIRST_CAL_DISTANCE] >> (j)) & 0x01)
+					{
+						ssd1306ClearPixel((100 * i)/80 + x, y - (j*2));
+						ssd1306ClearPixel((100 * i)/80 + x, y - (j*2) - 1);
+					}
+				}
+				else
+				{
+					if ((profile->right[i % SPYPOST_FIRST_CAL_DISTANCE] >> (j)) & 0x01)
+					{
+						ssd1306ClearPixel((100 * i)/80 + x, y - (j*2));
+						ssd1306ClearPixel((100 * i)/80 + x, y - (j*2) - 1);
+					}
 				}
 			}
 		}
-	}
-	else
-	{
 	}
 	ssd1306Refresh();
 }
