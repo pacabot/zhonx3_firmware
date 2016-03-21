@@ -45,10 +45,11 @@
 #include "middleware/controls/mazeControl/spyPost.h"
 
 #define SPYPOST_ENCODERS_STEPS_MEASURE_MM 	1
-#define SPYPOST_FIRST_CAL_DISTANCE			140//(CELL_LENGTH - (Z3_CENTER_BACK_DIST + HALF_WALL_THICKNESS))
+#define SPYPOST_OFFSET_DISTANCE				10
+#define SPYPOST_FIRST_CAL_DISTANCE			500//40
 #define SPYPOST_ARRAY_PROFILE_LENGTH 		((SPYPOST_FIRST_CAL_DISTANCE)/SPYPOST_ENCODERS_STEPS_MEASURE_MM)
 
-#define SPYPOST_NBITS_SAMPLING_RESOLUTION 	16
+#define SPYPOST_NBITS_SAMPLING_RESOLUTION 	32
 #define SPYPOST_MIN_DIAG_SENSOR_DISTANCE 	70
 #define SPYPOST_MAX_DIAG_SENSOR_DISTANCE 	102
 
@@ -57,8 +58,6 @@
 #if (SPYPOST_MAX_DIAG_SENSOR_DISTANCE - SPYPOST_MIN_DIAG_SENSOR_DISTANCE) % (SPYPOST_NBITS_SAMPLING_RESOLUTION) != 0
 #error  MAX DIAG - MIN_DIAG must be a multiple of SAMPLING_RESOLUTION
 #endif
-
-//#define MAVRG_BUFF_SIZE 					(1 << MAVRG_NBITS)
 
 typedef struct
 {
@@ -110,6 +109,8 @@ int spyPostCalibration(void)
 
 void spyPostStartMeasure(enum telemeterName telemeter, spyPostProfileStruct *profile)
 {
+	int buff[SPYPOST_ARRAY_PROFILE_LENGTH] = {0};
+
 	if (telemeter != TELEMETER_DR && telemeter != TELEMETER_DL)
 		return;
 
@@ -117,8 +118,11 @@ void spyPostStartMeasure(enum telemeterName telemeter, spyPostProfileStruct *pro
 	int sample = 0;
 	telemetersStart();
 
+	//offset dist
+	move(0, SPYPOST_OFFSET_DISTANCE, 50, 50);
+	while(hasMoveEnded() != TRUE);
 	//take the measures
-	move(0, SPYPOST_FIRST_CAL_DISTANCE, 5, 5);
+	move(0, SPYPOST_FIRST_CAL_DISTANCE, 50, 50);
 	for(i = 0; i < SPYPOST_ARRAY_PROFILE_LENGTH; i++)
 	{
 		while((((int)(encoderGetDist(ENCODER_L) + encoderGetDist(ENCODER_R)) <= (SPYPOST_ENCODERS_STEPS_MEASURE_MM * 2 * i))) &&
@@ -133,6 +137,7 @@ void spyPostStartMeasure(enum telemeterName telemeter, spyPostProfileStruct *pro
 			else
 				profile->left[i] = 1 << (sample - SPYPOST_MIN_DIAG_SENSOR_DISTANCE) / SPYPOST_TELEMETER_STEPS_MEASURE_MM;
 			ssd1306PrintfAtLine(0, 1, &Font_5x8, "bin : %d", profile->left[i]);
+			buff[i] = (int)(getTelemeterDist(TELEMETER_DL) * 10);
 		}
 		else
 		{
@@ -143,6 +148,7 @@ void spyPostStartMeasure(enum telemeterName telemeter, spyPostProfileStruct *pro
 				profile->right[i] = 1 << (sample - SPYPOST_MIN_DIAG_SENSOR_DISTANCE) / SPYPOST_TELEMETER_STEPS_MEASURE_MM;
 
 			ssd1306PrintfAtLine(0, 1, &Font_5x8, "bin : %d", profile->right[i]);
+			buff[i] = (int)(getTelemeterDist(TELEMETER_DL) * 10);
 		}
 
 		ssd1306PrintIntAtLine(0, 0, "wall dist :  ", sample, &Font_5x8);
@@ -151,6 +157,20 @@ void spyPostStartMeasure(enum telemeterName telemeter, spyPostProfileStruct *pro
 		ssd1306ProgressBar(10,50,(i*100)/SPYPOST_ARRAY_PROFILE_LENGTH);
 		ssd1306Refresh();
 	}
+
+	for (i = 0; i < SPYPOST_ARRAY_PROFILE_LENGTH; i++)
+	{
+		HAL_Delay(2);
+		bluetoothPrintf("%d\n", (buff[i]));
+	}
+	// filtering the measure
+//	kalman_filter_array(buff, SPYPOST_ARRAY_PROFILE_LENGTH); //do not work!!
+//	for (i = 0; i < SPYPOST_ARRAY_PROFILE_LENGTH; i++)
+//	{
+//		HAL_Delay(2);
+//		bluetoothPrintf("%d\n", (buff[i]));
+//	}
+
 	while(hasMoveEnded() != TRUE);
 	telemetersStop();
 	motorsDriverSleep(ON);
@@ -162,7 +182,7 @@ void spyPostPrintProfile(enum telemeterName telemeter, spyPostProfileStruct *pro
 	int y = 64;
 
 	ssd1306ClearScreen(MAIN_AREA);
-	ssd1306FillRect(0, 64 - (SPYPOST_NBITS_SAMPLING_RESOLUTION * 2 - 1), SPYPOST_FIRST_CAL_DISTANCE, SPYPOST_NBITS_SAMPLING_RESOLUTION * 2);
+	ssd1306DrawRect(0, 64 - (SPYPOST_NBITS_SAMPLING_RESOLUTION + 1), SPYPOST_FIRST_CAL_DISTANCE * 2, SPYPOST_NBITS_SAMPLING_RESOLUTION);
 
 	if (telemeter != TELEMETER_DR && telemeter != TELEMETER_DL)
 		return;
@@ -177,16 +197,14 @@ void spyPostPrintProfile(enum telemeterName telemeter, spyPostProfileStruct *pro
 				{
 					if ((profile->left[i % SPYPOST_FIRST_CAL_DISTANCE] >> (j)) & 0x01)
 					{
-						ssd1306ClearPixel((100 * i)/80 + x, y - (j*2));
-						ssd1306ClearPixel((100 * i)/80 + x, y - (j*2) - 1);
+						ssd1306DrawPixel(2 * i + x, y - j);
 					}
 				}
 				else
 				{
 					if ((profile->right[i % SPYPOST_FIRST_CAL_DISTANCE] >> (j)) & 0x01)
 					{
-						ssd1306ClearPixel((100 * i)/80 + x, y - (j*2));
-						ssd1306ClearPixel((100 * i)/80 + x, y - (j*2) - 1);
+						ssd1306DrawPixel(2 * i + x, y - j);
 					}
 				}
 			}
