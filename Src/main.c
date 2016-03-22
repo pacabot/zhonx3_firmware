@@ -130,6 +130,9 @@ int main(void)
 	ledPowerBlink(990, 10, 0);
 	settingsInit();
 	mulimeterInit();
+
+//	bluetoothCmd("AT+AB Bond 20:15:12:07:36:56 1234");
+	bluetoothCmd("AT+AB Bond HC 1234");
 	bluetoothInit();
 	toneInit();
 
@@ -141,6 +144,7 @@ int main(void)
 	cmd_context.out = blockingPrintf;
 	// Initialize Command Line module
 	cmdline_init(&cmd_context);
+
 
 	// Check if robot name is populated in Flash
 	memset(zhonxName, 0, sizeof(zhonxName));
@@ -154,7 +158,6 @@ int main(void)
 	{
 		menu(zhonxNameMenu);
 	}
-
 	while (1)
 	{
 		menu(mainMenu);

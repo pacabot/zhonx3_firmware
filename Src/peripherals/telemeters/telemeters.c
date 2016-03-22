@@ -22,15 +22,15 @@
 #include <stdio.h>
 #include <stdint.h>
 
+/* Middleware declarations */
+#include "middleware/display/banner.h"
+
 /* Peripheral declarations */
 #include "peripherals/display/ssd1306.h"
 #include "peripherals/display/smallfonts.h"
 #include "peripherals/expander/pcf8574.h"
 #include "peripherals/bluetooth/bluetooth.h"
 #include "peripherals/telemeters/telemeters.h"
-
-/* Middleware declarations */
-#include "middleware/display/banner.h"
 
 /*application include */
 #include "application/solverMaze/solverMaze.h"

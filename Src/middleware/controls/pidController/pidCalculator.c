@@ -17,6 +17,11 @@
 #include "stdbool.h"
 #include <arm_math.h>
 #include <math.h>
+#include <middleware/controls/mainControl/mainControl.h>
+#include <middleware/controls/mainControl/positionControl.h>
+#include <middleware/controls/mainControl/speedControl.h>
+#include <middleware/controls/mainControl/speedControl.h>
+#include <middleware/controls/mainControl/transfertFunction.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdint.h>
@@ -33,13 +38,6 @@
 
 /* Middleware declarations */
 #include "middleware/controls/pidController/pidController.h"
-#include "middleware/controls/motionControl/positionControl.h"
-#include "middleware/controls/motionControl/speedControl.h"
-#include "middleware/controls/motionControl/mainControl.h"
-#include "middleware/controls/motionControl/transfertFunction.h"
-
-/* Declarations for this module */
-#include "middleware/controls/motionControl/speedControl.h"
 
 /* Macros */
 

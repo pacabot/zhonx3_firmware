@@ -51,7 +51,7 @@ extern void lineFollower();
 extern int 	lineSensorsCalibration (void);
 extern void maze();
 extern void testWallsSensors();
-extern void followWallTest(void);
+extern void movesTest(void);
 extern void rotateTest(void);
 extern void expenderLedTest();
 extern int	wallSensorsCalibrationFront(void);
@@ -158,7 +158,7 @@ const menuItem control_menu=
 {
 		"CONTROL",
 		{
-				{"follow the wall",'f',		(void*)followWallTest},
+				{"follow the wall",'f',		(void*)movesTest},
 				{"rotate",'f',				(void*)rotateTest},
 				{"PIDstep Response",'f',	(void*)pidCalculator},
 		}
@@ -342,7 +342,7 @@ void menuHighlightedMove(unsigned char y, unsigned char max_y)
 		{
 			ssd1306InvertArea(0, y - 1, HIGHLIGHT_LENGHT, HIGHLIGHT_HEIGHT);
 			ssd1306InvertArea(0, y, HIGHLIGHT_LENGHT, HIGHLIGHT_HEIGHT);
-			if (y % 2)
+			if (y % 2)//refresh if pair, increases the refresh speed
 				ssd1306Refresh();
 			while (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY);
 		}
@@ -354,7 +354,7 @@ void menuHighlightedMove(unsigned char y, unsigned char max_y)
 		{
 			ssd1306InvertArea(0, y + 1, HIGHLIGHT_LENGHT, HIGHLIGHT_HEIGHT);
 			ssd1306InvertArea(0, y, HIGHLIGHT_LENGHT, HIGHLIGHT_HEIGHT);
-			if (y % 2)
+			if (y % 2)//refresh if pair, increases the refresh speed
 				ssd1306Refresh();
 			while (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY);
 		}

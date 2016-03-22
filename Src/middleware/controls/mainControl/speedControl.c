@@ -17,6 +17,11 @@
 #include "stdbool.h"
 #include <arm_math.h>
 #include <math.h>
+#include <middleware/controls/mainControl/mainControl.h>
+#include <middleware/controls/mainControl/positionControl.h>
+#include <middleware/controls/mainControl/speedControl.h>
+#include <middleware/controls/mainControl/speedControl.h>
+#include <middleware/controls/mainControl/transfertFunction.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdint.h>
@@ -32,13 +37,6 @@
 
 /* Middleware declarations */
 #include "middleware/controls/pidController/pidController.h"
-#include "middleware/controls/motionControl/positionControl.h"
-#include "middleware/controls/motionControl/speedControl.h"
-#include "middleware/controls/motionControl/mainControl.h"
-#include "middleware/controls/motionControl/transfertFunction.h"
-
-/* Declarations for this module */
-#include "middleware/controls/motionControl/speedControl.h"
 
 typedef struct
 {
@@ -309,20 +307,6 @@ double speedProfileCompute(double distance, double max_speed, double end_speed)
 	speed_params.distance_consign = distance;
 
 	double move_loop_time = (speed_params.nb_loop_accel + speed_params.nb_loop_decel + speed_params.nb_loop_maint);
-//	bluetoothPrintf("nombre de deplacement: %d,nb_loop_accel = %d, nb_loop_decel = %d, nb_loop_maint = %d \r\n", i, (int)speed_params.nb_loop_accel, (int)speed_params.nb_loop_decel, (int)speed_params.nb_loop_maint);
+	//	bluetoothPrintf("nombre de deplacement: %d,nb_loop_accel = %d, nb_loop_decel = %d, nb_loop_maint = %d \r\n", i, (int)speed_params.nb_loop_accel, (int)speed_params.nb_loop_decel, (int)speed_params.nb_loop_maint);
 	return move_loop_time;
-}
-
-double speedMaintainCompute(void)
-{
-/* This function returns the maintain loop count according to front wall detection to avoid early turns leading to wall collision.
- * 	void
- */
-	if (getWallPresence(FRONT_WALL) == WALL_PRESENCE)
-	{
-		// Calculating average distance detected by FR and FL Telemeters
-		return ((getTelemeterDist(TELEMETER_FL) + getTelemeterDist(TELEMETER_FR)) / 2.00) + 65.00 - (CELL_LENGTH + OFFSET_DIST);
-	}
-	else
-		return 0.00;
 }

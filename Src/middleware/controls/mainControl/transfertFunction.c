@@ -21,6 +21,15 @@
 #include <stdio.h>
 #include <stdint.h>
 
+/* Middleware declarations */
+#include "middleware/controls/mazeControl/wallFollowControl.h"
+#include "middleware/controls/lineFollowerControl/lineFollowControl.h"
+#include "middleware/controls/mainControl/mainControl.h"
+#include "middleware/controls/mainControl/positionControl.h"
+#include "middleware/controls/mainControl/positionControl.h"
+#include "middleware/controls/mainControl/speedControl.h"
+#include "middleware/controls/mainControl/transfertFunction.h"
+
 /* Peripheral declarations */
 #include "peripherals/display/ssd1306.h"
 #include "peripherals/display/smallfonts.h"
@@ -31,14 +40,6 @@
 /* Middleware declarations */
 #include "middleware/wall_sensors/wall_sensors.h"
 #include "middleware/controls/pidController/pidController.h"
-#include "middleware/controls/motionControl/positionControl.h"
-#include "middleware/controls/motionControl/speedControl.h"
-#include "middleware/controls/motionControl/mainControl.h"
-#include "middleware/controls/motionControl/lineFollowControl.h"
-#include "middleware/controls/motionControl/wallFollowControl.h"
-
-/* Declarations for this module */
-#include "middleware/controls/motionControl/transfertFunction.h"
 
 transfert_function_struct transfert_function;
 
@@ -69,7 +70,7 @@ int transfertFunctionLimiter(void)
 
 int transfertFunctionLoop(void)
 {
-//	if (multimeterGetBatVoltage() > 6000 && multimeterGetBatVoltage() < 9000)
+//	if (multimeterGetBatVoltage() > 5000 && multimeterGetBatVoltage() < 9000)
 //		transfert_function.pwm_ratio = (PWM_RATIO_COEFF_A * multimeterGetBatVoltage() + PWM_RATIO_COEFF_B);	//compute ratio to not exceed motor voltage
 //	else
 		transfert_function.pwm_ratio = (PWM_RATIO_COEFF_A * 8000 + PWM_RATIO_COEFF_B);						//if vbat read fail

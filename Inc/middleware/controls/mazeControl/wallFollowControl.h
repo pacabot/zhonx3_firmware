@@ -17,9 +17,10 @@
 #define WALL_FOLLOW_CONTROL_E_ERROR    MAKE_ERROR(WALL_FOLLOW_CONTROL_MODULE_ID, 1)
 
 
-int wallFollowControlInit(void);
-double wallFollowGetCommand(void);
-char isDeadZone(void);
-int wallFollowControlLoop(void);
+int 	wallFollowControlInit(void);
+double 	wallFollowGetCommand(void);
+char 	isDeadZone(void);
+int 	wallFollowControlLoop(void);
+double 	wallFollowMaintainCompute(void);
 
 #endif

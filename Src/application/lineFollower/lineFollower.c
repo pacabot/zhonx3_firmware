@@ -21,6 +21,14 @@
 #include <stdio.h>
 #include <stdint.h>
 
+/* Middleware declarations */
+#include "middleware/controls/lineFollowerControl/lineFollowControl.h"
+#include "middleware/controls/mainControl/mainControl.h"
+#include "middleware/controls/mainControl/positionControl.h"
+#include "middleware/controls/mainControl/positionControl.h"
+#include "middleware/controls/mainControl/speedControl.h"
+#include "middleware/controls/mainControl/transfertFunction.h"
+
 /* Peripheral declarations */
 #include "peripherals/lineSensors/lineSensors.h"
 #include "peripherals/tone/tone.h"
@@ -36,13 +44,6 @@
 /* Middleware declarations */
 #include "middleware/wall_sensors/wall_sensors.h"
 #include "middleware/controls/pidController/pidController.h"
-#include "middleware/controls/motionControl/positionControl.h"
-#include "middleware/controls/motionControl/speedControl.h"
-#include "middleware/controls/motionControl/transfertFunction.h"
-#include "middleware/controls/motionControl/mainControl.h"
-#include "middleware/controls/motionControl/wallFollowControl.h"
-
-/* Declarations for this module */
 #include "application/lineFollower/lineFollower.h"
 #include "application/statistiques/statistiques.h"
 

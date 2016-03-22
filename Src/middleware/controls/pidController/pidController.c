@@ -14,6 +14,7 @@
 
 #include "stdbool.h"
 #include <arm_math.h>
+#include <middleware/controls/mainControl/mainControl.h>
 
 #include "stm32f4xx_hal.h"
 
@@ -23,7 +24,6 @@
 #include "peripherals/expander/pcf8574.h"
 
 #include <middleware/controls/pidController/pidController.h>
-#include "middleware/controls/motionControl/mainControl.h"
 
 /* extern variables ---------------------------------------------------------*/
 /* global variables ---------------------------------------------------------*/

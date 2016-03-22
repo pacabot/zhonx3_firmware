@@ -11,6 +11,7 @@
 /* dependencies */
 #include "config/module_id.h"
 #include "peripherals/flash/flash.h"
+#include "config/basetypes.h"
 
 /*********************** ZHONX generation and version *********************************/
 #define ZHONX_GENERATION          "Z3"

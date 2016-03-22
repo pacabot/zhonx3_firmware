@@ -17,6 +17,7 @@
 #include "stdbool.h"
 #include <arm_math.h>
 #include <math.h>
+#include <middleware/controls/mainControl/mainControl.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -30,9 +31,6 @@
 #include "peripherals/gyroscope/adxrs620.h"
 
 /* Middleware declarations */
-#include "middleware/controls/motionControl/mainControl.h"
-
-/* Declarations for this module */
 #include "peripherals/motors/motors.h"
 
 #define MOTORS_TIMER		htim8

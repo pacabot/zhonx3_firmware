@@ -10,13 +10,24 @@
 #include "stdbool.h"
 #include <arm_math.h>
 #include <math.h>
+#include <middleware/controls/mainControl/mainControl.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdint.h>
 
+#include "config/basetypes.h"
+
 /* Peripheral declarations */
+#include "peripherals/gyroscope/adxrs620.h"
+#include "peripherals/telemeters/telemeters.h"
+#include "peripherals/multimeter/multimeter.h"
+#include "peripherals/lineSensors/lineSensors.h"
+#include "peripherals/encoders/ie512.h"
+#include "peripherals/times_base/times_base.h"
+#include "peripherals/tone/tone.h"
 
 /* Middleware declarations */
+#include "middleware/powerManagement/powerManagement.h"
 
 /* Declarations for this module */
 #include "peripherals/callback/user_it_callback.h"
@@ -33,15 +44,6 @@ extern TIM_HandleTypeDef htim7;
 extern ADC_HandleTypeDef hadc1;
 extern ADC_HandleTypeDef hadc2;
 extern ADC_HandleTypeDef hadc3;
-
-#include "config/basetypes.h"
-#include "peripherals/gyroscope/adxrs620.h"
-#include "peripherals/telemeters/telemeters.h"
-#include "peripherals/multimeter/multimeter.h"
-#include "peripherals/lineSensors/lineSensors.h"
-#include "peripherals/encoders/ie512.h"
-#include "middleware/controls/motionControl/mainControl.h"
-#include "peripherals/times_base/times_base.h"
 
 /* Application declarations */
 #include "application/lineFollower/lineFollower.h"
