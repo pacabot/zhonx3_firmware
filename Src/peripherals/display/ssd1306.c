@@ -354,7 +354,6 @@ void ssd1306Refresh(void)
 {
 	ssd1306DrawDashedLine(0,8,128,8);
 	if (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY)
-		//	if (HAL_DMA_GetState(&hdma_i2c1_tx) == HAL_DMA_STATE_BUSY) //todo add frequency limiter based on systick
 		return;
 	display_buffer[0] = 0x40;
 	DATA(display_buffer, SSD1306_MAINSIZE + SSD1306_BANNERSIZE + SSD1306_CMDSIZE);
@@ -534,9 +533,11 @@ void ssd1306ShiftFrameBuffer( unsigned char height )
     - make your picture with gimp
     - save to Bitmap file
     - open Image2LCD
+    - chose into Scan Mode box => Data hor, Bite ver
     - chose into BitsPixel box => monochrome
-    - chose into Scan Mode box => Vertical Scan
-    - chose mirror up-down
+    - check => Antitone pixel in byte
+    - uncheck the rest
+    - select => chose normal
     - chose into Output file type box => C array (*C)
     - save
     - open the file with SublimeText => select all => copy

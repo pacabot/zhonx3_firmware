@@ -10,6 +10,7 @@
 #define __BASICMOVES_H__
 
 #include <middleware/controls/mainControl/speedControl.h>
+#include <middleware/controls/mainControl/mainControl.h>
 #include "config/config.h"
 #include "middleware/wall_sensors/wall_sensors.h"
 

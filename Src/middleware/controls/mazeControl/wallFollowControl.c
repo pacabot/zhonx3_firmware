@@ -28,6 +28,7 @@
 #include "middleware/controls/mainControl/positionControl.h"
 #include "middleware/controls/mainControl/speedControl.h"
 #include "middleware/controls/mainControl/transfertFunction.h"
+#include "middleware/controls/mazeControl/reposition.h"
 
 /* Peripheral declarations */
 #include "peripherals/display/ssd1306.h"
@@ -47,42 +48,35 @@
 #include "middleware/controls/mazeControl/wallFollowControl.h"
 
 /* Types definitions */
-#define CENTER_DISTANCE 	 15.0
+//#define CENTER_DISTANCE 	 15.0
 #define SUCCES_GAP_DIST 	 2.0
 
-#define MAX_DIST_FOR_ALIGN 	 160.00
-#define MIN_DIST_FOR_ALIGN 	 3.00
+//#define MAX_DIST_FOR_ALIGN 	 160.00
+//#define MIN_DIST_FOR_ALIGN 	 3.00
 
-#define MAX_DIST_FOR_FOLLOW  120.00
-#define MIN_DIST_FOR_FOLLOW  30.00
+//#define MAX_DIST_FOR_FOLLOW  120.00
+//#define MIN_DIST_FOR_FOLLOW  30.00
 
-#define BOTH_WALL_DIST 		 180.00
+//#define BOTH_WALL_DIST 		 180.00
 
 #define DIAG_DIST_FOR_FOLLOW 80.00
 
-#define SLIP_TRANSLATION	 100
+//#define SLIP_TRANSLATION	 100
 
-#define MAX_ANGLE_ERROR		 30.00	//Degres
+//#define MAX_ANGLE_ERROR		 30.00	//Degres
 #define MAX_FOLLOW_ERROR	 50.00	//Millimeter
-
-#define DEADZONE_DIST		 100.00	//Distance between the start of the cell and doubt area
-#define DEADZONE			 100.00	//doubt area
 
 typedef struct
 {
 	double follow_error;
 	double follow_command;
 	char succes;
-    pid_control_struct follow_pid;
+	pid_control_struct follow_pid;
 }wall_follow_control_struct;
 
 /* App definitions */
-
 /* Macros */
-
 /* Static functions */
-static double wallFollow(enum telemeterName telemeter_name);
-
 /* extern variables */
 
 /* global variables */
@@ -109,51 +103,39 @@ double wallFollowGetCommand(void)
 	return wall_follow_control.follow_command;
 }
 
-char isDeadZone(void)
-{
-	double distance = (((encoderGetDist(ENCODER_L) + encoderGetDist(ENCODER_R)) / 2.00) + mouveGetInitialPosition());
-
-	if (distance > (DEADZONE_DIST - (DEADZONE / 2.00)) &&
-			distance < (DEADZONE_DIST + (DEADZONE / 2.00)))
-	{
-		toneStart(F3H);
-		return TRUE;
-	}
-	else
-	{
-		toneStop();
-		return FALSE;
-	}
-}
-
 int wallFollowControlLoop(void)
 {
 	if (mainControlGetWallFollowType() != STRAIGHT)
 		return WALL_FOLLOW_CONTROL_E_SUCCESS;
 
-	if (isDeadZone() == TRUE) //todo redefine call architecture
+	switch (getSensorsUsedToTrackWalls())
 	{
+	case NO_SIDE:
 		positionControlSetPositionType(POSITION_CTRL);
 		wall_follow_control.follow_error = 0;
 		pidControllerReset(wall_follow_control.follow_pid.instance);
+		expanderSetLeds(0b000);
+		break;
+	case ALL_SIDE:
+		positionControlSetPositionType(NO_POSITION_CTRL);
+		wall_follow_control.follow_error = (double)getTelemeterDist(TELEMETER_DR) - (double)getTelemeterDist(TELEMETER_DL);
+		expanderSetLeds(0b101);
+		break;
+	case LEFT_SIDE:
+		positionControlSetPositionType(NO_POSITION_CTRL);
+		wall_follow_control.follow_error = DIAG_DIST_FOR_FOLLOW - (double)getTelemeterDist(TELEMETER_DL);
+		expanderSetLeds(0b100);
+		break;
+	case RIGHT_SIDE:
+		positionControlSetPositionType(NO_POSITION_CTRL);
+		wall_follow_control.follow_error = -1.00 * (DIAG_DIST_FOR_FOLLOW - (double)getTelemeterDist(TELEMETER_DR));
+		expanderSetLeds(0b001);
+		break;
 	}
-	else if (getWallPresence(FRONT_WALL) == TRUE)
+
+	if (getWallPresence(FRONT_WALL) == TRUE)
 	{
 		positionControlSetPositionType(POSITION_CTRL);
-		wall_follow_control.follow_error = 0;
-		pidControllerReset(wall_follow_control.follow_pid.instance);
-	}
-	else if (getWallPresence(LEFT_WALL) == TRUE)
-	{
-		wall_follow_control.follow_error = wallFollow(TELEMETER_DL);
-	}
-	else if (getWallPresence(RIGHT_WALL) == TRUE)
-	{
-		wall_follow_control.follow_error = -1.00 * wallFollow(TELEMETER_DR);
-	}
-	else
-	{
-		positionControlSetPositionType( POSITION_CTRL);
 		wall_follow_control.follow_error = 0;
 		pidControllerReset(wall_follow_control.follow_pid.instance);
 	}
@@ -167,14 +149,4 @@ int wallFollowControlLoop(void)
 	wall_follow_control.follow_command = (pidController(wall_follow_control.follow_pid.instance, wall_follow_control.follow_error));
 
 	return WALL_FOLLOW_CONTROL_E_SUCCESS;
-}
-
-double wallFollow(enum telemeterName telemeter_name)
-{
-	positionControlSetPositionType(NO_POSITION_CTRL);
-	if (fabs(wall_follow_control.follow_error) < SUCCES_GAP_DIST)
-	{
-		wall_follow_control.succes = TRUE;
-	}
-	return DIAG_DIST_FOR_FOLLOW - (double)getTelemeterDist(telemeter_name);
 }

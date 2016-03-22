@@ -21,7 +21,7 @@ const unsigned char power_Icon[12] = {
 
 //w = 13 h = 8
 const unsigned char USB_Icon[13] = {
-0X38,0X38,0X10,0X18,0X14,0X36,0X52,0XD2,0X90,0X10,0X7C,0X38,0X10,};
+0X38,0X38,0X10,0X18,0X14,0X34,0X52,0X92,0X90,0X10,0X7C,0X38,0X10,};
 
 //w = 5 h = 8
 const unsigned char BT_Icon[5] = {

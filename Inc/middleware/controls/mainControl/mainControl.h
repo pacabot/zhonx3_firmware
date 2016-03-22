@@ -31,7 +31,6 @@ typedef struct
 {
 	enum mainControlWallFollowType moveType;
 	walls cellState;
-	double initial_position;
 }move_params_struct;
 
 extern move_params_struct move_params;

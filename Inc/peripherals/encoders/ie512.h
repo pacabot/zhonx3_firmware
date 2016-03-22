@@ -23,6 +23,7 @@ void 	encoderLeft_IT(void);
 void 	encoderRight_IT(void);
 int 	encodersReset(void);
 double 	encoderGetDist(enum encoderName encoder_name);
+double 	encoderGetAbsDist(enum encoderName encoder_name);
 void 	encoderTest(void);
 
 #endif //__IE512_H__

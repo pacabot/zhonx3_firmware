@@ -44,7 +44,9 @@ unsigned int joy_activ_old_time;
 static void sendData(uint8_t aTxBuffer)
 {
 	// I2C
-	while (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY);
+	//	while (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY);
+	if (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY)
+		return;
 	HAL_I2C_Master_Transmit_DMA(&hi2c1, (uint16_t)64, (uint8_t*)&aTxBuffer, 1);
 
 	//	while (HAL_I2C_Master_Transmit(&hi2c1, (uint16_t)64, (uint8_t *)&aTxBuffer, 1, 1000) != HAL_OK)
@@ -118,6 +120,11 @@ void expanderLedState(char led, char val)
 	}
 }
 
+void expanderSetLeds(char leds)
+{
+	sendData((0b00001111 | (~leds << 4)));
+}
+
 char expanderJoyState(void)
 {
 	switch (~(getData() | 0xF0))
@@ -165,8 +172,19 @@ char antiBounceJoystick2(char arrow_type)
 	static long time_base = 0;
 	static char old_arrow_type = 0;
 	static char fast_clic = false;
-	long time=HAL_GetTick();
-	if(old_arrow_type != arrow_type)
+	long time = HAL_GetTick();
+
+	if (arrow_type == JOY_LEFT || arrow_type == JOY_RIGHT) //no repeat for LEFT and RIGHT keys
+	{
+		if (old_arrow_type != arrow_type)
+		{
+			old_arrow_type = arrow_type;
+			return DONE;
+		}
+		else
+			return -1;
+	}
+	else if (old_arrow_type != arrow_type)
 	{
 		joy_activ_old_time = HAL_GetTick();
 		old_arrow_type = arrow_type;
@@ -174,7 +192,7 @@ char antiBounceJoystick2(char arrow_type)
 		fast_clic = false;
 		return DONE;
 	}
-	else if((fast_clic == true) && ((time_base + FAST_DELAY_REAPEAT) < time))
+	else if ((fast_clic == true) && ((time_base + FAST_DELAY_REAPEAT) < time))
 	{
 		time_base = time;
 		return DONE;
@@ -229,17 +247,30 @@ void expenderLedTest ()
 {
 	while(expanderJoyState()!=JOY_LEFT)
 	{
-		expanderLedState(1,1);
+		//		expanderLedState(1,1);
+		//		HAL_Delay(250);
+		//		expanderLedState(2,1);
+		//		HAL_Delay(250);
+		//		expanderLedState(3,1);
+		//		HAL_Delay(250);
+		//		expanderLedState(1,0);
+		//		HAL_Delay(250);
+		//		expanderLedState(2,0);
+		//		HAL_Delay(250);
+		//		expanderLedState(3,0);
+		//		HAL_Delay(250);
+
+		expanderSetLeds(0b100);
 		HAL_Delay(250);
-		expanderLedState(2,1);
+		expanderSetLeds(0b110);
 		HAL_Delay(250);
-		expanderLedState(3,1);
+		expanderSetLeds(0b111);
 		HAL_Delay(250);
-		expanderLedState(1,0);
+		expanderSetLeds(0b110);
 		HAL_Delay(250);
-		expanderLedState(2,0);
+		expanderSetLeds(0b100);
 		HAL_Delay(250);
-		expanderLedState(3,0);
+		expanderSetLeds(0b000);
 		HAL_Delay(250);
 	}
 	antiBounceJoystick();
