@@ -46,12 +46,17 @@
 
 #define SPYPOST_ENCODERS_STEPS_MEASURE_MM 	1
 #define SPYPOST_OFFSET_DISTANCE				10
-#define SPYPOST_FIRST_CAL_DISTANCE			500//40
+#define SPYPOST_FIRST_CAL_DISTANCE			40
 #define SPYPOST_ARRAY_PROFILE_LENGTH 		((SPYPOST_FIRST_CAL_DISTANCE)/SPYPOST_ENCODERS_STEPS_MEASURE_MM)
 
 #define SPYPOST_NBITS_SAMPLING_RESOLUTION 	32
 #define SPYPOST_MIN_DIAG_SENSOR_DISTANCE 	70
 #define SPYPOST_MAX_DIAG_SENSOR_DISTANCE 	102
+
+#define SPYPOST_REFERENCE_SAMPLE_HEIGHT 	16	//16 bit height
+#define SPYPOST_REFERENCE_SAMPLE_WIDTH 		20	//array length
+
+#define SPYPOST_MOVE_SPEED 					50
 
 #define SPYPOST_TELEMETER_STEPS_MEASURE_MM 	((SPYPOST_MAX_DIAG_SENSOR_DISTANCE - SPYPOST_MIN_DIAG_SENSOR_DISTANCE) / SPYPOST_NBITS_SAMPLING_RESOLUTION)
 
@@ -59,15 +64,29 @@
 #error  MAX DIAG - MIN_DIAG must be a multiple of SAMPLING_RESOLUTION
 #endif
 
+// Machine Definitions
 typedef struct
 {
-	int right [SPYPOST_ARRAY_PROFILE_LENGTH + 1];
-	int left [SPYPOST_ARRAY_PROFILE_LENGTH + 1];
+	uint32_t current_sample [SPYPOST_ARRAY_PROFILE_LENGTH];
+	uint16_t ref_sample [SPYPOST_REFERENCE_SAMPLE_WIDTH];
+	enum telemeterName telemeterName;
 } spyPostProfileStruct;
 
+typedef struct
+{
+	spyPostProfileStruct wallToNoWall;
+	spyPostProfileStruct singlePlot;
+	spyPostProfileStruct perpendicularWall;
+} spyPostTypeProfileStruct;
+
+spyPostTypeProfileStruct left;
+spyPostTypeProfileStruct right;
+
 /* Static functions */
-static void spyPostStartMeasure(enum telemeterName telemeter, spyPostProfileStruct *profile);
-static void spyPostPrintProfile(enum telemeterName telemeter, spyPostProfileStruct *profile);
+static void spyPostStartMeasure(spyPostProfileStruct *profile);
+static void spyPostPrintProfile(spyPostProfileStruct *profile);
+static void spyPostSendBTProfile(int *buff, int lenght);
+static void spyPostResizeCalibrationProfile(spyPostProfileStruct *profile);
 
 int spyPostCalibration(void)
 {
@@ -99,19 +118,36 @@ int spyPostCalibration(void)
 	mainControlSetFollowType(NO_FOLLOW);
 
 	spyPostProfileStruct spyPostProfile_wallToNoWall;
-	spyPostStartMeasure(TELEMETER_DL, &spyPostProfile_wallToNoWall);
-	spyPostPrintProfile(TELEMETER_DL, &spyPostProfile_wallToNoWall);
+	spyPostProfileStruct spyPostProfile_singlePlot;
+	spyPostProfileStruct spyPostProfile_perpendicularWall;
+
+	//init stucts
+	memset((spyPostTypeProfileStruct*)&left, 0, sizeof(spyPostTypeProfileStruct));
+	memset((spyPostTypeProfileStruct*)&right, 0, sizeof(spyPostTypeProfileStruct));
+	left.wallToNoWall.telemeterName = TELEMETER_DL;
+	left.singlePlot.telemeterName = TELEMETER_DL;
+	left.perpendicularWall.telemeterName = TELEMETER_DL;
+	right.wallToNoWall.telemeterName = TELEMETER_DR;
+	right.singlePlot.telemeterName = TELEMETER_DR;
+	right.perpendicularWall.telemeterName = TELEMETER_DR;
+
+	//left calibration
+	spyPostStartMeasure(&left.wallToNoWall);
+	spyPostStartMeasure(&left.singlePlot);
+	spyPostStartMeasure(&left.perpendicularWall);
+
+	spyPostResizeCalibrationProfile(&left.wallToNoWall);
 
 	while(1);
 	return 0;
 	//	return TELEMETERS_DRIVER_E_SUCCESS;
 }
 
-void spyPostStartMeasure(enum telemeterName telemeter, spyPostProfileStruct *profile)
+void spyPostStartMeasure(spyPostProfileStruct *profile)
 {
 	int buff[SPYPOST_ARRAY_PROFILE_LENGTH] = {0};
 
-	if (telemeter != TELEMETER_DR && telemeter != TELEMETER_DL)
+	if (profile->telemeterName != TELEMETER_DR && profile->telemeterName != TELEMETER_DL)
 		return;
 
 	int i = 0;
@@ -119,38 +155,24 @@ void spyPostStartMeasure(enum telemeterName telemeter, spyPostProfileStruct *pro
 	telemetersStart();
 
 	//offset dist
-	move(0, SPYPOST_OFFSET_DISTANCE, 50, 50);
+	move(0, SPYPOST_OFFSET_DISTANCE, SPYPOST_MOVE_SPEED, SPYPOST_MOVE_SPEED);
 	while(hasMoveEnded() != TRUE);
 	//take the measures
-	move(0, SPYPOST_FIRST_CAL_DISTANCE, 50, 50);
+	move(0, SPYPOST_FIRST_CAL_DISTANCE, SPYPOST_MOVE_SPEED, SPYPOST_MOVE_SPEED);
 	for(i = 0; i < SPYPOST_ARRAY_PROFILE_LENGTH; i++)
 	{
 		while((((int)(encoderGetDist(ENCODER_L) + encoderGetDist(ENCODER_R)) <= (SPYPOST_ENCODERS_STEPS_MEASURE_MM * 2 * i))) &&
 				(hasMoveEnded() != TRUE));
 
 		ssd1306ClearScreen(MAIN_AREA);
-		if (telemeter == TELEMETER_DL)
-		{
-			sample = (int)getTelemeterDist(TELEMETER_DL);
-			if (sample < SPYPOST_MIN_DIAG_SENSOR_DISTANCE || sample > SPYPOST_MAX_DIAG_SENSOR_DISTANCE)
-				profile->left[i] = 0x00;
-			else
-				profile->left[i] = 1 << (sample - SPYPOST_MIN_DIAG_SENSOR_DISTANCE) / SPYPOST_TELEMETER_STEPS_MEASURE_MM;
-			ssd1306PrintfAtLine(0, 1, &Font_5x8, "bin : %d", profile->left[i]);
-			buff[i] = (int)(getTelemeterDist(TELEMETER_DL) * 10);
-		}
+		sample = (int)getTelemeterDist(profile->telemeterName);
+		if (sample < SPYPOST_MIN_DIAG_SENSOR_DISTANCE || sample > SPYPOST_MAX_DIAG_SENSOR_DISTANCE)
+			profile->current_sample[i] = 0x00;
 		else
-		{
-			sample = (int)getTelemeterDist(TELEMETER_DR);
-			if (sample < SPYPOST_MIN_DIAG_SENSOR_DISTANCE || sample > SPYPOST_MAX_DIAG_SENSOR_DISTANCE)
-				profile->right[i] = 0x00;
-			else
-				profile->right[i] = 1 << (sample - SPYPOST_MIN_DIAG_SENSOR_DISTANCE) / SPYPOST_TELEMETER_STEPS_MEASURE_MM;
+			profile->current_sample[i] = 1 << (sample - SPYPOST_MIN_DIAG_SENSOR_DISTANCE) / SPYPOST_TELEMETER_STEPS_MEASURE_MM;
+		ssd1306PrintfAtLine(0, 1, &Font_5x8, "bin : %d", profile->current_sample[i]);
 
-			ssd1306PrintfAtLine(0, 1, &Font_5x8, "bin : %d", profile->right[i]);
-			buff[i] = (int)(getTelemeterDist(TELEMETER_DL) * 10);
-		}
-
+		buff[i] = (sample * 10);
 		ssd1306PrintIntAtLine(0, 0, "wall dist :  ", sample, &Font_5x8);
 		ssd1306PrintIntAtLine(0, 2, "enc. dist :  ", (int)(SPYPOST_ENCODERS_STEPS_MEASURE_MM * i + 1), &Font_5x8);
 
@@ -158,103 +180,82 @@ void spyPostStartMeasure(enum telemeterName telemeter, spyPostProfileStruct *pro
 		ssd1306Refresh();
 	}
 
-	for (i = 0; i < SPYPOST_ARRAY_PROFILE_LENGTH; i++)
-	{
-		HAL_Delay(2);
-		bluetoothPrintf("%d\n", (buff[i]));
-	}
-	// filtering the measure
-//	kalman_filter_array(buff, SPYPOST_ARRAY_PROFILE_LENGTH); //do not work!!
-//	for (i = 0; i < SPYPOST_ARRAY_PROFILE_LENGTH; i++)
-//	{
-//		HAL_Delay(2);
-//		bluetoothPrintf("%d\n", (buff[i]));
-//	}
-
+	while(hasMoveEnded() != TRUE);
+	move(0, CELL_LENGTH - (SPYPOST_FIRST_CAL_DISTANCE + SPYPOST_OFFSET_DISTANCE), SPYPOST_MOVE_SPEED, SPYPOST_MOVE_SPEED); //
 	while(hasMoveEnded() != TRUE);
 	telemetersStop();
 	motorsDriverSleep(ON);
+
+	//spyPostSendBTProfile(buff, SPYPOST_ARRAY_PROFILE_LENGTH);
 }
 
-void spyPostPrintProfile(enum telemeterName telemeter, spyPostProfileStruct *profile)
+void spyPostPrintProfile(spyPostProfileStruct *profile)
 {
 	int x = 0;
 	int y = 64;
 
 	ssd1306ClearScreen(MAIN_AREA);
-	ssd1306DrawRect(0, 64 - (SPYPOST_NBITS_SAMPLING_RESOLUTION + 1), SPYPOST_FIRST_CAL_DISTANCE * 2, SPYPOST_NBITS_SAMPLING_RESOLUTION);
+	ssd1306DrawRect(0, 64 - (SPYPOST_REFERENCE_SAMPLE_HEIGHT * 4 + 1), SPYPOST_REFERENCE_SAMPLE_WIDTH * 5, SPYPOST_REFERENCE_SAMPLE_HEIGHT * 4);
 
-	if (telemeter != TELEMETER_DR && telemeter != TELEMETER_DL)
-		return;
-
-	if (telemeter == TELEMETER_DL)
+	for (int i = 0; i < SPYPOST_REFERENCE_SAMPLE_WIDTH; i++)
 	{
-		for (int i = 0; i < SPYPOST_FIRST_CAL_DISTANCE; i++)
+		for (int j = SPYPOST_REFERENCE_SAMPLE_HEIGHT; j > 0; j--)
 		{
-			for (int j = SPYPOST_NBITS_SAMPLING_RESOLUTION; j > 0; j--)
+			if ((profile->ref_sample[i] >> (j)) & 0x01)
 			{
-				if (telemeter == TELEMETER_DL)
-				{
-					if ((profile->left[i % SPYPOST_FIRST_CAL_DISTANCE] >> (j)) & 0x01)
-					{
-						ssd1306DrawPixel(2 * i + x, y - j);
-					}
-				}
-				else
-				{
-					if ((profile->right[i % SPYPOST_FIRST_CAL_DISTANCE] >> (j)) & 0x01)
-					{
-						ssd1306DrawPixel(2 * i + x, y - j);
-					}
-				}
+				ssd1306DrawPixel(5 * i + x, y - j * 4);
 			}
 		}
 	}
+
 	ssd1306Refresh();
 }
 
+void spyPostSendBTProfile(int *buff, int lenght)
+{
+	int i = 0;
+	for (i = 0; i < lenght; i++)
+	{
+		HAL_Delay(2);
+		bluetoothPrintf("%d\n", (buff[i]));
+	}
+}
 
-//
-//	// filter the measure
-//	kalman_filter_array(front_telemeters.left, TELEMETER_PROFILE_ARRAY_LENGTH);
-//	kalman_filter_array(front_telemeters.right, TELEMETER_PROFILE_ARRAY_LENGTH);
-//
-//	/*
-//	 * this four line are for make sure in search for convert in millimeter we don't go outside
-//	 * of the array because we have stronger or smaller value than during the calibration
-//	 */
-//	front_telemeters.left[0]  = 4095;
-//	front_telemeters.right[0] = 4095;
-//	front_telemeters.left[TELEMETER_PROFILE_ARRAY_LENGTH]  = 0;
-//	front_telemeters.right[TELEMETER_PROFILE_ARRAY_LENGTH] = 0;
-//
-//	// save the measures
-//	bluetoothPrintf("\nfiltered measures :\n");
-//	for (int i = 0; i < TELEMETER_PROFILE_ARRAY_LENGTH; i++)
-//	{
-//		bluetoothPrintf("%d|%d|%d\n", i,
-//				front_telemeters.left[i], front_telemeters.right[i]);
-//	}
-//	bluetoothPrintf("Saving Front telemeters profile into Flash memory...\n");
-//	ssd1306ClearScreen(MAIN_AREA);
-//	ssd1306PrintfAtLine(0, 1, &Font_5x8, "save into Flash memory...");
-//	// Write telemeters profiles in Flash memory
-//	rv = flash_write(zhonxSettings.h_flash,
-//			(unsigned char *)&telemeters_profile->front,
-//			(unsigned char *)&front_telemeters,
-//			sizeof(FRONT_TELEMETERS_PROFILE));
-//	if (rv == FLASH_E_SUCCESS)
-//	{
-//		bluetoothPrintf("Values saved into Flash Memory\n");
-//		ssd1306ClearScreen(MAIN_AREA);
-//		ssd1306PrintfAtLine(0, 1, &Font_5x8, "FLASH memory updated");
-//		ssd1306Refresh();
-//	}
-//	else
-//	{
-//		bluetoothPrintf("Failed to write Flash Memory (%d)\n", rv);
-//		ssd1306ClearScreen(MAIN_AREA);
-//		ssd1306PrintfAtLine(0, 1, &Font_5x8, "FLASH write error (%d)", rv);
-//		ssd1306Refresh();
-//	}
-//	HAL_Delay(3000);
+void spyPostResizeCalibrationProfile(spyPostProfileStruct *profile)
+{
+	int i, j;
+	int y_min = SPYPOST_NBITS_SAMPLING_RESOLUTION;
+	// search the minimal of the curve
+	for (i = 0; i < SPYPOST_ARRAY_PROFILE_LENGTH; i++)
+	{
+		for (j = 0; j < SPYPOST_NBITS_SAMPLING_RESOLUTION; j++)
+		{
+			if (((profile->current_sample[i] >> j) & 0x01) && y_min > j )
+			{
+				y_min = j;
+			}
+		}
+	}
+	//shift buffer (y axis)
+	for (i = 0; i < SPYPOST_ARRAY_PROFILE_LENGTH; i++)
+	{
+		profile->current_sample[i] = profile->current_sample[i] >> (y_min - 1); //-& for one pix margin
+	}
+	//crop buffer height
+	int mask = (int)(pow(2, SPYPOST_REFERENCE_SAMPLE_HEIGHT) - 1);
+	for (i = 0; i < SPYPOST_ARRAY_PROFILE_LENGTH; i++)
+	{
+		profile->current_sample[i] = profile->current_sample[i] & mask;
+	}
+	//search the last value into the buffer for align reference sample
+	int x = SPYPOST_ARRAY_PROFILE_LENGTH;
+	while (profile->current_sample[x] == 0x00)
+	{
+		x--;
+	}
+	//save crop into ref buffer
+	for (i = SPYPOST_REFERENCE_SAMPLE_WIDTH; i > 0; i++)
+	{
+		profile->ref_sample[i] = (uint16_t)profile->current_sample[i - x];
+	}
+}
