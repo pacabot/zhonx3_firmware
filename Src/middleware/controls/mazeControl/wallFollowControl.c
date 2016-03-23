@@ -48,23 +48,9 @@
 #include "middleware/controls/mazeControl/wallFollowControl.h"
 
 /* Types definitions */
-//#define CENTER_DISTANCE 	 15.0
 #define SUCCES_GAP_DIST 	 2.0
-
-//#define MAX_DIST_FOR_ALIGN 	 160.00
-//#define MIN_DIST_FOR_ALIGN 	 3.00
-
-//#define MAX_DIST_FOR_FOLLOW  120.00
-//#define MIN_DIST_FOR_FOLLOW  30.00
-
-//#define BOTH_WALL_DIST 		 180.00
-
 #define DIAG_DIST_FOR_FOLLOW 80.00
-
-//#define SLIP_TRANSLATION	 100
-
-//#define MAX_ANGLE_ERROR		 30.00	//Degres
-#define MAX_FOLLOW_ERROR	 50.00	//Millimeter
+#define MAX_FOLLOW_ERROR	 100.00	//Millimeter
 
 typedef struct
 {
@@ -85,9 +71,9 @@ static arm_pid_instance_f32 telemeters_pid_instance;
 
 int wallFollowControlInit(void)
 {
-	telemeters_pid_instance.Kp = 5;
+	telemeters_pid_instance.Kp = 10;
 	telemeters_pid_instance.Ki = 0;
-	telemeters_pid_instance.Kd = 200;
+	telemeters_pid_instance.Kd = 800;
 
 	wall_follow_control.follow_pid.instance = &telemeters_pid_instance;
 

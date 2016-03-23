@@ -45,8 +45,8 @@
 /* Declarations for this module */
 #include "middleware/controls/mazeControl/reposition.h"
 
-#define DEADZONE_DIST		 80.00	//Distance between the start of the cell and doubt area
-#define DEADZONE			 70.00	//doubt area
+#define DEADZONE_DIST		 90.00	//Distance between the start of the cell and doubt area
+#define DEADZONE			 50.00	//doubt area
 
 enum telemeters_used getSensorsUsedToTrackWalls(void)
 {
@@ -54,11 +54,11 @@ enum telemeters_used getSensorsUsedToTrackWalls(void)
 
 	double distance = ((encoderGetDist(ENCODER_L) + encoderGetDist(ENCODER_R)) / 2.00) + mouveGetInitialPosition();
 
-	if (distance < 2.00 * OFFSET_DIST ||
+	if (distance < OFFSET_DIST + 10 ||
 			distance > (DEADZONE_DIST + (DEADZONE / 2.00)))
 	{
-		if (distance < (2.00 * OFFSET_DIST))
-		{
+//		if (distance < (2.00 * OFFSET_DIST))
+//		{
 			if ((getWallPresence(LEFT_WALL) == TRUE) && (getWallPresence(RIGHT_WALL) == TRUE))
 			{
 				telemeter_used = ALL_SIDE;
@@ -72,7 +72,7 @@ enum telemeters_used getSensorsUsedToTrackWalls(void)
 			}
 			else
 				telemeter_used = NO_SIDE;
-		}
+//		}
 	}
 
 	if (distance > (DEADZONE_DIST - (DEADZONE / 2.00)) &&
@@ -98,7 +98,7 @@ double	repositionGetPostDist(double offset)
 	{
 		distance = ((getTelemeterDist(TELEMETER_FL) + getTelemeterDist(TELEMETER_FR)) / 2.00) + 65.00 - (CELL_LENGTH - offset);
 		// Calculating average distance detected by FR and FL Telemeters
-		bluetoothPrintf("distance = %d \n", (int)distance);
+		//bluetoothPrintf("distance = %d \n", (int)distance);
 		return distance;
 	}
 	else

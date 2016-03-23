@@ -199,20 +199,30 @@ int moveRotateCCW90(float max_speed, float end_speed)
  */
 int moveUTurn(float speed_rotation, float max_speed, float end_speed)
 {
+	char wall_presence;
+	if (getWallPresence(RIGHT_WALL) == WALL_PRESENCE)
+	{
+		wall_presence = RIGHT_WALL;
+	}
+	else if (getWallPresence(LEFT_WALL) == WALL_PRESENCE)
+	{
+		wall_presence = LEFT_WALL;
+	}
+
 	while(hasMoveEnded() != TRUE);
 	moveHalfCell_IN(max_speed, 0);
 
 	//frontCal(speed_rotation);
 
 	while(hasMoveEnded() != TRUE);
-	if (getWallPresence(RIGHT_WALL) == WALL_PRESENCE)
+	if (wall_presence == RIGHT_WALL)
 	{
 		move (90, 0, speed_rotation, speed_rotation);
 		frontCal(speed_rotation);
 		while(hasMoveEnded() != TRUE);
 		move (90, 0, speed_rotation, speed_rotation);
 	}
-	else if (getWallPresence(LEFT_WALL) == WALL_PRESENCE)
+	else if (wall_presence == LEFT_WALL)
 	{
 		move (-90, 0, speed_rotation, speed_rotation);
 		frontCal(speed_rotation);
