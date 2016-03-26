@@ -4,7 +4,7 @@
     @author   PLF Pacabot.com
     @date     03 August 2014
     @version  0.10
-*/
+ */
 /**************************************************************************/
 #ifndef __TELEMETERS_H__
 #define __TELEMETERS_H__
@@ -17,16 +17,16 @@
 #define TELEMETERS_DRIVER_E_SUCCESS  0
 #define TELEMETERS_DRIVER_E_ERROR    MAKE_ERROR(TELEMETERS_DRIVER_MODULE_ID, 1)
 
+#define TELEMETERS_CAL_E_SUCCESS  0
+#define TELEMETERS_CAL_E_ERROR    MAKE_ERROR(TELEMETERSCAL_DRIVER_MODULE_ID, 1)
+
 #define TELEMETER_PROFILE_ARRAY_LENGTH 		250
-#define MEASURED_DISTANCE	250
+#define MEASURED_DISTANCE	                250
 #define NUMBER_OF_MILLIMETER_BY_LOOP (MEASURED_DISTANCE/TELEMETER_PROFILE_ARRAY_LENGTH)
 
 #if ((DISTANCE_MEASURED) % (TELEMETER_PROFILE_ARRAY_LENGTH)) != 0
 #error you must put a multiple of NUMBER_OF_CELL in DISTANCE_MEASURED
 #endif
-
-#define TELEMETERS_CAL_E_SUCCESS  0
-#define TELEMETERS_CAL_E_ERROR    MAKE_ERROR(TELEMETERS_CAL_MODULE_ID, 1)
 
 int   wallSensorsCalibrationFront(void);
 int	  wallSensorsCalibrationDiag (void);
@@ -37,20 +37,20 @@ enum telemeterName {TELEMETER_FL, TELEMETER_DL, TELEMETER_DR, TELEMETER_FR};
 
 typedef struct
 {
-    int right[TELEMETER_PROFILE_ARRAY_LENGTH + 1];
-    int left [TELEMETER_PROFILE_ARRAY_LENGTH + 1];
+  int right[TELEMETER_PROFILE_ARRAY_LENGTH + 1];
+  int left [TELEMETER_PROFILE_ARRAY_LENGTH + 1];
 } FRONT_TELEMETERS_PROFILE;
 
 typedef struct
 {
-    int right [TELEMETER_PROFILE_ARRAY_LENGTH + 1];
-    int left  [TELEMETER_PROFILE_ARRAY_LENGTH + 1];
+  int right [TELEMETER_PROFILE_ARRAY_LENGTH + 1];
+  int left  [TELEMETER_PROFILE_ARRAY_LENGTH + 1];
 } DIAG_TELEMETERS_PROFILE;
 
 typedef struct
 {
-    FRONT_TELEMETERS_PROFILE front;
-    DIAG_TELEMETERS_PROFILE diag;
+  FRONT_TELEMETERS_PROFILE front;
+  DIAG_TELEMETERS_PROFILE diag;
 } TELEMETERS_PROFILE;
 
 //extern int telemeter_FR_profile[TELEMETER_PROFILE_ARRAY_LENGTH + 1];
