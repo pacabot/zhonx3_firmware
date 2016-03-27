@@ -24,7 +24,7 @@
 
 void eepromWP(char state);
 int eepromWriteBuffer(unsigned int eeaddress, unsigned char *data, unsigned int length);
-void eeepromWriteByte(unsigned int eeaddress, unsigned char data);
+void eepromWriteByte(unsigned int eeaddress, unsigned char data);
 int  eepromWritePage(unsigned int eeaddresspage, unsigned char* data, unsigned char length);
 char eepromReadByte(unsigned int eeaddress);
 void eepromReadBuffer(unsigned int eeaddress, unsigned char *buffer, int length);
