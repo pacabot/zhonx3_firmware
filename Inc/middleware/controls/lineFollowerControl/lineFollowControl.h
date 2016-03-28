@@ -1,9 +1,9 @@
 /**************************************************************************/
 /*!
-    @file    followControl.h
-    @author  PLF (PACABOT)
-    @date
-    @version  0.0
+ @file    followControl.h
+ @author  PLF (PACABOT)
+ @date
+ @version  0.0
  */
 /**************************************************************************/
 #ifndef __LINEFOLLOWCONTROL_H__
@@ -22,19 +22,19 @@
 
 typedef struct
 {
-	int sign;
-	int active_state;
-}line_follow_params_struct;
+    int sign;
+    int active_state;
+} line_follow_params_struct;
 
 extern line_follow_params_struct line_follow_params;
 
 typedef struct
 {
-	double line_follow_error;
-	double line_follow_command;
-	char succes;
+    double line_follow_error;
+    double line_follow_command;
+    char succes;
     pid_control_struct line_follow_pid;
-}line_follow_control_struct;
+} line_follow_control_struct;
 
 extern line_follow_control_struct line_follow_control;
 

@@ -1,9 +1,9 @@
 /**************************************************************************/
 /*!
-    @file    cmdline_parser.c
-    @author  Netanel (PACABOT)
-    @date    02/05/2015
-    @version 0.1
+ @file    cmdline_parser.c
+ @author  Netanel (PACABOT)
+ @date    02/05/2015
+ @version 0.1
  */
 /**************************************************************************/
 
@@ -32,20 +32,18 @@
 #define MAX_COMMAND_LEN 100 + 1
 
 /* Context of this module */
-CMDLINE_CONTEXT cmdline_ctxt =
-{
-    NULL,   // output callback
-    FALSE,  // cmd_received flag
-    NULL,   // Pointer to command line
-    0,      // command line length
-    FALSE   // is_initialized flag
-};
+CMDLINE_CONTEXT cmdline_ctxt = {
+NULL,   // output callback
+        FALSE,  // cmd_received flag
+        NULL,   // Pointer to command line
+        0,      // command line length
+        FALSE   // is_initialized flag
+        };
 // Buffer used for Command line parser
 extern char serial_buffer[100];
 
 /* Private functions */
 static CMD_HANDLER *cmdline_check_cmd(const char *cmd);
-
 
 int cmdline_init(CMDLINE_CONTEXT *context)
 {
@@ -75,12 +73,12 @@ int cmdline_init(CMDLINE_CONTEXT *context)
 
 int cmdline_parse(void)
 {
-    const char  *params = NULL;
+    const char *params = NULL;
     CMD_HANDLER *hcmd = NULL;
-    char        command[MAX_COMMAND_LEN];
-    char        *cmd_end;
-    int         cmd_len = 0;
-    int         rv;
+    char command[MAX_COMMAND_LEN];
+    char *cmd_end;
+    int cmd_len = 0;
+    int rv;
 
     if (cmdline_ctxt.cmd_received == FALSE)
     {
@@ -153,7 +151,7 @@ int cmdline_parse(void)
      ******************/
     rv = hcmd->pCmdCallback(params);
 
-out:
+    out:
     // Reset Command line buffer
     memset(cmdline_ctxt.cmdline, 0x00, cmdline_ctxt.cmd_len);
     // Display back prompt message
@@ -170,7 +168,6 @@ void cmdline_setCmdReceived(int status, int cmd_length)
     cmdline_ctxt.cmd_received = status;
 }
 
-
 /**
  * @brief   Checks if command exists
  *
@@ -180,10 +177,10 @@ void cmdline_setCmdReceived(int status, int cmd_length)
  */
 static CMD_HANDLER *cmdline_check_cmd(const char *cmd)
 {
-    CMD_HANDLER *hcmd = (CMD_HANDLER *)cmd_handlers;
+    CMD_HANDLER *hcmd = (CMD_HANDLER *) cmd_handlers;
 
     /* Walk through commands array */
-    while(hcmd->command != NULL)
+    while (hcmd->command != NULL)
     {
         if (strcmp(hcmd->command, cmd) == 0)
         {

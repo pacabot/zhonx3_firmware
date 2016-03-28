@@ -56,18 +56,17 @@
 //Structures typedef
 typedef struct
 {
-  char wall_north;
-  char wall_south;
-  char wall_east;
-  char wall_west;
-  int length;
-}one_cell;
+    char wall_north;
+    char wall_south;
+    char wall_east;
+    char wall_west;
+    int length;
+} one_cell;
 
 typedef struct
 {
-  one_cell cell[MAZE_SIZE][MAZE_SIZE];
-}labyrinthe;
-
+    one_cell cell[MAZE_SIZE][MAZE_SIZE];
+} labyrinthe;
 
 typedef struct
 {
@@ -76,20 +75,18 @@ typedef struct
     char midOfCell;
 } positionRobot;
 
-
 // fonctions
 extern int maze(void);
-void exploration(labyrinthe *maze, positionRobot* positionZhonx,  coordinate end_coordinate);
-void moveVirtualZhonx(labyrinthe maze, positionRobot positionZhonxVirtuel,
-		coordinate way[], coordinate end_coordinate);
+void exploration(labyrinthe *maze, positionRobot* positionZhonx, coordinate end_coordinate);
+void moveVirtualZhonx(labyrinthe maze, positionRobot positionZhonxVirtuel, coordinate way[], coordinate end_coordinate);
 void poids(labyrinthe *maze, coordinate end_coordinate, char wallNoKnow);
-void mazeInit (labyrinthe *maze);
-void* calloc_s (size_t nombre, size_t taille);
+void mazeInit(labyrinthe *maze);
+void* calloc_s(size_t nombre, size_t taille);
 void printMaze(const labyrinthe maze, coordinate robot_coordinate);
-void printLength(const labyrinthe maze,const int x_robot, const int y_robot);
+void printLength(const labyrinthe maze, const int x_robot, const int y_robot);
 void clearMazelength(labyrinthe* maze);
 char miniwayFind(labyrinthe *maze, coordinate start_coordinate, coordinate end_coordinate);
 void moveRealZhonxArc(labyrinthe *maze, positionRobot *positionZhonx, coordinate way[]);
 void waitStart(void);
-char diffway(coordinate *way1,coordinate *way2);
+char diffway(coordinate *way1, coordinate *way2);
 #endif /* RESOLUTION_MAZE_H_ */

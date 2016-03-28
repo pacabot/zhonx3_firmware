@@ -1,9 +1,9 @@
 /**************************************************************************/
 /*!
-    @file     telemeter.h
-    @author   PLF Pacabot.com
-    @date     03 August 2014
-    @version  0.10
+ @file     telemeter.h
+ @author   PLF Pacabot.com
+ @date     03 August 2014
+ @version  0.10
  */
 /**************************************************************************/
 #ifndef __TELEMETERS_H__
@@ -28,29 +28,32 @@
 #error you must put a multiple of NUMBER_OF_CELL in DISTANCE_MEASURED
 #endif
 
-int   wallSensorsCalibrationFront(void);
-int	  wallSensorsCalibrationDiag (void);
-void  testWallsSensors();
-void  testPostSensors();
+int wallSensorsCalibrationFront(void);
+int wallSensorsCalibrationDiag(void);
+void testWallsSensors();
+void testPostSensors();
 
-enum telemeterName {TELEMETER_FL, TELEMETER_DL, TELEMETER_DR, TELEMETER_FR};
+enum telemeterName
+{
+    TELEMETER_FL, TELEMETER_DL, TELEMETER_DR, TELEMETER_FR
+};
 
 typedef struct
 {
-  int right[TELEMETER_PROFILE_ARRAY_LENGTH + 1];
-  int left [TELEMETER_PROFILE_ARRAY_LENGTH + 1];
+    int right[TELEMETER_PROFILE_ARRAY_LENGTH + 1];
+    int left[TELEMETER_PROFILE_ARRAY_LENGTH + 1];
 } FRONT_TELEMETERS_PROFILE;
 
 typedef struct
 {
-  int right [TELEMETER_PROFILE_ARRAY_LENGTH + 1];
-  int left  [TELEMETER_PROFILE_ARRAY_LENGTH + 1];
+    int right[TELEMETER_PROFILE_ARRAY_LENGTH + 1];
+    int left[TELEMETER_PROFILE_ARRAY_LENGTH + 1];
 } DIAG_TELEMETERS_PROFILE;
 
 typedef struct
 {
-  FRONT_TELEMETERS_PROFILE front;
-  DIAG_TELEMETERS_PROFILE diag;
+    FRONT_TELEMETERS_PROFILE front;
+    DIAG_TELEMETERS_PROFILE diag;
 } TELEMETERS_PROFILE;
 
 //extern int telemeter_FR_profile[TELEMETER_PROFILE_ARRAY_LENGTH + 1];
@@ -60,16 +63,16 @@ typedef struct
 extern TELEMETERS_PROFILE *telemeters_profile;
 
 /* Exported functions */
-void   telemetersInit(void);
-void   telemetersStart(void);
-void   telemetersStop(void);
+void telemetersInit(void);
+void telemetersStart(void);
+void telemetersStop(void);
 double getTelemeterDist(enum telemeterName telemeter_name);
-int    getTelemeterAvrg(enum telemeterName telemeter_name);
+int getTelemeterAvrg(enum telemeterName telemeter_name);
 double getTelemeterSpeed(enum telemeterName telemeter_name);
-void   telemeters_IT(void);
-void   telemeters_DMA_IT(void);
-void   telemeters_ADC2_IT(void);
-void   telemeters_ADC3_IT(void);
-void   telemetersTest(void);
+void telemeters_IT(void);
+void telemeters_DMA_IT(void);
+void telemeters_ADC2_IT(void);
+void telemeters_ADC3_IT(void);
+void telemetersTest(void);
 
 #endif //__TELEMETERS_H__

@@ -1,9 +1,9 @@
 /**************************************************************************/
 /*!
-    @file    cmdline_parser.h
-    @author  Netanel (PACABOT)
-    @date    02/05/2015
-    @version 0.1
+ @file    cmdline_parser.h
+ @author  Netanel (PACABOT)
+ @date    02/05/2015
+ @version 0.1
  */
 /**************************************************************************/
 #ifndef __CMDLINE_PARSER_H__
@@ -55,7 +55,6 @@ typedef struct
 
 extern CMDLINE_CONTEXT cmdline_ctxt;
 
-
 /**
  * @brief   Initializes the command line parser
  *
@@ -71,6 +70,5 @@ int cmdline_init(CMDLINE_CONTEXT *context);
  *          a negative value otherwise
  */
 int cmdline_parse(void);
-
 
 #endif // __CMDLINE_PARSER_H__

@@ -1,9 +1,9 @@
 /**************************************************************************/
 /*!
-    @file     powerManagment.c
-    @author   PLF Pacabot.com
-    @date     03 January 2016
-    @version  0.10
+ @file     powerManagment.c
+ @author   PLF Pacabot.com
+ @date     03 January 2016
+ @version  0.10
  */
 /**************************************************************************/
 /* STM32 hal library declarations */
@@ -35,12 +35,12 @@
 
 void batteryGauge_IT(void)
 {
-	if (HAL_GPIO_ReadPin(GPIOA, GPIO_BASE) == FALSE)
-	{
-		bannerSetIcon(USB, TRUE);
-	}
-	else
-	{
-		bannerSetIcon(BATTERY, (int)(multimeterGetBatVoltage() / BATTERY_COEFF_A - BATTERY_COEFF_B));
-	}
+    if (HAL_GPIO_ReadPin(GPIOA, GPIO_BASE) == FALSE)
+    {
+        bannerSetIcon(USB, TRUE);
+    }
+    else
+    {
+        bannerSetIcon(BATTERY, (int) (multimeterGetBatVoltage() / BATTERY_COEFF_A - BATTERY_COEFF_B));
+    }
 }

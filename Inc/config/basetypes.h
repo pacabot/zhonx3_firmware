@@ -5,7 +5,7 @@ typedef struct
 {
     void *p_value;        // Parameter to modify
     void *presetBuffer;   // Preset buffer for the the parameter
-    int (*callback)(int param1 ,void *param2);
+    int (*callback)(int param1, void *param2);
 } presetParam;
 
 /** This constant defines an empty pointer value */

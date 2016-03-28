@@ -1,9 +1,9 @@
 /**************************************************************************/
 /*!
-    @file    cmd_maze.c
-    @author  Netanel (PACABOT)
-    @date    14/05/2015
-    @version 0.1
+ @file    cmd_maze.c
+ @author  Netanel (PACABOT)
+ @date    14/05/2015
+ @version 0.1
  */
 /**************************************************************************/
 
@@ -16,7 +16,6 @@
 #include "middleware/cmdline/cmdline_parser.h"
 
 #include "application/solverMaze/solverMaze.h"
-
 
 int cmd_maze(const char *args)
 {
