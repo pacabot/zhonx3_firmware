@@ -56,8 +56,6 @@ enum telemeters_used getSensorsUsedToTrackWalls(void)
 
     if (distance < OFFSET_DIST + 10 || distance > (DEADZONE_DIST + (DEADZONE / 2.00)))
     {
-//		if (distance < (2.00 * OFFSET_DIST))
-//		{
         if ((getWallPresence(LEFT_WALL) == TRUE) && (getWallPresence(RIGHT_WALL) == TRUE))
         {
             telemeter_used = ALL_SIDE;
@@ -71,7 +69,6 @@ enum telemeters_used getSensorsUsedToTrackWalls(void)
         }
         else
             telemeter_used = NO_SIDE;
-//		}
     }
 
     if (distance > (DEADZONE_DIST - (DEADZONE / 2.00)) && distance < (DEADZONE_DIST + (DEADZONE / 2.00)))

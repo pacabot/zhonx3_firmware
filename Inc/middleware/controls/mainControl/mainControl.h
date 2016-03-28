@@ -20,8 +20,6 @@
 #define MAIN_CONTROL_E_SUCCESS  0
 #define MAIN_CONTROL_E_ERROR    MAKE_ERROR(MAIN_CONTROL_MODULE_ID, 1)
 
-#define OFFSET_DIST	20.00
-
 /* Types definitions */
 enum rotationTypeEnum
 {

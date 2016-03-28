@@ -43,7 +43,7 @@
 
 #define SSD1306_CMDSIZE					1
 
-#define SSD1306_BANNERSIZE			(SSD1306_LCDWIDTH)
+#define SSD1306_BANNERSIZE			    (SSD1306_LCDWIDTH)
 #define SSD1306_MAINSIZE				((SSD1306_LCDWIDTH * SSD1306_LCDPAGEHEIGHT) - SSD1306_BANNERSIZE)
 
 // Commands
@@ -52,7 +52,7 @@
 #define SSD1306_DISPLAYALLON            0xA5
 #define SSD1306_NORMALDISPLAY           0xA6
 #define SSD1306_INVERTDISPLAY           0xA7
-#define SSD1306_DISPLAYOFF          	  0xAE
+#define SSD1306_DISPLAYOFF          	0xAE
 #define SSD1306_DISPLAYON               0xAF
 #define SSD1306_SETDISPLAYOFFSET        0xD3
 #define SSD1306_SETCOMPINS              0xDA
@@ -60,7 +60,7 @@
 #define SSD1306_SETDISPLAYCLOCKDIV      0xD5
 #define SSD1306_SETPRECHARGE            0xD9
 #define SSD1306_SETMULTIPLEX            0xA8
-#define SSD1306_SETPAGESTART		  	    0xB0
+#define SSD1306_SETPAGESTART		  	0xB0
 #define SSD1306_SETLOWCOLUMN            0x00
 #define SSD1306_SETHIGHCOLUMN           0x10
 #define SSD1306_SETSTARTLINE            0x40
@@ -209,7 +209,7 @@ void ssd1306Init(unsigned char vccstate)
     {
         CMD(254);								// contrast (0-255)
     }
-    CMD(SSD1306_NORMALDISPLAY);     // 0xA6 NORMAL MODE (A7 for inverse display)
+    CMD(SSD1306_NORMALDISPLAY);                 // 0xA6 NORMAL MODE (A7 for inverse display)
     //	CMD(SSD1306_INVERTDISPLAY);             // 0xA6 NORMAL MODE (A7 for inverse display)
     CMD(SSD1306_DISPLAYALLON_RESUME);           // 0xA4
     CMD(SSD1306_SETMULTIPLEX);                  // 0xA8

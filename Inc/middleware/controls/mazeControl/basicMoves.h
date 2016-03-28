@@ -33,5 +33,6 @@ int moveRotateCCW90(float max_speed, float end_speed);
 int moveUTurn(float speed_rotation, float max_speed, float end_speed);
 void movesTest(void);
 void rotateTest(void);
+void mainControlDisplayTest(void);
 
 #endif // __BASICMOVES_H

@@ -30,6 +30,7 @@
 #include "middleware/controls/mainControl/speedControl.h"
 #include "middleware/controls/mainControl/transfertFunction.h"
 #include "middleware/controls/mazeControl/reposition.h"
+#include "middleware/controls/mazeControl/spyPost.h"
 
 /* Peripheral declarations */
 #include "peripherals/gyroscope/adxrs620.h"
@@ -50,6 +51,29 @@
 /* Declarations for this module */
 #include "middleware/controls/mazeControl/basicMoves.h"
 
+/**************************************************************************************/
+/***************       Decomposition of straight displacement      ********************/
+/**************************************************************************************/
+/*
+ *                  O
+ *                  O
+ *      o           O           o
+ *      :           O           :
+ *      :           O           :
+ *      :           M           :
+ *      :           M           :
+ *      :           M           :
+ *      :           M           :
+ *      :           M           :
+ *      :           M           :
+ *      :                       :
+ *      o                       o
+ *
+ *      O = OFFSET_DIST
+ *      M = MAIN_DIST
+ *
+ */
+
 typedef struct
 {
     double current_position;
@@ -67,15 +91,18 @@ double mouveGetInitialPosition(void)
 /**************************************************************************************/
 
 /*
- * 			 :
- * 		o    :    o
- * 		:    :    :
- * 		:    :    :
+ * 			 |
+ * 		o    |    o
+ * 		:    |    :
+ * 		:    |    :
  * 		o         o
  */
 int moveCell(unsigned long nb_cell, float max_speed, float end_speed)
 {
     unsigned int i;
+    spyPostGetOffsetsStruct offset;
+
+    ssd1306ClearScreen(MAIN_AREA);
 
     if (nb_cell == 0)
         return POSITION_CONTROL_E_SUCCESS;
@@ -83,19 +110,35 @@ int moveCell(unsigned long nb_cell, float max_speed, float end_speed)
     for (i = 0; i < (nb_cell - 1); i++)
     {
         while (hasMoveEnded() != TRUE)
-            ;
+        {
+        }
         basicMoves_params.current_position = OFFSET_DIST; //absolute position into a cell
         move(0, (CELL_LENGTH), max_speed, max_speed);
     }
     while (hasMoveEnded() != TRUE)
-        ;
+    {
+    }
     basicMoves_params.current_position = OFFSET_DIST; //absolute position into a cell
-    move(0, (CELL_LENGTH - (OFFSET_DIST * 2.00)), max_speed, end_speed); //distance with last move offset
+    move(0, MAIN_DIST, max_speed, end_speed); //distance with last move offset
+    spyPostGetOffset(&offset);
     while (hasMoveEnded() != TRUE)
-        ;
+    {
+    }
     basicMoves_params.current_position = CELL_LENGTH - OFFSET_DIST;	//absolute position into a cell
-    move(0, (OFFSET_DIST * 2.00) + repositionGetPostDist(-OFFSET_DIST), max_speed, end_speed);
+    if (repositionGetPostDist(-OFFSET_DIST) > 0.0 || repositionGetPostDist(-OFFSET_DIST) < 0.0)
+        move(0, (OFFSET_DIST * 2.00) + repositionGetPostDist(-OFFSET_DIST), max_speed, end_speed);
+    else if (offset.left_x != 0)
+    {
+        move(0, (OFFSET_DIST * 2.00) + offset.left_x, max_speed, end_speed);
+    ssd1306PrintfAtLine(0, 2, &Font_5x8, " left_x =", offset.left_x);
+    }
+    else
+    {
+        move(0, (OFFSET_DIST * 2.00) + offset.right_x, max_speed, end_speed);
+        ssd1306PrintfAtLine(0, 2, &Font_5x8, " right_x =", offset.right_x);
+    }
 
+    ssd1306Refresh();
     return POSITION_CONTROL_E_SUCCESS;
 }
 
@@ -103,13 +146,14 @@ int moveCell(unsigned long nb_cell, float max_speed, float end_speed)
  *
  * 		o	 	  o
  * 		:         :
- * 		:    :    :
+ * 		:    |    :
  * 		o         o
  */
 int moveHalfCell_IN(float max_speed, float end_speed)
 {
     while (hasMoveEnded() != TRUE)
-        ;
+    {
+    }
     basicMoves_params.current_position = OFFSET_DIST;
     move(0, (HALF_CELL_LENGTH - OFFSET_DIST), max_speed, end_speed);
 
@@ -117,20 +161,22 @@ int moveHalfCell_IN(float max_speed, float end_speed)
 }
 
 /*
- * 			 :
- * 		o	 :	  o
- * 		:    :    :
+ * 			 |
+ * 		o	 |	  o
+ * 		:    |    :
  * 		:         :
  * 		o         :
  */
 int moveHalfCell_OUT(float max_speed, float end_speed)
 {
     while (hasMoveEnded() != TRUE)
-        ;
+    {
+    }
     basicMoves_params.current_position = HALF_CELL_LENGTH;
     move(0, HALF_CELL_LENGTH - OFFSET_DIST, max_speed, end_speed);
     while (hasMoveEnded() != TRUE)
-        ;
+    {
+    }
     basicMoves_params.current_position = CELL_LENGTH - (OFFSET_DIST);
     move(0, (OFFSET_DIST * 2.00) + repositionGetPostDist(-OFFSET_DIST), max_speed, end_speed);
 
@@ -138,20 +184,22 @@ int moveHalfCell_OUT(float max_speed, float end_speed)
 }
 
 /*
- * 			 :
- * 		o    :    o
- * 		:    :    :
- * 		:    :    :
+ * 			 |
+ * 		o    |    o
+ * 		:    |    :
+ * 		:    |    :
  * 		o_________o
  */
 int moveStartCell(float max_speed, float end_speed)
 {
     while (hasMoveEnded() != TRUE)
-        ;
+    {
+    }
     basicMoves_params.current_position = Z3_CENTER_BACK_DIST + HALF_WALL_THICKNESS;
     move(0, ((CELL_LENGTH - (Z3_CENTER_BACK_DIST + HALF_WALL_THICKNESS)) - OFFSET_DIST), max_speed, end_speed);
     while (hasMoveEnded() != TRUE)
-        ;
+    {
+    }
     basicMoves_params.current_position = CELL_LENGTH - (OFFSET_DIST);
     move(0, (OFFSET_DIST * 2.00) + repositionGetPostDist(-OFFSET_DIST), max_speed, end_speed);
 
@@ -159,8 +207,8 @@ int moveStartCell(float max_speed, float end_speed)
 }
 
 /*
- *		 	 :
- * 		o	 :	  o
+ *		 	 |
+ * 		o	 |	  o
  * 		:    '._    <<<
  * 		:			<<<
  * 		o_________o
@@ -168,10 +216,12 @@ int moveStartCell(float max_speed, float end_speed)
 int moveRotateCW90(float max_speed, float end_speed)
 {
     while (hasMoveEnded() != TRUE)
-        ;
+    {
+    }
     move(90, (HALF_CELL_LENGTH - OFFSET_DIST), max_speed, max_speed);
     while (hasMoveEnded() != TRUE)
-        ;
+    {
+    }
     basicMoves_params.current_position = (CELL_LENGTH - OFFSET_DIST);
     move(0, (OFFSET_DIST * 2.00) + repositionGetPostDist(-OFFSET_DIST), max_speed, end_speed);
 
@@ -179,8 +229,8 @@ int moveRotateCW90(float max_speed, float end_speed)
 }
 
 /*
- *		 	 :
- * 		o	 :	  o
+ *		 	 |
+ * 		o	 |	  o
  * 	>>>    _.'	  :
  * 	>>>	          :
  * 		o_________o
@@ -188,10 +238,12 @@ int moveRotateCW90(float max_speed, float end_speed)
 int moveRotateCCW90(float max_speed, float end_speed)
 {
     while (hasMoveEnded() != TRUE)
-        ;
+    {
+    }
     move(-90, (HALF_CELL_LENGTH - OFFSET_DIST), max_speed, max_speed);
     while (hasMoveEnded() != TRUE)
-        ;
+    {
+    }
     basicMoves_params.current_position = (CELL_LENGTH - OFFSET_DIST);
     move(0, (OFFSET_DIST * 2.00) + repositionGetPostDist(-OFFSET_DIST), max_speed, end_speed);
 
@@ -206,12 +258,12 @@ int moveRotateCCW90(float max_speed, float end_speed)
  * 		o	 _	  o
  * 		:   / )   :
  * 		:   \'    :
- * 		o    :    o
+ * 		o    |    o
  * 			 v
  */
 int moveUTurn(float speed_rotation, float max_speed, float end_speed)
 {
-    char wall_presence;
+    char wall_presence = 0xFF;
     if (getWallPresence(RIGHT_WALL) == WALL_PRESENCE)
     {
         wall_presence = RIGHT_WALL;
@@ -222,19 +274,22 @@ int moveUTurn(float speed_rotation, float max_speed, float end_speed)
     }
 
     while (hasMoveEnded() != TRUE)
-        ;
+    {
+    }
     moveHalfCell_IN(max_speed, 0);
 
     //frontCal(speed_rotation);
 
     while (hasMoveEnded() != TRUE)
-        ;
+    {
+    }
     if (wall_presence == RIGHT_WALL)
     {
         move(90, 0, speed_rotation, speed_rotation);
         frontCal(speed_rotation);
         while (hasMoveEnded() != TRUE)
-            ;
+        {
+        }
         move(90, 0, speed_rotation, speed_rotation);
     }
     else if (wall_presence == LEFT_WALL)
@@ -242,7 +297,8 @@ int moveUTurn(float speed_rotation, float max_speed, float end_speed)
         move(-90, 0, speed_rotation, speed_rotation);
         frontCal(speed_rotation);
         while (hasMoveEnded() != TRUE)
-            ;
+        {
+        }
         move(-90, 0, speed_rotation, speed_rotation);
     }
     else
@@ -265,7 +321,8 @@ int rotate180WithCal(enum rotationTypeEnum rotation_type, float max_speed, float
     else
         move(-90, 0, max_speed, 0);
     while (hasMoveEnded() != TRUE)
-        ;
+    {
+    }
     /***************************************/
 
     frontCal(max_speed);
@@ -276,7 +333,8 @@ int rotate180WithCal(enum rotationTypeEnum rotation_type, float max_speed, float
     else
         move(-90, 0, max_speed, end_speed);
     while (hasMoveEnded() != TRUE)
-        ;
+    {
+    }
     /***************************************/
 
     return POSITION_CONTROL_E_SUCCESS;
@@ -290,7 +348,8 @@ int rotate90WithCal(enum rotationTypeEnum rotation_type, float max_speed, float 
     else
         move(-90, 0, max_speed, 0);
     while (hasMoveEnded() != TRUE)
-        ;
+    {
+    }
     /***************************************/
 
     frontCal(max_speed);
@@ -332,7 +391,10 @@ void movesTest()
     Vrotate = 400;
 
     moveStartCell(Vmax, Vmax);
-    moveCell(1, Vmax, Vmin);
+    while (1)
+    {
+        moveCell(1, Vmax, Vmin);
+    }
     moveRotateCW90(Vmin, Vmin);
     moveCell(2, Vmax, Vmin);
     moveRotateCW90(Vmin, Vmin);
