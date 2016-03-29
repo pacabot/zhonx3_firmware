@@ -21,5 +21,7 @@ typedef struct
 
 int spyPostGetOffset(spyPostGetOffsetsStruct *offset);
 int spyPostCalibration(void);
+int spyPostReadCalibration(void);
+void spyPostTest();
 
 #endif /* _SPYPOST_H_ */

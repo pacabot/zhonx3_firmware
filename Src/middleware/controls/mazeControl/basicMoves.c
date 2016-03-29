@@ -129,13 +129,13 @@ int moveCell(unsigned long nb_cell, float max_speed, float end_speed)
         move(0, (OFFSET_DIST * 2.00) + repositionGetPostDist(-OFFSET_DIST), max_speed, end_speed);
     else if (offset.left_x != 0)
     {
-        move(0, (OFFSET_DIST * 2.00) + offset.left_x, max_speed, end_speed);
-    ssd1306PrintfAtLine(0, 2, &Font_5x8, " left_x =", offset.left_x);
+        move(0, (OFFSET_DIST * 2.00) - offset.left_x, max_speed, max_speed);
+        ssd1306PrintfAtLine(0, 2, &Font_5x8, "left_x = %d", offset.left_x);
     }
     else
     {
-        move(0, (OFFSET_DIST * 2.00) + offset.right_x, max_speed, end_speed);
-        ssd1306PrintfAtLine(0, 2, &Font_5x8, " right_x =", offset.right_x);
+        move(0, (OFFSET_DIST * 2.00) - offset.right_x, max_speed, max_speed);
+        ssd1306PrintfAtLine(0, 2, &Font_5x8, "right_x = %d", offset.right_x);
     }
 
     ssd1306Refresh();
@@ -391,10 +391,7 @@ void movesTest()
     Vrotate = 400;
 
     moveStartCell(Vmax, Vmax);
-    while (1)
-    {
-        moveCell(1, Vmax, Vmin);
-    }
+    moveCell(1, Vmax, Vmin);
     moveRotateCW90(Vmin, Vmin);
     moveCell(2, Vmax, Vmin);
     moveRotateCW90(Vmin, Vmin);

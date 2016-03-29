@@ -62,6 +62,8 @@ extern int setDark(void);
 extern int pidCalculator(void);
 extern void telemetersGetCalibrationValues(void);
 extern void spyPostCalibration(void);
+extern void spyPostTest();
+extern int spyPostReadCalibration();
 extern int _Factor;
 extern int _KP;
 /*
@@ -81,61 +83,76 @@ float toto = 4.0;
 float titi = 4.0;
 float tata = 4.0;
 
-const menuItem testGraphicMenu = { "GRAPHICS", { { "Default accel :", 'a', (void*) &toto }, { "Max speed dist:", 'a',
-                                                                                              (void*) &titi },
-                                                 { "Default accel :", 'a', (void*) &tata }, { "graphique", 'g', null },
+const menuItem testGraphicMenu = { "GRAPHICS", {
+                                                 { "Default accel :", 'a', (void*) &toto },
+                                                 { "Max speed dist:", 'a', (void*) &titi },
+                                                 { "Default accel :", 'a', (void*) &tata },
+                                                 { "graphique", 'g', null },
                                                  { (char*) NULL, 0, NULL } } };
 
-const menuItem maze_menu = { "MAZE", { { "new maze", 'f', (void*) maze },
-                                       { "calibration", 'b', (void*) &zhonxSettings.calibration_enabled }, {
-                                               "color finish", 'b', (void*) &zhonxSettings.color_sensor_enabled },
-                                       { "x finish", 'i', (void*) &zhonxSettings.maze_end_coordinate.x }, {
-                                               "y finish", 'i', (void*) &zhonxSettings.maze_end_coordinate.y } }
+const menuItem maze_menu = { "MAZE", {
+                                       { "new maze", 'f', (void*) maze },
+                                       { "calibration", 'b', (void*) &zhonxSettings.calibration_enabled },
+                                       { "color finish", 'b', (void*) &zhonxSettings.color_sensor_enabled },
+                                       { "x finish", 'i', (void*) &zhonxSettings.maze_end_coordinate.x },
+                                       { "y finish", 'i', (void*) &zhonxSettings.maze_end_coordinate.y } }
 
 };
 
-const menuItem follower_menu = { "LINE FOLL", { { "line follower", 'f', (void*) lineFollower },
+const menuItem follower_menu = { "LINE FOLL", {
+                                                { "line follower", 'f', (void*) lineFollower },
                                                 { "calibration", 'f', (void*) lineSensorsCalibration },
                                                 //{"Sensor Bluetooth",'f', (void*)lineSensorSendBluetooth},
-        { "Set F. K", 'i', (void*) &_Factor }, { "Set F. KP", 'i', (void*) &_KP }, } };
+                                                { "Set F. K", 'i', (void*) &_Factor },
+                                                { "Set F. KP", 'i', (void*) &_KP }, } };
 
-const menuItem parameters_menu = { "PARAMS", { { "calibration front", 'f', (void*) wallSensorsCalibrationFront }, {
-        "calibration diag", 'f', (void*) wallSensorsCalibrationDiag },
-                                               { "Send calib values", 'f', (void *) telemetersGetCalibrationValues }, {
-                                                       "Set BT baudrate", 'p', (void *) &BTpresetBaudRate } } };
+const menuItem parameters_menu = { "PARAMS", {
+                                               { "calibration front", 'f', (void*) wallSensorsCalibrationFront },
+                                               { "calibration diag", 'f', (void*) wallSensorsCalibrationDiag },
+                                               { "Send calib values", 'f', (void *) telemetersGetCalibrationValues },
+                                               { "Set BT baudrate", 'p', (void *) &BTpresetBaudRate } } };
 const menuItem peripheral_test_menu = { "PERIPH.", { 0 } };
-const menuItem tests_menu = { "TESTS", { { "wall sensor", 'f', (void*) testWallsSensors }, { "bluetooth", 'f',
-                                                                                             (void*) bluetoothTest },
-                                         { "multimeter", 'f', (void*) mulimeterTest }, { "display", 'f',
-                                                                                         (void*) ssd1306Test },
+
+const menuItem tests_menu = { "TESTS", {
+                                         { "wall sensor", 'f', (void*) testWallsSensors },
+                                         { "bluetooth", 'f', (void*) bluetoothTest },
+                                         { "multimeter", 'f', (void*) mulimeterTest },
+                                         { "display", 'f', (void*) ssd1306Test },
                                          { "eeprom", 'f', (void*) eepromTest },
-                                         { "encoders", 'f', (void*) encoderTest }, { "joystick", 'f',
-                                                                                     (void*) joystickTest },
-                                         { "gyroscope", 'f', (void*) adxrs620Test }, { "telemeters", 'f',
-                                                                                       (void*) telemetersTest },
-                                         { "beeper", 'f', (void*) toneTest }, { "motors", 'f', (void*) motorsTest }, {
-                                                 "line sensors", 'f', (void*) lineSensorsTest },
-                                         { "Expender LEDs", 'f', (void*) expenderLedTest }, { 0, 0, 0 } } };
+                                         { "encoders", 'f', (void*) encoderTest },
+                                         { "joystick", 'f', (void*) joystickTest },
+                                         { "gyroscope", 'f', (void*) adxrs620Test },
+                                         { "telemeters", 'f', (void*) telemetersTest },
+                                         { "beeper", 'f', (void*) toneTest },
+                                         { "motors", 'f', (void*) motorsTest },
+                                         { "line sensors", 'f', (void*) lineSensorsTest },
+                                         { "Expender LEDs", 'f', (void*) expenderLedTest },
+                                         { 0, 0, 0 } } };
 
-const menuItem control_menu = { "CONTROL", { { "follow the wall", 'f', (void*) movesTest }, { "rotate", 'f',
-                                                                                              (void*) rotateTest },
-                                             { "PID calculator", 'f', (void*) pidCalculator }, {
-                                                     "spy post Cal.", 'f', (void*) spyPostCalibration }, } };
+const menuItem control_menu = { "CONTROL", {
+                                             { "follow the wall", 'f', (void*) movesTest },
+                                             { "rotate", 'f', (void*) rotateTest },
+                                             { "PID calculator", 'f', (void*) pidCalculator },
+                                             { "spyPost Cal.", 'f', (void*) spyPostCalibration },
+                                             { "spyPost Read Cal.", 'f', (void*) spyPostReadCalibration },
+                                             { "spyPost test.", 'f', (void*) spyPostTest }, } };
 
-const menuItem zhonxNameMenu = { "SET MAME",
+const menuItem zhonxNameMenu = {
+                                 "SET MAME",
                                  { { "Meddle", 'f', setMeddle }, { "Dark", 'f', setDark }, { NULL, 0, NULL } } };
 
 const menuItem mainMenu = {
 CONFIG_ZHONX_INFO_ADDR,
                             {
                             //	{"telemeters calibration",'f',		(void*)telemeterFrontCalibration},
-                            { "Maze menu", 'm', (void*) &maze_menu },
+                              { "Maze menu", 'm', (void*) &maze_menu },
                               { "Unit tests", 'm', (void*) &tests_menu },
                               { "Control menu", 'm', (void*) &control_menu },
-                              { "Line menu", 'm', (void*) &follower_menu }, { "Parameters menu", 'm',
-                                                                              (void*) &parameters_menu },
+                              { "Line menu", 'm', (void*) &follower_menu },
+                              { "Parameters menu", 'm', (void*) &parameters_menu },
                               { "Test graph", 'm', (void*) &testGraphicMenu },
-                              { "Test flash", 'f', (void*) &testFlash }, { "Zhonx Name", 'm', (void*) &zhonxNameMenu },
+                              { "Test flash", 'f', (void*) &testFlash },
+                              { "Zhonx Name", 'm', (void*) &zhonxNameMenu },
                               { 0, 0, 0 } } };
 
 extern I2C_HandleTypeDef hi2c1;
