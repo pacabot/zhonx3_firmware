@@ -1,9 +1,9 @@
 /**************************************************************************/
 /*!
-    @file    cmd_halt.c
-    @author  Netanel (PACABOT)
-    @date    29/05/2015
-    @version 1.0
+ @file    cmd_halt.c
+ @author  Netanel (PACABOT)
+ @date    29/05/2015
+ @version 1.0
  */
 /**************************************************************************/
 
@@ -19,7 +19,6 @@
 #include "middleware/cmdline/cmdline_parser.h"
 
 #include "stm32f4xx_hal.h"
-
 
 int cmd_halt(const char *args)
 {

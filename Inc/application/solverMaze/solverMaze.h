@@ -44,9 +44,9 @@
 #define END_FIND			1
 #define POSSIBLE_END_FIND	2
 
-#define MAX_SPEED_ROTATION		(400)
-#define MAX_SPEED_TRANSLATION   (400)
-#define END_SPEED_TRANSLATION	(400)
+#define MAX_SPEED_ROTATION		(300)
+#define MAX_SPEED_TRANSLATION   (300)
+#define END_SPEED_TRANSLATION	(300)
 
 #define DEBUG 3
 
@@ -63,17 +63,17 @@
 //Structures typedef
 typedef struct
 {
-  char wall_north;
-  char wall_south;
-  char wall_east;
-  char wall_west;
-  int length;
-}one_cell;
+    char wall_north;
+    char wall_south;
+    char wall_east;
+    char wall_west;
+    int length;
+} one_cell;
 
 typedef struct
 {
-  one_cell cell[MAZE_SIZE][MAZE_SIZE];
-}labyrinthe;
+    one_cell cell[MAZE_SIZE][MAZE_SIZE];
+} labyrinthe;
 
 typedef struct
 {

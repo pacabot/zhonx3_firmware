@@ -11,9 +11,9 @@
 /* Types definitions */
 typedef struct
 {
-	double position;			//total distance
-	char   active_state;
-}line_follower_struct;
+    double position;			//total distance
+    char active_state;
+} line_follower_struct;
 extern line_follower_struct line_follower;
 
 #define MAXTAB 4500
@@ -29,11 +29,11 @@ extern line_follower_struct line_follower;
 
 typedef struct
 {
-	unsigned short int left;
-	unsigned short int front;
-	unsigned short int right;
-	unsigned short int leftExt;
-	unsigned short int rightExt;
+    unsigned short int left;
+    unsigned short int front;
+    unsigned short int right;
+    unsigned short int leftExt;
+    unsigned short int rightExt;
 } ground_sensors_struct;
 
 void lineSensorsCalibration(void);

@@ -1,10 +1,10 @@
 /**************************************************************************/
 /*!
-    @file     Bluetooth.h
-    @author   PLF Pacabot.com
-    @date     03 August 2014
-    @version  0.10
-*/
+ @file     Bluetooth.h
+ @author   PLF Pacabot.com
+ @date     03 August 2014
+ @version  0.10
+ */
 /**************************************************************************/
 #ifndef __BLUETOOTH_H__
 #define __BLUETOOTH_H__
@@ -76,7 +76,6 @@ int bluetoothSend(unsigned char *data, int length);
  */
 int bluetoothReceive(unsigned char *data, int length);
 
-
 /**
  * @brief Send an AT command to Bluetooth module
  *
@@ -88,7 +87,6 @@ int bluetoothReceive(unsigned char *data, int length);
  * @return          The response of bluetooth module
  */
 char *bluetoothCmd(const char *cmd);
-
 
 /**
  * @brief Waits until Bluetooth UART becomes ready

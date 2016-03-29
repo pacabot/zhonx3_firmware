@@ -1,10 +1,10 @@
 /**************************************************************************/
 /*!
-    @file     powerManagment.h
-    @author   PLF Pacabot.com
-    @date     03 January 2016
-    @version  0.10
-*/
+ @file     powerManagment.h
+ @author   PLF Pacabot.com
+ @date     03 January 2016
+ @version  0.10
+ */
 /**************************************************************************/
 #ifndef __POWERMANAGMENT_H__
 #define __POWERMANAGMENT_H__

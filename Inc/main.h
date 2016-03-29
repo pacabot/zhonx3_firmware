@@ -1,10 +1,10 @@
 /**************************************************************************/
 /*!
-    @file     main.h
-    @author   PLF Pacabot.com
-    @date     03 August 2014
-    @version  0.10
-*/
+ @file     main.h
+ @author   PLF Pacabot.com
+ @date     03 August 2014
+ @version  0.10
+ */
 /**************************************************************************/
 #ifndef __MAIN_H__
 #define __MAIN_H__
@@ -26,6 +26,5 @@
 #include "application/display/menu.h"
 
 #include <stdlib.h>
-
 
 #endif

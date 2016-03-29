@@ -1,9 +1,9 @@
 /**************************************************************************/
 /*!
-    @file    repositon.c
-    @author  PLF (PACABOT)
-    @date
-    @version  0.0
+ @file    repositon.c
+ @author  PLF (PACABOT)
+ @date
+ @version  0.0
  */
 /**************************************************************************/
 /* STM32 hal library declarations */
@@ -45,101 +45,98 @@
 /* Declarations for this module */
 #include "middleware/controls/mazeControl/reposition.h"
 
-#define DEADZONE_DIST		 80.00	//Distance between the start of the cell and doubt area
-#define DEADZONE			 70.00	//doubt area
+#define DEADZONE_DIST		 90.00	//Distance between the start of the cell and doubt area
+#define DEADZONE			 50.00	//doubt area
 
 enum telemeters_used getSensorsUsedToTrackWalls(void)
 {
-	static enum telemeters_used telemeter_used = NO_SIDE;
+    static enum telemeters_used telemeter_used = NO_SIDE;
 
-	double distance = ((encoderGetDist(ENCODER_L) + encoderGetDist(ENCODER_R)) / 2.00) + mouveGetInitialPosition();
+    double distance = ((encoderGetDist(ENCODER_L) + encoderGetDist(ENCODER_R)) / 2.00) + mouveGetInitialPosition();
 
-	if (distance < 2.00 * OFFSET_DIST ||
-			distance > (DEADZONE_DIST + (DEADZONE / 2.00)))
-	{
-		if (distance < (2.00 * OFFSET_DIST))
-		{
-			if ((getWallPresence(LEFT_WALL) == TRUE) && (getWallPresence(RIGHT_WALL) == TRUE))
-			{
-				telemeter_used = ALL_SIDE;
-			}
-			else if ((getWallPresence(LEFT_WALL) == TRUE) || (getWallPresence(RIGHT_WALL) == TRUE))
-			{
-				if (getWallPresence(LEFT_WALL) == TRUE)
-					telemeter_used = LEFT_SIDE;
-				else
-					telemeter_used = RIGHT_SIDE;
-			}
-			else
-				telemeter_used = NO_SIDE;
-		}
-	}
+    if (distance < OFFSET_DIST + 10 || distance > (DEADZONE_DIST + (DEADZONE / 2.00)))
+    {
+        if ((getWallPresence(LEFT_WALL) == TRUE) && (getWallPresence(RIGHT_WALL) == TRUE))
+        {
+            telemeter_used = ALL_SIDE;
+        }
+        else if ((getWallPresence(LEFT_WALL) == TRUE) || (getWallPresence(RIGHT_WALL) == TRUE))
+        {
+            if (getWallPresence(LEFT_WALL) == TRUE)
+                telemeter_used = LEFT_SIDE;
+            else
+                telemeter_used = RIGHT_SIDE;
+        }
+        else
+            telemeter_used = NO_SIDE;
+    }
 
-	if (distance > (DEADZONE_DIST - (DEADZONE / 2.00)) &&
-			distance < (DEADZONE_DIST + (DEADZONE / 2.00)))
-	{
-		toneStart(F3H);
-		return telemeter_used = NO_SIDE;
-	}
-	else
-	{
-		toneStop();
-		return telemeter_used;
-	}
+    if (distance > (DEADZONE_DIST - (DEADZONE / 2.00)) && distance < (DEADZONE_DIST + (DEADZONE / 2.00)))
+    {
+        toneStart(F3H);
+        return telemeter_used = NO_SIDE;
+    }
+    else
+    {
+        toneStop();
+        return telemeter_used;
+    }
 }
 
 /* This function returns the maintain loop count according to front wall detection to avoid early turns leading to wall collision.
  * 	void
  */
-double	repositionGetPostDist(double offset)
+double repositionGetPostDist(double offset)
 {
-	double distance;
-	if (getWallPresence(FRONT_WALL) == WALL_PRESENCE)
-	{
-		distance = ((getTelemeterDist(TELEMETER_FL) + getTelemeterDist(TELEMETER_FR)) / 2.00) + 65.00 - (CELL_LENGTH - offset);
-		// Calculating average distance detected by FR and FL Telemeters
-		bluetoothPrintf("distance = %d \n", (int)distance);
-		return distance;
-	}
-	else
-		return 0.00;
+    double distance;
+    if (getWallPresence(FRONT_WALL) == WALL_PRESENCE)
+    {
+        distance = ((getTelemeterDist(TELEMETER_FL) + getTelemeterDist(TELEMETER_FR)) / 2.00) + 65.00
+                - (CELL_LENGTH - offset);
+        // Calculating average distance detected by FR and FL Telemeters
+        //bluetoothPrintf("distance = %d \n", (int)distance);
+        return distance;
+    }
+    else
+        return 0.00;
 }
 
 int frontCal(float max_speed)
 {
-	double relative_dist = 0.00;
+    double relative_dist = 0.00;
 
-	while(hasMoveEnded() != TRUE);
+    while (hasMoveEnded() != TRUE)
+        ;
 
-	if (getWallPresence(FRONT_WALL) == WALL_PRESENCE)
-	{
-		if (getTelemeterDist(TELEMETER_FR) > getTelemeterDist(TELEMETER_FL))
-		{
-			move(-30, 0, max_speed, max_speed);
-			while (((getTelemeterDist(TELEMETER_FR) - getTelemeterDist(TELEMETER_FL))) > 1.00)
-			{
-				if (hasMoveEnded() == TRUE)
-				{
-					move(30, 0, max_speed, max_speed);
-					return 0xFF;
-				}
-			}
-		}
-		else
-		{
-			move(30, 0, max_speed, max_speed);
-			while (((getTelemeterDist(TELEMETER_FL) - getTelemeterDist(TELEMETER_FR))) > 1.00)
-			{
-				if (hasMoveEnded() == TRUE)
-				{
-					move(-30, 0, max_speed, max_speed);
-					return 0xFF;
-				}
-			}
-		}
-		relative_dist = ((getTelemeterDist(TELEMETER_FL) + getTelemeterDist(TELEMETER_FR)) / 2.00) - 21.00;
-		move(0,relative_dist, 100, 100);
-	}
+    if (getWallPresence(FRONT_WALL) == WALL_PRESENCE)
+    {
+        if (getTelemeterDist(TELEMETER_FR) > getTelemeterDist(TELEMETER_FL))
+        {
+            move(-30, 0, max_speed, max_speed);
+            while (((getTelemeterDist(TELEMETER_FR) - getTelemeterDist(TELEMETER_FL))) > 1.00)
+            {
+                if (hasMoveEnded() == TRUE)
+                {
+                    move(30, 0, max_speed, max_speed);
+                    return 0xFF;
+                }
+            }
+        }
+        else
+        {
+            move(30, 0, max_speed, max_speed);
+            while (((getTelemeterDist(TELEMETER_FL) - getTelemeterDist(TELEMETER_FR))) > 1.00)
+            {
+                if (hasMoveEnded() == TRUE)
+                {
+                    move(-30, 0, max_speed, max_speed);
+                    return 0xFF;
+                }
+            }
+        }
+        relative_dist = ((getTelemeterDist(TELEMETER_FL) + getTelemeterDist(TELEMETER_FR)) / 2.00) - 21.00;
+        move(0, relative_dist, 100, 100);
+    }
 
-	return POSITION_CONTROL_E_SUCCESS;
+    return POSITION_CONTROL_E_SUCCESS;
 }

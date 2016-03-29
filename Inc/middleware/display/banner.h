@@ -8,7 +8,10 @@
 #ifndef BANNER_H_
 #define BANNER_H_
 
-enum iconType {LINESENSORS, TELEMETERS, GYROMETER, BEEPER, BLUETOOTH, BATTERY, USB};
+enum iconType
+{
+    LINESENSORS, TELEMETERS, GYROMETER, BEEPER, BLUETOOTH, BATTERY, USB
+};
 
 void bannerSetIcon(enum iconType icon, int val);
 

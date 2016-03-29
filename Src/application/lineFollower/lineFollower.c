@@ -1,9 +1,9 @@
 /**************************************************************************/
 /*!
-    @file    line_follower.c
-    @author   BM Pacabot.com
-    @date     05 May 2015
-    @version  0.01
+ @file    line_follower.c
+ @author   BM Pacabot.com
+ @date     05 May 2015
+ @version  0.01
  */
 /**************************************************************************/
 /* STM32 hal library declarations */
@@ -48,387 +48,414 @@
 #include "application/statistiques/statistiques.h"
 
 line_follower_struct line_follower;
-ground_sensors_struct max_Floor;	//global data to memorize maximum value of sensors
-ground_sensors_struct coef_Floor;	//global data to memorize coeff value (0..1000]
-ground_sensors_struct min_Floor;	//global data to memorize minimum value of sensors
-int _Factor=10;
+ground_sensors_struct max_Floor; //global data to memorize maximum value of sensors
+ground_sensors_struct coef_Floor; //global data to memorize coeff value (0..1000]
+ground_sensors_struct min_Floor; //global data to memorize minimum value of sensors
+int _Factor = 10;
 
 //__IO uint16_t ADC1ConvertedValues[2] = {0};
 //__IO uint16_t ADC3ConvertedValues[3] = {0};
 
 GPIO_InitTypeDef GPIO_InitStruct;
 
-
 void lineSensorSendBluetooth(void)
 {
-	ground_sensors_struct current;
+    ground_sensors_struct current;
 
-	int i=0;
-	int GO=0;
+    int i = 0;
+    int GO = 0;
 
-	mainControlInit();
-	lineSensorsInit();
+    mainControlInit();
+    lineSensorsInit();
 
-	positionControlSetPositionType(GYRO);
-	mainControlSetFollowType(NO_FOLLOW);
+    positionControlSetPositionType(GYRO);
+    mainControlSetFollowType(NO_FOLLOW);
 
-	lineSensorsStart();
+    lineSensorsStart();
 
-	tone(e, 500);
-	move(40, 0, 100, 0);
-	while(hasMoveEnded() != TRUE);
-	move(-80, 0, 25, 0);
-	max_Floor.left=lineSensors.left.adc_value;
-	max_Floor.front=lineSensors.front.adc_value;
-	max_Floor.right=lineSensors.right.adc_value;
-	max_Floor.leftExt=lineSensors.left_ext.adc_value;
-	max_Floor.rightExt=lineSensors.right_ext.adc_value;
-	memcpy(&min_Floor, &max_Floor, sizeof(ground_sensors_struct) );
-	memcpy(&current, &min_Floor, sizeof(ground_sensors_struct) );
+    tone(e, 500);
+    move(40, 0, 100, 0);
+    while (hasMoveEnded() != TRUE)
+        ;
+    move(-80, 0, 25, 0);
+    max_Floor.left = lineSensors.left.adc_value;
+    max_Floor.front = lineSensors.front.adc_value;
+    max_Floor.right = lineSensors.right.adc_value;
+    max_Floor.leftExt = lineSensors.left_ext.adc_value;
+    max_Floor.rightExt = lineSensors.right_ext.adc_value;
+    memcpy(&min_Floor, &max_Floor, sizeof(ground_sensors_struct));
+    memcpy(&current, &min_Floor, sizeof(ground_sensors_struct));
 
-	while(hasMoveEnded() != TRUE)
-	{
-		current.left=lineSensors.left.adc_value;
-		current.front=lineSensors.front.adc_value;
-		current.right=lineSensors.right.adc_value;
-		current.leftExt=lineSensors.left_ext.adc_value;
-		current.rightExt=lineSensors.right_ext.adc_value;
+    while (hasMoveEnded() != TRUE)
+    {
+        current.left = lineSensors.left.adc_value;
+        current.front = lineSensors.front.adc_value;
+        current.right = lineSensors.right.adc_value;
+        current.leftExt = lineSensors.left_ext.adc_value;
+        current.rightExt = lineSensors.right_ext.adc_value;
 
-		if (current.left < min_Floor.left) min_Floor.left = current.left;
-		if (current.front < min_Floor.front) min_Floor.front = current.front;
-		if (current.right < min_Floor.right) min_Floor.right = current.right;
-		if (current.leftExt < min_Floor.leftExt) min_Floor.leftExt = current.leftExt;
-		if (current.rightExt < min_Floor.rightExt) min_Floor.rightExt = current.rightExt;
+        if (current.left < min_Floor.left)
+            min_Floor.left = current.left;
+        if (current.front < min_Floor.front)
+            min_Floor.front = current.front;
+        if (current.right < min_Floor.right)
+            min_Floor.right = current.right;
+        if (current.leftExt < min_Floor.leftExt)
+            min_Floor.leftExt = current.leftExt;
+        if (current.rightExt < min_Floor.rightExt)
+            min_Floor.rightExt = current.rightExt;
 
-		if (current.left > max_Floor.left) max_Floor.left = current.left;
-		if (current.front > max_Floor.front) max_Floor.front = current.front;
-		if (current.right > max_Floor.right) max_Floor.right = current.right;
-		if (current.leftExt > max_Floor.leftExt) max_Floor.leftExt = current.leftExt;
-		if (current.rightExt > max_Floor.rightExt) max_Floor.rightExt = current.rightExt;
+        if (current.left > max_Floor.left)
+            max_Floor.left = current.left;
+        if (current.front > max_Floor.front)
+            max_Floor.front = current.front;
+        if (current.right > max_Floor.right)
+            max_Floor.right = current.right;
+        if (current.leftExt > max_Floor.leftExt)
+            max_Floor.leftExt = current.leftExt;
+        if (current.rightExt > max_Floor.rightExt)
+            max_Floor.rightExt = current.rightExt;
 
-		i++;
-		if (current.leftExt>min_Floor.leftExt*1.5) GO=i;
-		if(i%10==0 && GO)
-		{
+        i++;
+        if (current.leftExt > min_Floor.leftExt * 1.5)
+            GO = i;
+        if (i % 10 == 0 && GO)
+        {
 
-			// ===================================================================================
-			// Envoi BLUETOOTH
-			// ===================================================================================
+            // ===================================================================================
+            // Envoi BLUETOOTH
+            // ===================================================================================
 
-			bluetoothPrintf("%d , %d , %d , %d , %d \n",current.leftExt,current.left,current.front,current.right,current.rightExt);
-			/*		ssd1306ClearScreen(MAIN_AREA);
-			ssd1306PrintIntAtLine(10, 1, "",current.leftExt, &Font_5x8);
-			ssd1306PrintIntAtLine(10, 2, ",",current.left, &Font_5x8);
-			ssd1306PrintIntAtLine(10, 3, ",",current.front, &Font_5x8);
-			ssd1306PrintIntAtLine(10, 4, ",",current.right, &Font_5x8);
-			ssd1306PrintIntAtLine(10, 5, ",",current.rightExt, &Font_5x8);
-			ssd1306Refresh(); */
-		}
-	}
-	move(40, 0, 100, 0);
-	while(hasMoveEnded() != TRUE){}
-	// desactivate PID
-	pid_loop.start_state = FALSE;
-	line_follower.active_state = FALSE;
-	telemetersStop();
-	motorsDriverSleep(ON);
+            bluetoothPrintf("%d , %d , %d , %d , %d \n", current.leftExt, current.left, current.front, current.right,
+                            current.rightExt);
+            /*		ssd1306ClearScreen(MAIN_AREA);
+             ssd1306PrintIntAtLine(10, 1, "",current.leftExt, &Font_5x8);
+             ssd1306PrintIntAtLine(10, 2, ",",current.left, &Font_5x8);
+             ssd1306PrintIntAtLine(10, 3, ",",current.front, &Font_5x8);
+             ssd1306PrintIntAtLine(10, 4, ",",current.right, &Font_5x8);
+             ssd1306PrintIntAtLine(10, 5, ",",current.rightExt, &Font_5x8);
+             ssd1306Refresh(); */
+        }
+    }
+    move(40, 0, 100, 0);
+    while (hasMoveEnded() != TRUE)
+    {
+    }
+    // desactivate PID
+    pid_loop.start_state = FALSE;
+    line_follower.active_state = FALSE;
+    telemetersStop();
+    motorsDriverSleep(ON);
 }
 
 //----------------------------------------------------------------
 // Initialize data sensor to memorize the max and min value for each 5 sensors
 void lineSensorsCalibration(void)
 {
-	mainControlInit();
-	lineSensorsInit();
+    mainControlInit();
+    lineSensorsInit();
 
-	positionControlSetPositionType(GYRO);
-	mainControlSetFollowType(NO_FOLLOW);
+    positionControlSetPositionType(GYRO);
+    mainControlSetFollowType(NO_FOLLOW);
 
-	HAL_Delay(1000);
+    HAL_Delay(1000);
 
-	double cdg=0;
-	double cdg2=0;
-	double A,B,C,D,E;
-	ground_sensors_struct current;
+    double cdg = 0;
+    double cdg2 = 0;
+    double A, B, C, D, E;
+    ground_sensors_struct current;
 
-	lineSensorsStart();
+    lineSensorsStart();
 
-	tone(e, 500);
-	move(40, 0, 100, 100);
-	while(hasMoveEnded() != TRUE);
-	move(-80, 0, 150, 150);
-	// -------------------------------------------------------------
-	// Init line Sensor
+    tone(e, 500);
+    move(40, 0, 100, 100);
+    while (hasMoveEnded() != TRUE)
+        ;
+    move(-80, 0, 150, 150);
+    // -------------------------------------------------------------
+    // Init line Sensor
 
-	max_Floor.left=lineSensors.left.adc_value;
-	max_Floor.front=lineSensors.front.adc_value;
-	max_Floor.right=lineSensors.right.adc_value;
-	max_Floor.leftExt=lineSensors.left_ext.adc_value;
-	max_Floor.rightExt=lineSensors.right_ext.adc_value;
-	memcpy(&min_Floor, &max_Floor, sizeof(ground_sensors_struct) );
-	memcpy(&current, &min_Floor, sizeof(ground_sensors_struct) );
+    max_Floor.left = lineSensors.left.adc_value;
+    max_Floor.front = lineSensors.front.adc_value;
+    max_Floor.right = lineSensors.right.adc_value;
+    max_Floor.leftExt = lineSensors.left_ext.adc_value;
+    max_Floor.rightExt = lineSensors.right_ext.adc_value;
+    memcpy(&min_Floor, &max_Floor, sizeof(ground_sensors_struct));
+    memcpy(&current, &min_Floor, sizeof(ground_sensors_struct));
 
-	while(hasMoveEnded() != TRUE)
-	{
+    while (hasMoveEnded() != TRUE)
+    {
 
-		current.left=lineSensors.left.adc_value;
-		current.front=lineSensors.front.adc_value;
-		current.right=lineSensors.right.adc_value;
-		current.leftExt=lineSensors.left_ext.adc_value;
-		current.rightExt=lineSensors.right_ext.adc_value;
+        current.left = lineSensors.left.adc_value;
+        current.front = lineSensors.front.adc_value;
+        current.right = lineSensors.right.adc_value;
+        current.leftExt = lineSensors.left_ext.adc_value;
+        current.rightExt = lineSensors.right_ext.adc_value;
 
-		if (current.left < min_Floor.left) min_Floor.left = current.left;
-		if (current.front < min_Floor.front) min_Floor.front = current.front;
-		if (current.right < min_Floor.right) min_Floor.right = current.right;
-		if (current.leftExt < min_Floor.leftExt) min_Floor.leftExt = current.leftExt;
-		if (current.rightExt < min_Floor.rightExt) min_Floor.rightExt = current.rightExt;
+        if (current.left < min_Floor.left)
+            min_Floor.left = current.left;
+        if (current.front < min_Floor.front)
+            min_Floor.front = current.front;
+        if (current.right < min_Floor.right)
+            min_Floor.right = current.right;
+        if (current.leftExt < min_Floor.leftExt)
+            min_Floor.leftExt = current.leftExt;
+        if (current.rightExt < min_Floor.rightExt)
+            min_Floor.rightExt = current.rightExt;
 
-		if (current.left > max_Floor.left) max_Floor.left = current.left;
-		if (current.front > max_Floor.front) max_Floor.front = current.front;
-		if (current.right > max_Floor.right) max_Floor.right = current.right;
-		if (current.leftExt > max_Floor.leftExt) max_Floor.leftExt = current.leftExt;
-		if (current.rightExt > max_Floor.rightExt) max_Floor.rightExt = current.rightExt;
+        if (current.left > max_Floor.left)
+            max_Floor.left = current.left;
+        if (current.front > max_Floor.front)
+            max_Floor.front = current.front;
+        if (current.right > max_Floor.right)
+            max_Floor.right = current.right;
+        if (current.leftExt > max_Floor.leftExt)
+            max_Floor.leftExt = current.leftExt;
+        if (current.rightExt > max_Floor.rightExt)
+            max_Floor.rightExt = current.rightExt;
 
-	}
-	tone(b, 500);
-	tone(c, 500);
+    }
+    tone(b, 500);
+    tone(c, 500);
 
-	move(40, 0, 30, 30);
+    move(40, 0, 30, 30);
 
-	ssd1306ClearScreen(MAIN_AREA);
-	while(hasMoveEnded() != TRUE)
-	{  //=($A$1*A3+$B$1*B3+$C$1*C3+$D$1*D3+$E$1*E3)/(A3+B3+C3+D3+E3)
+    ssd1306ClearScreen(MAIN_AREA);
+    while (hasMoveEnded() != TRUE)
+    {  //=($A$1*A3+$B$1*B3+$C$1*C3+$D$1*D3+$E$1*E3)/(A3+B3+C3+D3+E3)
 
-		current.left=lineSensors.left.adc_value;
-		current.front=lineSensors.front.adc_value;
-		current.right=lineSensors.right.adc_value;
-		current.leftExt=lineSensors.left_ext.adc_value;
-		current.rightExt=lineSensors.right_ext.adc_value;
+        current.left = lineSensors.left.adc_value;
+        current.front = lineSensors.front.adc_value;
+        current.right = lineSensors.right.adc_value;
+        current.leftExt = lineSensors.left_ext.adc_value;
+        current.rightExt = lineSensors.right_ext.adc_value;
 
-		A=(double)(current.leftExt-min_Floor.leftExt)/max_Floor.leftExt*1000;
-		B=(double)(current.left-min_Floor.left)/max_Floor.left*1000;
-		C=(double)(current.front-min_Floor.front)/max_Floor.front*1000;
-		D=(double)(current.right-min_Floor.right)/max_Floor.right*1000;
-		E=(double)(current.rightExt-min_Floor.rightExt)/max_Floor.rightExt*1000;
+        A = (double) (current.leftExt - min_Floor.leftExt) / max_Floor.leftExt * 1000;
+        B = (double) (current.left - min_Floor.left) / max_Floor.left * 1000;
+        C = (double) (current.front - min_Floor.front) / max_Floor.front * 1000;
+        D = (double) (current.right - min_Floor.right) / max_Floor.right * 1000;
+        E = (double) (current.rightExt - min_Floor.rightExt) / max_Floor.rightExt * 1000;
 
-		cdg=(-1000*A-389*B+C+D*431+E*1000)/(A+B+C+D+E);
-		cdg=(-500*A-194.5*B+C+D*215.5+E*500)/(A+B+C+D+E);
-		ssd1306ClearRectAtLine(0, 1, 128);
-		ssd1306ClearRectAtLine(0, 2, 128);
-		ssd1306PrintIntAtLine(10, 1,  "Centre =  ", (uint16_t)cdg, &Font_5x8);
-		ssd1306PrintIntAtLine(10, 2,  "milieu =  ", (uint16_t)D-B, &Font_5x8);
-		ssd1306Refresh();
-		HAL_Delay(50);
-	}
+        cdg = (-1000 * A - 389 * B + C + D * 431 + E * 1000) / (A + B + C + D + E);
+        cdg = (-500 * A - 194.5 * B + C + D * 215.5 + E * 500) / (A + B + C + D + E);
+        ssd1306ClearRectAtLine(0, 1, 128);
+        ssd1306ClearRectAtLine(0, 2, 128);
+        ssd1306PrintIntAtLine(10, 1, "Centre =  ", (uint16_t) cdg, &Font_5x8);
+        ssd1306PrintIntAtLine(10, 2, "milieu =  ", (uint16_t) D - B, &Font_5x8);
+        ssd1306Refresh();
+        HAL_Delay(50);
+    }
 
-	lineSensorsStop();
-	telemetersStop();
-	motorsDriverSleep(ON);
+    lineSensorsStop();
+    telemetersStop();
+    motorsDriverSleep(ON);
 
-	int joystick = expanderJoyFiltered();
-	while (joystick!=JOY_LEFT)
-	{
+    int joystick = expanderJoyFiltered();
+    while (joystick != JOY_LEFT)
+    {
 
-		joystick = expanderJoyFiltered();
+        joystick = expanderJoyFiltered();
 
-		current.left=lineSensors.left.adc_value;
-		current.front=lineSensors.front.adc_value;
-		current.right=lineSensors.right.adc_value;
-		current.leftExt=lineSensors.left_ext.adc_value;
-		current.rightExt=lineSensors.right_ext.adc_value;
+        current.left = lineSensors.left.adc_value;
+        current.front = lineSensors.front.adc_value;
+        current.right = lineSensors.right.adc_value;
+        current.leftExt = lineSensors.left_ext.adc_value;
+        current.rightExt = lineSensors.right_ext.adc_value;
 
-		A=(double)(current.leftExt-min_Floor.leftExt)/max_Floor.leftExt*1000;
-		B=(double)(current.left-min_Floor.left)/max_Floor.left*1000;
-		C=(double)(current.front-min_Floor.front)/max_Floor.front*1000;
-		D=(double)(current.right-min_Floor.right)/max_Floor.right*1000;
-		E=(double)(current.rightExt-min_Floor.rightExt)/max_Floor.rightExt*1000;
+        A = (double) (current.leftExt - min_Floor.leftExt) / max_Floor.leftExt * 1000;
+        B = (double) (current.left - min_Floor.left) / max_Floor.left * 1000;
+        C = (double) (current.front - min_Floor.front) / max_Floor.front * 1000;
+        D = (double) (current.right - min_Floor.right) / max_Floor.right * 1000;
+        E = (double) (current.rightExt - min_Floor.rightExt) / max_Floor.rightExt * 1000;
 
-		cdg=(-1000*A-389*B+C+D*431+E*1000)/(A+B+C+D+E);
-		cdg=(-1000*A-389*B+D*431+E*1000)/(A+B+C+D+E);
+        cdg = (-1000 * A - 389 * B + C + D * 431 + E * 1000) / (A + B + C + D + E);
+        cdg = (-1000 * A - 389 * B + D * 431 + E * 1000) / (A + B + C + D + E);
 
-		cdg2= cdg*C/500;
-		cdg=D-B;
-		if (cdg<0)
-		{
-			cdg2=C-1000;
-		} else
-		{
-			cdg2=1000-C;
-		}
-		cdg=D-B;
-		if (cdg<0)
-		{
-			cdg2=-B;
-		} else
-		{
-			cdg2=D;
-		}
-		line_follower.position = (cdg2)/1000.0;
+        cdg2 = cdg * C / 500;
+        cdg = D - B;
+        if (cdg < 0)
+        {
+            cdg2 = C - 1000;
+        }
+        else
+        {
+            cdg2 = 1000 - C;
+        }
+        cdg = D - B;
+        if (cdg < 0)
+        {
+            cdg2 = -B;
+        }
+        else
+        {
+            cdg2 = D;
+        }
+        line_follower.position = (cdg2) / 1000.0;
 
-		ssd1306ClearScreen(MAIN_AREA);
-		if (cdg>0)
-		{
-			ssd1306PrintIntAtLine(10, 1,  "Centre =  ", (uint16_t)cdg, &Font_5x8);
-		} else
-		{
-			ssd1306PrintIntAtLine(10, 1,  "Centre =- ", (uint16_t)-cdg, &Font_5x8);
-		}
-		if (D>B)
-		{
-			ssd1306PrintIntAtLine(10, 2,  "milieu =  ", (uint16_t)cdg2, &Font_5x8);
-		} else
-		{
-			ssd1306PrintIntAtLine(10, 2,  "milieu =- ", (uint16_t)-cdg2, &Font_5x8);
-		}
-		ssd1306Refresh();
+        ssd1306ClearScreen(MAIN_AREA);
+        if (cdg > 0)
+        {
+            ssd1306PrintIntAtLine(10, 1, "Centre =  ", (uint16_t) cdg, &Font_5x8);
+        }
+        else
+        {
+            ssd1306PrintIntAtLine(10, 1, "Centre =- ", (uint16_t) -cdg, &Font_5x8);
+        }
+        if (D > B)
+        {
+            ssd1306PrintIntAtLine(10, 2, "milieu =  ", (uint16_t) cdg2, &Font_5x8);
+        }
+        else
+        {
+            ssd1306PrintIntAtLine(10, 2, "milieu =- ", (uint16_t) -cdg2, &Font_5x8);
+        }
+        ssd1306Refresh();
 
-	}
+    }
 }
 
 //---------------------------------------------------------------------
 // Intelligent function to manage zhonx on the line path
 void lineFollower(void)
 {
-	ground_sensors_struct current;
-	double A,B,C,D,E;
-	double cdg=0;
-	double cdg2=0;
+    ground_sensors_struct current;
+    double A, B, C, D, E;
+    double cdg = 0;
+    double cdg2 = 0;
 
-	mainControlInit();
-	lineSensorsInit();
+    mainControlInit();
+    lineSensorsInit();
 
-	positionControlSetPositionType(GYRO);
-	mainControlSetFollowType(LINE_FOLLOW);
+    positionControlSetPositionType(GYRO);
+    mainControlSetFollowType(LINE_FOLLOW);
 
-	lineSensorsStart();
+    lineSensorsStart();
 
-	if (max_Floor.left-min_Floor.left< 100.0)
-	{
-		tone(a, 500);
-		tone(b, 500);
-		return;
-	}
+    if (max_Floor.left - min_Floor.left < 100.0)
+    {
+        tone(a, 500);
+        tone(b, 500);
+        return;
+    }
 
-	tone(c, 100);
-	coef_Floor.left=100.0/(max_Floor.left-min_Floor.left);     //  100/(max_capteur-min_capteur) (0..100)
-	coef_Floor.front=100.0/(max_Floor.front-min_Floor.front);
-	coef_Floor.right=100.0/(max_Floor.right-min_Floor.right);
-	coef_Floor.leftExt=100.0/(max_Floor.leftExt-min_Floor.leftExt);
-	coef_Floor.rightExt=100.0/(max_Floor.rightExt-min_Floor.rightExt);
+    tone(c, 100);
+    coef_Floor.left = 100.0 / (max_Floor.left - min_Floor.left); //  100/(max_capteur-min_capteur) (0..100)
+    coef_Floor.front = 100.0 / (max_Floor.front - min_Floor.front);
+    coef_Floor.right = 100.0 / (max_Floor.right - min_Floor.right);
+    coef_Floor.leftExt = 100.0 / (max_Floor.leftExt - min_Floor.leftExt);
+    coef_Floor.rightExt = 100.0 / (max_Floor.rightExt - min_Floor.rightExt);
 
-	ssd1306ClearScreen(MAIN_AREA);
-	ssd1306PrintIntAtLine(10, 0, "LEFT_EXT  =  ", (uint16_t) min_Floor.leftExt, &Font_5x8);
-	ssd1306PrintIntAtLine(10, 1, "LEFT      =  ", (uint16_t) min_Floor.left, &Font_5x8);
-	ssd1306PrintIntAtLine(10, 2, "FRONT --  =  ", (uint16_t) min_Floor.front, &Font_5x8);
-	ssd1306PrintIntAtLine(10, 3, "RIGHT     =  ", (uint16_t) min_Floor.right, &Font_5x8);
-	ssd1306PrintIntAtLine(10, 4, "RIGHT_EXT =  ", (uint16_t) min_Floor.rightExt, &Font_5x8);
-	ssd1306Refresh();
-	HAL_Delay(1000);
-	tone(c, 100);
+    ssd1306ClearScreen(MAIN_AREA);
+    ssd1306PrintIntAtLine(10, 0, "LEFT_EXT  =  ", (uint16_t) min_Floor.leftExt, &Font_5x8);
+    ssd1306PrintIntAtLine(10, 1, "LEFT      =  ", (uint16_t) min_Floor.left, &Font_5x8);
+    ssd1306PrintIntAtLine(10, 2, "FRONT --  =  ", (uint16_t) min_Floor.front, &Font_5x8);
+    ssd1306PrintIntAtLine(10, 3, "RIGHT     =  ", (uint16_t) min_Floor.right, &Font_5x8);
+    ssd1306PrintIntAtLine(10, 4, "RIGHT_EXT =  ", (uint16_t) min_Floor.rightExt, &Font_5x8);
+    ssd1306Refresh();
+    HAL_Delay(1000);
+    tone(c, 100);
 
-	//	HAL_Delay(500);
+    //	HAL_Delay(500);
 
-	line_follower.active_state = TRUE;
-	move(0, 10000, MAXSPEED, MAXSPEED);
-	//	while(hasMoveEnded() != TRUE);
-	char foreward = TRUE;
-	char cpt=0;
-	int  error;
+    line_follower.active_state = TRUE;
+    move(0, 10000, MAXSPEED, MAXSPEED);
+    //	while(hasMoveEnded() != TRUE);
+    char foreward = TRUE;
+    char cpt = 0;
+    int error;
 
+    while (expanderJoyFiltered() != JOY_LEFT && foreward)
+    {
 
-	while(expanderJoyFiltered()!=JOY_LEFT && foreward)
-	{
+        current.left = lineSensors.left.adc_value;
+        current.front = lineSensors.front.adc_value;
+        current.right = lineSensors.right.adc_value;
+        current.leftExt = lineSensors.left_ext.adc_value;
+        current.rightExt = lineSensors.right_ext.adc_value;
 
+        A = (double) (current.leftExt - min_Floor.leftExt) / max_Floor.leftExt * 1000;
+        B = (double) (current.left - min_Floor.left) / max_Floor.left * 1000;
+        C = (double) (current.front - min_Floor.front) / max_Floor.front * 1000;
+        D = (double) (current.right - min_Floor.right) / max_Floor.right * 1000;
+        E = (double) (current.rightExt - min_Floor.rightExt) / max_Floor.rightExt * 1000;
 
-		current.left=lineSensors.left.adc_value;
-		current.front=lineSensors.front.adc_value;
-		current.right=lineSensors.right.adc_value;
-		current.leftExt=lineSensors.left_ext.adc_value;
-		current.rightExt=lineSensors.right_ext.adc_value;
+        ssd1306ClearScreen(MAIN_AREA);
+        ssd1306DrawLine(0, 32, 127, 32);
+        cdg = (-1000 * A - 389 * B + C + D * 431 + E * 1000) / (A + B + C + D + E);
+        cdg = (-500 * A - 194.5 * B + C + D * 215.5 + E * 500) / (A + B + C + D + E);
 
-		A=(double)(current.leftExt-min_Floor.leftExt)/max_Floor.leftExt*1000;
-		B=(double)(current.left-min_Floor.left)/max_Floor.left*1000;
-		C=(double)(current.front-min_Floor.front)/max_Floor.front*1000;
-		D=(double)(current.right-min_Floor.right)/max_Floor.right*1000;
-		E=(double)(current.rightExt-min_Floor.rightExt)/max_Floor.rightExt*1000;
+        cdg = D - B;
+        if (cdg < 0)
+        {
+            cdg2 = -B;
+            //if (cdg<-500) move(0, 10000, 500, 0);
+        }
+        else
+        {
+            cdg2 = D;
+            //if (cdg>500)move(0, 10000, 500, 0);
+        }
 
-		ssd1306ClearScreen(MAIN_AREA);
-		ssd1306DrawLine(0,32, 127, 32);
-		cdg=(-1000*A-389*B+C+D*431+E*1000)/(A+B+C+D+E);
-		cdg=(-500*A-194.5*B+C+D*215.5+E*500)/(A+B+C+D+E);
+        //error=follow_control.follow_error*10;
 
-		cdg=D-B;
-		if (cdg<0)
-		{
-			cdg2=-B;
-			//if (cdg<-500) move(0, 10000, 500, 0);
-		} else
-		{
-			cdg2=D;
-			//if (cdg>500)move(0, 10000, 500, 0);
-		}
+        error = (int) cdg2 / 1000.0;
 
-		//error=follow_control.follow_error*10;
+        ssd1306ClearScreen(MAIN_AREA);
+        ssd1306PrintIntAtLine(10, 0, "LEFT_EXT  =  ", current.leftExt, &Font_5x8);
+        ssd1306PrintIntAtLine(10, 1, "LEFT      =  ", current.left, &Font_5x8);
+        ssd1306PrintIntAtLine(10, 2, "FRONT --  =  ", current.front, &Font_5x8);
+        ssd1306PrintIntAtLine(10, 3, "RIGHT     =  ", current.right, &Font_5x8);
+        //		ssd1306PrintIntAtLine(10, 4, "RIGHT_EXT =  ", current.rightExt, &Font_5x8);
 
-		error=(int) cdg2/1000.0;
+        ssd1306PrintIntAtLine(10, 4, "error=", error, &Font_5x8);
+        ssd1306Refresh();
 
+        // -----------------------------------------------------------------------
+        // Condition to stop zhonx if no line
+        // -----------------------------------------------------------------------
+        if ((double) lineSensors.front.adc_value < min_Floor.front * 1.2 && (double) lineSensors.left.adc_value
+                < min_Floor.left * 1.2
+            && (double) lineSensors.right.adc_value < min_Floor.right * 1.2
+            && (double) lineSensors.left_ext.adc_value < min_Floor.leftExt * 1.2
+            && (double) lineSensors.right_ext.adc_value < min_Floor.rightExt * 1.2)
+        {
+            cpt++;
+            if (cpt > 5)
+            {
+                foreward = FALSE;
+                move(0, 150, 250, 0);
+                tone(c, 500);
+                tone(d, 500);
+            }
+        }
+        // -----------------------------------------------------------------------
+        // Condition to stop if right priority
+        // -----------------------------------------------------------------------
+        //		if (((double)lineSensors.left_ext.adc_value*1.2) > max_Floor.leftExt )
+        //		{
+        //			move(0, 30, 30, 0);
+        //			tone(c, 500);
+        //			// capteur telemeter ON
+        //			move(0, 10000, MAXSPEED, 0);
+        //		}
 
-		ssd1306ClearScreen(MAIN_AREA);
-		ssd1306PrintIntAtLine(10, 0, "LEFT_EXT  =  ", current.leftExt, &Font_5x8);
-		ssd1306PrintIntAtLine(10, 1, "LEFT      =  ", current.left, &Font_5x8);
-		ssd1306PrintIntAtLine(10, 2, "FRONT --  =  ", current.front, &Font_5x8);
-		ssd1306PrintIntAtLine(10, 3, "RIGHT     =  ", current.right, &Font_5x8);
-		//		ssd1306PrintIntAtLine(10, 4, "RIGHT_EXT =  ", current.rightExt, &Font_5x8);
-
-		ssd1306PrintIntAtLine(10, 4, "error=", error, &Font_5x8);
-		ssd1306Refresh();
-
-		// -----------------------------------------------------------------------
-		// Condition to stop zhonx if no line
-		// -----------------------------------------------------------------------
-		if ((double)lineSensors.front.adc_value < min_Floor.front *1.2 &&
-				(double)lineSensors.left.adc_value < min_Floor.left *1.2 &&
-				(double)lineSensors.right.adc_value < min_Floor.right *1.2 &&
-				(double)lineSensors.left_ext.adc_value < min_Floor.leftExt *1.2 &&
-				(double)lineSensors.right_ext.adc_value < min_Floor.rightExt *1.2)
-		{
-			cpt++;
-			if (cpt>5)
-			{
-				foreward = FALSE;
-				move(0, 150, 250, 0);
-				tone(c, 500);tone(d, 500);
-			}
-		}
-		// -----------------------------------------------------------------------
-		// Condition to stop if right priority
-		// -----------------------------------------------------------------------
-		//		if (((double)lineSensors.left_ext.adc_value*1.2) > max_Floor.leftExt )
-		//		{
-		//			move(0, 30, 30, 0);
-		//			tone(c, 500);
-		//			// capteur telemeter ON
-		//			move(0, 10000, MAXSPEED, 0);
-		//		}
-
-	}
-	lineSensorsStart();
-	telemetersStop();
-	motorsDriverSleep(ON);
+    }
+    lineSensorsStart();
+    telemetersStop();
+    motorsDriverSleep(ON);
 }
 
 int EstAGauche()
 {
-	ground_sensors_struct current;
-	current.left=lineSensors.left.adc_value;
-	current.front=lineSensors.front.adc_value;
-	current.right=lineSensors.right.adc_value;
-	current.leftExt=lineSensors.left_ext.adc_value;
-	current.rightExt=lineSensors.right_ext.adc_value;
-	if ( (current.left>current.right)||
-			(current.leftExt>max_Floor.leftExt/2))
-		return 1;
-	return 0;
+    ground_sensors_struct current;
+    current.left = lineSensors.left.adc_value;
+    current.front = lineSensors.front.adc_value;
+    current.right = lineSensors.right.adc_value;
+    current.leftExt = lineSensors.left_ext.adc_value;
+    current.rightExt = lineSensors.right_ext.adc_value;
+    if ((current.left > current.right) || (current.leftExt > max_Floor.leftExt / 2))
+        return 1;
+    return 0;
 }
 
 //----------------------------------------------------------------------
@@ -436,79 +463,79 @@ int EstAGauche()
 //
 void controlLoop(void)
 {
-	ground_sensors_struct current;
-	double A,B,C,D,E;
-	double cdg=0;
-	double cdg2=0.0;
+    ground_sensors_struct current;
+    double A, B, C, D, E;
+    double cdg = 0;
+    double cdg2 = 0.0;
 
-	current.left=lineSensors.left.adc_value;
-	current.front=lineSensors.front.adc_value;
-	current.right=lineSensors.right.adc_value;
-	current.leftExt=lineSensors.left_ext.adc_value;
-	current.rightExt=lineSensors.right_ext.adc_value;
+    current.left = lineSensors.left.adc_value;
+    current.front = lineSensors.front.adc_value;
+    current.right = lineSensors.right.adc_value;
+    current.leftExt = lineSensors.left_ext.adc_value;
+    current.rightExt = lineSensors.right_ext.adc_value;
 
-	//	A=(double)(current.leftExt-min_Floor.leftExt)/max_Floor.leftExt*1000;
-	B=(double)(current.left-min_Floor.left)/max_Floor.left*1000;
-	C=(double)(current.front-min_Floor.front)/max_Floor.front*1000;
-	D=(double)(current.right-min_Floor.right)/max_Floor.right*1000;
-	//	E=(double)(current.rightExt-min_Floor.rightExt)/max_Floor.rightExt*1000;
+    //	A=(double)(current.leftExt-min_Floor.leftExt)/max_Floor.leftExt*1000;
+    B = (double) (current.left - min_Floor.left) / max_Floor.left * 1000;
+    C = (double) (current.front - min_Floor.front) / max_Floor.front * 1000;
+    D = (double) (current.right - min_Floor.right) / max_Floor.right * 1000;
+    //	E=(double)(current.rightExt-min_Floor.rightExt)/max_Floor.rightExt*1000;
 
-
-	//	cdg=(-1000*A-389*B+C+D*431+E*1000)/(A+B+C+D+E);
-	//  cdg=(-500*A-194.5*B+C+D*215.5+E*500)/(A+B+C+D+E);
-	cdg=D-B;
-	if (cdg<0)
-	{
-		cdg2=-B;
-	} else
-	{
-		cdg2=D;
-	}
-	line_follower.position = (cdg2)/1000.0;
+    //	cdg=(-1000*A-389*B+C+D*431+E*1000)/(A+B+C+D+E);
+    //  cdg=(-500*A-194.5*B+C+D*215.5+E*500)/(A+B+C+D+E);
+    cdg = D - B;
+    if (cdg < 0)
+    {
+        cdg2 = -B;
+    }
+    else
+    {
+        cdg2 = D;
+    }
+    line_follower.position = (cdg2) / 1000.0;
 
 }
 void lineFollower_IT(void)
 {
-	// Rapide
-	//	static int vitesse=0;
+    // Rapide
+    //	static int vitesse=0;
 
-	controlLoop();
+    controlLoop();
 
-	//	if (follow_control.follow_error > 3.0 && vitesse==0)
-	//	{
-	//		// deceleration
-	//		move(0, 30, MAXSPEED, MINSPEED);
-	//		vitesse=-1;
-	//	}
-	//	else if (follow_control.follow_error < 3.0 && vitesse==0)
-	//	{
-	//		// acceleration
-	//		move(0, 30, MINSPEED, MAXSPEED);
-	//		vitesse=1;
-	//	}
-	//
-	//	if (hasMoveEnded() == TRUE)
-	//	{
-	//		if (vitesse<0)
-	//		{
-	//			move(0, 10000, MINSPEED, MINSPEED);
-	//		}
-	//		else if (vitesse>0)
-	//		{
-	//			move(0, 10000, MAXSPEED, MAXSPEED);
-	//		}
-	//		vitesse=0;
-	//	}
-	// -----------------------------------------------------------------------
-	// Condition to stop zhonx if no line
-	// -----------------------------------------------------------------------
-	if ((double)lineSensors.front.adc_value < min_Floor.front *1.2 &&
-			(double)lineSensors.left.adc_value < min_Floor.left *1.2 &&
-			(double)lineSensors.right.adc_value < min_Floor.right *1.2 &&
-			(double)lineSensors.left_ext.adc_value < min_Floor.leftExt *1.2 &&
-			(double)lineSensors.right_ext.adc_value < min_Floor.rightExt *1.2)
-	{
-		move(0, 150, 250, 0);
-	}
+    //	if (follow_control.follow_error > 3.0 && vitesse==0)
+    //	{
+    //		// deceleration
+    //		move(0, 30, MAXSPEED, MINSPEED);
+    //		vitesse=-1;
+    //	}
+    //	else if (follow_control.follow_error < 3.0 && vitesse==0)
+    //	{
+    //		// acceleration
+    //		move(0, 30, MINSPEED, MAXSPEED);
+    //		vitesse=1;
+    //	}
+    //
+    //	if (hasMoveEnded() == TRUE)
+    //	{
+    //		if (vitesse<0)
+    //		{
+    //			move(0, 10000, MINSPEED, MINSPEED);
+    //		}
+    //		else if (vitesse>0)
+    //		{
+    //			move(0, 10000, MAXSPEED, MAXSPEED);
+    //		}
+    //		vitesse=0;
+    //	}
+    // -----------------------------------------------------------------------
+    // Condition to stop zhonx if no line
+    // -----------------------------------------------------------------------
+    if ((double) lineSensors.front.adc_value < min_Floor.front * 1.2 && (double) lineSensors.left.adc_value
+            < min_Floor.left * 1.2
+        && (double) lineSensors.right.adc_value < min_Floor.right * 1.2
+        && (double) lineSensors.left_ext.adc_value < min_Floor.leftExt * 1.2
+        && (double) lineSensors.right_ext.adc_value < min_Floor.rightExt * 1.2)
+    {
+        move(0, 150, 250, 0);
+    }
 }
 

@@ -23,11 +23,11 @@
 /* memory address */
 
 /* structure of settings */
-typedef struct coordinate
+typedef struct
 {
-  int x;
-  int y;
-}coordinate;
+    int x;
+    int y;
+} coordinate;
 
 typedef struct
 {
@@ -45,6 +45,6 @@ extern settings zhonxSettings;
 /* Exported Bluetooth parameters */
 extern presetParam BTpresetBaudRate;
 
-int settingsInit (void);
+int settingsInit(void);
 void halt(void);
 #endif /* SETTING_H_ */

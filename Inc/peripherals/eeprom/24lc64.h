@@ -1,11 +1,11 @@
 /**************************************************************************/
 /*!
-    @file     24LC64.h
-    @author  PLF (PACABOT)
-    @date
-    @version  0.0
+ @file     24LC64.h
+ @author  PLF (PACABOT)
+ @date
+ @version  0.0
 
-    Driver for eeprom 24LC64
+ Driver for eeprom 24LC64
  */
 /**************************************************************************/
 #ifndef __24LC64_H__
@@ -24,8 +24,8 @@
 
 void eepromWP(char state);
 int eepromWriteBuffer(unsigned int eeaddress, unsigned char *data, unsigned int length);
-void eeepromWriteByte(unsigned int eeaddress, unsigned char data);
-int  eepromWritePage(unsigned int eeaddresspage, unsigned char* data, unsigned char length);
+void eepromWriteByte(unsigned int eeaddress, unsigned char data);
+int eepromWritePage(unsigned int eeaddresspage, unsigned char* data, unsigned char length);
 char eepromReadByte(unsigned int eeaddress);
 void eepromReadBuffer(unsigned int eeaddress, unsigned char *buffer, int length);
 void eepromTest(void);
