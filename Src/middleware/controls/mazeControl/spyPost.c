@@ -95,8 +95,6 @@ spyPostTypeProfileStruct left = {
                     .wallToNoWall =
                     {
                      .ref_sample = {14,
-                                    14,
-                                    14,
                                     28,
                                     28,
                                     28,
@@ -106,15 +104,17 @@ spyPostTypeProfileStruct left = {
                                     56,
                                     56,
                                     56,
-                                    112,
+                                    56,
                                     112,
                                     224,
+                                    224,
+                                    448,
                                     896,
                                     1792,
-                                    3584,
                                     14336,
-                                    57344},
-                     .ref_center_distance = 59
+                                    14336,
+                                    49152},
+                     .ref_center_distance = 55
                     },
                     .singlePost =
                     {
@@ -123,46 +123,46 @@ spyPostTypeProfileStruct left = {
                                     112,
                                     56,
                                     28,
-                                    28,
+                                    14,
                                     14,
                                     14,
                                     7,
                                     7,
                                     14,
-                                    28,
+                                    14,
                                     28,
                                     56,
                                     112,
-                                    224,
+                                    448,
                                     896,
                                     3584,
                                     14336,
-                                    49152},
-                     .ref_center_distance = 72
+                                    57344},
+                     .ref_center_distance = 60
                     },
                     .perpendicularWall =
                     {
                      .ref_sample = {112,
                                     56,
+                                    28,
+                                    28,
+                                    14,
+                                    14,
+                                    7,
+                                    7,
+                                    7,
+                                    7,
+                                    7,
+                                    14,
+                                    14,
                                     56,
-                                    28,
-                                    28,
-                                    14,
-                                    14,
-                                    7,
-                                    7,
-                                    7,
-                                    7,
-                                    14,
-                                    28,
-                                    28,
-                                    56,
+                                    112,
                                     224,
-                                    448,
-                                    3584,
+                                    896,
+                                    7168,
                                     28672,
                                     49152},
-                     .ref_center_distance = 67
+                     .ref_center_distance = 60
                     }
 };
 
@@ -172,72 +172,72 @@ spyPostTypeProfileStruct right = {
                      .ref_sample = {14,
                                     14,
                                     14,
-                                    28,
-                                    28,
-                                    28,
+                                    14,
+                                    14,
+                                    14,
+                                    14,
+                                    14,
                                     28,
                                     28,
                                     28,
                                     56,
                                     56,
-                                    56,
-                                    112,
                                     112,
                                     224,
+                                    448,
                                     896,
                                     1792,
-                                    3584,
-                                    14336,
-                                    57344},
-                     .ref_center_distance = 59
+                                    7168,
+                                    28672},
+                     .ref_center_distance = 56
                     },
                     .singlePost =
                     {
-                     .ref_sample = {448,
-                                    224,
+                     .ref_sample = {7168,
+                                    1792,
+                                    896,
+                                    448,
                                     112,
                                     56,
                                     28,
-                                    28,
+                                    14,
                                     14,
                                     14,
                                     7,
                                     7,
                                     14,
+                                    14,
                                     28,
-                                    28,
-                                    56,
                                     112,
                                     224,
                                     896,
                                     3584,
-                                    14336,
-                                    49152},
-                     .ref_center_distance = 72
+                                    14336},
+                     .ref_center_distance = 59
                     },
                     .perpendicularWall =
                     {
-                     .ref_sample = {112,
+                     .ref_sample = {448,
+                                    112,
                                     56,
-                                    56,
                                     28,
                                     28,
                                     14,
+                                    7,
+                                    7,
+                                    7,
+                                    7,
+                                    7,
+                                    7,
                                     14,
-                                    7,
-                                    7,
-                                    7,
-                                    7,
-                                    14,
-                                    28,
                                     28,
                                     56,
                                     224,
                                     448,
-                                    3584,
-                                    28672,
-                                    49152},
-                     .ref_center_distance = 67
+                                    1792,
+                                    7168,
+                                    28672},
+                     .ref_center_distance = 60
                     },
 };
 
@@ -692,12 +692,12 @@ void spyPostTest()
     }
     if (offset.left_x != 0)
     {
-        move(0, (OFFSET_DIST * 2.00) - offset.left_x, Vmax, Vmax);
+        move(0, (OFFSET_DIST * 2.00) + offset.left_x, Vmax, Vmax);
         ssd1306PrintfAtLine(0, 2, &Font_5x8, "left_x = %d", offset.left_x);
     }
     else
     {
-        move(0, (OFFSET_DIST * 2.00) - offset.right_x, Vmax, Vmax);
+        move(0, (OFFSET_DIST * 2.00) + offset.right_x, Vmax, Vmax);
         ssd1306PrintfAtLine(0, 2, &Font_5x8, "right_x = %d", offset.right_x);
     }
 
