@@ -53,6 +53,7 @@ extern I2C_HandleTypeDef hi2c1;
 
 int maze(void)
 {
+	HAL_Delay(500);
 	coordinate end_coordinate; // it's the coordinates which Zhonx have at the start
 	labyrinthe maze;
 	mazeInit(&maze);				// create and initialize the maze
@@ -61,6 +62,7 @@ int maze(void)
 	mainControlInit();
 
 	mainControlSetFollowType(WALL_FOLLOW);
+	motorsDriverSleep(ON);
 	/*init zhonx start position for different micromouse competition*/
 
 	if(zhonxSettings.nime_competition == true) // if it's the Nimes micromouse competition
@@ -78,9 +80,11 @@ int maze(void)
 	/*end of initialization for different micromouse competition*/
 	/* init zhonx start position for all competition */
 	zhonx_position.midOfCell = true;
-	start_position = zhonx_position;
+	memcpy(&start_position, &zhonx_position, sizeof(positionRobot));
+	start_position.orientation += 2; start_position.orientation = start_position.orientation % 4;
+	newCell(ask_cell_state(),&maze,start_position);
+	start_position.orientation += 2; start_position.orientation = start_position.orientation % 4;
 	printMaze(maze, zhonx_position.cordinate);
-
 	waitStart();
 	motorsDriverSleep(OFF);
 	telemetersStart();
