@@ -1,9 +1,9 @@
 /**************************************************************************/
 /*!
-    @file    speedControl.h
-    @author  PLF (PACABOT)
-    @date
-    @version  0.0
+ @file    speedControl.h
+ @author  PLF (PACABOT)
+ @date
+ @version  0.0
  */
 /**************************************************************************/
 #ifndef __SPEEDCONTROL_H__
@@ -22,15 +22,18 @@
 /* Types definitions */
 
 //enum speedType { ACC, DCC, STOP, MAINTAIN };
-enum speedRate { LOWSPEED = 400, MEDIUMSPEED = 800, FASTSPEED = 1000, HIGHSPEED = 2000 };
+enum speedRate
+{
+    LOWSPEED = 400, MEDIUMSPEED = 800, FASTSPEED = 1000, HIGHSPEED = 2000
+};
 
-int 	speedControlInit(void);
-char 	speedControlHasMoveEnded(void);
-double 	speedControlGetCurrentDist(void);
-double 	speedControlGetSpeedCommand(void);
-double 	speedControlSetSign(double sign);
-int 	speedControlLoop(void);
-int 	speedCompute(void);
-double 	speedProfileCompute(double distance, double max_speed, double end_speed);
+int speedControlInit(void);
+char speedControlHasMoveEnded(void);
+double speedControlGetCurrentDist(void);
+double speedControlGetSpeedCommand(void);
+double speedControlSetSign(double sign);
+int speedControlLoop(void);
+int speedCompute(void);
+double speedProfileCompute(double distance, double max_speed, double end_speed);
 
 #endif

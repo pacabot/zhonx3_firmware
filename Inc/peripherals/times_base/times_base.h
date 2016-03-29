@@ -1,10 +1,10 @@
 /**************************************************************************/
 /*!
-    @file     TimesBase.h
-    @author   PLF Pacabot.com
-    @date     03 August 2014
-    @version  0.10
-*/
+ @file     TimesBase.h
+ @author   PLF Pacabot.com
+ @date     03 August 2014
+ @version  0.10
+ */
 /**************************************************************************/
 #ifndef __TIMESBASE_H__
 #define __TIMESBASE_H__
@@ -20,6 +20,5 @@ void timesBaseInit(void);
 void ledPowerBlink(unsigned int off_time, unsigned int on_time, unsigned int repeat);
 char timeOut(unsigned char second, int loop_nb);
 void ledBlink_IT(void);
-
 
 #endif

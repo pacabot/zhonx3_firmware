@@ -12,12 +12,12 @@
 
 void goOrientation(char *orientationZhonx, char directionToGo);
 void doUTurn(positionRobot *positionZhonx);
-void moveZhonxArc (int direction_to_go, positionRobot *positionZhonx, int numberOfCase, char end_mid_of_case, char chain);
+void moveZhonxArc(int direction_to_go, positionRobot *positionZhonx, int numberOfCase, char end_mid_of_case, char chain);
 int floorSensorCalibrate(void);
 int waitValidation(unsigned long timeout);
 void newCell(walls new_walls, labyrinthe *maze, positionRobot positionZhonx);
-void move_zhonx_arc (int direction_to_go, positionRobot *positionZhonx, int numberOfCell, char end_mid_of_case, char chain);
-walls getCellState ();
-
+void move_zhonx_arc(int direction_to_go, positionRobot *positionZhonx, int numberOfCell, char end_mid_of_case,
+                    char chain);
+walls getCellState();
 
 #endif /* ROBOTINTERFACE_H_ */

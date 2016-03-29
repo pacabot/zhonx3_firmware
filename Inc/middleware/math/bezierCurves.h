@@ -9,9 +9,8 @@
 #define BEZIER_CURVES_H_
 typedef struct
 {
-	char x;
-	char y;
-}point;
-
+    char x;
+    char y;
+} point;
 
 #endif /* BEZIER_CURVES_H_ */

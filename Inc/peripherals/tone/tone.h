@@ -1,9 +1,9 @@
 /**************************************************************************/
 /*!
-    @file     tone.h
-    @author  BM (PACABOT)
-    @date
-    @version  0.0
+ @file     tone.h
+ @author  BM (PACABOT)
+ @date
+ @version  0.0
  */
 /**************************************************************************/
 #ifndef __TONE_H__
@@ -76,11 +76,9 @@ void toneTest(void);
 
 #endif
 
-
 // Au clair de la lune
 //  int music[11]={C3,C3,C3,D3,E3,D3,C3,E3,D3,D3,C3};
 //  int duree[11]={2 ,2, 2, 2, 4, 4, 2, 2, 2, 2, 8};
-
 
 // Marseillaise
 //  int music[18]={G2,G2,G2,C3,C3,D3,D3,G3,E3,C3,C3,E3,C3,A2,F3,D3,B2,D3};

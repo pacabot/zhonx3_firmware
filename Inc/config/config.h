@@ -113,19 +113,25 @@
 /**************************************************************************************/
 #define WALL_THICKNESS			12.00
 #define HALF_WALL_THICKNESS		WALL_THICKNESS / 2.00
-#define CELL_LENGTH				179.20
+#define CELL_LENGTH				179.00
 #define HALF_CELL_LENGTH		CELL_LENGTH / 2.00
 #define MAZE_SIZE				16
 
 /**************************************************************************************/
+/***************                  Moves Constants                  ********************/
+/**************************************************************************************/
+#define OFFSET_DIST             20.00
+#define MAIN_DIST               (int)CELL_LENGTH - ((int)OFFSET_DIST * 2)
+
+/**************************************************************************************/
 /***************                 Physical Constants                ********************/
 /**************************************************************************************/
-#define MAX_SPEED				4000.0	//mm/s
-#define MAX_ACCEL				4000.0	//mm/s�
+#define MAX_SPEED				4000.00	//mm/s
+#define MAX_ACCEL				4000.00	//mm/s�
 //#define MAX_DECEL				8000.0	//mm/s�
 
-#define MAX_TURN_SPEED			500.0	//mm/s
-#define MAX_TURN_ACCEL			8000.0	//mm/s�
+#define MAX_TURN_SPEED			500.00	//mm/s
+#define MAX_TURN_ACCEL			8000.00	//mm/s�
 
 /**************************************************************************************/
 /***************                 Motors Constants                  ********************/

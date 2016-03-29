@@ -1,9 +1,9 @@
 /**************************************************************************/
 /*!
-    @file    mainControl.h
-    @author  PLF (PACABOT)
-    @date
-    @version  0.0
+ @file    mainControl.h
+ @author  PLF (PACABOT)
+ @date
+ @version  0.0
  */
 /**************************************************************************/
 #ifndef __MAINCONTROL_H__
@@ -20,33 +20,39 @@
 #define MAIN_CONTROL_E_SUCCESS  0
 #define MAIN_CONTROL_E_ERROR    MAKE_ERROR(MAIN_CONTROL_MODULE_ID, 1)
 
-#define OFFSET_DIST	25.00
-
 /* Types definitions */
-enum rotationTypeEnum {CW, CCW};
-enum mainControlWallFollowType {STRAIGHT, CURVE};
-enum mainControlFollowType {LINE_FOLLOW, WALL_FOLLOW, NO_FOLLOW};
+enum rotationTypeEnum
+{
+    CW, CCW
+};
+enum mainControlWallFollowType
+{
+    STRAIGHT, CURVE
+};
+enum mainControlFollowType
+{
+    LINE_FOLLOW, WALL_FOLLOW, NO_FOLLOW
+};
 
 typedef struct
 {
-	enum mainControlWallFollowType moveType;
-	walls cellState;
-	double initial_position;
-}move_params_struct;
+    enum mainControlWallFollowType moveType;
+    walls cellState;
+} move_params_struct;
 
 extern move_params_struct move_params;
 
 extern double ROTATION_DIAMETER;
 
-int 	mainControlInit(void);
-int 	mainControl_IT(void);
-int  	setWallFollowControl(char isActive);
-char 	hasMoveEnded(void);
-double 	mouveGetInitialPosition(void);
-int 	mainControlSetFollowType(enum mainControlFollowType follow_type);
-enum 	mainControlFollowType mainControlGetFollowType(void);
-enum 	mainControlWallFollowType mainControlGetWallFollowType(void);
-double	positionControlSetSign(double sign);
+int mainControlInit(void);
+int mainControl_IT(void);
+int setWallFollowControl(char isActive);
+char hasMoveEnded(void);
+double mouveGetInitialPosition(void);
+int mainControlSetFollowType(enum mainControlFollowType follow_type);
+enum mainControlFollowType mainControlGetFollowType(void);
+enum mainControlWallFollowType mainControlGetWallFollowType(void);
+double positionControlSetSign(double sign);
 
 /**
  * @brief compute and start a new movement
@@ -61,6 +67,6 @@ double	positionControlSetSign(double sign);
  *
  * @retval status
  */
-int 	move(double angle, double radius_or_distance, double max_speed, double end_speed);
+int move(double angle, double radius_or_distance, double max_speed, double end_speed);
 
 #endif // __MAINCONTROL_H

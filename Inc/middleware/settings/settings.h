@@ -25,26 +25,26 @@
 /* structure of settings */
 typedef struct
 {
-  int x;
-  int y;
-}coordinate;
+    int x;
+    int y;
+} coordinate;
 
 typedef struct
 {
-	char calibration_enabled;
-	char color_sensor_enabled;
-	coordinate maze_end_coordinate;
-	unsigned int sleep_delay_s;
-	unsigned long threshold_color;
-	unsigned long threshold_greater;
-	FLASH_HANDLE h_flash;
-}settings;
+    char calibration_enabled;
+    char color_sensor_enabled;
+    coordinate maze_end_coordinate;
+    unsigned int sleep_delay_s;
+    unsigned long threshold_color;
+    unsigned long threshold_greater;
+    FLASH_HANDLE h_flash;
+} settings;
 
 extern settings zhonxSettings;
 
 /* Exported Bluetooth parameters */
 extern presetParam BTpresetBaudRate;
 
-int settingsInit (void);
+int settingsInit(void);
 void halt(void);
 #endif /* SETTING_H_ */
