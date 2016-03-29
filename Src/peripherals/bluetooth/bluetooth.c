@@ -28,7 +28,7 @@
 #include "usart.h"
 
 /* Middleware declarations */
-// TODO: Remove mmiddleware declarations, as we are in lower level here
+// TODO: Remove middleware declarations, as we are in lower level here
 #include "middleware/ring_buffer/ring_buffer.h"
 #include "middleware/display/banner.h"
 
