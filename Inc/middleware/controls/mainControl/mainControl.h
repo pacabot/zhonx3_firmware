@@ -48,7 +48,6 @@ int mainControlInit(void);
 int mainControl_IT(void);
 int setWallFollowControl(char isActive);
 char hasMoveEnded(void);
-double mouveGetInitialPosition(void);
 int mainControlSetFollowType(enum mainControlFollowType follow_type);
 enum mainControlFollowType mainControlGetFollowType(void);
 enum mainControlWallFollowType mainControlGetWallFollowType(void);

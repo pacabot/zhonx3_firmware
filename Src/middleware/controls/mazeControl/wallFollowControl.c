@@ -92,9 +92,12 @@ double wallFollowGetCommand(void)
 int wallFollowControlLoop(void)
 {
     if (mainControlGetWallFollowType() != STRAIGHT)
+    {
+        expanderSetLeds(0b000);
         return WALL_FOLLOW_CONTROL_E_SUCCESS;
+    }
 
-    switch (getSensorsUsedToTrackWalls())
+    switch (repositionGetTelemeterUsed())
     {
         case NO_SIDE:
             positionControlSetPositionType(POSITION_CTRL);

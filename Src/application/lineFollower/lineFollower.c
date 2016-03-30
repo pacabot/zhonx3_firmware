@@ -413,11 +413,11 @@ void lineFollower(void)
         // -----------------------------------------------------------------------
         // Condition to stop zhonx if no line
         // -----------------------------------------------------------------------
-        if ((double) lineSensors.front.adc_value < min_Floor.front * 1.2 && (double) lineSensors.left.adc_value
-                < min_Floor.left * 1.2
-            && (double) lineSensors.right.adc_value < min_Floor.right * 1.2
-            && (double) lineSensors.left_ext.adc_value < min_Floor.leftExt * 1.2
-            && (double) lineSensors.right_ext.adc_value < min_Floor.rightExt * 1.2)
+        if ((double) lineSensors.front.adc_value < min_Floor.front * 1.2
+                && (double) lineSensors.left.adc_value < min_Floor.left * 1.2
+                && (double) lineSensors.right.adc_value < min_Floor.right * 1.2
+                && (double) lineSensors.left_ext.adc_value < min_Floor.leftExt * 1.2
+                && (double) lineSensors.right_ext.adc_value < min_Floor.rightExt * 1.2)
         {
             cpt++;
             if (cpt > 5)
@@ -529,11 +529,11 @@ void lineFollower_IT(void)
     // -----------------------------------------------------------------------
     // Condition to stop zhonx if no line
     // -----------------------------------------------------------------------
-    if ((double) lineSensors.front.adc_value < min_Floor.front * 1.2 && (double) lineSensors.left.adc_value
-            < min_Floor.left * 1.2
-        && (double) lineSensors.right.adc_value < min_Floor.right * 1.2
-        && (double) lineSensors.left_ext.adc_value < min_Floor.leftExt * 1.2
-        && (double) lineSensors.right_ext.adc_value < min_Floor.rightExt * 1.2)
+    if ((double) lineSensors.front.adc_value < min_Floor.front * 1.2
+            && (double) lineSensors.left.adc_value < min_Floor.left * 1.2
+            && (double) lineSensors.right.adc_value < min_Floor.right * 1.2
+            && (double) lineSensors.left_ext.adc_value < min_Floor.leftExt * 1.2
+            && (double) lineSensors.right_ext.adc_value < min_Floor.rightExt * 1.2)
     {
         move(0, 150, 250, 0);
     }
