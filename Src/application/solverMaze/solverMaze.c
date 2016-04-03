@@ -126,28 +126,29 @@ void moveVirtualZhonx(labyrinthe maze, positionRobot positionZhonxVirtuel, coord
     int i = 0;
     while (positionZhonxVirtuel.cordinate.x != end_coordinate.x || positionZhonxVirtuel.cordinate.y != end_coordinate.y)
     {
-        if (maze.cell[(int) (positionZhonxVirtuel.cordinate.x + 1)][(int) (positionZhonxVirtuel.cordinate.y)].length + 1 == maze.cell[(int) (positionZhonxVirtuel.cordinate.x)][(int) (positionZhonxVirtuel.cordinate.y)].length && positionZhonxVirtuel.cordinate.x
+        if (maze.cell[(int) (positionZhonxVirtuel.cordinate.x + 1)][(int) (positionZhonxVirtuel.cordinate.y)].length + 1
+                == maze.cell[(int) (positionZhonxVirtuel.cordinate.x)][(int) (positionZhonxVirtuel.cordinate.y)].length&& positionZhonxVirtuel.cordinate.x
                 + 1
-                                                                                                                                                                                                                                    < MAZE_SIZE
-            && maze.cell[(int) (positionZhonxVirtuel.cordinate.x)][(int) (positionZhonxVirtuel.cordinate.y)].wall_east == NO_WALL)
+                < MAZE_SIZE
+                && maze.cell[(int) (positionZhonxVirtuel.cordinate.x)][(int) (positionZhonxVirtuel.cordinate.y)].wall_east == NO_WALL)
         {
             positionZhonxVirtuel.cordinate.x = positionZhonxVirtuel.cordinate.x + 1;
         }
         else if (maze.cell[(int) (positionZhonxVirtuel.cordinate.x)][(int) (positionZhonxVirtuel.cordinate.y + 1)].length
                 + 1
-                 == maze.cell[(int) (positionZhonxVirtuel.cordinate.x)][(int) (positionZhonxVirtuel.cordinate.y)].length&& positionZhonxVirtuel.cordinate.y+1<MAZE_SIZE && maze.cell[(int)(positionZhonxVirtuel.cordinate.x)][(int)(positionZhonxVirtuel.cordinate.y)].wall_south==NO_WALL)
+                == maze.cell[(int) (positionZhonxVirtuel.cordinate.x)][(int) (positionZhonxVirtuel.cordinate.y)].length&& positionZhonxVirtuel.cordinate.y+1<MAZE_SIZE && maze.cell[(int)(positionZhonxVirtuel.cordinate.x)][(int)(positionZhonxVirtuel.cordinate.y)].wall_south==NO_WALL)
         {
             positionZhonxVirtuel.cordinate.y = positionZhonxVirtuel.cordinate.y + 1;
         }
         else if (maze.cell[(int) (positionZhonxVirtuel.cordinate.x - 1)][(int) (positionZhonxVirtuel.cordinate.y)].length
                 + 1
-                 == maze.cell[(int) (positionZhonxVirtuel.cordinate.x)][(int) (positionZhonxVirtuel.cordinate.y)].length&& positionZhonxVirtuel.cordinate.x>0 && maze.cell[(int)(positionZhonxVirtuel.cordinate.x)][(int)(positionZhonxVirtuel.cordinate.y)].wall_west==NO_WALL)
+                == maze.cell[(int) (positionZhonxVirtuel.cordinate.x)][(int) (positionZhonxVirtuel.cordinate.y)].length&& positionZhonxVirtuel.cordinate.x>0 && maze.cell[(int)(positionZhonxVirtuel.cordinate.x)][(int)(positionZhonxVirtuel.cordinate.y)].wall_west==NO_WALL)
         {
             positionZhonxVirtuel.cordinate.x = positionZhonxVirtuel.cordinate.x - 1;
         }
         else if (maze.cell[(int) (positionZhonxVirtuel.cordinate.x)][(int) (positionZhonxVirtuel.cordinate.y - 1)].length
                 + 1
-                 == maze.cell[(int) (positionZhonxVirtuel.cordinate.x)][(int) (positionZhonxVirtuel.cordinate.y)].length&& positionZhonxVirtuel.cordinate.y>0 && maze.cell[(int)(positionZhonxVirtuel.cordinate.x)][(int)(positionZhonxVirtuel.cordinate.y)].wall_north==NO_WALL)
+                == maze.cell[(int) (positionZhonxVirtuel.cordinate.x)][(int) (positionZhonxVirtuel.cordinate.y)].length&& positionZhonxVirtuel.cordinate.y>0 && maze.cell[(int)(positionZhonxVirtuel.cordinate.x)][(int)(positionZhonxVirtuel.cordinate.y)].wall_north==NO_WALL)
         {
             positionZhonxVirtuel.cordinate.y = positionZhonxVirtuel.cordinate.y - 1;
         }
@@ -235,7 +236,7 @@ void moveRealZhonxArc(labyrinthe *maze, positionRobot *positionZhonx, coordinate
         }
 
         while ((way[i].x != END_OF_LIST) && way[i].y == (positionZhonx->cordinate.y + additionY)
-               && way[i].x == positionZhonx->cordinate.x + additionX)
+                && way[i].x == positionZhonx->cordinate.x + additionX)
         {
             positionZhonx->cordinate.x = way[i].x;
             positionZhonx->cordinate.y = way[i].y;
@@ -280,38 +281,34 @@ void poids(labyrinthe *maze, coordinate end_coordinate, char wallNoKnow)
         {
             x = dotes_to_verifie[i1].x;
             y = dotes_to_verifie[i1].y;
-            if ((maze->cell[x][y].wall_north == NO_WALL || (wallNoKnow == true
-                    && maze->cell[x][y].wall_north == NO_KNOWN))
-                && maze->cell[x][y - 1].length > length - 1 && y > 0)
+            if ((maze->cell[x][y].wall_north == NO_WALL
+                    || (wallNoKnow == true && maze->cell[x][y].wall_north == NO_KNOWN))
+                    && maze->cell[x][y - 1].length > length - 1 && y > 0)
             {
                 new_dotes_to_verifie[i2].x = x;
                 new_dotes_to_verifie[i2].y = y - 1;
                 i2++;
                 maze->cell[x][y - 1].length = length;
             }
-            if ((maze->cell[x][y].wall_east == NO_WALL || (wallNoKnow == true && maze->cell[x][y].wall_east == NO_KNOWN)) && maze->cell[x
-                    + 1][y].length
-                                                                                                                             > length
-                && x + 1 < MAZE_SIZE)
+            if ((maze->cell[x][y].wall_east == NO_WALL || (wallNoKnow == true && maze->cell[x][y].wall_east == NO_KNOWN))
+                    && maze->cell[x + 1][y].length > length&& x + 1 < MAZE_SIZE)
             {
                 new_dotes_to_verifie[i2].x = x + 1;
                 new_dotes_to_verifie[i2].y = y;
                 i2++;
                 maze->cell[x + 1][y].length = length;
             }
-            if ((maze->cell[x][y].wall_south == NO_WALL || (wallNoKnow == true
-                    && maze->cell[x][y].wall_south == NO_KNOWN))
-                && maze->cell[x][y + 1].length > length && y + 1 < MAZE_SIZE)
+            if ((maze->cell[x][y].wall_south == NO_WALL
+                    || (wallNoKnow == true && maze->cell[x][y].wall_south == NO_KNOWN))
+                    && maze->cell[x][y + 1].length > length&& y + 1 < MAZE_SIZE)
             {
                 new_dotes_to_verifie[i2].x = x;
                 new_dotes_to_verifie[i2].y = y + 1;
                 i2++;
                 maze->cell[x][y + 1].length = length;
             }
-            if ((maze->cell[x][y].wall_west == NO_WALL || (wallNoKnow == true && maze->cell[x][y].wall_west == NO_KNOWN)) && maze->cell[x
-                    - 1][y].length
-                                                                                                                             > length
-                && x > 0)
+            if ((maze->cell[x][y].wall_west == NO_WALL || (wallNoKnow == true && maze->cell[x][y].wall_west == NO_KNOWN))
+                    && maze->cell[x - 1][y].length > length && x > 0)
             {
                 new_dotes_to_verifie[i2].x = x - 1;
                 new_dotes_to_verifie[i2].y = y;

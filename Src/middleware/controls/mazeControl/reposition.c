@@ -45,42 +45,74 @@
 /* Declarations for this module */
 #include "middleware/controls/mazeControl/reposition.h"
 
-#define DEADZONE_DIST		 90.00	//Distance between the start of the cell and doubt area
-#define DEADZONE			 50.00	//doubt area
+#define DEADZONE_DIST		 65.00	//Distance between the start of the cell and doubt area
+#define DEADZONE			 70.00	//doubt area
+#define GETWALLPRESENCEZONE  5.00
 
-enum telemeters_used getSensorsUsedToTrackWalls(void)
+static enum telemeters_used telemeter_used = NO_SIDE;
+
+void repositionResetTelemeterUsed(void)
 {
-    static enum telemeters_used telemeter_used = NO_SIDE;
+    telemeter_used = NO_SIDE;
+}
 
-    double distance = ((encoderGetDist(ENCODER_L) + encoderGetDist(ENCODER_R)) / 2.00) + mouveGetInitialPosition();
+enum telemeters_used repositionGetTelemeterUsed(void)
+{
+    double distance = ((encoderGetDist(ENCODER_L) + encoderGetDist(ENCODER_R)) / 2.00) + moveGetInitialPosition();
 
-    if (distance < OFFSET_DIST + 10 || distance > (DEADZONE_DIST + (DEADZONE / 2.00)))
+#ifdef DEBUG_REPOSITION
+    static char old_telemeter_used = 0xFF;
+    if (telemeter_used != old_telemeter_used)
+    {
+        switch (telemeter_used)
+        {
+            case ALL_SIDE:
+                old_telemeter_used = telemeter_used;
+                bluetoothPrintf("ALL_SIDE \n");
+                break;
+            case LEFT_SIDE:
+                old_telemeter_used = telemeter_used;
+                bluetoothPrintf("LEFT_SIDE \n");
+                break;
+            case RIGHT_SIDE:
+                old_telemeter_used = telemeter_used;
+                bluetoothPrintf("RIGHT_SIDE \n");
+                break;
+            case NO_SIDE:
+                old_telemeter_used = telemeter_used;
+                bluetoothPrintf("NO_SIDE \n");
+                break;
+        }
+    }
+#endif
+
+    if (((distance > OFFSET_DIST) && (distance < OFFSET_DIST + GETWALLPRESENCEZONE))
+            || (distance > (DEADZONE_DIST + (DEADZONE / 2.00)) ))
     {
         if ((getWallPresence(LEFT_WALL) == TRUE) && (getWallPresence(RIGHT_WALL) == TRUE))
         {
             telemeter_used = ALL_SIDE;
         }
-        else if ((getWallPresence(LEFT_WALL) == TRUE) || (getWallPresence(RIGHT_WALL) == TRUE))
-        {
-            if (getWallPresence(LEFT_WALL) == TRUE)
-                telemeter_used = LEFT_SIDE;
-            else
-                telemeter_used = RIGHT_SIDE;
-        }
+        else if (getWallPresence(LEFT_WALL) == TRUE)
+            telemeter_used = LEFT_SIDE;
+        else if (getWallPresence(RIGHT_WALL) == TRUE)
+            telemeter_used = RIGHT_SIDE;
         else
             telemeter_used = NO_SIDE;
     }
 
-    if (distance > (DEADZONE_DIST - (DEADZONE / 2.00)) && distance < (DEADZONE_DIST + (DEADZONE / 2.00)))
-    {
-        toneStart(F3H);
-        return telemeter_used = NO_SIDE;
-    }
-    else
-    {
-        toneStop();
-        return telemeter_used;
-    }
+    if ((distance > DEADZONE_DIST - (DEADZONE / 2.00)) && (distance < DEADZONE_DIST + (DEADZONE / 2.00)))
+        telemeter_used = NO_SIDE;
+
+    //    if (telemeter_used != NO_SIDE)
+    //    {
+    //        toneStop();
+    //    }
+    //    else
+    //    {
+    //        toneStart(F3H);
+    //    }
+    return telemeter_used;
 }
 
 /* This function returns the maintain loop count according to front wall detection to avoid early turns leading to wall collision.
@@ -93,8 +125,10 @@ double repositionGetPostDist(double offset)
     {
         distance = ((getTelemeterDist(TELEMETER_FL) + getTelemeterDist(TELEMETER_FR)) / 2.00) + 65.00
                 - (CELL_LENGTH - offset);
+#ifdef DEBUG_DISPLACEMENT
         // Calculating average distance detected by FR and FL Telemeters
         //bluetoothPrintf("distance = %d \n", (int)distance);
+#endif
         return distance;
     }
     else

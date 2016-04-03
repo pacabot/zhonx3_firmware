@@ -428,8 +428,8 @@ void getTelemetersDistance(telemeterStruct *tel)
         return;
     }
 
-    while ((tel->avrg > tel->mm_conv.profile[tel->mm_conv.cell_idx]) || (tel->avrg
-            < tel->mm_conv.profile[tel->mm_conv.cell_idx + 1]))
+    while ((tel->avrg > tel->mm_conv.profile[tel->mm_conv.cell_idx])
+            || (tel->avrg < tel->mm_conv.profile[tel->mm_conv.cell_idx + 1]))
     {
         tel->mm_conv.cell_idx += sens;
         if (tel->mm_conv.cell_idx < 0)
@@ -466,13 +466,12 @@ void getTelemetersDistance(telemeterStruct *tel)
      *
      */
     tel->dist_mm = ((double) ((tel->mm_conv.profile[tel->mm_conv.cell_idx] * (tel->mm_conv.cell_idx + 1)
-                               * NUMBER_OF_MILLIMETER_BY_LOOP)
-                              - (tel->mm_conv.cell_idx * NUMBER_OF_MILLIMETER_BY_LOOP
-                                 * tel->mm_conv.profile[tel->mm_conv.cell_idx + 1])
-                              - (tel->avrg * (tel->mm_conv.cell_idx + 1) * NUMBER_OF_MILLIMETER_BY_LOOP)
-                              + (tel->avrg * tel->mm_conv.cell_idx * NUMBER_OF_MILLIMETER_BY_LOOP)))
-                   / ((double) (-tel->mm_conv.profile[tel->mm_conv.cell_idx + 1]
-                           + (double) tel->mm_conv.profile[tel->mm_conv.cell_idx]));
+            * NUMBER_OF_MILLIMETER_BY_LOOP)
+            - (tel->mm_conv.cell_idx * NUMBER_OF_MILLIMETER_BY_LOOP * tel->mm_conv.profile[tel->mm_conv.cell_idx + 1])
+            - (tel->avrg * (tel->mm_conv.cell_idx + 1) * NUMBER_OF_MILLIMETER_BY_LOOP)
+            + (tel->avrg * tel->mm_conv.cell_idx * NUMBER_OF_MILLIMETER_BY_LOOP)))
+            / ((double) (-tel->mm_conv.profile[tel->mm_conv.cell_idx + 1]
+                    + (double) tel->mm_conv.profile[tel->mm_conv.cell_idx]));
 
     tel->delta_avrg = mobileAvrgInt(&tel->sAvrgStruct, (int) ((tel->mm_conv.old_dist_mm - tel->dist_mm) * 1000))
             / 1000.00;

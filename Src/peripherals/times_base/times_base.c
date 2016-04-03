@@ -242,7 +242,8 @@ void ledBlink_IT(void)
 void sleep_mode_IT()			//todo move this function
 {
 #ifdef KILL_WEN_UNUSED
-    if ((zhonxSettings.sleep_delay_s != 0) && (HAL_GetTick() > (joy_activ_old_time + zhonxSettings.sleep_delay_s * 1000)))
+    if ((zhonxSettings.sleep_delay_s != 0)
+            && (HAL_GetTick() > (joy_activ_old_time + zhonxSettings.sleep_delay_s * 1000)))
     {
         halt();
     }

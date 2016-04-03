@@ -91,155 +91,28 @@ typedef struct
 spyPostTypeProfileStruct left;
 spyPostTypeProfileStruct right;
 
-spyPostTypeProfileStruct left = {
-                    .wallToNoWall =
-                    {
-                     .ref_sample = {14,
-                                    28,
-                                    28,
-                                    28,
-                                    28,
-                                    28,
-                                    28,
-                                    56,
-                                    56,
-                                    56,
-                                    56,
-                                    112,
-                                    224,
-                                    224,
-                                    448,
-                                    896,
-                                    1792,
-                                    14336,
-                                    14336,
-                                    49152},
-                     .ref_center_distance = 55
-                    },
-                    .singlePost =
-                    {
-                     .ref_sample = {448,
-                                    224,
-                                    112,
-                                    56,
-                                    28,
-                                    14,
-                                    14,
-                                    14,
-                                    7,
-                                    7,
-                                    14,
-                                    14,
-                                    28,
-                                    56,
-                                    112,
-                                    448,
-                                    896,
-                                    3584,
-                                    14336,
-                                    57344},
-                     .ref_center_distance = 60
-                    },
-                    .perpendicularWall =
-                    {
-                     .ref_sample = {112,
-                                    56,
-                                    28,
-                                    28,
-                                    14,
-                                    14,
-                                    7,
-                                    7,
-                                    7,
-                                    7,
-                                    7,
-                                    14,
-                                    14,
-                                    56,
-                                    112,
-                                    224,
-                                    896,
-                                    7168,
-                                    28672,
-                                    49152},
-                     .ref_center_distance = 60
-                    }
-};
+spyPostTypeProfileStruct left =
+        { .wallToNoWall =
+                { .ref_sample =
+                        { 14, 28, 28, 28, 28, 28, 28, 56, 56, 56, 56, 112, 224, 224, 448, 896, 1792, 14336, 14336, 49152 }, .ref_center_distance =
+                        55 }, .singlePost =
+                { .ref_sample =
+                        { 448, 224, 112, 56, 28, 14, 14, 14, 7, 7, 14, 14, 28, 56, 112, 448, 896, 3584, 14336, 57344 }, .ref_center_distance =
+                        60 }, .perpendicularWall =
+                { .ref_sample =
+                        { 112, 56, 28, 28, 14, 14, 7, 7, 7, 7, 7, 14, 14, 56, 112, 224, 896, 7168, 28672, 49152 }, .ref_center_distance =
+                        60 } };
 
-spyPostTypeProfileStruct right = {
-                    .wallToNoWall =
-                    {
-                     .ref_sample = {14,
-                                    14,
-                                    14,
-                                    14,
-                                    14,
-                                    14,
-                                    14,
-                                    14,
-                                    28,
-                                    28,
-                                    28,
-                                    56,
-                                    56,
-                                    112,
-                                    224,
-                                    448,
-                                    896,
-                                    1792,
-                                    7168,
-                                    28672},
-                     .ref_center_distance = 56
-                    },
-                    .singlePost =
-                    {
-                     .ref_sample = {7168,
-                                    1792,
-                                    896,
-                                    448,
-                                    112,
-                                    56,
-                                    28,
-                                    14,
-                                    14,
-                                    14,
-                                    7,
-                                    7,
-                                    14,
-                                    14,
-                                    28,
-                                    112,
-                                    224,
-                                    896,
-                                    3584,
-                                    14336},
-                     .ref_center_distance = 59
-                    },
-                    .perpendicularWall =
-                    {
-                     .ref_sample = {448,
-                                    112,
-                                    56,
-                                    28,
-                                    28,
-                                    14,
-                                    7,
-                                    7,
-                                    7,
-                                    7,
-                                    7,
-                                    7,
-                                    14,
-                                    28,
-                                    56,
-                                    224,
-                                    448,
-                                    1792,
-                                    7168,
-                                    28672},
-                     .ref_center_distance = 60
-                    },
-};
+spyPostTypeProfileStruct right =
+        { .wallToNoWall =
+                { .ref_sample =
+                        { 14, 14, 14, 14, 14, 14, 14, 14, 28, 28, 28, 56, 56, 112, 224, 448, 896, 1792, 7168, 28672 }, .ref_center_distance =
+                        56 }, .singlePost =
+                { .ref_sample =
+                        { 7168, 1792, 896, 448, 112, 56, 28, 14, 14, 14, 7, 7, 14, 14, 28, 112, 224, 896, 3584, 14336 }, .ref_center_distance =
+                        59 }, .perpendicularWall =
+                { .ref_sample = { 448, 112, 56, 28, 28, 14, 7, 7, 7, 7, 7, 7, 14, 28, 56, 224, 448, 1792, 7168, 28672 }, .ref_center_distance =
+                        60 }, };
 
 // Declare telemeters profiles in Flash memory
 //TELEMETERS_PROFILE *telemeters_profile = (TELEMETERS_PROFILE *) ADDR_FLASH_SECTOR_10;
@@ -280,8 +153,7 @@ int spyPostGetOffset(spyPostGetOffsetsStruct *offset)
     for (i = 0; i < SPYPOST_ARRAY_PROFILE_LENGTH; i++)
     {
         while ((((int) (encoderGetDist(ENCODER_L) + encoderGetDist(ENCODER_R))
-                <= (SPYPOST_ENCODERS_STEPS_MEASURE_MM * 2 * i)))
-               && (hasMoveEnded() != TRUE))
+                <= (SPYPOST_ENCODERS_STEPS_MEASURE_MM * 2 * i))) && (hasMoveEnded() != TRUE))
         {
         }
         left_sample = (int) getTelemeterDist(TELEMETER_DL);
@@ -432,30 +304,30 @@ int spyPostCalibration(void)
 
     //send BT profiles
     bluetoothPrintf("wallToNoWall x = %d\n\r", typeProfile->wallToNoWall.ref_center_distance);
-    spyPostSendBTProfile((int*)&typeProfile->wallToNoWall.ref_sample, SPYPOST_REFERENCE_SAMPLE_WIDTH);
+    spyPostSendBTProfile((int*) &typeProfile->wallToNoWall.ref_sample, SPYPOST_REFERENCE_SAMPLE_WIDTH);
     bluetoothPrintf("singlePost x = %d\n\r", typeProfile->singlePost.ref_center_distance);
-    spyPostSendBTProfile((int*)&typeProfile->singlePost.ref_sample, SPYPOST_REFERENCE_SAMPLE_WIDTH);
+    spyPostSendBTProfile((int*) &typeProfile->singlePost.ref_sample, SPYPOST_REFERENCE_SAMPLE_WIDTH);
     bluetoothPrintf("perpendicularWall x = %d\n\r", typeProfile->perpendicularWall.ref_center_distance);
-    spyPostSendBTProfile((int*)&typeProfile->perpendicularWall.ref_sample, SPYPOST_REFERENCE_SAMPLE_WIDTH);
+    spyPostSendBTProfile((int*) &typeProfile->perpendicularWall.ref_sample, SPYPOST_REFERENCE_SAMPLE_WIDTH);
 
     // Write spyPost profiles in Flash memory
-//    int rv = flash_write(zhonxSettings.h_flash, (unsigned char *) &telemeters_profile->front,
-//                     (unsigned char *) &front_telemeters, sizeof(FRONT_TELEMETERS_PROFILE));
-//    if (rv == FLASH_E_SUCCESS)
-//    {
-//        bluetoothPrintf("Values saved into Flash Memory\n");
-//        ssd1306ClearScreen(MAIN_AREA);
-//        ssd1306PrintfAtLine(0, 1, &Font_5x8, "FLASH memory updated");
-//        ssd1306Refresh();
-//    }
-//    else
-//    {
-//        bluetoothPrintf("Failed to write Flash Memory (%d)\n", rv);
-//        ssd1306ClearScreen(MAIN_AREA);
-//        ssd1306PrintfAtLine(0, 1, &Font_5x8, "FLASH write error (%d)", rv);
-//        ssd1306Refresh();
-//    }
-//    HAL_Delay(3000);
+    //    int rv = flash_write(zhonxSettings.h_flash, (unsigned char *) &telemeters_profile->front,
+    //                     (unsigned char *) &front_telemeters, sizeof(FRONT_TELEMETERS_PROFILE));
+    //    if (rv == FLASH_E_SUCCESS)
+    //    {
+    //        bluetoothPrintf("Values saved into Flash Memory\n");
+    //        ssd1306ClearScreen(MAIN_AREA);
+    //        ssd1306PrintfAtLine(0, 1, &Font_5x8, "FLASH memory updated");
+    //        ssd1306Refresh();
+    //    }
+    //    else
+    //    {
+    //        bluetoothPrintf("Failed to write Flash Memory (%d)\n", rv);
+    //        ssd1306ClearScreen(MAIN_AREA);
+    //        ssd1306PrintfAtLine(0, 1, &Font_5x8, "FLASH write error (%d)", rv);
+    //        ssd1306Refresh();
+    //    }
+    //    HAL_Delay(3000);
 
     while (expanderJoyFiltered() != JOY_LEFT)
     {
@@ -490,8 +362,7 @@ void spyPostStartMeasure(spyPostTypeProfileStruct *typeProfile)
     for (i = 0; i < SPYPOST_ARRAY_PROFILE_LENGTH; i++)
     {
         while ((((int) (encoderGetDist(ENCODER_L) + encoderGetDist(ENCODER_R))
-                <= (SPYPOST_ENCODERS_STEPS_MEASURE_MM * 2 * i)))
-               && (hasMoveEnded() != TRUE))
+                <= (SPYPOST_ENCODERS_STEPS_MEASURE_MM * 2 * i))) && (hasMoveEnded() != TRUE))
             ;
 
         sample = (int) getTelemeterDist(typeProfile->telemeterName);
@@ -692,12 +563,12 @@ void spyPostTest()
     }
     if (offset.left_x != 0)
     {
-        move(0, (OFFSET_DIST * 2.00) + offset.left_x, Vmax, Vmax);
+        move(0, (OFFSET_DIST * 2.00) - offset.left_x, Vmax, Vmax);
         ssd1306PrintfAtLine(0, 2, &Font_5x8, "left_x = %d", offset.left_x);
     }
     else
     {
-        move(0, (OFFSET_DIST * 2.00) + offset.right_x, Vmax, Vmax);
+        move(0, (OFFSET_DIST * 2.00) - offset.right_x, Vmax, Vmax);
         ssd1306PrintfAtLine(0, 2, &Font_5x8, "right_x = %d", offset.right_x);
     }
 

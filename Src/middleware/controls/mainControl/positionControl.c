@@ -165,8 +165,7 @@ int positionControlLoop(void)
     position_control.position_error = position_control.current_angle_consign - position_control.current_angle;//for distance control
 
     position_control.position_command = (pidController(position_control.position_pid.instance,
-                                                       position_control.position_error))
-                                        * (float) position_params.sign;
+                                                       position_control.position_error)) * (float) position_params.sign;
 
     position_control.old_angle = position_control.current_angle;
 

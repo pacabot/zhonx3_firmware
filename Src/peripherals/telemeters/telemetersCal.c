@@ -77,8 +77,7 @@ int wallSensorsCalibrationFront(void)
     for (i = 0; i < TELEMETER_PROFILE_ARRAY_LENGTH; i++)
     {
         while ((((int) (encoderGetDist(ENCODER_L) + encoderGetDist(ENCODER_R))
-                >= -(NUMBER_OF_MILLIMETER_BY_LOOP * 2 * i)))
-               && (hasMoveEnded() != TRUE))
+                >= -(NUMBER_OF_MILLIMETER_BY_LOOP * 2 * i))) && (hasMoveEnded() != TRUE))
             ;
 
         front_telemeters.left[i] = getTelemeterAvrg(TELEMETER_FL);
@@ -170,8 +169,7 @@ int wallSensorsCalibrationDiag(void)
     for (i = 0; i < TELEMETER_PROFILE_ARRAY_LENGTH; i++)
     {
         while ((((int) (encoderGetDist(ENCODER_L) + encoderGetDist(ENCODER_R))
-                >= -(number_of_millimeter_per_loop * 2.00 * (double) i)))
-               && (hasMoveEnded() != TRUE))
+                >= -(number_of_millimeter_per_loop * 2.00 * (double) i))) && (hasMoveEnded() != TRUE))
             ;
 
         diag_telemeters.left[i] = getTelemeterAvrg(TELEMETER_DL);
