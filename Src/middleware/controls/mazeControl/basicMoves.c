@@ -53,29 +53,6 @@
 
 static void moveSetInitialPosition(double initial_position);
 
-/**************************************************************************************/
-/***************       Decomposition of straight displacement      ********************/
-/**************************************************************************************/
-/*
- *                  O
- *                  O
- *      o           O           o
- *      :           O           :
- *      :           O           :
- *      :           M           :
- *      :           M           :
- *      :           M           :
- *      :           M           :
- *      :           M           :
- *      :           M           :
- *      :                       :
- *      o                       o
- *
- *      O = OFFSET_DIST
- *      M = MAIN_DIST
- *
- */
-
 static double current_position;
 
 double moveGetInitialPosition(void)
@@ -108,8 +85,6 @@ int moveCell(unsigned long nb_cell, float max_speed, float end_speed)
     unsigned int i;
     spyPostGetOffsetsStruct offset;
 
-//    ssd1306ClearScreen(MAIN_AREA);
-
     if (nb_cell == 0)
         return POSITION_CONTROL_E_SUCCESS;
 
@@ -132,19 +107,15 @@ int moveCell(unsigned long nb_cell, float max_speed, float end_speed)
     }
     moveSetInitialPosition(CELL_LENGTH - OFFSET_DIST);	//absolute position into a cell
 //    if (repositionGetPostDist(-OFFSET_DIST) > 0.0 || repositionGetPostDist(-OFFSET_DIST) < 0.0)
-    move(0, (OFFSET_DIST * 2.00), max_speed, end_speed);// + repositionGetPostDist(-OFFSET_DIST), max_speed, end_speed);
-//    if (offset.left_x != 0)
-//    {
-//        move(0, (OFFSET_DIST * 2.00) - offset.left_x, max_speed, max_speed);
-//        ssd1306PrintfAtLine(0, 2, &Font_5x8, "left_x = %d", offset.left_x);
-//    }
-//    else
-//    {
-//        move(0, (OFFSET_DIST * 2.00) - offset.right_x, max_speed, max_speed);
-//        ssd1306PrintfAtLine(0, 2, &Font_5x8, "right_x = %d", offset.right_x);
-//    }
-
-//    ssd1306Refresh();
+//    move(0, (OFFSET_DIST * 2.00), max_speed, end_speed);// + repositionGetPostDist(-OFFSET_DIST), max_speed, end_speed);
+    if (offset.left_x != 0)
+    {
+        move(0, (OFFSET_DIST * 2.00) - offset.left_x, max_speed, max_speed);
+    }
+    else
+    {
+        move(0, (OFFSET_DIST * 2.00) - offset.right_x, max_speed, max_speed);
+    }
     return POSITION_CONTROL_E_SUCCESS;
 }
 
@@ -419,7 +390,7 @@ void movesTest()
 //    motorsDriverSleep(ON);
 //    while(1);
     moveStartCell(Vmax, Vmax);
-//    moveCell(1, Vmax, Vmin);
+    moveCell(1, Vmax, Vmin);
 //    moveRotateCW90(Vmin, Vmin);
 //    moveCell(2, Vmax, Vmin);
     moveRotateCW90(Vmin, Vmin);

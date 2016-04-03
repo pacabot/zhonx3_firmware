@@ -119,7 +119,7 @@ spyPostTypeProfileStruct right =
 
 /* Static functions */
 static void spyPostStartMeasure(spyPostTypeProfileStruct *typeProfile);
-static void spyPostPrintProfile(int x, int y, spyPostProfileStruct *profile);
+static void spyPostPrintProfile(int x, int y, int *sample, int ref_center_distance);
 static void spyPostSendBTProfile(int *buf32, int lenght_buf32);
 static void spyPostKeepUsefulPart(spyPostTypeProfileStruct *typeProfile);
 static void spyPostSaveCurrentSampleAsRefSample(spyPostTypeProfileStruct *typeProfile, spyPostProfileStruct *profile);
@@ -145,6 +145,9 @@ int spyPostGetOffset(spyPostGetOffsetsStruct *offset)
     right.wallToNoWall.stat = 0;
     right.singlePost.stat = 0;
     right.perpendicularWall.stat = 0;
+
+    memset(&right.current_sample, 0, sizeof(right.current_sample));
+    memset(&left.current_sample, 0, sizeof(left.current_sample));
 
     offset->left_x = 0;
     offset->right_x = 0;
@@ -187,6 +190,7 @@ int spyPostGetOffset(spyPostGetOffsetsStruct *offset)
         {
             left.perpendicularWall.stat++;
         }
+
         if (right.current_sample[i] & right.wallToNoWall.ref_sample[i])
         {
             right.wallToNoWall.stat++;
@@ -201,31 +205,89 @@ int spyPostGetOffset(spyPostGetOffsetsStruct *offset)
         }
     }
 
+    if (left.wallToNoWall.stat < 15)
+        left.wallToNoWall.stat = 0;
+    if (left.singlePost.stat < 15)
+        left.singlePost.stat = 0;
+    if (left.perpendicularWall.stat < 15)
+        left.perpendicularWall.stat = 0;
+    if (right.wallToNoWall.stat < 15)
+        right.wallToNoWall.stat = 0;
+    if (right.singlePost.stat < 15)
+        right.singlePost.stat = 0;
+    if (right.perpendicularWall.stat < 15)
+        right.perpendicularWall.stat = 0;
+
     if (left.wallToNoWall.stat > left.perpendicularWall.stat)
     {
         if (left.wallToNoWall.stat > left.singlePost.stat)
+        {
             offset->left_x = left.wallToNoWall.ref_center_distance - left.current_center_distance;
+#ifdef DEBUG_SPYPOST
+            bluetoothPrintf("L_WTNW = %d, stat = %d\n", (int) offset->left_x, (int) left.wallToNoWall.stat);
+#endif
+        }
         else
+        {
             offset->left_x = left.singlePost.ref_center_distance - left.current_center_distance;
+#ifdef DEBUG_SPYPOST
+            bluetoothPrintf("L_SP = %d, stat = %d\n", (int) offset->left_x, (int) left.singlePost.stat);
+#endif
+        }
     }
     else if (left.perpendicularWall.stat > left.singlePost.stat)
+    {
         offset->left_x = left.perpendicularWall.ref_center_distance - left.current_center_distance;
-    else
+#ifdef DEBUG_SPYPOST
+        bluetoothPrintf("L_PW = %d, stat = %d\n", (int) offset->left_x, (int) left.perpendicularWall.stat);
+#endif
+    }
+    else if (left.singlePost.stat != 0)
+    {
         offset->left_x = left.singlePost.ref_center_distance - left.current_center_distance;
+#ifdef DEBUG_SPYPOST
+        bluetoothPrintf("L_SP = %d, stat = %d\n", (int) offset->left_x, (int) left.singlePost.stat);
+#endif
+    }
+    else
+        offset->left_x = 0;
 
+    /*--------------------------------------------------------------------------------------------------------------------*/
     if (right.wallToNoWall.stat > right.perpendicularWall.stat)
     {
         if (right.wallToNoWall.stat > right.singlePost.stat)
+        {
             offset->right_x = right.wallToNoWall.ref_center_distance - right.current_center_distance;
+#ifdef DEBUG_SPYPOST
+            bluetoothPrintf("R_WTNW = %d, stat = %d\n", (int) offset->right_x, (int) right.wallToNoWall.stat);
+#endif
+        }
         else
+        {
             offset->right_x = right.singlePost.ref_center_distance - right.current_center_distance;
+#ifdef DEBUG_SPYPOST
+            bluetoothPrintf("R_SP = %d, stat = %d\n", (int) offset->right_x, (int) right.singlePost.stat);
+#endif
+        }
     }
     else if (right.perpendicularWall.stat > right.singlePost.stat)
+    {
         offset->right_x = right.perpendicularWall.ref_center_distance - right.current_center_distance;
-    else
+#ifdef DEBUG_SPYPOST
+        bluetoothPrintf("R_PW = %d, stat = %d\n", (int) offset->right_x, (int) right.perpendicularWall.stat);
+#endif
+    }
+    else if (right.singlePost.stat != 0)
+    {
         offset->right_x = right.singlePost.ref_center_distance - right.current_center_distance;
+#ifdef DEBUG_SPYPOST
+        bluetoothPrintf("R_SP = %d, stat = %d\n", (int) offset->right_x, (int) right.singlePost.stat);
+#endif
+    }
+    else
+        offset->right_x = 0;
 
-    return 0;
+    return SPYPOST_DRIVER_E_SUCCESS;
 }
 
 int spyPostCalibration(void)
@@ -298,9 +360,9 @@ int spyPostCalibration(void)
         spyPostSaveCurrentSampleAsRefSample(typeProfile, profile);
         spyPostSampleThicken(profile, 3);
     }
-    spyPostPrintProfile(0, 64, &typeProfile->wallToNoWall);
-    spyPostPrintProfile(43, 64, &typeProfile->singlePost);
-    spyPostPrintProfile(86, 64, &typeProfile->perpendicularWall);
+    spyPostPrintProfile(0, 64, typeProfile->wallToNoWall.ref_sample, typeProfile->wallToNoWall.ref_center_distance);
+    spyPostPrintProfile(43, 64, typeProfile->singlePost.ref_sample, typeProfile->singlePost.ref_center_distance);
+    spyPostPrintProfile(86, 64, typeProfile->perpendicularWall.ref_sample, typeProfile->perpendicularWall.ref_center_distance);
 
     //send BT profiles
     bluetoothPrintf("wallToNoWall x = %d\n\r", typeProfile->wallToNoWall.ref_center_distance);
@@ -396,17 +458,17 @@ void spyPostStartMeasure(spyPostTypeProfileStruct *typeProfile)
     ssd1306ClearScreen(MAIN_AREA);
 }
 
-void spyPostPrintProfile(int x, int y, spyPostProfileStruct *profile)
+void spyPostPrintProfile(int x, int y, int *sample, int ref_center_distance)
 {
     ssd1306DrawRect(0 + x, y - 2 - (SPYPOST_REFERENCE_SAMPLE_HEIGHT * 2),
     SPYPOST_REFERENCE_SAMPLE_WIDTH * 2 + 2,
                     SPYPOST_REFERENCE_SAMPLE_HEIGHT * 2 + 2);
-    ssd1306PrintfAtLine(x, 1, &Font_3x6, "%d\n", profile->ref_center_distance);
+    ssd1306PrintfAtLine(x, 1, &Font_3x6, "%d\n", ref_center_distance);
     for (int i = 0; i < SPYPOST_REFERENCE_SAMPLE_WIDTH; i++)
     {
         for (int j = SPYPOST_REFERENCE_SAMPLE_HEIGHT; j > 0; j--)
         {
-            if ((profile->ref_sample[i] >> (j)) & 0x01)
+            if ((sample[i] >> (j)) & 0x01)
             {
                 ssd1306DrawPixel(2 * i + x + 1, y - 1 - j * 2);
             }
@@ -465,6 +527,7 @@ void spyPostKeepUsefulPart(spyPostTypeProfileStruct *typeProfile)
     //sanity check
     if ((SPYPOST_ARRAY_PROFILE_LENGTH - (x + SPYPOST_REFERENCE_SAMPLE_WIDTH)) < 0)
     {
+//        memset(&typeProfile->current_sample, 0, sizeof(typeProfile->current_sample));
         ssd1306PrintfAtLine(0, 0, &Font_5x8, " SPYPOST ERROR x < 0");
         return;
     }
@@ -525,9 +588,9 @@ int spyPostReadCalibration(void)
             return SPYPOST_DRIVER_E_SUCCESS;
     }
 
-    spyPostPrintProfile(0, 64, &typeProfile->wallToNoWall);
-    spyPostPrintProfile(43, 64, &typeProfile->singlePost);
-    spyPostPrintProfile(86, 64, &typeProfile->perpendicularWall);
+    spyPostPrintProfile(0, 64, typeProfile->wallToNoWall.ref_sample, typeProfile->wallToNoWall.ref_center_distance);
+    spyPostPrintProfile(43, 64, typeProfile->singlePost.ref_sample, typeProfile->singlePost.ref_center_distance);
+    spyPostPrintProfile(86, 64, typeProfile->perpendicularWall.ref_sample, typeProfile->perpendicularWall.ref_center_distance);
 
     while (expanderJoyFiltered() != JOY_LEFT)
     {
@@ -538,6 +601,7 @@ int spyPostReadCalibration(void)
 void spyPostTest()
 {
     spyPostGetOffsetsStruct offset;
+    memset((spyPostGetOffsetsStruct*) &offset, 0, sizeof(spyPostGetOffsetsStruct));
 
     ssd1306ClearScreen(MAIN_AREA);
     mainControlInit();
@@ -564,16 +628,22 @@ void spyPostTest()
     if (offset.left_x != 0)
     {
         move(0, (OFFSET_DIST * 2.00) - offset.left_x, Vmax, Vmax);
-        ssd1306PrintfAtLine(0, 2, &Font_5x8, "left_x = %d", offset.left_x);
+        ssd1306PrintfAtLine(70, 1, &Font_3x6, "L_x = %d", offset.left_x);
     }
     else
     {
         move(0, (OFFSET_DIST * 2.00) - offset.right_x, Vmax, Vmax);
-        ssd1306PrintfAtLine(0, 2, &Font_5x8, "right_x = %d", offset.right_x);
+        ssd1306PrintfAtLine(70, 1, &Font_3x6, "R_x = %d", offset.right_x);
     }
+
+    spyPostPrintProfile(0, 64, left.current_sample, left.current_center_distance);
+    spyPostPrintProfile(43, 64, right.current_sample, right.current_center_distance);
 
     ssd1306Refresh();
     telemetersStop();
-    HAL_Delay(5000);
+    HAL_Delay(1000);
     motorsDriverSleep(ON);
+    while (expanderJoyFiltered() != JOY_LEFT)
+    {
+    }
 }

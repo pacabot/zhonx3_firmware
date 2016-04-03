@@ -19,6 +19,8 @@ typedef struct
 #define SPYPOST_DRIVER_E_SUCCESS  0
 #define SPYPOST_DRIVER_E_ERROR    MAKE_ERROR(SPYPOST_DRIVER_MODULE_ID, 1)
 
+#define DEBUG_SPYPOST
+
 int spyPostGetOffset(spyPostGetOffsetsStruct *offset);
 int spyPostCalibration(void);
 int spyPostReadCalibration(void);
