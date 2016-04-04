@@ -51,24 +51,6 @@
 /* Declarations for this module */
 #include "middleware/controls/mazeControl/basicMoves.h"
 
-static void moveSetInitialPosition(double initial_position);
-
-static double current_position;
-
-double moveGetInitialPosition(void)
-{
-    return current_position;
-}
-
-void moveSetInitialPosition(double initial_position)
-{
-    current_position = initial_position;
-    repositionResetTelemeterUsed();
-#ifdef DEBUG_DISPLACEMENT
-    bluetoothPrintf("initial dist = %d\n", (int)initial_position);
-#endif
-}
-
 /**************************************************************************************/
 /***************                    Basic Moves                    ********************/
 /**************************************************************************************/
@@ -93,19 +75,19 @@ int moveCell(unsigned long nb_cell, float max_speed, float end_speed)
         while (hasMoveEnded() != TRUE)
         {
         }
-        moveSetInitialPosition(OFFSET_DIST); //absolute position into a cell
+        repositionSetInitialPosition(OFFSET_DIST); //absolute position into a cell
         move(0, (CELL_LENGTH), max_speed, max_speed);
     }
     while (hasMoveEnded() != TRUE)
     {
     }
-    moveSetInitialPosition(OFFSET_DIST); //absolute position into a cell
+    repositionSetInitialPosition(OFFSET_DIST); //absolute position into a cell
     move(0, MAIN_DIST, max_speed, end_speed); //distance with last move offset
     spyPostGetOffset(&offset);
     while (hasMoveEnded() != TRUE)
     {
     }
-    moveSetInitialPosition(CELL_LENGTH - OFFSET_DIST);	//absolute position into a cell
+    repositionSetInitialPosition(CELL_LENGTH - OFFSET_DIST);	//absolute position into a cell
 //    if (repositionGetPostDist(-OFFSET_DIST) > 0.0 || repositionGetPostDist(-OFFSET_DIST) < 0.0)
 //    move(0, (OFFSET_DIST * 2.00), max_speed, end_speed);// + repositionGetPostDist(-OFFSET_DIST), max_speed, end_speed);
     if (offset.left_x != 0)
@@ -131,7 +113,7 @@ int moveHalfCell_IN(float max_speed, float end_speed)
     while (hasMoveEnded() != TRUE)
     {
     }
-    moveSetInitialPosition(OFFSET_DIST);
+    repositionSetInitialPosition(OFFSET_DIST);
     move(0, (HALF_CELL_LENGTH - OFFSET_DIST), max_speed, end_speed);
 
     return POSITION_CONTROL_E_SUCCESS;
@@ -149,12 +131,12 @@ int moveHalfCell_OUT(float max_speed, float end_speed)
     while (hasMoveEnded() != TRUE)
     {
     }
-    moveSetInitialPosition(HALF_CELL_LENGTH);
+    repositionSetInitialPosition(HALF_CELL_LENGTH);
     move(0, HALF_CELL_LENGTH - OFFSET_DIST, max_speed, end_speed);
     while (hasMoveEnded() != TRUE)
     {
     }
-    moveSetInitialPosition(CELL_LENGTH - (OFFSET_DIST));
+    repositionSetInitialPosition(CELL_LENGTH - (OFFSET_DIST));
     move(0, (OFFSET_DIST * 2.00) + repositionGetPostDist(-OFFSET_DIST), max_speed, end_speed);
 
     return POSITION_CONTROL_E_SUCCESS;
@@ -172,12 +154,12 @@ int moveStartCell(float max_speed, float end_speed)
     while (hasMoveEnded() != TRUE)
     {
     }
-    moveSetInitialPosition(Z3_CENTER_BACK_DIST + HALF_WALL_THICKNESS);
+    repositionSetInitialPosition(Z3_CENTER_BACK_DIST + HALF_WALL_THICKNESS);
     move(0, ((CELL_LENGTH - (Z3_CENTER_BACK_DIST + HALF_WALL_THICKNESS)) - OFFSET_DIST), max_speed, end_speed);
     while (hasMoveEnded() != TRUE)
     {
     }
-    moveSetInitialPosition(CELL_LENGTH - (OFFSET_DIST));
+    repositionSetInitialPosition(CELL_LENGTH - (OFFSET_DIST));
     move(0, (OFFSET_DIST * 2.00), max_speed, end_speed);// + repositionGetPostDist(-OFFSET_DIST), max_speed, end_speed);
 
     return POSITION_CONTROL_E_SUCCESS;
@@ -199,7 +181,7 @@ int moveRotateCW90(float max_speed, float end_speed)
     while (hasMoveEnded() != TRUE)
     {
     }
-    moveSetInitialPosition((CELL_LENGTH - OFFSET_DIST));
+    repositionSetInitialPosition((CELL_LENGTH - OFFSET_DIST));
     move(0, (OFFSET_DIST * 2.00), max_speed, end_speed);// + repositionGetPostDist(-OFFSET_DIST), max_speed, end_speed);
 
     return POSITION_CONTROL_E_SUCCESS;
@@ -221,16 +203,15 @@ int moveRotateCCW90(float max_speed, float end_speed)
     while (hasMoveEnded() != TRUE)
     {
     }
-    moveSetInitialPosition((CELL_LENGTH - OFFSET_DIST));
+    repositionSetInitialPosition((CELL_LENGTH - OFFSET_DIST));
     move(0, (OFFSET_DIST * 2.00), max_speed, end_speed);// + repositionGetPostDist(-OFFSET_DIST), max_speed, end_speed);
 
     return POSITION_CONTROL_E_SUCCESS;
 }
 
 /**************************************************************************************/
-/***************                Combination Moves                  ********************/
+/***************                   Avanced Moves                   ********************/
 /**************************************************************************************/
-
 /*		 _________
  * 		o	 _	  o
  * 		:   / )   :

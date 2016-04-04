@@ -23,6 +23,7 @@ enum telemeters_used
     NO_SIDE, ALL_SIDE, LEFT_SIDE, RIGHT_SIDE
 };
 
+void repositionSetInitialPosition(double initial_position);
 void repositionResetTelemeterUsed(void);
 enum telemeters_used repositionGetTelemeterUsed(void);
 double repositionGetPostDist(double offset);

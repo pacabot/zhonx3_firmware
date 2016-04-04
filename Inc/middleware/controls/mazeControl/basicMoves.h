@@ -23,7 +23,6 @@
 
 //#define DEBUG_DISPLACEMENT
 
-double moveGetInitialPosition(void);
 int rotate180WithCal(enum rotationTypeEnum rotation_type, float max_speed, float end_speed);
 int rotate90WithCal(enum rotationTypeEnum rotation_type, float max_speed, float end_speed);
 int moveCell(unsigned long nb_cell, float max_speed, float end_speed);

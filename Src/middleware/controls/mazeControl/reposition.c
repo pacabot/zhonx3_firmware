@@ -45,20 +45,25 @@
 /* Declarations for this module */
 #include "middleware/controls/mazeControl/reposition.h"
 
-#define DEADZONE_DIST		 65.00	//Distance between the start of the cell and doubt area
-#define DEADZONE			 80.00	//doubt area
+#define DEADZONE_DIST		 80.00	//Distance between the start of the cell and doubt area
+#define DEADZONE			 100.00	//doubt area
 #define GETWALLPRESENCEZONE  5.00
 
 static enum telemeters_used telemeter_used = NO_SIDE;
+static double current_position = 0;
 
-void repositionResetTelemeterUsed(void)
+void repositionSetInitialPosition(double initial_position)
 {
+    current_position = initial_position;
     telemeter_used = NO_SIDE;
+#ifdef DEBUG_DISPLACEMENT
+    bluetoothPrintf("initial dist = %d\n", (int)initial_position);
+#endif
 }
 
 enum telemeters_used repositionGetTelemeterUsed(void)
 {
-    double distance = ((encoderGetDist(ENCODER_L) + encoderGetDist(ENCODER_R)) / 2.00) + moveGetInitialPosition();
+    double distance = ((encoderGetDist(ENCODER_L) + encoderGetDist(ENCODER_R)) / 2.00) + current_position;
 
 #ifdef DEBUG_REPOSITION
     static char old_telemeter_used = 0xFF;
@@ -107,7 +112,7 @@ enum telemeters_used repositionGetTelemeterUsed(void)
 }
 
 /* This function returns the maintain loop count according to front wall detection to avoid early turns leading to wall collision.
- * 	void
+ *  void
  */
 double repositionGetPostDist(double offset)
 {
@@ -130,7 +135,8 @@ int frontCal(float max_speed)
 {
     double relative_dist = 0.00;
 
-    while (hasMoveEnded() != TRUE);
+    while (hasMoveEnded() != TRUE)
+        ;
 
     if (getWallPresence(FRONT_WALL) == WALL_PRESENCE)
     {
