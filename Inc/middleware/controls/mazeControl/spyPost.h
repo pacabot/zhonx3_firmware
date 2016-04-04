@@ -10,20 +10,20 @@
 
 typedef struct
 {
-    int left_x;
-    int right_x;
-    int left_y;
-    int right_y;
+    uint32_t left_x;
+    uint32_t right_x;
+    uint32_t left_y;
+    uint32_t right_y;
 } spyPostGetOffsetsStruct;
 
 #define SPYPOST_DRIVER_E_SUCCESS  0
 #define SPYPOST_DRIVER_E_ERROR    MAKE_ERROR(SPYPOST_DRIVER_MODULE_ID, 1)
 
-//#define DEBUG_SPYPOST
+#define DEBUG_SPYPOST
 
-int spyPostGetOffset(spyPostGetOffsetsStruct *offset);
-int spyPostCalibration(void);
-int spyPostReadCalibration(void);
+uint32_t spyPostGetOffset(spyPostGetOffsetsStruct *offset);
+uint32_t spyPostCalibration(void);
+uint32_t spyPostReadCalibration(void);
 void spyPostTest();
 
 #endif /* _SPYPOST_H_ */

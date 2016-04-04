@@ -49,7 +49,7 @@
 
 /* Types definitions */
 #define SUCCES_GAP_DIST 	 2.0
-#define DIAG_DIST_FOR_FOLLOW 80.00
+#define DIAG_DIST_FOR_FOLLOW 70.00 //80
 #define MAX_FOLLOW_ERROR	 100.00	//Millimeter
 
 typedef struct
@@ -71,9 +71,9 @@ static arm_pid_instance_f32 telemeters_pid_instance;
 
 int wallFollowControlInit(void)
 {
-    telemeters_pid_instance.Kp = 10;
+    telemeters_pid_instance.Kp = 15;
     telemeters_pid_instance.Ki = 0;
-    telemeters_pid_instance.Kd = 800;
+    telemeters_pid_instance.Kd = 50;
 
     wall_follow_control.follow_pid.instance = &telemeters_pid_instance;
 
