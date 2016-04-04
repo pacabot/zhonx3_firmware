@@ -3,7 +3,7 @@
  *
  *  Created on: 19 mars 2016
  *      Author: zhonx
- *      V1.0
+ *      V1.1
  */
 
 #include "stm32f4xx_hal.h"
@@ -198,9 +198,12 @@ uint32_t spyPostGetOffset(spyPostGetOffsetsStruct *offset)
             }
         }
         if (left_wallToNoWall_stat > MIN_STAT)
+        {
             offset->left_x = ref_left.wallToNoWall.center_x_distance - current_left.center_x_distance;
+            offset->left_y = ref_left.wallToNoWall.center_y_distance - current_left.center_y_distance;
+        }
 #ifdef DEBUG_SPYPOST
-        bluetoothPrintf("L_WTNW = %d, stat = %d\n", (uint32_t) offset->left_x, (uint32_t) left_wallToNoWall_stat);
+        bluetoothPrintf("L_WTNW x = %d, L_WTNW y = %d, stat = %d\n", (uint32_t) offset->left_x, (uint32_t) offset->left_y, (uint32_t) left_wallToNoWall_stat);
 #endif
     }
     else
@@ -219,22 +222,28 @@ uint32_t spyPostGetOffset(spyPostGetOffsetsStruct *offset)
         if (left_singlePost_stat > left_perpendicularWall_stat)
         {
             if (left_singlePost_stat > MIN_STAT)
+            {
                 offset->left_x = ref_left.singlePost.center_x_distance - current_left.center_x_distance;
+                offset->left_y = ref_left.singlePost.center_y_distance - current_left.center_y_distance;
+            }
 #ifdef DEBUG_SPYPOST
-            bluetoothPrintf("L_SP = %d, stat = %d\n", (uint32_t) offset->left_x, (uint32_t) left_singlePost_stat);
+            bluetoothPrintf("L_SP x = %d, L_SP y = %d, stat = %d\n", (uint32_t) offset->left_x, (uint32_t) offset->left_y, (uint32_t) left_singlePost_stat);
 #endif
         }
         else
         {
             if (left_perpendicularWall_stat >= MIN_STAT)
+            {
                 offset->left_x = ref_left.perpendicularWall.center_x_distance - current_left.center_x_distance;
+                offset->left_y = ref_left.perpendicularWall.center_y_distance - current_left.center_y_distance;
+            }
 #ifdef DEBUG_SPYPOST
             if (left_singlePost_stat == left_perpendicularWall_stat)
             {
                 bluetoothPrintf("SAME L PW SP, ");
                 bluetoothWaitReady();
             }
-            bluetoothPrintf("L_PW = %d, stat = %d\n", (uint32_t) offset->left_x,
+            bluetoothPrintf("L_PW x = %d, L_PW y = %d, stat = %d\n", (uint32_t) offset->left_x, (uint32_t) offset->left_y,
                             (uint32_t) left_perpendicularWall_stat);
 #endif
         }
@@ -254,9 +263,12 @@ uint32_t spyPostGetOffset(spyPostGetOffsetsStruct *offset)
             }
         }
         if (right_wallToNoWall_stat > MIN_STAT)
+        {
             offset->right_x = ref_right.wallToNoWall.center_x_distance - current_right.center_x_distance;
+            offset->right_y = ref_right.wallToNoWall.center_y_distance - current_right.center_y_distance;
+        }
 #ifdef DEBUG_SPYPOST
-        bluetoothPrintf("L_WTNW = %d, stat = %d\n", (uint32_t) offset->right_x, (uint32_t) right_wallToNoWall_stat);
+        bluetoothPrintf("R_WTNW x = %d, R_WTNW = y %d, stat = %d\n", (uint32_t) offset->right_x, (uint32_t) offset->right_y, (uint32_t) right_wallToNoWall_stat);
 #endif
     }
     else
@@ -275,30 +287,34 @@ uint32_t spyPostGetOffset(spyPostGetOffsetsStruct *offset)
         if (right_singlePost_stat > right_perpendicularWall_stat)
         {
             if (right_singlePost_stat > MIN_STAT)
+            {
                 offset->right_x = ref_right.singlePost.center_x_distance - current_right.center_x_distance;
+                offset->right_y = ref_right.singlePost.center_y_distance - current_right.center_y_distance;
+            }
 #ifdef DEBUG_SPYPOST
-            bluetoothPrintf("L_SP = %d, stat = %d\n", (uint32_t) offset->right_x, (uint32_t) right_singlePost_stat);
+            bluetoothPrintf("R_SP x = %d, R_SP y = %d, stat = %d\n", (uint32_t) offset->right_x, (uint32_t) offset->right_y, (uint32_t) right_singlePost_stat);
 #endif
         }
         else
         {
             if (right_perpendicularWall_stat >= MIN_STAT)
+            {
                 offset->right_x = ref_right.perpendicularWall.center_x_distance - current_right.center_x_distance;
+                offset->right_y = ref_right.perpendicularWall.center_y_distance - current_right.center_y_distance;
+            }
 #ifdef DEBUG_SPYPOST
             if (right_singlePost_stat == right_perpendicularWall_stat)
             {
                 bluetoothPrintf("SAME R PW SP, ");
                 bluetoothWaitReady();
             }
-            bluetoothPrintf("L_PW = %d, stat = %d\n", (uint32_t) offset->right_x,
+            bluetoothPrintf("R_PW x = %d, R_PW y = %d, stat = %d\n", (uint32_t) offset->right_x, (uint32_t) offset->right_y,
                             (uint32_t) right_perpendicularWall_stat);
 #endif
         }
     }
-
-    spyPostPrintProfile(0, 64, current_left.sample, current_left.center_x_distance);
-    spyPostPrintProfile(43, 64, current_right.sample, current_right.center_x_distance);
-
+//    spyPostPrintProfile(0, 64, current_left.sample, current_left.center_x_distance);
+//    spyPostPrintProfile(43, 64, current_right.sample, current_right.center_x_distance);
     return SPYPOST_DRIVER_E_SUCCESS;
 }
 
@@ -501,6 +517,8 @@ void spyPostKeepUsefulPart(spyPostProfileStruct *currentProfile)
             }
         }
     }
+    //save the central y distance
+    currentProfile->center_y_distance = y_min * SPYPOST_TELEMETER_STEPS_MEASURE_MM;
     //shift buffer (y axis)
     for (i = 0; i < SPYPOST_ARRAY_PROFILE_LENGTH; i++)
     {
@@ -526,9 +544,9 @@ void spyPostKeepUsefulPart(spyPostProfileStruct *currentProfile)
         }
         i--;
     }
-    //save the central pouint32_t distance
+    //save the central x distance
     currentProfile->center_x_distance = (i - (SPYPOST_REFERENCE_SAMPLE_WIDTH / 2))
-                                            * SPYPOST_ENCODERS_STEPS_MEASURE_MM;
+                                                            * SPYPOST_ENCODERS_STEPS_MEASURE_MM;
     //move useful part of sample at the beginning of the buffer
     memmove(currentProfile->sample,
             currentProfile->sample + ( i - SPYPOST_REFERENCE_SAMPLE_WIDTH),
@@ -606,27 +624,27 @@ void spyPostTest()
     Vmax = 100;
 
     moveStartCell(Vmax, Vmax);
-    while (hasMoveEnded() != TRUE)
-        ;
+    while (hasMoveEnded() != TRUE);
     move(0, MAIN_DIST, Vmax, Vmax); //distance with last move offset
     spyPostGetOffset(&offset);
-    while (hasMoveEnded() != TRUE)
-        ;
-    //    if (offset.left_x != 0)
-    //    {
-    move(0, (OFFSET_DIST * 2.00) + offset.left_x, Vmax, Vmax);
-    ssd1306PrintfAtLine(90, 2, &Font_3x6, "L_x = %d", offset.left_x);
-    //    }
-    //    else
-    //    {
-    //        move(0, (OFFSET_DIST * 2.00) + offset.right_x, Vmax, Vmax);
-    //        ssd1306PrintfAtLine(90, 2, &Font_3x6, "R_x = %d", offset.right_x);
-    //    }
+    while (hasMoveEnded() != TRUE);
+    if (offset.left_x != 0)
+    {
+        move(0, (OFFSET_DIST * 2.00) + offset.left_x, Vmax, Vmax);
+        while (hasMoveEnded() != TRUE);
+        ssd1306PrintfAtLine(90, 2, &Font_3x6, "L_x = %d", offset.left_x);
+    }
+    else
+    {
+        move(0, (OFFSET_DIST * 2.00) + offset.right_x, Vmax, Vmax);
+        while (hasMoveEnded() != TRUE);
+        ssd1306PrintfAtLine(90, 2, &Font_3x6, "R_x = %d", offset.right_x);
+    }
+    bluetoothPrintf("offset left = %d, offset right = %d\n", (uint32_t) offset.left_x, (uint32_t) offset.right_x);
 
     ssd1306Refresh();
     telemetersStop();
     HAL_Delay(1000);
     motorsDriverSleep(ON);
-    while (expanderJoyFiltered() != JOY_LEFT)
-        ;
+    while (expanderJoyFiltered() != JOY_LEFT);
 }

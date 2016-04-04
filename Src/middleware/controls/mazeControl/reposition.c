@@ -130,8 +130,7 @@ int frontCal(float max_speed)
 {
     double relative_dist = 0.00;
 
-    while (hasMoveEnded() != TRUE)
-        ;
+    while (hasMoveEnded() != TRUE);
 
     if (getWallPresence(FRONT_WALL) == WALL_PRESENCE)
     {

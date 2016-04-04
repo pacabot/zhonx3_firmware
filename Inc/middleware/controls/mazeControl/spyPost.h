@@ -10,10 +10,10 @@
 
 typedef struct
 {
-    uint32_t left_x;
-    uint32_t right_x;
-    uint32_t left_y;
-    uint32_t right_y;
+    int32_t left_x;
+    int32_t right_x;
+    int32_t left_y;
+    int32_t right_y;
 } spyPostGetOffsetsStruct;
 
 #define SPYPOST_DRIVER_E_SUCCESS  0
