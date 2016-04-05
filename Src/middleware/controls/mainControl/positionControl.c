@@ -56,7 +56,8 @@ typedef struct
     double current_angle_consign;			//differential distance (mm) since the control start
     double old_angle;				 //effective distance at the previous call
     char end_control;
-    enum position_type position_type;
+    enum enablePositionCtrl enablePositionCtrl;
+    enum positionType positionType;
 
     pid_control_struct position_pid;
 } position_control_struct;
@@ -85,7 +86,7 @@ int positionControlInit(void)
 
     position_control.position_pid.instance = &encoder_or_gyro_pid_instance;
 
-    position_control.position_type = ENCODERS;
+    position_control.positionType = ENCODERS;
     position_params.sign = 1;
 
     pidControllerInit(position_control.position_pid.instance);
@@ -108,9 +109,15 @@ double positionControlGetPositionCommand(void)
     return position_control.position_command;
 }
 
-char positionControlSetPositionType(enum position_type position_type)
+char positionControlSetPositionType(enum positionType position_type)
 {
-    position_control.position_type = position_type;
+    position_control.positionType = position_type;
+    return POSITION_CONTROL_E_SUCCESS;
+}
+
+char positionControlEnablePositionCtrl(enum enablePositionCtrl enable_position_ctrl)
+{
+    position_control.enablePositionCtrl = enable_position_ctrl;
     return POSITION_CONTROL_E_SUCCESS;
 }
 
@@ -121,26 +128,26 @@ double positionControlSetSign(double sign)
 
 int positionControlLoop(void)
 {
-    if (mainControlGetWallFollowType() == CURVE)
-        position_control.position_type = GYRO;
-
-    if (position_control.position_type == NO_POSITION_CTRL)
+    if (mainControlGetWallFollowType() != CURVE)
     {
-        position_control.position_command = 0;
-        pidControllerReset(position_control.position_pid.instance);
-        return SPEED_CONTROL_E_SUCCESS;
+//        if (position_control.enablePositionCtrl == NO_POSITION_CTRL)
+//        {
+//            position_control.position_command = 0;
+//            pidControllerReset(position_control.position_pid.instance);
+//            return SPEED_CONTROL_E_SUCCESS;
+//        }
     }
 
-    if (position_control.position_type == ENCODERS)
+    if (position_control.positionType == ENCODERS)
     {
         if (position_params.sign > 0)
             position_control.current_angle = 180.00 * (encoderGetDist(ENCODER_L) - encoderGetDist(ENCODER_R))
-                    / (PI * ROTATION_DIAMETER);
+            / (PI * ROTATION_DIAMETER);
         else
             position_control.current_angle = 180.00 * (encoderGetDist(ENCODER_R) - encoderGetDist(ENCODER_L))
-                    / (PI * ROTATION_DIAMETER);
+            / (PI * ROTATION_DIAMETER);
     }
-    else if (position_control.position_type == GYRO)
+    else if (position_control.positionType == GYRO)
     {
         if (position_params.sign > 0)
             position_control.current_angle = gyroGetAngle();
@@ -149,7 +156,7 @@ int positionControlLoop(void)
     }
     else
     {
-        position_control.position_type = ENCODERS;
+        position_control.positionType = ENCODERS;
     }
 
     if (position_control.nb_loop < position_params.nb_loop)

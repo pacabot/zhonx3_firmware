@@ -84,7 +84,7 @@ int maze(void)
     printMaze(maze, positionZhonx.cordinate);
     do
     {
-        waitStart();
+  //      waitStart();
 
         telemetersStart();
         HAL_Delay(2000);

@@ -72,31 +72,39 @@ int moveCell(unsigned long nb_cell, float max_speed, float end_speed)
 
     for (i = 0; i < (nb_cell - 1); i++)
     {
-        while (hasMoveEnded() != TRUE)
-        {
-        }
+        while (hasMoveEnded() != TRUE);
         repositionSetInitialPosition(OFFSET_DIST); //absolute position into a cell
         move(0, (CELL_LENGTH), max_speed, max_speed);
     }
-    while (hasMoveEnded() != TRUE)
-    {
-    }
+    while (hasMoveEnded() != TRUE);
     repositionSetInitialPosition(OFFSET_DIST); //absolute position into a cell
     move(0, MAIN_DIST, max_speed, end_speed); //distance with last move offset
     spyPostGetOffset(&offset);
-    while (hasMoveEnded() != TRUE)
-    {
-    }
+    while (hasMoveEnded() != TRUE);
     repositionSetInitialPosition(CELL_LENGTH - OFFSET_DIST);	//absolute position into a cell
-//    if (repositionGetPostDist(-OFFSET_DIST) > 0.0 || repositionGetPostDist(-OFFSET_DIST) < 0.0)
-//    move(0, (OFFSET_DIST * 2.00), max_speed, end_speed);// + repositionGetPostDist(-OFFSET_DIST), max_speed, end_speed);
-    if (offset.left_x != 0)
+    if (repositionGetPostDist(-OFFSET_DIST) > 0.00 || repositionGetPostDist(-OFFSET_DIST) < 0.00)
+    {
+        move(0, (OFFSET_DIST * 2.00) + repositionGetPostDist(-OFFSET_DIST), max_speed, end_speed);
+#ifdef DEBUG_BASIC_MOVES
+        bluetoothWaitReady();
+        bluetoothPrintf("MOVE CELL = MAIN_DIST + OFFSET_DIST * 2 + (FRONT OFFSET) %d\n\r", (int32_t)repositionGetPostDist(-OFFSET_DIST));
+#endif
+    }
+    else if (offset.left_x != 0)
     {
         move(0, (OFFSET_DIST * 2.00) - offset.left_x, max_speed, max_speed);
+#ifdef DEBUG_BASIC_MOVES
+        bluetoothWaitReady();
+        bluetoothPrintf("MOVE CELL = MAIN_DIST + OFFSET_DIST * 2 - (L_OFFSET) %d\n\r", (int32_t)offset.left_x);
+#endif
     }
     else
     {
         move(0, (OFFSET_DIST * 2.00) - offset.right_x, max_speed, max_speed);
+#ifdef DEBUG_BASIC_MOVES
+        bluetoothWaitReady();
+        bluetoothPrintf("MOVE CELL = MAIN_DIST + OFFSET_DIST * 2 - (R_OFFSET) %d\n\r", (int32_t)offset.right_x);
+#endif
     }
     return POSITION_CONTROL_E_SUCCESS;
 }
@@ -128,14 +136,10 @@ int moveHalfCell_IN(float max_speed, float end_speed)
  */
 int moveHalfCell_OUT(float max_speed, float end_speed)
 {
-    while (hasMoveEnded() != TRUE)
-    {
-    }
+    while (hasMoveEnded() != TRUE);
     repositionSetInitialPosition(HALF_CELL_LENGTH);
     move(0, HALF_CELL_LENGTH - OFFSET_DIST, max_speed, end_speed);
-    while (hasMoveEnded() != TRUE)
-    {
-    }
+    while (hasMoveEnded() != TRUE);
     repositionSetInitialPosition(CELL_LENGTH - (OFFSET_DIST));
     move(0, (OFFSET_DIST * 2.00) + repositionGetPostDist(-OFFSET_DIST), max_speed, end_speed);
 
@@ -160,8 +164,11 @@ int moveStartCell(float max_speed, float end_speed)
     {
     }
     repositionSetInitialPosition(CELL_LENGTH - (OFFSET_DIST));
-    move(0, (OFFSET_DIST * 2.00), max_speed, end_speed);// + repositionGetPostDist(-OFFSET_DIST), max_speed, end_speed);
+    move(0, (OFFSET_DIST * 2.00) + repositionGetPostDist(-OFFSET_DIST), max_speed, end_speed);
 
+#ifdef DEBUG_BASIC_MOVES
+    bluetoothPrintf("MOVE START CELL = CELL_LENGTH - (Z3_CENTER_BACK_DIST + HALF_WALL_THICKNESS) + OFFSET_DIST * 2 \n\r");
+#endif
     return POSITION_CONTROL_E_SUCCESS;
 }
 
@@ -182,8 +189,11 @@ int moveRotateCW90(float max_speed, float end_speed)
     {
     }
     repositionSetInitialPosition((CELL_LENGTH - OFFSET_DIST));
-    move(0, (OFFSET_DIST * 2.00), max_speed, end_speed);// + repositionGetPostDist(-OFFSET_DIST), max_speed, end_speed);
+    move(0, (OFFSET_DIST * 2.00) + repositionGetPostDist(-OFFSET_DIST), max_speed, end_speed);
 
+#ifdef DEBUG_BASIC_MOVES
+    bluetoothPrintf("MOVE ROTATE CW90 = OFFSET_DIST * 2 \n\r");
+#endif
     return POSITION_CONTROL_E_SUCCESS;
 }
 
@@ -204,8 +214,11 @@ int moveRotateCCW90(float max_speed, float end_speed)
     {
     }
     repositionSetInitialPosition((CELL_LENGTH - OFFSET_DIST));
-    move(0, (OFFSET_DIST * 2.00), max_speed, end_speed);// + repositionGetPostDist(-OFFSET_DIST), max_speed, end_speed);
+    move(0, (OFFSET_DIST * 2.00) + repositionGetPostDist(-OFFSET_DIST), max_speed, end_speed);
 
+#ifdef DEBUG_BASIC_MOVES
+    bluetoothPrintf("MOVE ROTATE CCW90 = OFFSET_DIST * 2 \n\r");
+#endif
     return POSITION_CONTROL_E_SUCCESS;
 }
 
@@ -230,33 +243,21 @@ int moveUTurn(float speed_rotation, float max_speed, float end_speed)
     {
         wall_presence = LEFT_WALL;
     }
-
-    while (hasMoveEnded() != TRUE)
-    {
-    }
+    while (hasMoveEnded() != TRUE);
     moveHalfCell_IN(max_speed, 0);
-
-    //frontCal(speed_rotation);
-
-    while (hasMoveEnded() != TRUE)
-    {
-    }
+    while (hasMoveEnded() != TRUE);
     if (wall_presence == RIGHT_WALL)
     {
         move(90, 0, speed_rotation, speed_rotation);
         frontCal(speed_rotation);
-        while (hasMoveEnded() != TRUE)
-        {
-        }
+        while (hasMoveEnded() != TRUE);
         move(90, 0, speed_rotation, speed_rotation);
     }
     else if (wall_presence == LEFT_WALL)
     {
         move(-90, 0, speed_rotation, speed_rotation);
         frontCal(speed_rotation);
-        while (hasMoveEnded() != TRUE)
-        {
-        }
+        while (hasMoveEnded() != TRUE);
         move(-90, 0, speed_rotation, speed_rotation);
     }
     else
@@ -266,6 +267,9 @@ int moveUTurn(float speed_rotation, float max_speed, float end_speed)
 
     moveHalfCell_OUT(max_speed, end_speed);
 
+#ifdef DEBUG_BASIC_MOVES
+    bluetoothPrintf("MOVE U TURN \n\r");
+#endif
     return POSITION_CONTROL_E_SUCCESS;
 }
 
@@ -349,48 +353,48 @@ void movesTest()
     Vrotate = 100;
 
     //   moveStartCell(Vmax, Vmax);
-//    moveCell(1, Vmax, Vmin);
-//    moveCell(1, Vmax, Vmin);
-//    moveCell(1, Vmax, Vmin);
-//    moveCell(1, Vmax, Vmin);
-//    moveCell(1, Vmax, Vmin);
-//    moveRotateCCW90(Vmin, Vmin);
-//    moveCell(1, Vmax, Vmin);
-//    moveRotateCCW90(Vmin, Vmin);
-//    moveCell(1, Vmax, Vmin);
-//    moveRotateCCW90(Vmin, Vmin);
-//    moveCell(1, Vmax, Vmin);
-//    moveRotateCCW90(Vmin, Vmin);
-//    moveCell(1, Vmax, Vmin);
-//    moveRotateCCW90(Vmin, Vmin);
-//    moveCell(1, Vmax, Vmin);
-//    moveRotateCCW90(Vmin, Vmin);
+    //    moveCell(1, Vmax, Vmin);
+    //    moveCell(1, Vmax, Vmin);
+    //    moveCell(1, Vmax, Vmin);
+    //    moveCell(1, Vmax, Vmin);
+    //    moveCell(1, Vmax, Vmin);
+    //    moveRotateCCW90(Vmin, Vmin);
+    //    moveCell(1, Vmax, Vmin);
+    //    moveRotateCCW90(Vmin, Vmin);
+    //    moveCell(1, Vmax, Vmin);
+    //    moveRotateCCW90(Vmin, Vmin);
+    //    moveCell(1, Vmax, Vmin);
+    //    moveRotateCCW90(Vmin, Vmin);
+    //    moveCell(1, Vmax, Vmin);
+    //    moveRotateCCW90(Vmin, Vmin);
+    //    moveCell(1, Vmax, Vmin);
+    //    moveRotateCCW90(Vmin, Vmin);
 
-//    ssd1306Refresh();
-//    telemetersStop();
-//    motorsDriverSleep(ON);
-//    while(1);
+    //    ssd1306Refresh();
+    //    telemetersStop();
+    //    motorsDriverSleep(ON);
+    //    while(1);
     moveStartCell(Vmax, Vmax);
     moveCell(1, Vmax, Vmin);
-//    moveRotateCW90(Vmin, Vmin);
-//    moveCell(2, Vmax, Vmin);
+    //    moveRotateCW90(Vmin, Vmin);
+    //    moveCell(2, Vmax, Vmin);
     moveRotateCW90(Vmin, Vmin);
     moveRotateCCW90(Vmin, Vmin);
     moveRotateCCW90(Vmin, Vmin);
     moveHalfCell_IN(Vmin, Vmin);
-//    moveCell(2, Vmax, Vmin);
-//    moveRotateCW90(Vmin, Vmin);
-//   moveCell(1, Vmax, Vmin);
-//    moveRotateCCW90(Vmin, Vmin);
-//    moveRotateCCW90(Vmin, Vmin);
-//    moveCell(1, Vmax, Vmin);
-//    moveRotateCW90(Vmin, Vmin);
-//    moveRotateCW90(Vmin, Vmin);
-//    moveRotateCCW90(Vmin, Vmin);
-//    moveRotateCW90(Vmin, Vmin);
-//    moveRotateCCW90(Vmin, Vmin);
-//    moveRotateCW90(Vmin, Vmin);
-//    moveCell(1, Vmax, Vmin);
+    //    moveCell(2, Vmax, Vmin);
+    //    moveRotateCW90(Vmin, Vmin);
+    //   moveCell(1, Vmax, Vmin);
+    //    moveRotateCCW90(Vmin, Vmin);
+    //    moveRotateCCW90(Vmin, Vmin);
+    //    moveCell(1, Vmax, Vmin);
+    //    moveRotateCW90(Vmin, Vmin);
+    //    moveRotateCW90(Vmin, Vmin);
+    //    moveRotateCCW90(Vmin, Vmin);
+    //    moveRotateCW90(Vmin, Vmin);
+    //    moveRotateCCW90(Vmin, Vmin);
+    //    moveRotateCW90(Vmin, Vmin);
+    //    moveCell(1, Vmax, Vmin);
     //	moveCell(5, Vmax, Vmin);
     //	moveRotateCW90(Vmin, Vmin);
     //	moveCell(2, Vmax, Vmin);
