@@ -133,6 +133,8 @@ int main(void)
     bluetoothInit();
     toneInit();
 
+    spyPostInit();
+
     toneSetVolulme(20);
     tone(F3, 50);
     toneItMode(A3, 50);
