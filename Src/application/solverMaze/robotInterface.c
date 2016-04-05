@@ -56,12 +56,17 @@ void move_zhonx_arc(int direction_to_go, positionRobot *positionZhonx, int numbe
     switch (turn)
     {
         case FORWARD:
+#ifdef DEBUG_ROBOT_INTERFACE
+            bluetoothPrintf("FORWARD \n");
+#endif
             break;
         case RIGHT:
+#ifdef DEBUG_ROBOT_INTERFACE
+            bluetoothPrintf("RIGHT \n");
+#endif
             if (positionZhonx->midOfCell == true)
             {
-                while (hasMoveEnded() != TRUE)
-                    ;				//todo rotate in place
+                while (hasMoveEnded() != TRUE);				//todo rotate in place
                 move(90, 0, MAX_SPEED_ROTATION, 0);
             }
             else
@@ -72,18 +77,23 @@ void move_zhonx_arc(int direction_to_go, positionRobot *positionZhonx, int numbe
             }
             break;
         case UTURN:
+#ifdef DEBUG_ROBOT_INTERFACE
+            bluetoothPrintf("UTURN \n");
+#endif
             if (positionZhonx->midOfCell == false)
             {
                 numberOfCell--;
             }
             moveUTurn(MAX_SPEED_ROTATION, MAX_SPEED_TRANSLATION,
-            END_SPEED_TRANSLATION);
+                      END_SPEED_TRANSLATION);
             break;
         case LEFT:
+#ifdef DEBUG_ROBOT_INTERFACE
+            bluetoothPrintf("LEFT \n");
+#endif
             if (positionZhonx->midOfCell == true)
             {
-                while (hasMoveEnded() != TRUE)
-                    ;
+                while (hasMoveEnded() != TRUE);
                 move(-90, 0, MAX_SPEED_ROTATION, 0);
             }
             else
@@ -126,93 +136,93 @@ void doUTurn(positionRobot *positionZhonx)
 
 int floorSensorCalibrate(void)
 {
-//	int rv;
-//	int i = 0;
-//	unsigned long arrival_color = 30000;
-//	unsigned long area_color = 500000;
-//
-//	lineSensorsInit ();
-//	lineSensorsStart ();
-//	while (1)
-//	{
-//		//ssd1306ClearScreen ();
-//		//ssd1306Printf (0, 9, &Font_5x8, "Present arrival color");
-//		//ssd1306Printf (0, 64 - 9, &Font_5x8, "'RIGHT' TO VALIDATE");
-//		//ssd1306Refresh ();
-//
-//		arrival_color = lineSensors.front.adc_value;
-//		//ssd1306Printf (10, 18, &Font_5x8, "Color sens: %i", arrival_color);
-//
-//		//ssd1306Refresh ();
-//
-//		rv = wait_validation (500);
-//		if (rv == JOY_RIGHT)
-//		{
-//			// Value validated
-//			for (i = 0; i < 100; i++)
-//			{
-//				arrival_color += lineSensors.front.adc_value;
-//				HAL_Delay (50);
-//			}
-//			arrival_color /= i;
-//			//ssd1306ClearScreen ();
-//			//ssd1306Printf (2, 9, &Font_5x8, "Value %i validated",
-//			//		arrival_color);
-//			//ssd1306Refresh ();
-//			HAL_Delay (1000);
-//			break;
-//		}
-//		else if (rv == JOY_LEFT)
-//		{
-//			// User aborted
-//			//ssd1306ClearScreen ();
-//			//ssd1306Printf (2, 9, &Font_5x8, "Calibration aborted");
-//			//ssd1306Refresh ();
-//			HAL_Delay (1000);
-//			return 0;
-//		}
-//	}
-//
-//	while (1)
-//	{
-//		//ssd1306ClearScreen ();
-//		//ssd1306Printf (0, 9, &Font_5x8, "Present area color");
-//		//ssd1306Printf (0, 64 - 9, &Font_5x8, "'RIGHT' TO VALIDATE");
-//		////ssd1306Refresh ();
-//
-//		area_color = lineSensors.front.adc_value;
-//		//ssd1306Printf (10, 18, &Font_5x8, "Color sens: %i", area_color);
-//
-//		//ssd1306Refresh ();
-//
-//		rv = wait_validation (500);
-//		if (rv == JOY_RIGHT)
-//		{
-//			// Value validated
-//			for (i = 0; i < 100; i++)
-//			{
-//				area_color += lineSensors.front.adc_value;
-//				HAL_Delay (50);
-//			}
-//			area_color /= i;
-//			//ssd1306ClearScreen ();
-//			//ssd1306Printf (2, 9, &Font_5x8, "Value %i validated", area_color);
-//			//ssd1306Refresh ();
-//			HAL_Delay (1000);
-//			break;
-//		}
-//	}
-//
-//	zhonxSettings.threshold_color = (MAX(arrival_color, area_color)
-//			- MIN(arrival_color, area_color)) / 2;
-//	//ssd1306ClearScreen ();
-//	//ssd1306Printf (1, 1, &Font_5x8, "diff col : %d",
-//	//		zhonxSettings.threshold_color);
-//	//ssd1306Refresh ();
-//	HAL_Delay (2000);
-//	zhonxSettings.threshold_color += MIN(arrival_color, area_color);
-//	zhonxSettings.threshold_greater = (arrival_color > area_color);
-//
+    //	int rv;
+    //	int i = 0;
+    //	unsigned long arrival_color = 30000;
+    //	unsigned long area_color = 500000;
+    //
+    //	lineSensorsInit ();
+    //	lineSensorsStart ();
+    //	while (1)
+    //	{
+    //		//ssd1306ClearScreen ();
+    //		//ssd1306Printf (0, 9, &Font_5x8, "Present arrival color");
+    //		//ssd1306Printf (0, 64 - 9, &Font_5x8, "'RIGHT' TO VALIDATE");
+    //		//ssd1306Refresh ();
+    //
+    //		arrival_color = lineSensors.front.adc_value;
+    //		//ssd1306Printf (10, 18, &Font_5x8, "Color sens: %i", arrival_color);
+    //
+    //		//ssd1306Refresh ();
+    //
+    //		rv = wait_validation (500);
+    //		if (rv == JOY_RIGHT)
+    //		{
+    //			// Value validated
+    //			for (i = 0; i < 100; i++)
+    //			{
+    //				arrival_color += lineSensors.front.adc_value;
+    //				HAL_Delay (50);
+    //			}
+    //			arrival_color /= i;
+    //			//ssd1306ClearScreen ();
+    //			//ssd1306Printf (2, 9, &Font_5x8, "Value %i validated",
+    //			//		arrival_color);
+    //			//ssd1306Refresh ();
+    //			HAL_Delay (1000);
+    //			break;
+    //		}
+    //		else if (rv == JOY_LEFT)
+    //		{
+    //			// User aborted
+    //			//ssd1306ClearScreen ();
+    //			//ssd1306Printf (2, 9, &Font_5x8, "Calibration aborted");
+    //			//ssd1306Refresh ();
+    //			HAL_Delay (1000);
+    //			return 0;
+    //		}
+    //	}
+    //
+    //	while (1)
+    //	{
+    //		//ssd1306ClearScreen ();
+    //		//ssd1306Printf (0, 9, &Font_5x8, "Present area color");
+    //		//ssd1306Printf (0, 64 - 9, &Font_5x8, "'RIGHT' TO VALIDATE");
+    //		////ssd1306Refresh ();
+    //
+    //		area_color = lineSensors.front.adc_value;
+    //		//ssd1306Printf (10, 18, &Font_5x8, "Color sens: %i", area_color);
+    //
+    //		//ssd1306Refresh ();
+    //
+    //		rv = wait_validation (500);
+    //		if (rv == JOY_RIGHT)
+    //		{
+    //			// Value validated
+    //			for (i = 0; i < 100; i++)
+    //			{
+    //				area_color += lineSensors.front.adc_value;
+    //				HAL_Delay (50);
+    //			}
+    //			area_color /= i;
+    //			//ssd1306ClearScreen ();
+    //			//ssd1306Printf (2, 9, &Font_5x8, "Value %i validated", area_color);
+    //			//ssd1306Refresh ();
+    //			HAL_Delay (1000);
+    //			break;
+    //		}
+    //	}
+    //
+    //	zhonxSettings.threshold_color = (MAX(arrival_color, area_color)
+    //			- MIN(arrival_color, area_color)) / 2;
+    //	//ssd1306ClearScreen ();
+    //	//ssd1306Printf (1, 1, &Font_5x8, "diff col : %d",
+    //	//		zhonxSettings.threshold_color);
+    //	//ssd1306Refresh ();
+    //	HAL_Delay (2000);
+    //	zhonxSettings.threshold_color += MIN(arrival_color, area_color);
+    //	zhonxSettings.threshold_greater = (arrival_color > area_color);
+    //
     return 0;
 }
 

@@ -49,7 +49,7 @@
 
 /* Types definitions */
 #define SUCCES_GAP_DIST 	 2.0
-#define DIAG_DIST_FOR_FOLLOW 70.00 //80
+#define DIAG_DIST_FOR_FOLLOW 82
 #define MAX_FOLLOW_ERROR	 100.00	//Millimeter
 
 typedef struct
@@ -100,24 +100,24 @@ int wallFollowControlLoop(void)
     switch (repositionGetTelemeterUsed())
     {
         case NO_SIDE:
-            positionControlSetPositionType(POSITION_CTRL);
+            positionControlEnablePositionCtrl(POSITION_CTRL);
             wall_follow_control.follow_error = 0;
             pidControllerReset(wall_follow_control.follow_pid.instance);
             expanderSetLeds(0b000);
             break;
         case ALL_SIDE:
-            positionControlSetPositionType(NO_POSITION_CTRL);
+            positionControlEnablePositionCtrl(NO_POSITION_CTRL);
             wall_follow_control.follow_error = (double) getTelemeterDist(TELEMETER_DR)
                     - (double) getTelemeterDist(TELEMETER_DL);
             expanderSetLeds(0b101);
             break;
         case LEFT_SIDE:
-            positionControlSetPositionType(NO_POSITION_CTRL);
+            positionControlEnablePositionCtrl(NO_POSITION_CTRL);
             wall_follow_control.follow_error = DIAG_DIST_FOR_FOLLOW - (double) getTelemeterDist(TELEMETER_DL);
             expanderSetLeds(0b100);
             break;
         case RIGHT_SIDE:
-            positionControlSetPositionType(NO_POSITION_CTRL);
+            positionControlEnablePositionCtrl(NO_POSITION_CTRL);
             wall_follow_control.follow_error = -1.00 * (DIAG_DIST_FOR_FOLLOW - (double) getTelemeterDist(TELEMETER_DR));
             expanderSetLeds(0b001);
             break;
@@ -125,7 +125,7 @@ int wallFollowControlLoop(void)
 
     if (getWallPresence(FRONT_WALL) == TRUE)
     {
-        positionControlSetPositionType(POSITION_CTRL);
+        positionControlEnablePositionCtrl(POSITION_CTRL);
         wall_follow_control.follow_error = 0;
         pidControllerReset(wall_follow_control.follow_pid.instance);
     }

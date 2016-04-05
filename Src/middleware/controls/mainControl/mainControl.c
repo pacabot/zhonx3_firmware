@@ -79,7 +79,7 @@ int mainControlInit(void)
     move(0, 0, 0, 0);
     gyroResetAngle();
 
-    positionControlSetPositionType(ENCODERS);
+    positionControlSetPositionType(GYRO);
     pid_loop.start_state = TRUE;
     mainControlSetFollowType(FALSE);
 
@@ -174,6 +174,9 @@ int move(double angle, double radius_or_distance, double max_speed, double end_s
 
         speedProfileCompute(radius_or_distance, max_speed, end_speed);
         positionProfileCompute(0, 0, max_speed);
+#ifdef DEBUG_MAIN_CONTROL
+            bluetoothPrintf("STRAIGHT = %d\n", (int32_t)radius_or_distance);
+#endif
     }
     else
     {
@@ -181,6 +184,9 @@ int move(double angle, double radius_or_distance, double max_speed, double end_s
         distance = fabsf((PI * (2.00 * radius_or_distance) * (angle / 360.00)));
 
         positionProfileCompute(angle, speedProfileCompute(distance, max_speed, end_speed), max_speed);
+#ifdef DEBUG_MAIN_CONTROL
+        bluetoothPrintf("CURVE = %d\n", (int32_t)angle);
+#endif
     }
 
     pid_loop.start_state = TRUE;

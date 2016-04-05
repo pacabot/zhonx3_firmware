@@ -59,7 +59,7 @@
 
 #define SPYPOST_TELEMETER_STEPS_MEASURE_MM     2
 #define SPYPOST_NBITS_SAMPLING_RESOLUTION 	   32
-#define SPYPOST_MIN_DIAG_SENSOR_DISTANCE 	   60
+#define SPYPOST_MIN_DIAG_SENSOR_DISTANCE 	   65
 #define SPYPOST_MAX_DIAG_SENSOR_DISTANCE 	   (SPYPOST_TELEMETER_STEPS_MEASURE_MM * SPYPOST_NBITS_SAMPLING_RESOLUTION) + SPYPOST_MIN_DIAG_SENSOR_DISTANCE
 
 #define SPYPOST_REFERENCE_SAMPLE_HEIGHT 	   16	//16 bit height
@@ -91,23 +91,23 @@ typedef struct
 spyPostRefTypeProfileStruct ref_left = //todo add saved value uint32_to flash
 { .wallToNoWall =
 { .sample =
-{ 14, 28, 14, 28, 28, 28, 28, 28, 56, 56, 56, 56, 112, 224, 224, 448, 896, 1792, 3584, 14336 }, .center_x_distance =
-        58 }, .singlePost =
-        { .sample = { 896, 224, 112, 56, 28, 14, 7, 7, 7, 7, 7, 7, 14, 56, 56, 112, 224, 896, 3584, 28672 }, .center_x_distance =
-                62 }, .perpendicularWall =
-                { .sample = { 224, 224, 56, 56, 28, 28, 14, 14, 14, 7, 14, 14, 14, 28, 56, 112, 224, 896, 3584, 28672 }, .center_x_distance =
+{ 28, 28, 28, 28, 56, 56, 56, 56, 56, 112, 112, 224, 224, 224, 448, 896, 1792, 3584, 7168, 28672 }, .center_x_distance =
+        57 }, .singlePost =
+        { .sample = { 7168, 1792, 896, 448, 112, 56, 28, 28, 14, 14, 7, 28, 7, 14, 14, 28, 56, 112, 224, 896 }, .center_x_distance =
+                61 }, .perpendicularWall =
+                { .sample = { 896, 448, 224, 112, 56, 56, 28, 14, 14, 14, 7, 7, 14, 14, 28, 56, 112, 224, 896, 7168 }, .center_x_distance =
                         62 } };
 
 spyPostRefTypeProfileStruct ref_right = //todo add saved value uint32_to flash
 { .wallToNoWall =
 { .sample =
-{ 14, 14, 14, 14, 14, 14, 14, 14, 28, 28, 28, 56, 56, 112, 224, 448, 896, 1792, 7168, 28672 }, .center_x_distance =
-        56 }, .singlePost =
+{ 14, 14, 14, 14, 14, 14, 28, 28, 28, 28, 56, 56, 56, 112, 112, 224, 448, 896, 3584, 14336 }, .center_x_distance =
+        62 }, .singlePost =
         { .sample =
-        { 7168, 1792, 896, 448, 112, 56, 28, 14, 14, 14, 7, 7, 14, 14, 28, 112, 224, 896, 3584, 14336 }, .center_x_distance =
-                59 }, .perpendicularWall =
-                { .sample = { 448, 112, 56, 28, 28, 14, 7, 7, 7, 7, 7, 7, 14, 28, 56, 224, 448, 1792, 7168, 28672 }, .center_x_distance =
-                        60 }, };
+        { 57344, 7168, 1792, 448, 224, 112, 28, 28, 14, 7, 7, 7, 7, 28, 14, 56, 112, 448, 1792, 7168 }, .center_x_distance =
+                66 }, .perpendicularWall =
+                { .sample = { 3584, 1792, 448, 224, 112, 56, 28, 28, 14, 7, 7, 7, 7, 14, 28, 28, 56, 224, 896, 3584 }, .center_x_distance =
+                        65 }, };
 
 // Declare telemeters profiles in Flash memory
 //TELEMETERS_PROFILE *telemeters_profile = (TELEMETERS_PROFILE *) ADDR_FLASH_SECTOR_10;
@@ -203,8 +203,8 @@ uint32_t spyPostGetOffset(spyPostGetOffsetsStruct *offset)
             offset->left_y = ref_left.wallToNoWall.center_y_distance - current_left.center_y_distance;
         }
 #ifdef DEBUG_SPYPOST
-        bluetoothPrintf("L_WTNW x = %d, L_WTNW y = %d, stat = %d\n", (uint32_t) offset->left_x,
-                        (uint32_t) offset->left_y, (uint32_t) left_wallToNoWall_stat);
+        bluetoothPrintf("L_WTNW x = %d, L_WTNW y = %d, stat = %d\n", (int32_t) offset->left_x,
+                        (uint32_t) offset->left_y, (int32_t) left_wallToNoWall_stat);
 #endif
     }
     else
@@ -228,8 +228,8 @@ uint32_t spyPostGetOffset(spyPostGetOffsetsStruct *offset)
                 offset->left_y = ref_left.singlePost.center_y_distance - current_left.center_y_distance;
             }
 #ifdef DEBUG_SPYPOST
-            bluetoothPrintf("L_SP x = %d, L_SP y = %d, stat = %d\n", (uint32_t) offset->left_x,
-                            (uint32_t) offset->left_y, (uint32_t) left_singlePost_stat);
+            bluetoothPrintf("L_SP x = %d, L_SP y = %d, stat = %d\n", (int32_t) offset->left_x,
+                            (uint32_t) offset->left_y, (int32_t) left_singlePost_stat);
 #endif
         }
         else
@@ -245,8 +245,8 @@ uint32_t spyPostGetOffset(spyPostGetOffsetsStruct *offset)
                 bluetoothPrintf("SAME L PW SP, ");
                 bluetoothWaitReady();
             }
-            bluetoothPrintf("L_PW x = %d, L_PW y = %d, stat = %d\n", (uint32_t) offset->left_x,
-                            (uint32_t) offset->left_y, (uint32_t) left_perpendicularWall_stat);
+            bluetoothPrintf("L_PW x = %d, L_PW y = %d, stat = %d\n", (int32_t) offset->left_x,
+                            (uint32_t) offset->left_y, (int32_t) left_perpendicularWall_stat);
 #endif
         }
     }
@@ -270,8 +270,8 @@ uint32_t spyPostGetOffset(spyPostGetOffsetsStruct *offset)
             offset->right_y = ref_right.wallToNoWall.center_y_distance - current_right.center_y_distance;
         }
 #ifdef DEBUG_SPYPOST
-        bluetoothPrintf("R_WTNW x = %d, R_WTNW = y %d, stat = %d\n", (uint32_t) offset->right_x,
-                        (uint32_t) offset->right_y, (uint32_t) right_wallToNoWall_stat);
+        bluetoothPrintf("R_WTNW x = %d, R_WTNW = y %d, stat = %d\n", (int32_t) offset->right_x,
+                        (uint32_t) offset->right_y, (int32_t) right_wallToNoWall_stat);
 #endif
     }
     else
@@ -295,8 +295,8 @@ uint32_t spyPostGetOffset(spyPostGetOffsetsStruct *offset)
                 offset->right_y = ref_right.singlePost.center_y_distance - current_right.center_y_distance;
             }
 #ifdef DEBUG_SPYPOST
-            bluetoothPrintf("R_SP x = %d, R_SP y = %d, stat = %d\n", (uint32_t) offset->right_x,
-                            (uint32_t) offset->right_y, (uint32_t) right_singlePost_stat);
+            bluetoothPrintf("R_SP x = %d, R_SP y = %d, stat = %d\n", (int32_t) offset->right_x,
+                            (uint32_t) offset->right_y, (int32_t) right_singlePost_stat);
 #endif
         }
         else
@@ -312,8 +312,8 @@ uint32_t spyPostGetOffset(spyPostGetOffsetsStruct *offset)
                 bluetoothPrintf("SAME R PW SP, ");
                 bluetoothWaitReady();
             }
-            bluetoothPrintf("R_PW x = %d, R_PW y = %d, stat = %d\n", (uint32_t) offset->right_x,
-                            (uint32_t) offset->right_y, (uint32_t) right_perpendicularWall_stat);
+            bluetoothPrintf("R_PW x = %d, R_PW y = %d, stat = %d\n", (int32_t) offset->right_x,
+                            (uint32_t) offset->right_y, (int32_t) right_perpendicularWall_stat);
 #endif
         }
     }
@@ -360,7 +360,7 @@ uint32_t spyPostCalibration(void)
     ssd1306Refresh();
 
     mainControlInit();
-    mainControlSetFollowType(WALL_FOLLOW);
+    mainControlSetFollowType(NO_FOLLOW);
     HAL_Delay(4000);
 
     for (uint32_t i = 0; i < 3; i++)
@@ -434,6 +434,7 @@ void spyPostStartMeasure(spyPostProfileStruct *currentProfile, enum telemeterNam
     while (hasMoveEnded() != TRUE)
     {
     }
+//    mainControlSetFollowType(WALL_FOLLOW);
     repositionSetInitialPosition(OFFSET_DIST); //absolute position into a cell
     //take the measures
     move(0, SPYPOST_CAL_DISTANCE, SPYPOST_MOVE_SPEED, SPYPOST_MOVE_SPEED);
