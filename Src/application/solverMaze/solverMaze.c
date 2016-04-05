@@ -631,19 +631,20 @@ char diffway(coordinate way1[], coordinate way2[])
 
 void waitStart()
 {
-	// TODO : move this function in robot interface
-	ssd1306ClearRect(SSD1306_LCDWIDTH/2,10,SSD1306_LCDWIDTH/2,SSD1306_LCDHEIGHT);
-	ssd1306PrintfAtLine(SSD1306_LCDWIDTH/2,1,&Font_5x8,"wait start");
-	while(HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY)
-	{
-	}
-	ssd1306Refresh();
-	while(expanderJoyFiltered() != JOY_RIGHT)
-	{
-		HAL_Delay(20);
-	}
-	ssd1306ClearRect(SSD1306_LCDWIDTH/2,10,SSD1306_LCDWIDTH/2,SSD1306_LCDHEIGHT);
-	ssd1306Refresh();
+    ssd1306ClearRect(SSD1306_LCDWIDTH / 2, DISPLAY_OFFSET, SSD1306_LCDWIDTH / 2,
+    SSD1306_LCDHEIGHT);
+    ssd1306PrintfAtLine(SSD1306_LCDWIDTH / 2, 0, &Font_5x8, "wait start");
+    while (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY)
+    {
+    }
+    ssd1306Refresh();
+    while (expanderJoyFiltered() != JOY_RIGHT)
+    {
+        HAL_Delay(20);
+    }
+    ssd1306ClearRect(SSD1306_LCDWIDTH / 2, DISPLAY_OFFSET, SSD1306_LCDWIDTH / 2,
+    SSD1306_LCDHEIGHT);
+    ssd1306Refresh();
 //TODO : wait start with front sensors
 
 }

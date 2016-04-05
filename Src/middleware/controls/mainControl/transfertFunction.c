@@ -77,10 +77,10 @@ int transfertFunctionLoop(void)
 
     transfert_function.right_motor_pwm = (speedControlGetSpeedCommand()
             - (positionControlGetPositionCommand() + wallFollowGetCommand() + line_follow_control.line_follow_command))
-                                         * transfert_function.pwm_ratio;
+            * transfert_function.pwm_ratio;
     transfert_function.left_motor_pwm = (speedControlGetSpeedCommand()
             + (positionControlGetPositionCommand() + wallFollowGetCommand() + line_follow_control.line_follow_command))
-                                        * transfert_function.pwm_ratio;
+            * transfert_function.pwm_ratio;
 
     transfertFunctionLimiter();
     motorSet_DF(MOTOR_R, transfert_function.right_motor_pwm);

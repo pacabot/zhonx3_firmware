@@ -63,12 +63,17 @@ void move_zhonx_arc(int direction_to_go, positionRobot *positionZhonx, int numbe
     switch (turn)
     {
         case FORWARD:
+#ifdef DEBUG_ROBOT_INTERFACE
+            bluetoothPrintf("FORWARD \n");
+#endif
             break;
         case RIGHT:
+#ifdef DEBUG_ROBOT_INTERFACE
+            bluetoothPrintf("RIGHT \n");
+#endif
             if (positionZhonx->midOfCell == true)
             {
-                while (hasMoveEnded() != TRUE)
-                    ;				//todo rotate in place
+                while (hasMoveEnded() != TRUE);				//todo rotate in place
                 move(90, 0, MAX_SPEED_ROTATION, 0);
             }
             else
@@ -79,18 +84,23 @@ void move_zhonx_arc(int direction_to_go, positionRobot *positionZhonx, int numbe
             }
             break;
         case UTURN:
+#ifdef DEBUG_ROBOT_INTERFACE
+            bluetoothPrintf("UTURN \n");
+#endif
             if (positionZhonx->midOfCell == false)
             {
                 numberOfCell--;
             }
             moveUTurn(MAX_SPEED_ROTATION, MAX_SPEED_TRANSLATION,
-            END_SPEED_TRANSLATION);
+                      END_SPEED_TRANSLATION);
             break;
         case LEFT:
+#ifdef DEBUG_ROBOT_INTERFACE
+            bluetoothPrintf("LEFT \n");
+#endif
             if (positionZhonx->midOfCell == true)
             {
-                while (hasMoveEnded() != TRUE)
-                    ;
+                while (hasMoveEnded() != TRUE);
                 move(-90, 0, MAX_SPEED_ROTATION, 0);
             }
             else

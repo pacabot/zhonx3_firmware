@@ -150,11 +150,6 @@ float multimeterGyroTemp(void)
 
 void mulimeterTest(void)
 {
-//	mainControlInit();
-//	positionControlSetPositionType(GYRO);
-//	mainControlSetFollowType(NO_FOLLOW);
-//	move(-90, 0, 8, 8); //rotation example
-
     while (expanderJoyFiltered() != JOY_LEFT)
     {
         ssd1306ClearScreen(MAIN_AREA);

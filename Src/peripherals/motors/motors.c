@@ -58,11 +58,11 @@ typedef struct
 
 volatile motor left_motor = {
 LEFT_MOTOR_IN1,
-                              LEFT_MOTOR_IN2 };
+LEFT_MOTOR_IN2 };
 
 volatile motor right_motor = {
 RIGHT_MOTOR_IN1,
-                               RIGHT_MOTOR_IN2 };
+RIGHT_MOTOR_IN2 };
 
 extern TIM_HandleTypeDef MOTORS_TIMER;
 

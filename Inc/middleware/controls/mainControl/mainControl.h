@@ -20,6 +20,8 @@
 #define MAIN_CONTROL_E_SUCCESS  0
 #define MAIN_CONTROL_E_ERROR    MAKE_ERROR(MAIN_CONTROL_MODULE_ID, 1)
 
+//#define DEBUG_MAIN_CONTROL
+
 /* Types definitions */
 enum rotationTypeEnum
 {
@@ -48,7 +50,6 @@ int mainControlInit(void);
 int mainControl_IT(void);
 int setWallFollowControl(char isActive);
 char hasMoveEnded(void);
-double mouveGetInitialPosition(void);
 int mainControlSetFollowType(enum mainControlFollowType follow_type);
 enum mainControlFollowType mainControlGetFollowType(void);
 enum mainControlWallFollowType mainControlGetWallFollowType(void);

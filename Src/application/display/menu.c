@@ -101,7 +101,7 @@ const menuItem maze_menu=
 		{
 				{"new maze",'f',		(void*)maze},
 				{"calibration",'b',		(void*)&zhonxSettings.calibration_enabled},
-				{"color finish",'b',	(void*)&zhonxSettings.color_sensor_enabled},
+				{"color finish",'b',	(void*)&zhonxSettings.nime_competition},
 				{"x finish",'i',		(void*)&zhonxSettings.maze_end_coordinate.x},
 				{"y finish",'i',		(void*)&zhonxSettings.maze_end_coordinate.y}
 		}
@@ -119,7 +119,6 @@ const menuItem follower_menu=
 				{"Set F. KP",'i', (void*)&_KP},
 		}
 };
-
 
 const menuItem parameters_menu=
 {

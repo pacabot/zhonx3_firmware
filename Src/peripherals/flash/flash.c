@@ -274,8 +274,8 @@ int flash_write(FLASH_HANDLE handle, unsigned char *p_dest, unsigned char *p_src
         return FLASH_E_SUCCESS;
     }
     /* Check p_src is NOT in Flash */
-    if (((unsigned int) p_src >= ihandle->drv_desc.props.flash_base) && ((unsigned int) p_src
-            < (ihandle->drv_desc.props.flash_base + ihandle->drv_desc.props.flash_size)))
+    if (((unsigned int) p_src >= ihandle->drv_desc.props.flash_base)
+            && ((unsigned int) p_src < (ihandle->drv_desc.props.flash_base + ihandle->drv_desc.props.flash_size)))
     {
         TRACE("ERROR: src pointer is in Flash");
         return FLASH_E_WRONG_PARAMS;
@@ -325,8 +325,8 @@ int flash_read(FLASH_HANDLE handle, unsigned char *p_dest, unsigned char *p_src,
         return FLASH_E_SUCCESS;
     }
     /* Check p_dest is NOT in Flash */
-    if (((unsigned int) p_dest >= ihandle->drv_desc.props.flash_base) && ((unsigned int) p_dest
-            < (ihandle->drv_desc.props.flash_base + ihandle->drv_desc.props.flash_size)))
+    if (((unsigned int) p_dest >= ihandle->drv_desc.props.flash_base)
+            && ((unsigned int) p_dest < (ihandle->drv_desc.props.flash_base + ihandle->drv_desc.props.flash_size)))
     {
         TRACE("ERROR: dest pointer is in Flash");
         return FLASH_E_WRONG_PARAMS;
@@ -535,7 +535,7 @@ static int update_flash_with_buffer(FLASH_INTERNAL_HANDLE *ihandle, unsigned int
     base_bytes_to_save = base_offset;/*base_offset is the offset of the first erased/updated cell*/
     base_bytes_to_save_algn = ptr_align((unsigned int) base_bytes_to_save, ihandle->drv_desc.props.quantum_size); //not a pointer but the operation is the same
     end_bytes_to_save = ihandle->drv_desc.props.sector_size - end_offset
-                        - 1/*end_offset is the offset of the last erased/updated cell*/;
+            - 1/*end_offset is the offset of the last erased/updated cell*/;
 
     // NOTE: the 'length' variable is now only used as buf's length
 

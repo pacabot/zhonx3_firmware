@@ -52,41 +52,6 @@
 #include "middleware/controls/mazeControl/basicMoves.h"
 
 /**************************************************************************************/
-/***************       Decomposition of straight displacement      ********************/
-/**************************************************************************************/
-/*
- *                  O
- *                  O
- *      o           O           o
- *      :           O           :
- *      :           O           :
- *      :           M           :
- *      :           M           :
- *      :           M           :
- *      :           M           :
- *      :           M           :
- *      :           M           :
- *      :                       :
- *      o                       o
- *
- *      O = OFFSET_DIST
- *      M = MAIN_DIST
- *
- */
-
-typedef struct
-{
-    double current_position;
-} basicMoves_params_struct;
-
-static basicMoves_params_struct basicMoves_params;
-
-double mouveGetInitialPosition(void)
-{
-    return basicMoves_params.current_position;
-}
-
-/**************************************************************************************/
 /***************                    Basic Moves                    ********************/
 /**************************************************************************************/
 
@@ -102,43 +67,45 @@ int moveCell(unsigned long nb_cell, float max_speed, float end_speed)
     unsigned int i;
     spyPostGetOffsetsStruct offset;
 
-    ssd1306ClearScreen(MAIN_AREA);
-
     if (nb_cell == 0)
         return POSITION_CONTROL_E_SUCCESS;
 
     for (i = 0; i < (nb_cell - 1); i++)
     {
-        while (hasMoveEnded() != TRUE)
-        {
-        }
-        basicMoves_params.current_position = OFFSET_DIST; //absolute position into a cell
+        while (hasMoveEnded() != TRUE);
+        repositionSetInitialPosition(OFFSET_DIST); //absolute position into a cell
         move(0, (CELL_LENGTH), max_speed, max_speed);
     }
-    while (hasMoveEnded() != TRUE)
-    {
-    }
-    basicMoves_params.current_position = OFFSET_DIST; //absolute position into a cell
+    while (hasMoveEnded() != TRUE);
+    repositionSetInitialPosition(OFFSET_DIST); //absolute position into a cell
     move(0, MAIN_DIST, max_speed, end_speed); //distance with last move offset
     spyPostGetOffset(&offset);
-    while (hasMoveEnded() != TRUE)
+    while (hasMoveEnded() != TRUE);
+    repositionSetInitialPosition(CELL_LENGTH - OFFSET_DIST);	//absolute position into a cell
+    if (repositionGetPostDist(-OFFSET_DIST) > 0.00 || repositionGetPostDist(-OFFSET_DIST) < 0.00)
     {
-    }
-    basicMoves_params.current_position = CELL_LENGTH - OFFSET_DIST;	//absolute position into a cell
-    if (repositionGetPostDist(-OFFSET_DIST) > 0.0 || repositionGetPostDist(-OFFSET_DIST) < 0.0)
         move(0, (OFFSET_DIST * 2.00) + repositionGetPostDist(-OFFSET_DIST), max_speed, end_speed);
+#ifdef DEBUG_BASIC_MOVES
+        bluetoothWaitReady();
+        bluetoothPrintf("MOVE CELL = MAIN_DIST + OFFSET_DIST * 2 + (FRONT OFFSET) %d\n\r", (int32_t)repositionGetPostDist(-OFFSET_DIST));
+#endif
+    }
     else if (offset.left_x != 0)
     {
         move(0, (OFFSET_DIST * 2.00) - offset.left_x, max_speed, max_speed);
-        ssd1306PrintfAtLine(0, 2, &Font_5x8, "left_x = %d", offset.left_x);
+#ifdef DEBUG_BASIC_MOVES
+        bluetoothWaitReady();
+        bluetoothPrintf("MOVE CELL = MAIN_DIST + OFFSET_DIST * 2 - (L_OFFSET) %d\n\r", (int32_t)offset.left_x);
+#endif
     }
     else
     {
         move(0, (OFFSET_DIST * 2.00) - offset.right_x, max_speed, max_speed);
-        ssd1306PrintfAtLine(0, 2, &Font_5x8, "right_x = %d", offset.right_x);
+#ifdef DEBUG_BASIC_MOVES
+        bluetoothWaitReady();
+        bluetoothPrintf("MOVE CELL = MAIN_DIST + OFFSET_DIST * 2 - (R_OFFSET) %d\n\r", (int32_t)offset.right_x);
+#endif
     }
-
-    ssd1306Refresh();
     return POSITION_CONTROL_E_SUCCESS;
 }
 
@@ -154,7 +121,7 @@ int moveHalfCell_IN(float max_speed, float end_speed)
     while (hasMoveEnded() != TRUE)
     {
     }
-    basicMoves_params.current_position = OFFSET_DIST;
+    repositionSetInitialPosition(OFFSET_DIST);
     move(0, (HALF_CELL_LENGTH - OFFSET_DIST), max_speed, end_speed);
 
     return POSITION_CONTROL_E_SUCCESS;
@@ -169,15 +136,11 @@ int moveHalfCell_IN(float max_speed, float end_speed)
  */
 int moveHalfCell_OUT(float max_speed, float end_speed)
 {
-    while (hasMoveEnded() != TRUE)
-    {
-    }
-    basicMoves_params.current_position = HALF_CELL_LENGTH;
+    while (hasMoveEnded() != TRUE);
+    repositionSetInitialPosition(HALF_CELL_LENGTH);
     move(0, HALF_CELL_LENGTH - OFFSET_DIST, max_speed, end_speed);
-    while (hasMoveEnded() != TRUE)
-    {
-    }
-    basicMoves_params.current_position = CELL_LENGTH - (OFFSET_DIST);
+    while (hasMoveEnded() != TRUE);
+    repositionSetInitialPosition(CELL_LENGTH - (OFFSET_DIST));
     move(0, (OFFSET_DIST * 2.00) + repositionGetPostDist(-OFFSET_DIST), max_speed, end_speed);
 
     return POSITION_CONTROL_E_SUCCESS;
@@ -195,14 +158,17 @@ int moveStartCell(float max_speed, float end_speed)
     while (hasMoveEnded() != TRUE)
     {
     }
-    basicMoves_params.current_position = Z3_CENTER_BACK_DIST + HALF_WALL_THICKNESS;
+    repositionSetInitialPosition(Z3_CENTER_BACK_DIST + HALF_WALL_THICKNESS);
     move(0, ((CELL_LENGTH - (Z3_CENTER_BACK_DIST + HALF_WALL_THICKNESS)) - OFFSET_DIST), max_speed, end_speed);
     while (hasMoveEnded() != TRUE)
     {
     }
-    basicMoves_params.current_position = CELL_LENGTH - (OFFSET_DIST);
+    repositionSetInitialPosition(CELL_LENGTH - (OFFSET_DIST));
     move(0, (OFFSET_DIST * 2.00) + repositionGetPostDist(-OFFSET_DIST), max_speed, end_speed);
 
+#ifdef DEBUG_BASIC_MOVES
+    bluetoothPrintf("MOVE START CELL = CELL_LENGTH - (Z3_CENTER_BACK_DIST + HALF_WALL_THICKNESS) + OFFSET_DIST * 2 \n\r");
+#endif
     return POSITION_CONTROL_E_SUCCESS;
 }
 
@@ -222,9 +188,12 @@ int moveRotateCW90(float max_speed, float end_speed)
     while (hasMoveEnded() != TRUE)
     {
     }
-    basicMoves_params.current_position = (CELL_LENGTH - OFFSET_DIST);
+    repositionSetInitialPosition((CELL_LENGTH - OFFSET_DIST));
     move(0, (OFFSET_DIST * 2.00) + repositionGetPostDist(-OFFSET_DIST), max_speed, end_speed);
 
+#ifdef DEBUG_BASIC_MOVES
+    bluetoothPrintf("MOVE ROTATE CW90 = OFFSET_DIST * 2 \n\r");
+#endif
     return POSITION_CONTROL_E_SUCCESS;
 }
 
@@ -244,16 +213,18 @@ int moveRotateCCW90(float max_speed, float end_speed)
     while (hasMoveEnded() != TRUE)
     {
     }
-    basicMoves_params.current_position = (CELL_LENGTH - OFFSET_DIST);
+    repositionSetInitialPosition((CELL_LENGTH - OFFSET_DIST));
     move(0, (OFFSET_DIST * 2.00) + repositionGetPostDist(-OFFSET_DIST), max_speed, end_speed);
 
+#ifdef DEBUG_BASIC_MOVES
+    bluetoothPrintf("MOVE ROTATE CCW90 = OFFSET_DIST * 2 \n\r");
+#endif
     return POSITION_CONTROL_E_SUCCESS;
 }
 
 /**************************************************************************************/
-/***************                Combination Moves                  ********************/
+/***************                   Avanced Moves                   ********************/
 /**************************************************************************************/
-
 /*		 _________
  * 		o	 _	  o
  * 		:   / )   :
@@ -272,33 +243,21 @@ int moveUTurn(float speed_rotation, float max_speed, float end_speed)
     {
         wall_presence = LEFT_WALL;
     }
-
-    while (hasMoveEnded() != TRUE)
-    {
-    }
+    while (hasMoveEnded() != TRUE);
     moveHalfCell_IN(max_speed, 0);
-
-    //frontCal(speed_rotation);
-
-    while (hasMoveEnded() != TRUE)
-    {
-    }
+    while (hasMoveEnded() != TRUE);
     if (wall_presence == RIGHT_WALL)
     {
         move(90, 0, speed_rotation, speed_rotation);
         frontCal(speed_rotation);
-        while (hasMoveEnded() != TRUE)
-        {
-        }
+        while (hasMoveEnded() != TRUE);
         move(90, 0, speed_rotation, speed_rotation);
     }
     else if (wall_presence == LEFT_WALL)
     {
         move(-90, 0, speed_rotation, speed_rotation);
         frontCal(speed_rotation);
-        while (hasMoveEnded() != TRUE)
-        {
-        }
+        while (hasMoveEnded() != TRUE);
         move(-90, 0, speed_rotation, speed_rotation);
     }
     else
@@ -308,6 +267,9 @@ int moveUTurn(float speed_rotation, float max_speed, float end_speed)
 
     moveHalfCell_OUT(max_speed, end_speed);
 
+#ifdef DEBUG_BASIC_MOVES
+    bluetoothPrintf("MOVE U TURN \n\r");
+#endif
     return POSITION_CONTROL_E_SUCCESS;
 }
 
@@ -386,30 +348,53 @@ void movesTest()
     HAL_Delay(2000);
 
     int Vmin, Vmax, Vrotate;
-    Vmin = 400;
-    Vmax = 400;
-    Vrotate = 400;
+    Vmin = 50;
+    Vmax = 50;
+    Vrotate = 100;
 
+    //   moveStartCell(Vmax, Vmax);
+    //    moveCell(1, Vmax, Vmin);
+    //    moveCell(1, Vmax, Vmin);
+    //    moveCell(1, Vmax, Vmin);
+    //    moveCell(1, Vmax, Vmin);
+    //    moveCell(1, Vmax, Vmin);
+    //    moveRotateCCW90(Vmin, Vmin);
+    //    moveCell(1, Vmax, Vmin);
+    //    moveRotateCCW90(Vmin, Vmin);
+    //    moveCell(1, Vmax, Vmin);
+    //    moveRotateCCW90(Vmin, Vmin);
+    //    moveCell(1, Vmax, Vmin);
+    //    moveRotateCCW90(Vmin, Vmin);
+    //    moveCell(1, Vmax, Vmin);
+    //    moveRotateCCW90(Vmin, Vmin);
+    //    moveCell(1, Vmax, Vmin);
+    //    moveRotateCCW90(Vmin, Vmin);
+
+    //    ssd1306Refresh();
+    //    telemetersStop();
+    //    motorsDriverSleep(ON);
+    //    while(1);
     moveStartCell(Vmax, Vmax);
     moveCell(1, Vmax, Vmin);
-    moveRotateCW90(Vmin, Vmin);
-    moveCell(2, Vmax, Vmin);
-    moveRotateCW90(Vmin, Vmin);
-    moveRotateCCW90(Vmin, Vmin);
-    moveRotateCCW90(Vmin, Vmin);
-    moveCell(2, Vmax, Vmin);
-    moveRotateCW90(Vmin, Vmin);
-    moveCell(1, Vmax, Vmin);
-    moveRotateCCW90(Vmin, Vmin);
-    moveRotateCCW90(Vmin, Vmin);
-    moveCell(1, Vmax, Vmin);
-    moveRotateCW90(Vmin, Vmin);
+    //    moveRotateCW90(Vmin, Vmin);
+    //    moveCell(2, Vmax, Vmin);
     moveRotateCW90(Vmin, Vmin);
     moveRotateCCW90(Vmin, Vmin);
-    moveRotateCW90(Vmin, Vmin);
     moveRotateCCW90(Vmin, Vmin);
-    moveRotateCW90(Vmin, Vmin);
-    moveCell(1, Vmax, Vmin);
+    moveHalfCell_IN(Vmin, Vmin);
+    //    moveCell(2, Vmax, Vmin);
+    //    moveRotateCW90(Vmin, Vmin);
+    //   moveCell(1, Vmax, Vmin);
+    //    moveRotateCCW90(Vmin, Vmin);
+    //    moveRotateCCW90(Vmin, Vmin);
+    //    moveCell(1, Vmax, Vmin);
+    //    moveRotateCW90(Vmin, Vmin);
+    //    moveRotateCW90(Vmin, Vmin);
+    //    moveRotateCCW90(Vmin, Vmin);
+    //    moveRotateCW90(Vmin, Vmin);
+    //    moveRotateCCW90(Vmin, Vmin);
+    //    moveRotateCW90(Vmin, Vmin);
+    //    moveCell(1, Vmax, Vmin);
     //	moveCell(5, Vmax, Vmin);
     //	moveRotateCW90(Vmin, Vmin);
     //	moveCell(2, Vmax, Vmin);
