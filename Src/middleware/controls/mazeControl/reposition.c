@@ -114,7 +114,7 @@ enum telemeters_used repositionGetTelemeterUsed(void)
 /* This function returns the maintain loop count according to front wall detection to avoid early turns leading to wall collision.
  *  void
  */
-double repositionGetPostDist(double offset)
+double repositionGetFrontDist(double offset)
 {
     double distance;
     if (getWallPresence(FRONT_WALL) == WALL_PRESENCE)
@@ -129,6 +129,10 @@ double repositionGetPostDist(double offset)
     }
     else
         return 0.00;
+}
+
+void repositionGetFrontDistCal(void)
+{
 }
 
 int frontCal(float max_speed)
