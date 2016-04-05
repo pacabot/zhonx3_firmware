@@ -69,7 +69,7 @@ void run2(labyrinthe *maze, positionRobot *positionZhonx, coordinate start_oordi
     {
         choice = -1;
         clearMazelength(maze);
-        poids(maze, zhonxSettings.maze_end_coordinate, true);
+        poids(maze, zhonxSettings.maze_end_coordinate, true, false);
         printMaze(*maze, positionZhonx->cordinate);
         waitStart();
         moveVirtualZhonx(*maze, *positionZhonx, way, end_coordinate);

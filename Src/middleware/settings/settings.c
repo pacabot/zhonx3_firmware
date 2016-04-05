@@ -21,6 +21,8 @@ int settingsInit(void)
 	zhonxSettings.maze_end_coordinate.x=7;
 	zhonxSettings.maze_end_coordinate.y=7;
 	zhonxSettings.sleep_delay_s=300; // the robot will go sleep in zhonxSettings.sleep_delay_s S
+	zhonxSettings.wall_know_cost = 1;
+	zhonxSettings.cell_cost = 5;
 
     // Flash Initialization
     // TODO: Check returned values of the following functions

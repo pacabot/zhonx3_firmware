@@ -72,9 +72,6 @@
 #define SSD1306_EXTERNALVCC             0x01
 #define SSD1306_SWITCHCAPVCC            0x02
 
-#define LINE_SPACING 					10
-#define HEAD_MARGIN						11
-
 /* extern variables ---------------------------------------------------------*/
 extern I2C_HandleTypeDef hi2c1;
 //extern DMA_HandleTypeDef hdma_i2c1_tx;

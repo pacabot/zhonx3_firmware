@@ -18,9 +18,13 @@
 #define SSD1306_DRIVER_E_SUCCESS  0
 #define SSD1306_DRIVER_E_ERROR    MAKE_ERROR(SSD1306_DRIVER_MODULE_ID, 1)
 
+/* screen specification */
 #define SSD1306_LCDWIDTH                128
 #define SSD1306_LCDHEIGHT               64
 #define SSD1306_LCDPAGEHEIGHT           8   //8 lines per page
+
+#define LINE_SPACING                    10
+#define HEAD_MARGIN                     11
 
 enum refreshTypeEnum
 {

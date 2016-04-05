@@ -13,6 +13,7 @@
 #include "config/module_id.h"
 #include "config/errors.h"
 #include "middleware/settings/settings.h"
+#include "middleware/wall_sensors/wall_sensors.h"
 
 /* Error codes */
 #define MAZE_SOLVER_E_SUCCESS  0
@@ -20,10 +21,10 @@
 
 //Define for the maze
 
-#define MAZE_SIZE 16
+#define MAZE_SIZE 17
 
 //definition for numerotation function
-#define CANT_GO 1023
+#define CANT_GO 2147483647
 
 //orientation define
 #define NORTH 0
@@ -63,17 +64,17 @@
 //Structures typedef
 typedef struct
 {
-    char wall_north;
-    char wall_south;
-    char wall_east;
-    char wall_west;
-    int length;
-} one_cell;
+  char wall_north;
+  char wall_south;
+  char wall_east;
+  char wall_west;
+  int length;
+}one_cell;
 
 typedef struct
 {
-    one_cell cell[MAZE_SIZE][MAZE_SIZE];
-} labyrinthe;
+  one_cell cell[MAZE_SIZE][MAZE_SIZE];
+}labyrinthe;
 
 typedef struct
 {
@@ -85,7 +86,8 @@ typedef struct
 
 // fonctions
 extern int maze(void);
-int exploration(labyrinthe *maze, positionRobot* positionZhonx, positionRobot start_position, coordinate *end_coordinate);
+int exploration(labyrinthe *maze, positionRobot* positionZhonx,const positionRobot *start_coordinates,
+        coordinate *end_coordinate);
 int goToPosition(labyrinthe *maze, positionRobot* positionZhonx,  coordinate end_coordinate);
 int moveVirtualZhonx(labyrinthe maze, positionRobot positionZhonxVirtuel,
 		coordinate way[], coordinate end_coordinate);
@@ -101,4 +103,6 @@ void waitStart(void);
 char diffway(coordinate way1[], coordinate way2[]);
 coordinate findEndCoordinate (coordinate coordinate_tab[]);
 int findArrival (labyrinthe maze, coordinate *end_coordinate);
+walls ask_cell_state ();
+void print_cell_state (walls cell_state);
 #endif /* RESOLUTION_MAZE_H_ */
