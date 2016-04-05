@@ -45,20 +45,25 @@
 /* Declarations for this module */
 #include "middleware/controls/mazeControl/reposition.h"
 
-#define DEADZONE_DIST		 65.00	//Distance between the start of the cell and doubt area
-#define DEADZONE			 70.00	//doubt area
+#define DEADZONE_DIST		 80.00	//Distance between the start of the cell and doubt area
+#define DEADZONE			 100.00	//doubt area
 #define GETWALLPRESENCEZONE  5.00
 
 static enum telemeters_used telemeter_used = NO_SIDE;
+static double current_position = 0;
 
-void repositionResetTelemeterUsed(void)
+void repositionSetInitialPosition(double initial_position)
 {
+    current_position = initial_position;
     telemeter_used = NO_SIDE;
+#ifdef DEBUG_DISPLACEMENT
+    bluetoothPrintf("initial dist = %d\n", (int)initial_position);
+#endif
 }
 
 enum telemeters_used repositionGetTelemeterUsed(void)
 {
-    double distance = ((encoderGetDist(ENCODER_L) + encoderGetDist(ENCODER_R)) / 2.00) + moveGetInitialPosition();
+    double distance = ((encoderGetDist(ENCODER_L) + encoderGetDist(ENCODER_R)) / 2.00) + current_position;
 
 #ifdef DEBUG_REPOSITION
     static char old_telemeter_used = 0xFF;
@@ -86,7 +91,9 @@ enum telemeters_used repositionGetTelemeterUsed(void)
     }
 #endif
 
-    if (((distance > OFFSET_DIST) && (distance < OFFSET_DIST + GETWALLPRESENCEZONE))
+    if ((distance > DEADZONE_DIST - (DEADZONE / 2.00)) && (distance < DEADZONE_DIST + (DEADZONE / 2.00)))
+        telemeter_used = NO_SIDE;
+    else if (((distance > OFFSET_DIST) && (distance < OFFSET_DIST + GETWALLPRESENCEZONE))
             || (distance > (DEADZONE_DIST + (DEADZONE / 2.00)) ))
     {
         if ((getWallPresence(LEFT_WALL) == TRUE) && (getWallPresence(RIGHT_WALL) == TRUE))
@@ -101,22 +108,11 @@ enum telemeters_used repositionGetTelemeterUsed(void)
             telemeter_used = NO_SIDE;
     }
 
-    if ((distance > DEADZONE_DIST - (DEADZONE / 2.00)) && (distance < DEADZONE_DIST + (DEADZONE / 2.00)))
-        telemeter_used = NO_SIDE;
-
-    //    if (telemeter_used != NO_SIDE)
-    //    {
-    //        toneStop();
-    //    }
-    //    else
-    //    {
-    //        toneStart(F3H);
-    //    }
     return telemeter_used;
 }
 
 /* This function returns the maintain loop count according to front wall detection to avoid early turns leading to wall collision.
- * 	void
+ *  void
  */
 double repositionGetPostDist(double offset)
 {
