@@ -38,6 +38,8 @@
 /* Middleware declarations */
 #include "middleware/controls/pidController/pidController.h"
 
+#define MAX_SPEED_ERROR     20.00 //Millimeter
+
 typedef struct
 {
     double distance_consign;			//total distance
@@ -95,8 +97,8 @@ int speedControlInit(void)
     memset(&speed_params, 0, sizeof(speed_params_struct));
 
     encoder_pid_instance.Kp = 638.00;
-    encoder_pid_instance.Ki = 0, 02666 / 1000.00;
-    encoder_pid_instance.Kd = 0, 00666 * 1000.00;
+    encoder_pid_instance.Ki = 0.02666 / 1000.00;
+    encoder_pid_instance.Kd = 0.00666 * 1000.00;
 
     speed_control.speed_pid.instance = &encoder_pid_instance;
 
@@ -157,6 +159,19 @@ int speedControlLoop(void)
     }
 
     speed_control.speed_error = speed_control.current_distance_consign - speed_control.current_distance;//for distance control
+    if (fabs(speed_control.speed_error) > MAX_SPEED_ERROR)
+    {
+        bluetoothPrintf("SPEED ERROR = %d, DISTANCE CONSIGN = %d, CURRENT DISTANCE = %d\n", (int32_t) speed_control.speed_error,
+                        (int32_t) speed_control.current_distance_consign,
+                        (int32_t) speed_control.current_distance);
+//        pid_loop.start_state = FALSE;
+//        motorsDriverSleep(ON);
+//        ssd1306ClearScreen(MAIN_AREA);
+//        ssd1306DrawStringAtLine(10, 1, "SPEED ERROR!!!", &Font_5x8);
+//        ssd1306WaitReady();
+//        ssd1306Refresh();
+    }
+
     speed_control.speed_command = pidController(speed_control.speed_pid.instance, speed_control.speed_error)
             * (float) speed_params.sign;
 
@@ -232,13 +247,13 @@ int speedCompute(void)
  t²
  */
 /**************************************************************************/
-double speedProfileCompute(double distance, double max_speed, double end_speed)
+double speedProfileCompute(double distance, double max_speed, double end_speed, double accel)
 {
     char str[50];
     speed_params.end_speed = end_speed;
     speed_params.max_speed = max_speed;
-    speed_params.accel = MAX_ACCEL;
-    speed_params.decel = MAX_ACCEL;
+    speed_params.accel = accel;
+    speed_params.decel = accel;
 
     speed_control.nb_loop_accel = 0;
     speed_control.nb_loop_maint = 0;

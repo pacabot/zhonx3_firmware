@@ -73,7 +73,7 @@ int wallSensorsCalibrationFront(void)
     telemetersStart();
 
     // take the measures
-    move(0, -MEASURED_DISTANCE, 50, 50);
+    moveStraight(-MEASURED_DISTANCE, 50, 50, 20);
     ssd1306Refresh();
     for (i = 0; i < TELEMETER_PROFILE_ARRAY_LENGTH; i++)
     {
@@ -171,7 +171,7 @@ int wallSensorsCalibrationDiag(void)
     telemetersStart();
 
     // take the measures
-    move(0, -number_of_millimeter_per_loop * TELEMETER_PROFILE_ARRAY_LENGTH, 50, 50);
+    moveStraight(-number_of_millimeter_per_loop * TELEMETER_PROFILE_ARRAY_LENGTH, 50, 50, 20);
     for (i = 0; i < TELEMETER_PROFILE_ARRAY_LENGTH; i++)
     {
         while ((((int) (encoderGetDist(ENCODER_L) + encoderGetDist(ENCODER_R))

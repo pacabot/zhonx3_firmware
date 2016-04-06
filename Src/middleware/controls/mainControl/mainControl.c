@@ -77,11 +77,9 @@ int mainControlInit(void)
     transfertFunctionInit();
 
     move(0, 0, 0, 0);
-    gyroResetAngle();
 
     positionControlSetPositionType(ENCODERS);
-    pid_loop.start_state = TRUE;
-    mainControlSetFollowType(FALSE);
+    mainControlSetFollowType(NO_FOLLOW);
 
     move_params.moveType = STRAIGHT;
 
@@ -155,12 +153,11 @@ enum mainControlWallFollowType mainControlGetWallFollowType()
 
 int move(double angle, double radius_or_distance, double max_speed, double end_speed)
 {
+    double distance;
     pid_loop.start_state = FALSE; //stop contol loop
 
     encodersReset();
     gyroResetAngle();
-
-    double distance;
 
     speedControlSetSign((double) SIGN(radius_or_distance));
     radius_or_distance = fabsf(radius_or_distance);
@@ -172,10 +169,10 @@ int move(double angle, double radius_or_distance, double max_speed, double end_s
     {
         move_params.moveType = STRAIGHT;
 
-        speedProfileCompute(radius_or_distance, max_speed, end_speed);
+        speedProfileCompute(radius_or_distance, max_speed, end_speed, MAX_ACCEL);
         positionProfileCompute(0, 0, max_speed);
 #ifdef DEBUG_MAIN_CONTROL
-            bluetoothPrintf("STRAIGHT = %d\n", (int32_t)radius_or_distance);
+        bluetoothPrintf("STRAIGHT = %d\n", (int32_t)radius_or_distance);
 #endif
     }
     else
@@ -183,11 +180,31 @@ int move(double angle, double radius_or_distance, double max_speed, double end_s
         move_params.moveType = CURVE;
         distance = fabsf((PI * (2.00 * radius_or_distance) * (angle / 360.00)));
 
-        positionProfileCompute(angle, speedProfileCompute(distance, max_speed, end_speed), max_speed);
+        positionProfileCompute(angle, speedProfileCompute(distance, max_speed, end_speed, MAX_ACCEL), max_speed);
 #ifdef DEBUG_MAIN_CONTROL
         bluetoothPrintf("CURVE = %d\n", (int32_t)angle);
 #endif
     }
+
+    pid_loop.start_state = TRUE;
+    motorsDriverSleep(OFF);
+    return POSITION_CONTROL_E_SUCCESS;
+}
+
+int moveStraight(double distance, double max_speed, double end_speed, double accel)
+{
+    pid_loop.start_state = FALSE; //stop contol loop
+
+    encodersReset();
+    gyroResetAngle();
+
+    speedControlSetSign((double) SIGN(distance));
+    distance = fabsf(distance);
+
+    move_params.moveType = STRAIGHT;
+
+    speedProfileCompute(distance, max_speed, end_speed, accel);
+    positionProfileCompute(0, 0, max_speed);
 
     pid_loop.start_state = TRUE;
     motorsDriverSleep(OFF);

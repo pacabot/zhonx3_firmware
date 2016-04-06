@@ -51,6 +51,8 @@
 #define DEADZONE			 100.00	//doubt area
 #define GETWALLPRESENCEZONE  5.00
 
+#define MAX_FRONT_DIST_ERROR OFFSET_DIST
+
 static enum telemeters_used telemeter_used = NO_SIDE;
 static double current_position = 0;
 
@@ -118,15 +120,22 @@ enum telemeters_used repositionGetTelemeterUsed(void)
  */
 double repositionGetFrontDist(void)
 {
-    double distance;
+    double error_distance;
     if (getWallPresence(FRONT_WALL) == WALL_PRESENCE)
     {
-        distance = ((getTelemeterDist(TELEMETER_FL) + getTelemeterDist(TELEMETER_FR)) / 2.00) - 142.00;
+        error_distance = ((getTelemeterDist(TELEMETER_FL) + getTelemeterDist(TELEMETER_FR)) / 2.00) - 142.00;
+        if (error_distance > MAX_FRONT_DIST_ERROR)
+        {
+            bluetoothPrintf("FRONT ERROR DIST OVER RANGE", (int32_t)error_distance);
+            bluetoothWaitReady();
+            error_distance = 0.0;
+        }
+
 #ifdef DEBUG_DISPLACEMENT
         // Calculating average distance detected by FR and FL Telemeters
-        //bluetoothPrintf("distance = %d \n", (int)distance);
+        bluetoothPrintf("distance = %d \n", (int)distance);
 #endif
-        return distance;
+        return error_distance;
     }
     else
         return 0.00;

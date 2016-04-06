@@ -345,6 +345,20 @@ void ssd1306ClearScreen(enum refreshTypeEnum clearType)
 
 /**************************************************************************/
 /*!
+ @brief wait I2C_STATE_READY
+ */
+/**************************************************************************/
+void ssd1306WaitReady(void)
+{
+    if (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY)
+    {
+        HAL_I2C_MspDeInit(&hi2c1);
+        HAL_I2C_MspInit(&hi2c1);
+    }
+}
+
+/**************************************************************************/
+/*!
  @brief Renders the contents of the pixel buffer on the LCD
  */
 /**************************************************************************/
