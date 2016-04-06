@@ -79,7 +79,7 @@ int mainControlInit(void)
     move(0, 0, 0, 0);
     gyroResetAngle();
 
-    positionControlSetPositionType(GYRO);
+    positionControlSetPositionType(ENCODERS);
     pid_loop.start_state = TRUE;
     mainControlSetFollowType(FALSE);
 

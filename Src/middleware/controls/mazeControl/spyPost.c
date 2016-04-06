@@ -62,9 +62,9 @@
 #define SPYPOST_CAL_DISTANCE			       (uint32_t)MAIN_DIST
 #define SPYPOST_ARRAY_PROFILE_LENGTH 		   ((SPYPOST_CAL_DISTANCE)/SPYPOST_ENCODERS_STEPS_MEASURE_MM)
 
-#define SPYPOST_TELEMETER_STEPS_MEASURE_MM     2
+#define SPYPOST_TELEMETER_STEPS_MEASURE_MM     3
 #define SPYPOST_NBITS_SAMPLING_RESOLUTION 	   32
-#define SPYPOST_MIN_DIAG_SENSOR_DISTANCE 	   65
+#define SPYPOST_MIN_DIAG_SENSOR_DISTANCE 	   55
 #define SPYPOST_MAX_DIAG_SENSOR_DISTANCE 	   (SPYPOST_TELEMETER_STEPS_MEASURE_MM * SPYPOST_NBITS_SAMPLING_RESOLUTION) + SPYPOST_MIN_DIAG_SENSOR_DISTANCE
 
 #define SPYPOST_REFERENCE_SAMPLE_HEIGHT 	   16	//16 bit height
@@ -406,6 +406,7 @@ uint32_t spyPostCalibration(void)
 
     mainControlInit();
     mainControlSetFollowType(NO_FOLLOW);
+    positionControlSetPositionType(ENCODERS);
     HAL_Delay(4000);
 
     for (i = 0; i < 3; i++)
@@ -475,9 +476,7 @@ uint32_t spyPostCalibration(void)
     bluetoothPrintf("\n perpendicularWall x = %d\n", refProfile_flash->perpendicularWall.center_x_distance);
     spyPostSendBTProfile((uint32_t*) &refProfile_flash->perpendicularWall.sample, SPYPOST_REFERENCE_SAMPLE_WIDTH);
 
-    while (expanderJoyFiltered() != JOY_LEFT)
-    {
-    }
+    while (expanderJoyFiltered() != JOY_LEFT);
     return SPYPOST_DRIVER_E_SUCCESS;
 }
 
@@ -501,9 +500,7 @@ void spyPostStartMeasure(spyPostProfileStruct *currentProfile, enum telemeterNam
     //offset dist
     repositionSetInitialPosition(0); //absolute position into a cell
     move(0, OFFSET_DIST, SPYPOST_MOVE_SPEED, SPYPOST_MOVE_SPEED);
-    while (hasMoveEnded() != TRUE)
-    {
-    }
+    while (hasMoveEnded() != TRUE);
 //    mainControlSetFollowType(WALL_FOLLOW);
     repositionSetInitialPosition(OFFSET_DIST); //absolute position into a cell
     //take the measures
@@ -511,8 +508,7 @@ void spyPostStartMeasure(spyPostProfileStruct *currentProfile, enum telemeterNam
     for (i = 0; i < SPYPOST_ARRAY_PROFILE_LENGTH; i++)
     {
         while ((((uint32_t) (encoderGetDist(ENCODER_L) + encoderGetDist(ENCODER_R))
-                <= (SPYPOST_ENCODERS_STEPS_MEASURE_MM * 2 * i))) && (hasMoveEnded() != TRUE))
-            ;
+                <= (SPYPOST_ENCODERS_STEPS_MEASURE_MM * 2 * i))) && (hasMoveEnded() != TRUE));
 
         sample = (uint32_t) getTelemeterDist(telemeterName);
 

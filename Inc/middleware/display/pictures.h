@@ -9,6 +9,7 @@
 
 const unsigned char spyPostLeft[640];
 const unsigned char spyPostRight[640];
+const unsigned char frontCalImg[236];
 const unsigned char Pacabot_bmp[5120];
 const unsigned char five_years[864];
 
