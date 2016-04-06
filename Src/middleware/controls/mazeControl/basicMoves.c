@@ -78,7 +78,7 @@ int moveCell(unsigned long nb_cell, float max_speed, float end_speed)
     }
     while (hasMoveEnded() != TRUE);
     repositionSetInitialPosition(OFFSET_DIST); //absolute position into a cell
-    move(0, MAIN_DIST, max_speed, end_speed); //distance with last move offset
+    move(0, MAIN_DIST, max_speed, max_speed); //distance with last move offset
     spyPostGetOffset(&offset);
     while (hasMoveEnded() != TRUE);
     repositionSetInitialPosition(CELL_LENGTH - OFFSET_DIST);	//absolute position into a cell
@@ -92,7 +92,7 @@ int moveCell(unsigned long nb_cell, float max_speed, float end_speed)
     }
     else if (offset.left_x != 0)
     {
-        move(0, (OFFSET_DIST * 2.00) - offset.left_x, max_speed, max_speed);
+        move(0, (OFFSET_DIST * 2.00) - offset.left_x, max_speed, end_speed);
 #ifdef DEBUG_BASIC_MOVES
         bluetoothWaitReady();
         bluetoothPrintf("MOVE CELL, L_OFFSET = %d\n\r", (int32_t)offset.left_x);
@@ -100,7 +100,7 @@ int moveCell(unsigned long nb_cell, float max_speed, float end_speed)
     }
     else
     {
-        move(0, (OFFSET_DIST * 2.00) - offset.right_x, max_speed, max_speed);
+        move(0, (OFFSET_DIST * 2.00) - offset.right_x, max_speed, end_speed);
 #ifdef DEBUG_BASIC_MOVES
         bluetoothWaitReady();
         bluetoothPrintf("MOVE CELL, R_OFFSET = %d\n\r", (int32_t)offset.right_x);
@@ -348,9 +348,9 @@ void movesTest()
     HAL_Delay(2000);
 
     int Vmin, Vmax, Vrotate;
-    Vmin = 600;
+    Vmin = 300;
     Vmax = 600;
-    Vrotate = 600;
+    Vrotate = 300;
 
     //   moveStartCell(Vmax, Vmax);
     //    moveCell(1, Vmax, Vmin);
