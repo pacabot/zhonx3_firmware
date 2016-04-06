@@ -53,6 +53,8 @@
 #include "middleware/cmdline/cmdline_parser.h"
 #include "middleware/cmdline/commands/commads.h"
 #include "middleware/ring_buffer/ring_buffer.h"
+#include "middleware/controls/mazeControl/spyPost.h"
+#include "middleware/controls/mainControl/mainControl.h"
 
 /* USER CODE END Includes */
 
@@ -123,6 +125,7 @@ int main(void)
     /* USER CODE BEGIN 2 */
     HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, SET);
 
+    mainControlInit();
     expanderInit();
     HAL_Delay(100);
     ssd1306Init(0);
@@ -132,7 +135,6 @@ int main(void)
     mulimeterInit();
     bluetoothInit();
     toneInit();
-
     spyPostInit();
 
     toneSetVolulme(20);

@@ -63,6 +63,8 @@ double ROTATION_DIAMETER;
 
 int mainControlInit(void)
 {
+    pid_loop.start_state = FALSE;
+
     ROTATION_DIAMETER = sqrt(pow(WHEELS_DISTANCE, 2) + pow(WHEELS_SPACING, 2));
 
     motorsInit();
@@ -75,8 +77,6 @@ int mainControlInit(void)
     wallFollowControlInit();
     lineFollowControlInit();
     transfertFunctionInit();
-
-    move(0, 0, 0, 0);
 
     positionControlSetPositionType(ENCODERS);
     mainControlSetFollowType(NO_FOLLOW);
@@ -214,7 +214,10 @@ int moveStraight(double distance, double max_speed, double end_speed, double acc
 char hasMoveEnded(void)
 {
     if (positionControlHasMoveEnded() == TRUE && speedControlHasMoveEnded() == TRUE)
+    {
         return TRUE;
+        pid_loop.start_state = FALSE;
+    }
     else
         return FALSE;
 }

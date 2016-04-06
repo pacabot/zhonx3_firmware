@@ -124,7 +124,7 @@ double repositionGetFrontDist(void)
     if (getWallPresence(FRONT_WALL) == WALL_PRESENCE)
     {
         error_distance = ((getTelemeterDist(TELEMETER_FL) + getTelemeterDist(TELEMETER_FR)) / 2.00) - 142.00;
-        if (error_distance > MAX_FRONT_DIST_ERROR)
+        if (fabs(error_distance) > MAX_FRONT_DIST_ERROR)
         {
             bluetoothPrintf("FRONT ERROR DIST OVER RANGE", (int32_t)error_distance);
             bluetoothWaitReady();
