@@ -62,8 +62,6 @@ extern int setDark(void);
 extern int pidCalculator(void);
 extern void telemetersGetCalibrationValues(void);
 extern void spyPostCalibration(void);
-extern void spyPostTest();
-extern int spyPostReadCalibration();
 extern int _Factor;
 extern int _KP;
 /*

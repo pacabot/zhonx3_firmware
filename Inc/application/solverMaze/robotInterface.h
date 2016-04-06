@@ -17,7 +17,6 @@ void doUTurn(positionRobot *positionZhonx);
 void moveZhonxArc (int direction_to_go, positionRobot *positionZhonx, int numberOfCase, char end_mid_of_case, char chain);
 int waitValidation(unsigned long timeout);
 void newCell(walls new_walls, labyrinthe *maze, positionRobot positionZhonx);
-walls ask_cell_state ();
 void move_zhonx_arc(int direction_to_go, positionRobot *positionZhonx, int numberOfCell, char end_mid_of_case,
                     char chain);
 walls getCellState();

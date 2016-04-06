@@ -31,6 +31,7 @@
 #include "middleware/wall_sensors/wall_sensors.h"
 #include "middleware/controls/pidController/pidController.h"
 #include "middleware/controls/mazeControl/basicMoves.h"
+#include "middleware/display/pictures.h"
 
 /* Peripheral declarations */
 #include "peripherals/display/ssd1306.h"
@@ -41,6 +42,7 @@
 #include "peripherals/gyroscope/adxrs620.h"
 #include "peripherals/tone/tone.h"
 #include "peripherals/bluetooth/bluetooth.h"
+#include "peripherals/motors/motors.h"
 
 /* Declarations for this module */
 #include "middleware/controls/mazeControl/reposition.h"
@@ -114,13 +116,12 @@ enum telemeters_used repositionGetTelemeterUsed(void)
 /* This function returns the maintain loop count according to front wall detection to avoid early turns leading to wall collision.
  *  void
  */
-double repositionGetPostDist(double offset)
+double repositionGetFrontDist(void)
 {
     double distance;
     if (getWallPresence(FRONT_WALL) == WALL_PRESENCE)
     {
-        distance = ((getTelemeterDist(TELEMETER_FL) + getTelemeterDist(TELEMETER_FR)) / 2.00) + 65.00
-                - (CELL_LENGTH - offset);
+        distance = ((getTelemeterDist(TELEMETER_FL) + getTelemeterDist(TELEMETER_FR)) / 2.00) - 142.00;
 #ifdef DEBUG_DISPLACEMENT
         // Calculating average distance detected by FR and FL Telemeters
         //bluetoothPrintf("distance = %d \n", (int)distance);
@@ -129,6 +130,48 @@ double repositionGetPostDist(double offset)
     }
     else
         return 0.00;
+}
+
+void repositionGetFrontDistCal(void)
+{
+    double dist = 0;
+    while (expanderJoyFiltered() != JOY_RIGHT)
+    {
+        ssd1306ClearScreen(MAIN_AREA);
+        ssd1306DrawBmp(frontCalImg, 35, 33, 59, 31);
+        ssd1306DrawStringAtLine(30, 0, "FRONT CALIBRATION", &Font_3x6);
+        ssd1306Refresh();
+        if (expanderJoyFiltered() == JOY_LEFT)
+        {
+            return;
+        }
+        HAL_Delay(20);
+    }
+    ssd1306ClearScreen(MAIN_AREA);
+    ssd1306DrawStringAtLine(40, 1, "Wait", &Font_3x6);
+    ssd1306Refresh();
+
+    mainControlInit();
+    mainControlSetFollowType(NO_FOLLOW);
+    HAL_Delay(4000);
+    telemetersStart();
+    ssd1306ClearScreen(MAIN_AREA);
+
+    repositionSetInitialPosition(Z3_CENTER_BACK_DIST + HALF_WALL_THICKNESS);
+    move(0, ((CELL_LENGTH - (Z3_CENTER_BACK_DIST + HALF_WALL_THICKNESS)) - OFFSET_DIST), 100, 100);
+    while (hasMoveEnded() != TRUE);
+    dist = (getTelemeterDist(TELEMETER_FL) + getTelemeterDist(TELEMETER_FR)) / 2.00;
+
+    ssd1306PrintfAtLine(0, 1, &Font_5x8, "dist = %d", (uint32_t)(dist * 10.00));
+    ssd1306Refresh();
+
+#ifdef DEBUG_BASIC_MOVES
+    bluetoothPrintf("FRONT DIST CAL (1/10mm) = %d\n\r", (uint32_t)(dist * 10.00));
+#endif
+    telemetersStop();
+    while (expanderJoyFiltered() != JOY_LEFT);
+    motorsDriverSleep(ON);
+    return;
 }
 
 int frontCal(float max_speed)
@@ -167,6 +210,5 @@ int frontCal(float max_speed)
         relative_dist = ((getTelemeterDist(TELEMETER_FL) + getTelemeterDist(TELEMETER_FR)) / 2.00) - 21.00;
         move(0, relative_dist, 100, 100);
     }
-
-    return POSITION_CONTROL_E_SUCCESS;
+    return 0;
 }

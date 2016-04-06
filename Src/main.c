@@ -133,33 +133,35 @@ int main(void)
     bluetoothInit();
     toneInit();
 
-	toneSetVolulme(20);
-	tone(F3, 50);
-	toneItMode(A3, 50);
+    spyPostInit();
 
-	// Register Output callback
-	cmd_context.out = blockingPrintf;
-	// Initialize Command Line module
-	cmdline_init(&cmd_context);
+    toneSetVolulme(20);
+    tone(F3, 50);
+    toneItMode(A3, 50);
 
-	// Check if robot name is populated in Flash
-	memset(zhonxName, 0, sizeof(zhonxName));
-	// Retrieve ZHONX information from flash if any
-	if (zhonx_info[0] == 'Z')
-	{
-		strcpy(zhonxName, zhonx_info);
-	}
+    // Register Output callback
+    cmd_context.out = blockingPrintf;
+    // Initialize Command Line module
+    cmdline_init(&cmd_context);
 
-	while(zhonxName[0] == 0)
-	{
-		menu(zhonxNameMenu);
-	}
+    // Check if robot name is populated in Flash
+    memset(zhonxName, 0, sizeof(zhonxName));
+    // Retrieve ZHONX information from flash if any
+    if (zhonx_info[0] == 'Z')
+    {
+        strcpy(zhonxName, zhonx_info);
+    }
 
-	while (1)
-	{
-		menu(mainMenu);
-		powerOffConfirmation();
-	}
+    while (zhonxName[0] == 0)
+    {
+        menu(zhonxNameMenu);
+    }
+
+    while (1)
+    {
+        menu(mainMenu);
+        powerOffConfirmation();
+    }
 
     /* USER CODE END 2 */
 
