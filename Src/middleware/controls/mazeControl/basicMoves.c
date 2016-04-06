@@ -217,7 +217,7 @@ int moveRotateCCW90(float max_speed, float end_speed)
     move(0, (OFFSET_DIST * 2.00) - repositionGetFrontDist(), max_speed, end_speed);
 
 #ifdef DEBUG_BASIC_MOVES
-    bluetoothPrintf("MOVE ROTATE CCW90 = OFFSET_DIST * 2 \n\r");
+    bluetoothPrintf("MOVE ROTATE CCW90\n\r");
 #endif
     return POSITION_CONTROL_E_SUCCESS;
 }
@@ -348,9 +348,9 @@ void movesTest()
     HAL_Delay(2000);
 
     int Vmin, Vmax, Vrotate;
-    Vmin = 300;
-    Vmax = 300;
-    Vrotate = 100;
+    Vmin = 600;
+    Vmax = 600;
+    Vrotate = 600;
 
     //   moveStartCell(Vmax, Vmax);
     //    moveCell(1, Vmax, Vmin);

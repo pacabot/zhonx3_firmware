@@ -180,7 +180,7 @@ int positionControlLoop(void)
         motorsDriverSleep(ON);
         ssd1306ClearScreen(MAIN_AREA);
         ssd1306DrawStringAtLine(10, 1, "POSITION ERROR!!!", &Font_5x8);
-        ssd1306WaitReady();
+//        ssd1306WaitReady();
         ssd1306Refresh();
     }
 
