@@ -87,7 +87,7 @@ int moveCell(unsigned long nb_cell, float max_speed, float end_speed)
         move(0, (OFFSET_DIST * 2.00) - repositionGetFrontDist(), max_speed, end_speed);
 #ifdef DEBUG_BASIC_MOVES
         bluetoothWaitReady();
-        bluetoothPrintf("MOVE CELL = MAIN_DIST + OFFSET_DIST * 2 + (FRONT OFFSET) %d\n\r", (int32_t)repositionGetFrontDist());
+        bluetoothPrintf("MOVE CELL, FRONT OFFSET = %d\n\r", (int32_t)repositionGetFrontDist());
 #endif
     }
     else if (offset.left_x != 0)
@@ -95,7 +95,7 @@ int moveCell(unsigned long nb_cell, float max_speed, float end_speed)
         move(0, (OFFSET_DIST * 2.00) - offset.left_x, max_speed, max_speed);
 #ifdef DEBUG_BASIC_MOVES
         bluetoothWaitReady();
-        bluetoothPrintf("MOVE CELL = MAIN_DIST + OFFSET_DIST * 2 - (L_OFFSET) %d\n\r", (int32_t)offset.left_x);
+        bluetoothPrintf("MOVE CELL, L_OFFSET = %d\n\r", (int32_t)offset.left_x);
 #endif
     }
     else
@@ -103,7 +103,7 @@ int moveCell(unsigned long nb_cell, float max_speed, float end_speed)
         move(0, (OFFSET_DIST * 2.00) - offset.right_x, max_speed, max_speed);
 #ifdef DEBUG_BASIC_MOVES
         bluetoothWaitReady();
-        bluetoothPrintf("MOVE CELL = MAIN_DIST + OFFSET_DIST * 2 - (R_OFFSET) %d\n\r", (int32_t)offset.right_x);
+        bluetoothPrintf("MOVE CELL, R_OFFSET = %d\n\r", (int32_t)offset.right_x);
 #endif
     }
     return POSITION_CONTROL_E_SUCCESS;
@@ -167,7 +167,7 @@ int moveStartCell(float max_speed, float end_speed)
     move(0, (OFFSET_DIST * 2.00) - repositionGetFrontDist(), max_speed, end_speed);
 
 #ifdef DEBUG_BASIC_MOVES
-    bluetoothPrintf("MOVE START CELL = CELL_LENGTH - (Z3_CENTER_BACK_DIST + HALF_WALL_THICKNESS) + OFFSET_DIST * 2 \n\r");
+    bluetoothPrintf("MOVE START CELL\n\r");
 #endif
     return POSITION_CONTROL_E_SUCCESS;
 }
@@ -192,7 +192,7 @@ int moveRotateCW90(float max_speed, float end_speed)
     move(0, (OFFSET_DIST * 2.00) - repositionGetFrontDist(), max_speed, end_speed);
 
 #ifdef DEBUG_BASIC_MOVES
-    bluetoothPrintf("MOVE ROTATE CW90 = OFFSET_DIST * 2 \n\r");
+    bluetoothPrintf("MOVE ROTATE CW90\n\r");
 #endif
     return POSITION_CONTROL_E_SUCCESS;
 }
@@ -268,7 +268,7 @@ int moveUTurn(float speed_rotation, float max_speed, float end_speed)
     moveHalfCell_OUT(max_speed, end_speed);
 
 #ifdef DEBUG_BASIC_MOVES
-    bluetoothPrintf("MOVE U TURN \n\r");
+    bluetoothPrintf("MOVE U TURN\n\r");
 #endif
     return POSITION_CONTROL_E_SUCCESS;
 }
