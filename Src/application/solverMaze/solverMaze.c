@@ -147,18 +147,13 @@ int maze(void)
 #endif
     start_position.orientation += 2;
     start_position.orientation = start_position.orientation % 4;
-    newCell(ask_cell_state(), &maze, start_position);
+    //newCell(ask_cell_state(), &maze, start_position);
+    newCell((walls){WALL_PRESENCE,WALL_PRESENCE,WALL_PRESENCE}, &maze, start_position);
     printLength(maze,8,8);
     start_position.orientation += 2;
     start_position.orientation = start_position.orientation % 4;
     printMaze(maze, zhonx_position.cordinate);
     waitStart();
-#ifdef ZHONX3
-    motorsDriverSleep(OFF);
-#elif defined ZHONX2
-    hal_step_motor_enable();
-#endif
-    exploration(&maze, &zhonx_position, &start_position, &end_coordinate); //make exploration for go from the robot position and the end of the maze
 #ifdef ZHONX3
     telemetersStart();
     motorsDriverSleep(OFF);
@@ -858,7 +853,7 @@ int findArrival(labyrinthe maze, coordinate *end_coordinate)
             {
                 end_coordinate->x = x;
                 end_coordinate->y = y;
-                bluetoothPrintf("end find at : %i; %i\n", x, y);
+//                bluetoothPrintf("end find at : %i; %i\n", x, y);
                 return MAZE_SOLVER_E_SUCCESS;
             }
             if (possible_end_find
@@ -869,7 +864,7 @@ int findArrival(labyrinthe maze, coordinate *end_coordinate)
                     && maze.cell[x][y].length != CANT_GO && maze.cell[x+1][y].length != CANT_GO
                     && maze.cell[x][y+1].length != CANT_GO && maze.cell[x+1][y+1].length != CANT_GO)
             {
-                bluetoothPrintf("possible end find at : %i; %i\n", x, y);
+//                bluetoothPrintf("possible end find at : %i; %i\n", x, y);
                 if ((maze.cell[x][y].wall_east != NO_WALL
                         || maze.cell[x][y].wall_south != NO_WALL)
                         && maze.cell[x][y].length != 0)

@@ -15,6 +15,7 @@
 #include "peripherals/expander/pcf8574.h"
 #include "peripherals/motors/motors.h"
 #include "peripherals/telemeters/telemeters.h"
+#include "peripherals/bluetooth/bluetooth.h"
 
 /* meddleware include */
 #include "application/solverMaze/solverMaze.h"
@@ -363,8 +364,9 @@ void print_cell_state (walls cell_state)
 void waitStart()
 {
    telemetersStart();
+   HAL_Delay(300);
    while(getWallPresence(FRONT_WALL) == false);
-   HAL_Delay(20);
+   HAL_Delay(100);
    while(getWallPresence(FRONT_WALL) == true);
    telemetersStop();
 }

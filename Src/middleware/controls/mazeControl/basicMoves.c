@@ -236,6 +236,66 @@ int moveRotateCCW90(float max_speed, float end_speed)
     return POSITION_CONTROL_E_SUCCESS;
 }
 
+/*
+ *
+ *      o         o
+ *      :    __
+ *      :    |
+ *      o_________o
+ */
+int moveRotateInPlaceCW90(float max_speed, float end_speed)
+{
+    while (hasMoveEnded() != TRUE)
+    {
+    }
+    move(90, 0, max_speed, max_speed);
+
+#ifdef DEBUG_BASIC_MOVES
+        bluetoothPrintf("MOVE ROTATE IN PLACE CW180\n\r");
+#endif
+    return POSITION_CONTROL_E_SUCCESS;
+}
+
+/*
+ *
+ *      o         o
+ *      :   __
+ *      :    |
+ *      o_________o
+ */
+int moveRotateInPlaceCCW90(float max_speed, float end_speed)
+{
+    while (hasMoveEnded() != TRUE)
+    {
+    }
+    move(-90, 0, max_speed, max_speed);
+
+#ifdef DEBUG_BASIC_MOVES
+        bluetoothPrintf("MOVE ROTATE IN PLACE CW180\n\r");
+#endif
+    return POSITION_CONTROL_E_SUCCESS;
+}
+
+/*
+ *
+ *      o         o
+ *      :   __
+ *      :    |
+ *      o_________o
+ */
+int moveRotateInPlaceCW180(float max_speed, float end_speed)
+{
+    while (hasMoveEnded() != TRUE)
+    {
+    }
+    move(180, 0, max_speed, max_speed);
+
+#ifdef DEBUG_BASIC_MOVES
+        bluetoothPrintf("MOVE ROTATE IN PLACE CW180\n\r");
+#endif
+    return POSITION_CONTROL_E_SUCCESS;
+}
+
 /**************************************************************************************/
 /***************                   Avanced Moves                   ********************/
 /**************************************************************************************/
