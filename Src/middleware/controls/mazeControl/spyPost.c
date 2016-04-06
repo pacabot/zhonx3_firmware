@@ -123,7 +123,7 @@ spyPostRefTypeProfileStruct *ref_right = NULL;
 
 /* Static functions */
 static void spyPostStartMeasure(spyPostProfileStruct *currentProfile, enum telemeterName telemeterName);
-static void spyPostPrintProfile(uint32_t x, uint32_t y, uint32_t *sample, uint32_t center_x_distance);
+static void spyPostPrintProfile(uint32_t x, uint32_t y, uint32_t *sample, uint32_t center_x_distance, uint32_t center_y_distance);
 static void spyPostSendBTProfile(uint32_t *buf32, uint32_t lenght_buf32);
 static void spyPostKeepUsefulPart(spyPostProfileStruct *typeProfile);
 static void spyPostSampleThicken(spyPostProfileStruct *profile, char stroke_width);
@@ -380,9 +380,7 @@ uint32_t spyPostCalibration(void)
             ssd1306DrawBmp(spyPostRight, 1, 24, 128, 40);
             ssd1306DrawStringAtLine(30, 0, "RIGHT CALIBRATION", &Font_3x6);
             ssd1306Refresh();
-//            refProfiles = ref_right;
             refProfile_flash = ref_right;
-            //memset((spyPostRefTypeProfileStruct*) ref_right, 0, sizeof(spyPostRefTypeProfileStruct));   //reinit stucts
         }
         if (expanderJoyState() == JOY_DOWN)
         {
@@ -390,9 +388,7 @@ uint32_t spyPostCalibration(void)
             ssd1306DrawBmp(spyPostLeft, 1, 24, 128, 40);
             ssd1306DrawStringAtLine(30, 0, "LEFT CALIBRATION", &Font_3x6);
             ssd1306Refresh();
-//            refProfiles = ref_left;
             refProfile_flash = ref_left;
-            //memset((spyPostRefTypeProfileStruct*) ref_left, 0, sizeof(spyPostRefTypeProfileStruct));    //reinit stucts
         }
         if (expanderJoyFiltered() == JOY_LEFT)
         {
@@ -463,10 +459,10 @@ uint32_t spyPostCalibration(void)
         return rv;
     }
 
-    spyPostPrintProfile(0, 64, refProfile_flash->wallToNoWall.sample, refProfile_flash->wallToNoWall.center_x_distance);
-    spyPostPrintProfile(43, 64, refProfile_flash->singlePost.sample, refProfile_flash->singlePost.center_x_distance);
+    spyPostPrintProfile(0, 64, refProfile_flash->wallToNoWall.sample, refProfile_flash->wallToNoWall.center_x_distance, refProfile_flash->wallToNoWall.center_y_distance);
+    spyPostPrintProfile(43, 64, refProfile_flash->singlePost.sample, refProfile_flash->singlePost.center_x_distance, refProfile_flash->singlePost.center_y_distance);
     spyPostPrintProfile(86, 64, refProfile_flash->perpendicularWall.sample,
-                        refProfile_flash->perpendicularWall.center_x_distance);
+                        refProfile_flash->perpendicularWall.center_x_distance, refProfile_flash->perpendicularWall.center_y_distance);
 
     //send BT profiles
     bluetoothPrintf("\n wallToNoWall x = %d\n", refProfile_flash->wallToNoWall.center_x_distance);
@@ -546,12 +542,13 @@ void spyPostStartMeasure(spyPostProfileStruct *currentProfile, enum telemeterNam
     ssd1306ClearScreen(MAIN_AREA);
 }
 
-void spyPostPrintProfile(uint32_t x, uint32_t y, uint32_t *sample, uint32_t center_x_distance)
+void spyPostPrintProfile(uint32_t x, uint32_t y, uint32_t *sample, uint32_t center_x_distance, uint32_t center_y_distance)
 {
     ssd1306DrawRect(0 + x, y - 2 - (SPYPOST_REFERENCE_SAMPLE_HEIGHT * 2),
                     SPYPOST_REFERENCE_SAMPLE_WIDTH * 2 + 2,
                     SPYPOST_REFERENCE_SAMPLE_HEIGHT * 2 + 2);
-    ssd1306PrintfAtLine(x, 1, &Font_3x6, "%d\n", (uint32_t) center_x_distance);
+    ssd1306PrintfAtLine(x + 5, 1, &Font_3x6, "%d\n", (uint32_t) center_x_distance);
+    ssd1306PrintfAtLine(x + 30, 1, &Font_3x6, "%d\n", (uint32_t) center_y_distance);
     for (uint32_t i = 0; i < SPYPOST_REFERENCE_SAMPLE_WIDTH; i++)
     {
         for (uint32_t j = SPYPOST_REFERENCE_SAMPLE_HEIGHT; j > 0; j--)
@@ -647,7 +644,7 @@ uint32_t spyPostReadCalibration(void)
     ssd1306DrawStringAtLine(4, 1, "USE UP OR DOWN KEYS TO SELECT", &Font_3x6);
     ssd1306Refresh();
 
-    while (expanderJoyState() != JOY_RIGHT || refProfiles == NULL)
+    while (1)
     {
         if (expanderJoyState() == JOY_UP)
         {
@@ -655,6 +652,10 @@ uint32_t spyPostReadCalibration(void)
             ssd1306DrawStringAtLine(30, 0, "RIGHT CALIBRATION", &Font_3x6);
             ssd1306Refresh();
             refProfiles = ref_right;
+            spyPostPrintProfile(0, 64, refProfiles->wallToNoWall.sample, refProfiles->wallToNoWall.center_x_distance, refProfiles->wallToNoWall.center_y_distance);
+            spyPostPrintProfile(43, 64, refProfiles->singlePost.sample, refProfiles->singlePost.center_x_distance, refProfiles->singlePost.center_y_distance);
+            spyPostPrintProfile(86, 64, refProfiles->perpendicularWall.sample,
+                                refProfiles->perpendicularWall.center_x_distance, refProfiles->perpendicularWall.center_y_distance);
         }
         if (expanderJoyState() == JOY_DOWN)
         {
@@ -662,18 +663,15 @@ uint32_t spyPostReadCalibration(void)
             ssd1306DrawStringAtLine(30, 0, "LEFT CALIBRATION", &Font_3x6);
             ssd1306Refresh();
             refProfiles = ref_left;
+            spyPostPrintProfile(0, 64, refProfiles->wallToNoWall.sample, refProfiles->wallToNoWall.center_x_distance, refProfiles->wallToNoWall.center_y_distance);
+            spyPostPrintProfile(43, 64, refProfiles->singlePost.sample, refProfiles->singlePost.center_x_distance, refProfiles->singlePost.center_y_distance);
+            spyPostPrintProfile(86, 64, refProfiles->perpendicularWall.sample,
+                                refProfiles->perpendicularWall.center_x_distance, refProfiles->perpendicularWall.center_y_distance);
         }
         if (expanderJoyFiltered() == JOY_LEFT)
             return SPYPOST_DRIVER_E_SUCCESS;
     }
-    spyPostPrintProfile(0, 64, refProfiles->wallToNoWall.sample, refProfiles->wallToNoWall.center_x_distance);
-    spyPostPrintProfile(43, 64, refProfiles->singlePost.sample, refProfiles->singlePost.center_x_distance);
-    spyPostPrintProfile(86, 64, refProfiles->perpendicularWall.sample,
-                        refProfiles->perpendicularWall.center_x_distance);
 
-    while (expanderJoyFiltered() != JOY_LEFT)
-    {
-    }
     return SPYPOST_DRIVER_E_SUCCESS;
 }
 

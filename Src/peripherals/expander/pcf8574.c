@@ -153,8 +153,9 @@ char expanderJoyState(void)
 }
 char expanderJoyFiltered(void)
 {
-    if (antiBounceJoystick2(expanderJoyState()) == DONE)
-        return expanderJoyState();
+    char joy_state = expanderJoyState();
+    if (antiBounceJoystick2(joy_state) == DONE)
+        return joy_state;
     return 0;
 }
 
