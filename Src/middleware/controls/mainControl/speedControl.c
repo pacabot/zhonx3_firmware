@@ -38,7 +38,8 @@
 /* Middleware declarations */
 #include "middleware/controls/pidController/pidController.h"
 
-#define MAX_SPEED_ERROR     120.00 //Millimeter //todo gros bug de merde 113
+#define MAX_SPEED_STOP_ERROR     120.00 //Millimeter //todo gros bug de merde 113
+#define MAX_SPEED_MAX_ERROR      20.00 //Millimeter //todo gros bug de merde 113
 
 typedef struct
 {
@@ -160,7 +161,7 @@ int speedControlLoop(void)
     }
 
     speed_control.speed_error = speed_control.current_distance_consign - speed_control.current_distance;//for distance control
-    if (fabs(speed_control.speed_error) > MAX_SPEED_ERROR)
+    if (fabs(speed_control.speed_error) > MAX_SPEED_STOP_ERROR)
     {
         bluetoothPrintf("SPEED ERROR = %d, DISTANCE CONSIGN = %d, CURRENT DISTANCE = %d\n", (int32_t) speed_control.speed_error,
                         (int32_t) speed_control.current_distance_consign,
