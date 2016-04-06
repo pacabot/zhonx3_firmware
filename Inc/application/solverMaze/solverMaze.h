@@ -13,14 +13,11 @@
 #include "config/module_id.h"
 #include "config/errors.h"
 #include "middleware/settings/settings.h"
+#include "config/config.h"
 
 /* Error codes */
 #define MAZE_SOLVER_E_SUCCESS  0
 #define MAZE_SOLVER_E_ERROR    MAKE_ERROR(MAZE_SOLVER_MODULE_ID, 1)
-
-//Define for the maze
-
-#define MAZE_SIZE 16
 
 //orientation define
 #define NORTH 0
