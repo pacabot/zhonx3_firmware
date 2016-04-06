@@ -149,9 +149,8 @@ void encoderRight_IT(void)
 int encoderResetDistance(encoder *enc)
 {
     enc->offset_dist = ((((double) enc->mot_rev_cnt * ENCODER_RESOLUTION * (double) WELL_TURN_NB)
-            + ((double) __HAL_TIM_GetCounter(enc->timer)))
-                        /
-                        STEPS_PER_MM);
+            + ((double) __HAL_TIM_GetCounter(enc->timer))) /
+    STEPS_PER_MM);
     return IE512_DRIVER_E_SUCCESS;
 }
 
@@ -162,10 +161,8 @@ int encoderResetDistance(encoder *enc)
 double encoderGetDistance(encoder *enc)
 {
     enc->rel_dist = (((((double) enc->mot_rev_cnt * ENCODER_RESOLUTION * (double) WELL_TURN_NB)
-            + ((double) __HAL_TIM_GetCounter(enc->timer)))
-                      /
-                      STEPS_PER_MM)
-                     - (double) enc->offset_dist);
+            + ((double) __HAL_TIM_GetCounter(enc->timer))) /
+    STEPS_PER_MM) - (double) enc->offset_dist);
     return enc->rel_dist;
 }
 
@@ -176,9 +173,8 @@ double encoderGetDistance(encoder *enc)
 double encoderGetAbsDistance(encoder *enc)
 {
     enc->abs_dist = ((((double) enc->mot_rev_cnt * ENCODER_RESOLUTION * (double) WELL_TURN_NB)
-            + ((double) __HAL_TIM_GetCounter(enc->timer)))
-                     /
-                     STEPS_PER_MM);
+            + ((double) __HAL_TIM_GetCounter(enc->timer))) /
+    STEPS_PER_MM);
     return enc->abs_dist;
 }
 

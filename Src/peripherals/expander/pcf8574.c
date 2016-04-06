@@ -153,8 +153,9 @@ char expanderJoyState(void)
 }
 char expanderJoyFiltered(void)
 {
-    if (antiBounceJoystick2(expanderJoyState()) == DONE)
-        return expanderJoyState();
+    char joy_state = expanderJoyState();
+    if (antiBounceJoystick2(joy_state) == DONE)
+        return joy_state;
     return 0;
 }
 
@@ -188,7 +189,7 @@ char antiBounceJoystick2(char arrow_type)
     }
     else if (old_arrow_type != arrow_type)
     {
-        joy_activ_old_time = HAL_GetTick();
+        joy_activ_old_time = time;
         old_arrow_type = arrow_type;
         time_base = time;
         fast_clic = false;

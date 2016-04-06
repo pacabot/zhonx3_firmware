@@ -53,6 +53,8 @@
 #include "middleware/cmdline/cmdline_parser.h"
 #include "middleware/cmdline/commands/commads.h"
 #include "middleware/ring_buffer/ring_buffer.h"
+#include "middleware/controls/mazeControl/spyPost.h"
+#include "middleware/controls/mainControl/mainControl.h"
 
 /* USER CODE END Includes */
 
@@ -122,9 +124,9 @@ int main(void)
 
     /* USER CODE BEGIN 2 */
     HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, SET);
-
     expanderInit();
     HAL_Delay(100);
+    mainControlInit();
     ssd1306Init(0);
     timesBaseInit();
     ledPowerBlink(990, 10, 0);
@@ -132,34 +134,35 @@ int main(void)
     mulimeterInit();
     bluetoothInit();
     toneInit();
+    spyPostInit();
 
-	toneSetVolulme(20);
-	tone(F3, 50);
-	toneItMode(A3, 50);
+    toneSetVolulme(20);
+    tone(F3, 50);
+    toneItMode(A3, 50);
 
-	// Register Output callback
-	cmd_context.out = blockingPrintf;
-	// Initialize Command Line module
-	cmdline_init(&cmd_context);
+    // Register Output callback
+    cmd_context.out = blockingPrintf;
+    // Initialize Command Line module
+    cmdline_init(&cmd_context);
 
-	// Check if robot name is populated in Flash
-	memset(zhonxName, 0, sizeof(zhonxName));
-	// Retrieve ZHONX information from flash if any
-	if (zhonx_info[0] == 'Z')
-	{
-		strcpy(zhonxName, zhonx_info);
-	}
+    // Check if robot name is populated in Flash
+    memset(zhonxName, 0, sizeof(zhonxName));
+    // Retrieve ZHONX information from flash if any
+    if (zhonx_info[0] == 'Z')
+    {
+        strcpy(zhonxName, zhonx_info);
+    }
 
-	while(zhonxName[0] == 0)
-	{
-		menu(zhonxNameMenu);
-	}
+    while (zhonxName[0] == 0)
+    {
+        menu(zhonxNameMenu);
+    }
 
-	while (1)
-	{
-		menu(mainMenu);
-		powerOffConfirmation();
-	}
+    while (1)
+    {
+        menu(mainMenu);
+        powerOffConfirmation();
+    }
 
     /* USER CODE END 2 */
 

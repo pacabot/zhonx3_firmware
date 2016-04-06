@@ -20,6 +20,14 @@
 #include "stm32f4xx.h"
 #include "config/basetypes.h"
 
+/* Middleware declarations */
+#include "middleware/controls/lineFollowerControl/lineFollowControl.h"
+#include "middleware/controls/mainControl/mainControl.h"
+#include "middleware/controls/mainControl/positionControl.h"
+#include "middleware/controls/mainControl/positionControl.h"
+#include "middleware/controls/mainControl/speedControl.h"
+#include "middleware/controls/mainControl/transfertFunction.h"
+
 /* peripherale inlcudes*/
 #include "peripherals/times_base/times_base.h"
 #include "peripherals/display/ssd1306.h"
@@ -33,14 +41,6 @@
 #include "middleware/settings/settings.h"
 #include "middleware/wall_sensors/wall_sensors.h"
 #include "middleware/controls/pidController/pidController.h"
-#include "middleware/controls/lineFollowerControl/lineFollowControl.h"
-#include "middleware/controls/mainControl/mainControl.h"
-#include "middleware/controls/mainControl/positionControl.h"
-#include "middleware/controls/mainControl/positionControl.h"
-#include "middleware/controls/mainControl/speedControl.h"
-#include "middleware/controls/mainControl/transfertFunction.h"
-
-/*application include */
 #include "application/solverMaze/solverMaze.h"
 #include "application/solverMaze/robotInterface.h"
 #include "application/solverMaze/run.h"
@@ -906,73 +906,4 @@ int findArrival(labyrinthe maze, coordinate *end_coordinate)
         }
     }
     return MAZE_SOLVER_E_ERROR;
-}
-
-walls ask_cell_state()
-{
-    walls cell_state;
-    memset(&cell_state, NO_KNOWN, sizeof(walls));
-    int joystick = JOY_SEVERAL;
-    while (joystick != JOY_UP)
-    {
-        joystick = expanderJoyFiltered();
-        switch (joystick)
-        {
-            case JOY_DOWN:
-                if (cell_state.front == WALL_PRESENCE)
-                {
-                    cell_state.front = NO_WALL;
-                }
-                else
-                {
-                    cell_state.front = WALL_PRESENCE;
-                }
-                break;
-            case JOY_RIGHT:
-                if (cell_state.left == WALL_PRESENCE)
-                {
-                    cell_state.left = NO_WALL;
-                }
-                else
-                {
-                    cell_state.left = WALL_PRESENCE;
-                }
-                break;
-            case JOY_LEFT:
-                if (cell_state.right == WALL_PRESENCE)
-                {
-                    cell_state.right = NO_WALL;
-                }
-                else
-                {
-                    cell_state.right = WALL_PRESENCE;
-                }
-                break;
-            default:
-                break;
-        }
-        print_cell_state(cell_state);
-        ssd1306Refresh();
-    }
-    return cell_state;
-}
-
-void print_cell_state(walls cell_state)
-{
-    ssd1306ClearRect(64, HEAD_MARGIN, 54, 5);
-    ssd1306ClearRect(64, HEAD_MARGIN, 5, 54);
-    ssd1306ClearRect(113, HEAD_MARGIN, 5, 54);
-
-    if (cell_state.front == WALL_PRESENCE)
-    {
-        ssd1306FillRect(64, HEAD_MARGIN, 54, 5);
-    }
-    if (cell_state.left == WALL_PRESENCE)
-    {
-        ssd1306FillRect(64, HEAD_MARGIN, 5, 54);
-    }
-    if (cell_state.right == WALL_PRESENCE)
-    {
-        ssd1306FillRect(113, HEAD_MARGIN, 5, 54);
-    }
 }

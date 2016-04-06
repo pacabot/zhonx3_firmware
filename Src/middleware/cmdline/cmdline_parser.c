@@ -34,10 +34,10 @@
 /* Context of this module */
 CMDLINE_CONTEXT cmdline_ctxt = {
 NULL,   // output callback
-        FALSE,  // cmd_received flag
-        NULL,   // Pointer to command line
-        0,      // command line length
-        FALSE   // is_initialized flag
+FALSE,  // cmd_received flag
+NULL,   // Pointer to command line
+0,      // command line length
+FALSE   // is_initialized flag
         };
 // Buffer used for Command line parser
 extern char serial_buffer[100];

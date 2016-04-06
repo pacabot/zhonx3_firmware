@@ -16,13 +16,18 @@
 #define REPOSITION_E_SUCCESS  0
 #define REPOSITION_E_ERROR    MAKE_ERROR(REPOSITION_MODULE_ID, 1)
 
+//#define DEBUG_REPOSITION
+
 enum telemeters_used
 {
     NO_SIDE, ALL_SIDE, LEFT_SIDE, RIGHT_SIDE
 };
 
-enum telemeters_used getSensorsUsedToTrackWalls(void);
-double repositionGetPostDist(double offset);
+void repositionSetInitialPosition(double initial_position);
+void repositionResetTelemeterUsed(void);
+enum telemeters_used repositionGetTelemeterUsed(void);
+double repositionGetFrontDist(void);
+void repositionGetFrontDistCal(void);
 int frontCal(float max_speed);
 
 #endif

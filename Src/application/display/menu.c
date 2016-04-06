@@ -33,6 +33,7 @@
 #include "middleware/display/pictures.h"
 #include "middleware/settings/settings.h"
 #include "middleware/cmdline/cmdline_parser.h"
+#include "middleware/controls/mazeControl/reposition.h"
 
 /* Declarations for this module */
 #include "application/display/menu.h"
@@ -62,6 +63,9 @@ extern int setDark(void);
 extern int pidCalculator(void);
 extern void telemetersGetCalibrationValues(void);
 extern void spyPostCalibration(void);
+extern void spyPostTest(void);
+extern int spyPostReadCalibration(void);
+extern void repositionGetFrontDistCal(void);
 extern int _Factor;
 extern int _KP;
 /*
@@ -118,7 +122,6 @@ const menuItem follower_menu=
 		}
 };
 
-
 const menuItem parameters_menu=
 {
 		"PARAMS",
@@ -155,15 +158,17 @@ const menuItem tests_menu=
 		}
 };
 
-const menuItem control_menu=
-{
-		"CONTROL",
-		{
-				{"follow the wall",'f',		(void*)movesTest},
-				{"rotate",'f',				(void*)rotateTest},
-				{"PID calculator",'f',		(void*)pidCalculator},
-				{"spy post Cal.",'f',		(void*)spyPostCalibration},
-		}
+const menuItem control_menu =
+{ "CONTROL",
+        {
+                { "follow the wall", 'f', (void*) movesTest },
+                { "rotate", 'f', (void*) rotateTest },
+                { "PID calculator", 'f', (void*) pidCalculator },
+                { "spyPost Cal.", 'f', (void*) spyPostCalibration },
+                { "spyPost Read Cal.", 'f', (void*) spyPostReadCalibration },
+                { "spyPost test.", 'f', (void*) spyPostTest },
+                { "Front Cal.", 'f', (void*) repositionGetFrontDistCal}
+        }
 };
 
 const menuItem zhonxNameMenu =

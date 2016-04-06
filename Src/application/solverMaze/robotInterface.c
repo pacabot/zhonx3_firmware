@@ -25,10 +25,6 @@
 
 #include "application/solverMaze/robotInterface.h"
 
-/* extern variables ---------------------------------------------------------*/
-extern I2C_HandleTypeDef hi2c1;
-
-
 void goOrientation(char *orientationZhonx, char directionToGo)
 {
 	int turn = (4 + directionToGo - *orientationZhonx) % 4;
@@ -67,8 +63,14 @@ void move_zhonx_arc(int direction_to_go, positionRobot *positionZhonx, int numbe
     switch (turn)
     {
         case FORWARD:
+#ifdef DEBUG_ROBOT_INTERFACE
+            bluetoothPrintf("FORWARD \n");
+#endif
             break;
         case RIGHT:
+#ifdef DEBUG_ROBOT_INTERFACE
+            bluetoothPrintf("RIGHT \n");
+#endif
             if (positionZhonx->midOfCell == true)
             {
                 while (hasMoveEnded() != TRUE)
@@ -83,14 +85,20 @@ void move_zhonx_arc(int direction_to_go, positionRobot *positionZhonx, int numbe
             }
             break;
         case UTURN:
+#ifdef DEBUG_ROBOT_INTERFACE
+            bluetoothPrintf("UTURN \n");
+#endif
             if (positionZhonx->midOfCell == false)
             {
                 numberOfCell--;
             }
             moveUTurn(MAX_SPEED_ROTATION, MAX_SPEED_TRANSLATION,
-            END_SPEED_TRANSLATION);
+                      END_SPEED_TRANSLATION);
             break;
         case LEFT:
+#ifdef DEBUG_ROBOT_INTERFACE
+            bluetoothPrintf("LEFT \n");
+#endif
             if (positionZhonx->midOfCell == true)
             {
                 while (hasMoveEnded() != TRUE)
@@ -284,26 +292,79 @@ walls getCellState()
     }
     return cell_condition;
 }
+walls ask_cell_state ()
+{
+	walls cell_state;
+	memset(&cell_state, NO_KNOWN, sizeof(walls));
+	int joystick = expanderJoyFiltered();
+	while (joystick != JOY_UP)
+	{
+		joystick = expanderJoyFiltered();
+		switch (joystick) {
+			case JOY_DOWN:
+				if (cell_state.front == WALL_PRESENCE)
+				{
+					cell_state.front = NO_WALL;
+				}
+				else
+				{
+					cell_state.front = WALL_PRESENCE;
+				}
+				break;
+			case JOY_RIGHT:
+				if (cell_state.left == WALL_PRESENCE)
+				{
+					cell_state.left = NO_WALL;
+				}
+				else
+				{
+					cell_state.left = WALL_PRESENCE;
+				}
+				break;
+			case JOY_LEFT:
+				if (cell_state.right == WALL_PRESENCE)
+				{
+					cell_state.right = NO_WALL;
+				}
+				else
+				{
+					cell_state.right = WALL_PRESENCE;
+				}
+				break;
+			default:
+				break;
+		}
+		print_cell_state(cell_state);
+		ssd1306Refresh();
+	}
+	return cell_state;
+}
+
+void print_cell_state (walls cell_state)
+{
+	ssd1306ClearRect(64,DISPLAY_OFFSET,54,5);
+	ssd1306ClearRect(64,DISPLAY_OFFSET,5,54);
+	ssd1306ClearRect(113,DISPLAY_OFFSET,5,54);
+
+	if (cell_state.front == WALL_PRESENCE)
+	{
+		ssd1306FillRect(64,DISPLAY_OFFSET,54,5);
+	}
+	if (cell_state.left == WALL_PRESENCE)
+	{
+		ssd1306FillRect(64,DISPLAY_OFFSET,5,54);
+	}
+	if (cell_state.right == WALL_PRESENCE)
+	{
+		ssd1306FillRect(113,DISPLAY_OFFSET,5,54);
+	}
+}
+
 void waitStart()
 {
-    // TODO : move this function in robot interface
-    ssd1306ClearRect(SSD1306_LCDWIDTH/2,10,SSD1306_LCDWIDTH/2,SSD1306_LCDHEIGHT);
-    ssd1306PrintfAtLine(SSD1306_LCDWIDTH/2,1,&Font_5x8,"wait start");
-    while(HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY)
-    {
-    }
-    ssd1306Refresh();
-    while(expanderJoyFiltered() != JOY_RIGHT)
-    {
-        HAL_Delay(20);
-    }
-    ssd1306ClearRect(SSD1306_LCDWIDTH/2,10,SSD1306_LCDWIDTH/2,SSD1306_LCDHEIGHT);
-    ssd1306Refresh();
-//TODO : wait start with front sensors
-//  unsigned char sensors_state = hal_sensor_get_state(app_context.sensors);
-//  while(check_bit(sensors_state, SENSOR_F10_POS)==true)
-//      sensors_state = hal_sensor_get_state(app_context.sensors);
-//  HAL_Delay(200);
-//  while(check_bit(sensors_state, SENSOR_F10_POS)==false)
-//      sensors_state = hal_sensor_get_state(app_context.sensors);
+   telemetersStart();
+   while(getWallPresence(FRONT_WALL) == false);
+   HAL_Delay(20);
+   while(getWallPresence(FRONT_WALL) == true);
+   telemetersStop();
 }

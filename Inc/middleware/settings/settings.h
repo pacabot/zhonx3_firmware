@@ -36,6 +36,7 @@ typedef struct
 	coordinate maze_end_coordinate;
 	int wall_know_cost;
 	int cell_cost;
+	int start_orientation;
 	unsigned int sleep_delay_s;
 	unsigned long threshold_color;
 	unsigned long threshold_greater;

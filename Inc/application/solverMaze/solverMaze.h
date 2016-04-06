@@ -13,15 +13,12 @@
 #include "config/module_id.h"
 #include "config/errors.h"
 #include "middleware/settings/settings.h"
-#include "middleware/wall_sensors/wall_sensors.h"
+#include "config/config.h"
 
 /* Error codes */
 #define MAZE_SOLVER_E_SUCCESS  0
 #define MAZE_SOLVER_E_ERROR    MAKE_ERROR(MAZE_SOLVER_MODULE_ID, 1)
 
-//Define for the maze
-
-#define MAZE_SIZE 17
 
 //definition for numerotation function
 #define CANT_GO 2147483647
@@ -60,7 +57,7 @@
 #define DISPLAY_OFFSET	12	//offset for maze print on ssd1306
 
 #include <stdlib.h>
-
+#include "middleware/wall_sensors/wall_sensors.h"
 //Structures typedef
 typedef struct
 {
@@ -103,6 +100,4 @@ void waitStart(void);
 char diffway(coordinate way1[], coordinate way2[]);
 coordinate findEndCoordinate (coordinate coordinate_tab[]);
 int findArrival (labyrinthe maze, coordinate *end_coordinate);
-walls ask_cell_state ();
-void print_cell_state (walls cell_state);
 #endif /* RESOLUTION_MAZE_H_ */
