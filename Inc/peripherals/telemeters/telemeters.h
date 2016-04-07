@@ -28,11 +28,6 @@
 #error you must put a multiple of NUMBER_OF_CELL in DISTANCE_MEASURED
 #endif
 
-int wallSensorsCalibrationFront(void);
-int wallSensorsCalibrationDiag(void);
-void testWallsSensors();
-void testPostSensors();
-
 enum telemeterName
 {
     TELEMETER_FL, TELEMETER_DL, TELEMETER_DR, TELEMETER_FR
@@ -56,13 +51,15 @@ typedef struct
     DIAG_TELEMETERS_PROFILE diag;
 } TELEMETERS_PROFILE;
 
-//extern int telemeter_FR_profile[TELEMETER_PROFILE_ARRAY_LENGTH + 1];
-//extern int telemeter_FL_profile[TELEMETER_PROFILE_ARRAY_LENGTH + 1];
-//extern int telemeter_DR_profile[TELEMETER_PROFILE_ARRAY_LENGTH + 1];
-//extern int telemeter_DL_profile[TELEMETER_PROFILE_ARRAY_LENGTH + 1];
 extern TELEMETERS_PROFILE *telemeters_profile;
 
-/* Exported functions */
+/* Exported functions for telemeterCal.c*/
+int wallSensorsCalibrationFront(void);
+int wallSensorsCalibrationDiag(void);
+void testWallsSensors();
+void testPostSensors();
+
+/* Exported functions for telemeter.c */
 void telemetersInit(void);
 void telemetersStart(void);
 void telemetersStop(void);
