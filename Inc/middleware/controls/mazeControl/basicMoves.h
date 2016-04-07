@@ -23,11 +23,7 @@
 
 #define DEBUG_BASIC_MOVES
 
-int rotate180WithCal(enum rotationTypeEnum rotation_type, float max_speed, float end_speed);
-int rotate90WithCal(enum rotationTypeEnum rotation_type, float max_speed, float end_speed);
 int moveCell(unsigned long nb_cell, float max_speed, float end_speed);
-int moveHalfCell_IN(float max_speed, float end_speed);
-int moveHalfCell_OUT(float max_speed, float end_speed);
 int moveEndCell(float max_speed, float end_speed);
 int moveStartCell(float max_speed, float end_speed);
 int moveRotateCW90(float max_speed, float end_speed);

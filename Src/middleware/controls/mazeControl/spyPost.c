@@ -82,8 +82,8 @@
 typedef struct
 {
     uint32_t sample[SPYPOST_ARRAY_PROFILE_LENGTH + 1];
-    uint32_t center_x_distance;
-    uint32_t center_y_distance;
+    int32_t center_x_distance;
+    int32_t center_y_distance;
 } spyPostProfileStruct;
 
 typedef struct
@@ -93,27 +93,6 @@ typedef struct
     spyPostProfileStruct perpendicularWall;
     unsigned int         initializer;
 } spyPostRefTypeProfileStruct;
-
-//spyPostRefTypeProfileStruct ref_left = //todo add saved value uint32_to flash
-//{ .wallToNoWall =
-//{ .sample =
-//{ 14, 28, 14, 28, 28, 28, 28, 28, 56, 56, 56, 56, 112, 224, 224, 448, 896, 1792, 3584, 14336 }, .center_x_distance =
-//        58 }, .singlePost =
-//        { .sample = { 896, 224, 112, 56, 28, 14, 7, 7, 7, 7, 7, 7, 14, 56, 56, 112, 224, 896, 3584, 28672 }, .center_x_distance =
-//                62 }, .perpendicularWall =
-//                { .sample = { 224, 224, 56, 56, 28, 28, 14, 14, 14, 7, 14, 14, 14, 28, 56, 112, 224, 896, 3584, 28672 }, .center_x_distance =
-//                        62 } };
-//
-//spyPostRefTypeProfileStruct ref_right = //todo add saved value uint32_to flash
-//{ .wallToNoWall =
-//{ .sample =
-//{ 14, 14, 14, 14, 14, 14, 14, 14, 28, 28, 28, 56, 56, 112, 224, 448, 896, 1792, 7168, 28672 }, .center_x_distance =
-//        56 }, .singlePost =
-//        { .sample =
-//        { 7168, 1792, 896, 448, 112, 56, 28, 14, 14, 14, 7, 7, 14, 14, 28, 112, 224, 896, 3584, 14336 }, .center_x_distance =
-//                59 }, .perpendicularWall =
-//                { .sample = { 448, 112, 56, 28, 28, 14, 7, 7, 7, 7, 7, 7, 14, 28, 56, 224, 448, 1792, 7168, 28672 }, .center_x_distance =
-//                        60 }, };
 
 // Declare Reference SpyPost profiles in Flash memory
 spyPostRefTypeProfileStruct *spyPost_profiles = (spyPostRefTypeProfileStruct *)ADDR_FLASH_SECTOR_9;
@@ -218,6 +197,7 @@ uint32_t spyPostGetOffset(spyPostGetOffsetsStruct *offset)
             current_right.sample[i] = 0x00;
         }
     }
+    while (hasMoveEnded() != TRUE);
     spyPostKeepUsefulPart(&current_left);
     spyPostKeepUsefulPart(&current_right);
 
@@ -589,7 +569,7 @@ void spyPostKeepUsefulPart(spyPostProfileStruct *currentProfile)
         }
     }
     //save the central y distance
-    currentProfile->center_y_distance = y_min * SPYPOST_TELEMETER_STEPS_MEASURE_MM;
+    currentProfile->center_x_distance = (y_min + (SPYPOST_REFERENCE_SAMPLE_HEIGHT / 2)) * SPYPOST_TELEMETER_STEPS_MEASURE_MM;
     //shift buffer (y axis)
     for (i = 0; i < SPYPOST_ARRAY_PROFILE_LENGTH; i++)
     {
