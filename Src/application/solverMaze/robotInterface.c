@@ -60,7 +60,7 @@ void goOrientation(char *orientationZhonx, char directionToGo)
 	}
 }
 
-void move_zhonx_arc(int direction_to_go, positionRobot *positionZhonx, int numberOfCell, char end_mid_of_case,
+void move_zhonx(int direction_to_go, positionRobot *positionZhonx, int numberOfCell, char end_mid_of_case,
                     char chain)
 {
     int turn = (4 + direction_to_go - positionZhonx->orientation) % 4;
@@ -88,7 +88,7 @@ void move_zhonx_arc(int direction_to_go, positionRobot *positionZhonx, int numbe
     {
         #ifdef DEBUG_ROBOT_INTERFACE
             bluetoothWaitReady();
-			bluetoothPrintf("start cell \n");
+			bluetoothPrintf("start cell ");
         #endif
         moveStartCell(MAX_SPEED_TRANSLATION, END_SPEED_TRANSLATION);
         numberOfCell--;
@@ -102,13 +102,13 @@ void move_zhonx_arc(int direction_to_go, positionRobot *positionZhonx, int numbe
         case FORWARD:
             #ifdef DEBUG_ROBOT_INTERFACE
                 bluetoothWaitReady();
-			bluetoothPrintf("FORWARD \n");
+                bluetoothPrintf("FORWARD ");
             #endif
             break;
         case RIGHT:
             #ifdef DEBUG_ROBOT_INTERFACE
                 bluetoothWaitReady();
-			bluetoothPrintf("RIGHT \n");
+                bluetoothPrintf("RIGHT ");
             #endif
             if (positionZhonx->midOfCell == true)
             {
@@ -125,7 +125,7 @@ void move_zhonx_arc(int direction_to_go, positionRobot *positionZhonx, int numbe
         case UTURN:
             #ifdef DEBUG_ROBOT_INTERFACE
                 bluetoothWaitReady();
-			bluetoothPrintf("UTURN \n");
+			bluetoothPrintf("UTURN ");
             #endif
             if (positionZhonx->midOfCell == false)
             {
@@ -142,7 +142,7 @@ void move_zhonx_arc(int direction_to_go, positionRobot *positionZhonx, int numbe
         case LEFT:
             #ifdef DEBUG_ROBOT_INTERFACE
                 bluetoothWaitReady();
-			bluetoothPrintf("LEFT \n");
+			bluetoothPrintf("LEFT ");
             #endif
             if (positionZhonx->midOfCell == true)
             {
@@ -294,7 +294,6 @@ void newCell(walls new_walls, labyrinthe *maze, positionRobot positionZhonx)
 walls getCellState()
 {
     walls cell_condition;
-
     if (getWallPresence(FRONT_WALL) == false)
     {
         cell_condition.front = NO_WALL;
@@ -392,10 +391,8 @@ void print_cell_state (walls cell_state)
 
 void waitStart()
 {
-   telemetersStart();
-   HAL_Delay(200);
    while(getWallPresence(FRONT_WALL) == false);
    HAL_Delay(20);
    while(getWallPresence(FRONT_WALL) == true);
-   telemetersStop();
+   HAL_Delay(500);
 }
