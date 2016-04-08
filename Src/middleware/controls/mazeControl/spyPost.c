@@ -197,7 +197,6 @@ uint32_t spyPostGetOffset(spyPostGetOffsetsStruct *offset)
             current_right.sample[i] = 0x00;
         }
     }
-    while (hasMoveEnded() != TRUE);
     spyPostKeepUsefulPart(&current_left);
     spyPostKeepUsefulPart(&current_right);
 
@@ -214,8 +213,8 @@ uint32_t spyPostGetOffset(spyPostGetOffsetsStruct *offset)
         }
         if (left_wallToNoWall_stat > MIN_STAT)
         {
-            offset->left_x = ref_left->wallToNoWall.center_x_distance - current_left.center_x_distance;
-            offset->left_y = ref_left->wallToNoWall.center_y_distance - current_left.center_y_distance;
+            offset->left_x = current_left.center_x_distance - ref_left->wallToNoWall.center_x_distance;
+            offset->left_y = current_left.center_y_distance - ref_left->wallToNoWall.center_y_distance;
             offset->left_spyPostType = WALL_TO_NO_WALL;
         }
 #ifdef DEBUG_SPYPOST
@@ -240,8 +239,8 @@ uint32_t spyPostGetOffset(spyPostGetOffsetsStruct *offset)
         {
             if (left_singlePost_stat > MIN_STAT)
             {
-                offset->left_x = ref_left->singlePost.center_x_distance - current_left.center_x_distance;
-                offset->left_y = ref_left->singlePost.center_y_distance - current_left.center_y_distance;
+                offset->left_x = current_left.center_x_distance - ref_left->singlePost.center_x_distance;
+                offset->left_y = current_left.center_y_distance - ref_left->singlePost.center_y_distance;
                 offset->left_spyPostType = SINGLE_POST;
             }
 #ifdef DEBUG_SPYPOST
@@ -253,8 +252,8 @@ uint32_t spyPostGetOffset(spyPostGetOffsetsStruct *offset)
         {
             if (left_perpendicularWall_stat >= MIN_STAT)
             {
-                offset->left_x = ref_left->perpendicularWall.center_x_distance - current_left.center_x_distance;
-                offset->left_y = ref_left->perpendicularWall.center_y_distance - current_left.center_y_distance;
+                offset->left_x = current_left.center_x_distance - ref_left->perpendicularWall.center_x_distance;
+                offset->left_y = current_left.center_y_distance - ref_left->perpendicularWall.center_y_distance;
                 offset->left_spyPostType = PERPENDICULAR_WALL;
             }
 #ifdef DEBUG_SPYPOST
@@ -284,8 +283,8 @@ uint32_t spyPostGetOffset(spyPostGetOffsetsStruct *offset)
         }
         if (right_wallToNoWall_stat > MIN_STAT)
         {
-            offset->right_x = ref_right->wallToNoWall.center_x_distance - current_right.center_x_distance;
-            offset->right_y = ref_right->wallToNoWall.center_y_distance - current_right.center_y_distance;
+            offset->right_x = current_right.center_x_distance - ref_right->wallToNoWall.center_x_distance;
+            offset->right_y = current_right.center_y_distance - ref_right->wallToNoWall.center_y_distance;
             offset->right_spyPostType = WALL_TO_NO_WALL;
         }
 #ifdef DEBUG_SPYPOST
@@ -310,8 +309,8 @@ uint32_t spyPostGetOffset(spyPostGetOffsetsStruct *offset)
         {
             if (right_singlePost_stat > MIN_STAT)
             {
-                offset->right_x = ref_right->singlePost.center_x_distance - current_right.center_x_distance;
-                offset->right_y = ref_right->singlePost.center_y_distance - current_right.center_y_distance;
+                offset->right_x = current_right.center_x_distance - ref_right->singlePost.center_x_distance;
+                offset->right_y = current_right.center_y_distance - ref_right->singlePost.center_y_distance;
                 offset->right_spyPostType = SINGLE_POST;
             }
 #ifdef DEBUG_SPYPOST
@@ -323,8 +322,8 @@ uint32_t spyPostGetOffset(spyPostGetOffsetsStruct *offset)
         {
             if (right_perpendicularWall_stat >= MIN_STAT)
             {
-                offset->right_x = ref_right->perpendicularWall.center_x_distance - current_right.center_x_distance;
-                offset->right_y = ref_right->perpendicularWall.center_y_distance - current_right.center_y_distance;
+                offset->right_x = current_right.center_x_distance - ref_right->perpendicularWall.center_x_distance;
+                offset->right_y = current_right.center_y_distance - ref_right->perpendicularWall.center_y_distance;
                 offset->right_spyPostType = PERPENDICULAR_WALL;
             }
 #ifdef DEBUG_SPYPOST
@@ -340,6 +339,7 @@ uint32_t spyPostGetOffset(spyPostGetOffsetsStruct *offset)
     }
     //    spyPostPrintProfile(0, 64, current_left.sample, current_left.center_x_distance);
     //    spyPostPrintProfile(43, 64, current_right.sample, current_right.center_x_distance);
+    while (hasMoveEnded() != TRUE);
     return SPYPOST_DRIVER_E_SUCCESS;
 }
 

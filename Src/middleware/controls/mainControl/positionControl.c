@@ -86,7 +86,7 @@ int positionControlInit(void)
 
     encoder_or_gyro_pid_instance.Kp = 100;
     encoder_or_gyro_pid_instance.Ki = 0;
-    encoder_or_gyro_pid_instance.Kd = 1000;
+    encoder_or_gyro_pid_instance.Kd = 2000;
 
     position_control.position_pid.instance = &encoder_or_gyro_pid_instance;
 

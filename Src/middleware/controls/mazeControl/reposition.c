@@ -48,10 +48,8 @@
 #include "middleware/controls/mazeControl/reposition.h"
 
 #define DEADZONE_DIST		 80.00	//Distance between the start of the cell and doubt area
-#define DEADZONE			 100.00	//doubt area
+#define DEADZONE			 80.00	//doubt area
 #define GETWALLPRESENCEZONE  5.00
-
-#define MAX_FRONT_DIST_ERROR OFFSET_DIST * 2.00
 
 static enum telemeters_used telemeter_used = NO_SIDE;
 static double current_position = 0;
@@ -120,16 +118,10 @@ enum telemeters_used repositionGetTelemeterUsed(void)
  */
 int repositionGetFrontDist(void)
 {
-    double error_distance;
+    int error_distance;
     if (getWallPresence(FRONT_WALL) == WALL_PRESENCE)
     {
-        error_distance = 117 * 2 - (int)(getTelemeterDist(TELEMETER_FL) + getTelemeterDist(TELEMETER_FR));
-        if (fabs(error_distance) > MAX_FRONT_DIST_ERROR)
-        {
-            bluetoothWaitReady();
-            error_distance = 0;
-        }
-
+        error_distance = (int)(getTelemeterDist(TELEMETER_FL) + getTelemeterDist(TELEMETER_FR)) - (114 * 2);
 #ifdef DEBUG_DISPLACEMENT
         // Calculating average distance detected by FR and FL Telemeters
         bluetoothPrintf("distance = %d \n", (int)distance);
@@ -185,10 +177,7 @@ void repositionGetFrontDistCal(void)
 int frontCal(float max_speed)
 {
     double relative_dist = 0.00;
-
-    while (hasMoveEnded() != TRUE)
-        ;
-
+    while (hasMoveEnded() != TRUE);
     if (getWallPresence(FRONT_WALL) == WALL_PRESENCE)
     {
         if (getTelemeterDist(TELEMETER_FR) > getTelemeterDist(TELEMETER_FL))
