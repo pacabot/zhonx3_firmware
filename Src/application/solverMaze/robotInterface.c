@@ -15,6 +15,7 @@
 #include "peripherals/expander/pcf8574.h"
 #include "peripherals/motors/motors.h"
 #include "peripherals/telemeters/telemeters.h"
+#include "peripherals/bluetooth/bluetooth.h"
 
 /* meddleware include */
 #include "application/solverMaze/solverMaze.h"
@@ -94,7 +95,7 @@ void move_zhonx_arc(int direction_to_go, positionRobot *positionZhonx, int numbe
     }
     else // so endMidOfCase=true and positionZhonx->midOfCase=false
     {
-        moveHalfCell_IN(MAX_SPEED_TRANSLATION, END_SPEED_TRANSLATION); //TODO : change that
+        //moveHalfCell_IN(MAX_SPEED_TRANSLATION, END_SPEED_TRANSLATION); //TODO : change that
     }
     switch (turn)
     {
