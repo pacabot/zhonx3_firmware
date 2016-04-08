@@ -19,10 +19,10 @@
 #endif
 
 /* Types definitions */
-enum wallSelectorEnum
+typedef enum
 {
-    LEFT_WALL, RIGHT_WALL, FRONT_WALL
-};
+    LEFT_WALL = 1, RIGHT_WALL = 2, FRONT_WALL = 3
+} wallSelectorEnum;
 
 //#define NUMBER_OF_MEASURE_BY_STEP 5000
 
@@ -42,6 +42,6 @@ typedef struct
 
 extern walls cell_state;
 
-char getWallPresence(enum wallSelectorEnum wallSelector);
+char getWallPresence(wallSelectorEnum wallSelector);
 
 #endif /* WALL_SENSORS_H_ */

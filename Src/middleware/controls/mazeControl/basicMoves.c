@@ -31,6 +31,9 @@
 #include "middleware/controls/mainControl/transfertFunction.h"
 #include "middleware/controls/mazeControl/reposition.h"
 #include "middleware/controls/mazeControl/spyPost.h"
+#include "middleware/wall_sensors/wall_sensors.h"
+#include "middleware/controls/pidController/pidController.h"
+#include "middleware/wall_sensors/wall_sensors.h"
 
 /* Peripheral declarations */
 #include "peripherals/gyroscope/adxrs620.h"
@@ -44,21 +47,18 @@
 #include "peripherals/telemeters/telemeters.h"
 #include "peripherals/bluetooth/bluetooth.h"
 
-/* Middleware declarations */
-#include "middleware/wall_sensors/wall_sensors.h"
-#include "middleware/controls/pidController/pidController.h"
-
 /* Declarations for this module */
 #include "middleware/controls/mazeControl/basicMoves.h"
 
-#define UTURN_OFFSET 10
+#define UTURN_OFFSET 5
 
-static int moveHalfCell_IN(float max_speed, float end_speed);
-static int moveHalfCell_OUT(float max_speed, float end_speed);
-static int moveMainDist(float max_speed, float end_speed);
-static int moveOffsetDist(double offset, float max_speed, float end_speed);
-static int rotate180WithCal(enum rotationTypeEnum rotation_type, char wall_presence, float speed_rotation);
-static int rotate90WithCal(enum rotationTypeEnum rotation_type, char wall_presence, float speed_rotation);
+static int moveHalfCell_IN(double max_speed, double end_speed);
+static int moveHalfCell_OUT(double max_speed, double end_speed);
+static int moveMainDist(double max_speed, double end_speed);
+static int moveOffsetDist(int offset, double max_speed, double end_speed);
+static int moveRotateInPlaceCW90(double speed_rotation);
+static int moveRotateInPlaceCCW90(double speed_rotation);
+static int moveRotateInPlaceCW180(double speed_rotation);
 
 /**************************************************************************************/
 /***************                    Basic Moves                    ********************/
@@ -71,11 +71,9 @@ static int rotate90WithCal(enum rotationTypeEnum rotation_type, char wall_presen
  * 		:    |    :
  * 		o         o
  */
-int moveHalfCell_IN(float max_speed, float end_speed)
+int moveHalfCell_IN(double max_speed, double end_speed)
 {
-    while (hasMoveEnded() != TRUE)
-    {
-    }
+    while (hasMoveEnded() != TRUE);
     repositionSetInitialPosition(OFFSET_DIST);
     move(0, (HALF_CELL_LENGTH - OFFSET_DIST), max_speed, end_speed);
 
@@ -83,20 +81,17 @@ int moveHalfCell_IN(float max_speed, float end_speed)
 }
 
 /*
- * 			 |
- * 		o	 |	  o
+ *
+ * 		o	 	  o
  * 		:    |    :
  * 		:         :
  * 		o         :
  */
-int moveHalfCell_OUT(float max_speed, float end_speed)
+int moveHalfCell_OUT(double max_speed, double end_speed)
 {
     while (hasMoveEnded() != TRUE);
     repositionSetInitialPosition(HALF_CELL_LENGTH);
     move(0, HALF_CELL_LENGTH - OFFSET_DIST, max_speed, end_speed);
-    while (hasMoveEnded() != TRUE);
-    repositionSetInitialPosition(CELL_LENGTH - (OFFSET_DIST));
-    move(0, (OFFSET_DIST * 2.00) + repositionGetFrontDist(), max_speed, end_speed);
 
     return POSITION_CONTROL_E_SUCCESS;
 }
@@ -108,7 +103,7 @@ int moveHalfCell_OUT(float max_speed, float end_speed)
  *      :    |    :
  *      o         :
  */
-int moveMainDist(float max_speed, float end_speed)
+int moveMainDist(double max_speed, double end_speed)
 {
     while (hasMoveEnded() != TRUE);
     repositionSetInitialPosition(OFFSET_DIST); //absolute position into a cell
@@ -124,61 +119,56 @@ int moveMainDist(float max_speed, float end_speed)
  *      :         :
  *      o         :
  */
-int moveOffsetDist(double offset, float max_speed, float end_speed)
+int moveOffsetDist(int offset, double max_speed, double end_speed)
 {
     while (hasMoveEnded() != TRUE);
     repositionSetInitialPosition(CELL_LENGTH - OFFSET_DIST);    //absolute position into a cell
-    move(0, (OFFSET_DIST * 2.00) - offset, max_speed, end_speed);
+    move(0, (OFFSET_DIST * 2.00) - (double)offset, max_speed, end_speed);
 
     return POSITION_CONTROL_E_SUCCESS;
 }
 
-int rotate180WithCal(enum rotationTypeEnum rotation_type, char wall_presence, float speed_rotation)
+/*
+ *
+ *      o         o
+ *      :   _|__
+ *      :    !
+ *      o_________o
+ */
+int moveRotateInPlaceCW90(double speed_rotation)
 {
-    // chose the correct turn for re-calibrate the robot if possible
-    if (wall_presence == RIGHT_WALL)
-    {
-        moveRotateInPlaceCW90(speed_rotation, speed_rotation);
-        frontCal(speed_rotation);
-        while (hasMoveEnded() != TRUE);
-        moveRotateInPlaceCW90(speed_rotation, speed_rotation);
-    }
-    else if (wall_presence == LEFT_WALL)
-    {
-        moveRotateInPlaceCCW90(speed_rotation, speed_rotation);
-        frontCal(speed_rotation);
-        while (hasMoveEnded() != TRUE);
-        moveRotateInPlaceCCW90(speed_rotation, speed_rotation);
-    }
-    else
-    {
-        moveRotateInPlaceCW180(speed_rotation, speed_rotation);
-    }
+    while (hasMoveEnded() != TRUE);
+    move(90, 0, speed_rotation, 0);
 
     return POSITION_CONTROL_E_SUCCESS;
 }
 
-int rotate90WithCal(enum rotationTypeEnum rotation_type, char wall_presence, float speed_rotation)
+/*
+ *
+ *      o         o
+ *      :  __|_
+ *      :    !
+ *      o_________o
+ */
+int moveRotateInPlaceCCW90(double speed_rotation)
 {
-    // chose the correct turn for re-calibrate the robot if possible
-    if (wall_presence == RIGHT_WALL)
-    {
-        moveRotateInPlaceCW90(speed_rotation, speed_rotation);
-        frontCal(speed_rotation);
-        while (hasMoveEnded() != TRUE);
-        moveRotateInPlaceCW90(speed_rotation, speed_rotation);
-    }
-    else if (wall_presence == LEFT_WALL)
-    {
-        moveRotateInPlaceCCW90(speed_rotation, speed_rotation);
-        frontCal(speed_rotation);
-        while (hasMoveEnded() != TRUE);
-        moveRotateInPlaceCCW90(speed_rotation, speed_rotation);
-    }
-    else
-    {
-        moveRotateInPlaceCW180(speed_rotation, speed_rotation);
-    }
+    while (hasMoveEnded() != TRUE);
+    move(-90, 0, speed_rotation, 0);
+
+    return POSITION_CONTROL_E_SUCCESS;
+}
+
+/*
+ *       _________
+ *      o         o
+ *      :   .->
+ *      :   '-<
+ *      o_________o
+ */
+int moveRotateInPlaceCW180(double speed_rotation)
+{
+    while (hasMoveEnded() != TRUE);
+    move(180, 0, speed_rotation, 0);
 
     return POSITION_CONTROL_E_SUCCESS;
 }
@@ -194,7 +184,7 @@ int rotate90WithCal(enum rotationTypeEnum rotation_type, char wall_presence, flo
  *      :    |    :
  *      o         o
  */
-int moveCell(unsigned long nb_cell, float max_speed, float end_speed)
+int moveCell(unsigned int nb_cell, double max_speed, double end_speed)
 {
     unsigned int i;
     spyPostGetOffsetsStruct offset;
@@ -211,7 +201,7 @@ int moveCell(unsigned long nb_cell, float max_speed, float end_speed)
     moveMainDist(max_speed, max_speed);
     spyPostGetOffset(&offset);
 
-    if (repositionGetFrontDist() > 0.00 || repositionGetFrontDist() < 0.00)
+    if (repositionGetFrontDist() == 0)
     {
         moveOffsetDist(repositionGetFrontDist(), max_speed, end_speed);
 #ifdef DEBUG_BASIC_MOVES
@@ -224,7 +214,7 @@ int moveCell(unsigned long nb_cell, float max_speed, float end_speed)
         moveOffsetDist(offset.left_x, max_speed, end_speed);
 #ifdef DEBUG_BASIC_MOVES
         bluetoothWaitReady();
-        bluetoothPrintf("MOVE CELL, L_OFFSET = %d\n\r", (int32_t)offset.left_x);
+        bluetoothPrintf("MOVE CELL, L_OFFSET = %d, TYPE = %d\n\r", (int32_t)offset.left_x, offset.left_spyPostType);
 #endif
     }
     else if (offset.right_x != 0)
@@ -232,12 +222,12 @@ int moveCell(unsigned long nb_cell, float max_speed, float end_speed)
         moveOffsetDist(offset.right_x, max_speed, end_speed);
 #ifdef DEBUG_BASIC_MOVES
         bluetoothWaitReady();
-        bluetoothPrintf("MOVE CELL, R_OFFSET = %d\n\r", (int32_t)offset.right_x);
+        bluetoothPrintf("MOVE CELL, R_OFFSET = %d, TYPE = %d\n\r", (int32_t)offset.right_x, offset.right_spyPostType);
 #endif
     }
     else
     {
-        moveOffsetDist(0.00, max_speed, end_speed);
+        moveOffsetDist(0, max_speed, end_speed);
 #ifdef DEBUG_BASIC_MOVES
         bluetoothWaitReady();
         bluetoothPrintf("MOVE CELL\n\r");
@@ -253,20 +243,15 @@ int moveCell(unsigned long nb_cell, float max_speed, float end_speed)
  *      :    |    :
  *      o_________o
  */
-int moveStartCell(float max_speed, float end_speed)
+int moveStartCell(double max_speed, double end_speed)
 {
-    while (hasMoveEnded() != TRUE)
-    {
-    }
+    while (hasMoveEnded() != TRUE);
     repositionSetInitialPosition(Z3_CENTER_BACK_DIST + HALF_WALL_THICKNESS);
     move(0, ((CELL_LENGTH - (Z3_CENTER_BACK_DIST + HALF_WALL_THICKNESS)) - OFFSET_DIST), max_speed, end_speed);
-    while (hasMoveEnded() != TRUE)
-    {
-    }
     moveOffsetDist(repositionGetFrontDist(), max_speed, end_speed);
 
 #ifdef DEBUG_BASIC_MOVES
-    if (repositionGetFrontDist() > 0.00 || repositionGetFrontDist() < 0.00)
+    if (repositionGetFrontDist() == 0)
     {
         bluetoothWaitReady();
         bluetoothPrintf("MOVE START CELL, FRONT OFFSET = %d\n\r", (int32_t)repositionGetFrontDist());
@@ -285,19 +270,14 @@ int moveStartCell(float max_speed, float end_speed)
  *      :           <<<
  *      o_________o
  */
-int moveRotateCW90(float max_speed, float end_speed)
+int moveRotateCW90(double max_speed, double end_speed)
 {
-    while (hasMoveEnded() != TRUE)
-    {
-    }
+    while (hasMoveEnded() != TRUE);
     move(90, (HALF_CELL_LENGTH - OFFSET_DIST), max_speed, max_speed);
-    while (hasMoveEnded() != TRUE)
-    {
-    }
     moveOffsetDist(repositionGetFrontDist(), max_speed, end_speed);
 
 #ifdef DEBUG_BASIC_MOVES
-    if (repositionGetFrontDist() > 0.00 || repositionGetFrontDist() < 0.00)
+    if (repositionGetFrontDist() == 0)
     {
         bluetoothWaitReady();
         bluetoothPrintf("MOVE ROTATE CW90, FRONT OFFSET = %d\n\r", (int32_t)repositionGetFrontDist());
@@ -316,19 +296,14 @@ int moveRotateCW90(float max_speed, float end_speed)
  *  >>>           :
  *      o_________o
  */
-int moveRotateCCW90(float max_speed, float end_speed)
+int moveRotateCCW90(double max_speed, double end_speed)
 {
-    while (hasMoveEnded() != TRUE)
-    {
-    }
+    while (hasMoveEnded() != TRUE);
     move(-90, (HALF_CELL_LENGTH - OFFSET_DIST), max_speed, max_speed);
-    while (hasMoveEnded() != TRUE)
-    {
-    }
-    move(0, (OFFSET_DIST * 2.00) + repositionGetFrontDist(), max_speed, end_speed);
+    moveOffsetDist(repositionGetFrontDist(), max_speed, end_speed);
 
 #ifdef DEBUG_BASIC_MOVES
-    if (repositionGetFrontDist() > 0.00 || repositionGetFrontDist() < 0.00)
+    if (repositionGetFrontDist() == 0)
     {
         bluetoothWaitReady();
         bluetoothPrintf("MOVE ROTATE CCW90, FRONT OFFSET = %d\n\r", (int32_t)repositionGetFrontDist());
@@ -341,62 +316,70 @@ int moveRotateCCW90(float max_speed, float end_speed)
 }
 
 /*
- *
+ *       _________
  *      o         o
- *      :    __
- *      :    |
+ *      :   .->
+ *      :   '-<
  *      o_________o
  */
-int moveRotateInPlaceCW90(float max_speed, float end_speed)
+int rotate180WithCal(wallSelectorEnum wall_presence, double speed_rotation)
 {
-    while (hasMoveEnded() != TRUE)
+    // chose the correct turn for re-calibrate the robot if possible
+    if (wall_presence == RIGHT_WALL)
     {
+        rotateInPlaceWithCalCW90(wall_presence, speed_rotation);
+        while (hasMoveEnded() != TRUE);
+        moveRotateInPlaceCW90(speed_rotation);
     }
-    move(90, 0, max_speed, max_speed);
+    else if (wall_presence == LEFT_WALL)
+    {
+        rotateInPlaceWithCalCCW90(wall_presence, speed_rotation);
+        while (hasMoveEnded() != TRUE);
+        moveRotateInPlaceCCW90(speed_rotation);
+    }
+    else
+    {
+        moveRotateInPlaceCW180(speed_rotation);
+    }
 
-#ifdef DEBUG_BASIC_MOVES
-        bluetoothPrintf("MOVE ROTATE IN PLACE CW180\n\r");
-#endif
     return POSITION_CONTROL_E_SUCCESS;
 }
 
 /*
  *
  *      o         o
- *      :   __
- *      :    |
+ *      :   _|__
+ *      :    !
  *      o_________o
  */
-int moveRotateInPlaceCCW90(float max_speed, float end_speed)
+int rotateInPlaceWithCalCW90(wallSelectorEnum wall_presence, double speed_rotation)
 {
-    while (hasMoveEnded() != TRUE)
+    moveRotateInPlaceCW90(speed_rotation);
+    // chose re-calibrate the robot if possible
+    if (wall_presence == RIGHT_WALL)
     {
+        frontCal(speed_rotation);
     }
-    move(-90, 0, max_speed, max_speed);
 
-#ifdef DEBUG_BASIC_MOVES
-        bluetoothPrintf("MOVE ROTATE IN PLACE CW180\n\r");
-#endif
     return POSITION_CONTROL_E_SUCCESS;
 }
 
 /*
  *
  *      o         o
- *      :   __
- *      :    |
+ *      :  __|_
+ *      :    !
  *      o_________o
  */
-int moveRotateInPlaceCW180(float max_speed, float end_speed)
+int rotateInPlaceWithCalCCW90(wallSelectorEnum wall_presence, double speed_rotation)
 {
-    while (hasMoveEnded() != TRUE)
+    moveRotateInPlaceCCW90(speed_rotation);
+    // chose re-calibrate the robot if possible
+    if (wall_presence == LEFT_WALL)
     {
+        frontCal(speed_rotation);
     }
-    move(180, 0, max_speed, max_speed);
 
-#ifdef DEBUG_BASIC_MOVES
-        bluetoothPrintf("MOVE ROTATE IN PLACE CW180\n\r");
-#endif
     return POSITION_CONTROL_E_SUCCESS;
 }
 
@@ -407,9 +390,9 @@ int moveRotateInPlaceCW180(float max_speed, float end_speed)
  * 		o    |    o
  * 			 v
  */
-int moveUTurn(float speed_rotation, float max_speed, float end_speed)
+int moveUTurn(double speed_rotation, double max_speed, double end_speed)
 {
-    char wall_presence = FALSE;
+    wallSelectorEnum wall_presence = FALSE;
     // memorize wall presence before move HALF CELL IN
     if (getWallPresence(RIGHT_WALL) == TRUE)
     {
@@ -420,46 +403,28 @@ int moveUTurn(float speed_rotation, float max_speed, float end_speed)
         wall_presence = LEFT_WALL;
     }
     // move HALF CELL IN
-    while (hasMoveEnded() != TRUE);
     moveHalfCell_IN(max_speed, 0);
-    while (hasMoveEnded() != TRUE);
-
     // chose the correct turn for re-calibrate the robot if possible
-    if (wall_presence == RIGHT_WALL)
-    {
-        moveRotateInPlaceCW90(speed_rotation, speed_rotation);
-        frontCal(speed_rotation);
-        while (hasMoveEnded() != TRUE);
-        moveRotateInPlaceCW90(speed_rotation, speed_rotation);
-    }
-    else if (wall_presence == LEFT_WALL)
-    {
-        moveRotateInPlaceCCW90(speed_rotation, speed_rotation);
-        frontCal(speed_rotation);
-        while (hasMoveEnded() != TRUE);
-        moveRotateInPlaceCCW90(speed_rotation, speed_rotation);
-    }
-    else
-    {
-        moveRotateInPlaceCW180(speed_rotation, speed_rotation);
-    }
-
+    rotate180WithCal(wall_presence, speed_rotation);
     // go back and go out for maximize correct alignment
     repositionSetInitialPosition(HALF_CELL_LENGTH);
-    move(0, -1.00 * (HALF_CELL_LENGTH - (Z3_CENTER_BACK_DIST + HALF_WALL_THICKNESS - UTURN_OFFSET)), max_speed, 0);
-    while (hasMoveEnded() != TRUE)
-    {
-    }
+    while (hasMoveEnded() != TRUE);
+    move(0, -1.00 * (HALF_CELL_LENGTH - (Z3_CENTER_BACK_DIST + HALF_WALL_THICKNESS + UTURN_OFFSET)), max_speed, 0);
     repositionSetInitialPosition(Z3_CENTER_BACK_DIST + HALF_WALL_THICKNESS + UTURN_OFFSET);
-    move(0, (HALF_CELL_LENGTH - (Z3_CENTER_BACK_DIST + HALF_WALL_THICKNESS - UTURN_OFFSET)), max_speed, end_speed);
-    while (hasMoveEnded() != TRUE)
-    {
-    }
+    while (hasMoveEnded() != TRUE);
+    move(0, (HALF_CELL_LENGTH - (Z3_CENTER_BACK_DIST + HALF_WALL_THICKNESS + UTURN_OFFSET)), max_speed, end_speed);
 
-    moveHalfCell_OUT(max_speed, end_speed);
+    moveHalfCell_OUT(max_speed, max_speed);
+    moveOffsetDist(repositionGetFrontDist(), max_speed, end_speed);
 
 #ifdef DEBUG_BASIC_MOVES
-    bluetoothPrintf("MOVE U TURN\n\r");
+    if (repositionGetFrontDist() == 0)
+    {
+        bluetoothWaitReady();
+        bluetoothPrintf("MOVE U TURN, FRONT OFFSET = %d\n\r", (int32_t)repositionGetFrontDist());
+    }
+    else
+        bluetoothPrintf("MOVE U TURN\n\r");
 #endif
     return POSITION_CONTROL_E_SUCCESS;
 }
@@ -500,75 +465,57 @@ void movesTest()
     Vmax = 400;
     Vrotate = 300;
 
-    //   moveStartCell(Vmax, Vmax);
-    //    moveCell(1, Vmax, Vmin);
-    //    moveCell(1, Vmax, Vmin);
-    //    moveCell(1, Vmax, Vmin);
-    //    moveCell(1, Vmax, Vmin);
-    //    moveCell(1, Vmax, Vmin);
-    //    moveRotateCCW90(Vmin, Vmin);
-    //    moveCell(1, Vmax, Vmin);
-    //    moveRotateCCW90(Vmin, Vmin);
-    //    moveCell(1, Vmax, Vmin);
-    //    moveRotateCCW90(Vmin, Vmin);
-    //    moveCell(1, Vmax, Vmin);
-    //    moveRotateCCW90(Vmin, Vmin);
-    //    moveCell(1, Vmax, Vmin);
-    //    moveRotateCCW90(Vmin, Vmin);
-    //    moveCell(1, Vmax, Vmin);
-    //    moveRotateCCW90(Vmin, Vmin);
+    //test Uturn
+//    moveStartCell(Vmax, Vmax);
+//    moveUTurn(Vrotate, Vmax, Vmax);
+//    return;
 
-    //    ssd1306Refresh();
-    //    telemetersStop();
-    //    motorsDriverSleep(ON);
-    //    while(1);
+    //maze
     moveStartCell(Vmax, Vmax);
     moveCell(1, Vmax, Vmin);
-    //    moveRotateCW90(Vmin, Vmin);
-    //    moveCell(2, Vmax, Vmin);
-    moveRotateCW90(Vmin, Vmin);
-    moveRotateCCW90(Vmin, Vmin);
-    moveRotateCW90(Vmin, Vmin);
-    moveRotateCCW90(Vmin, Vmin);
-    moveRotateCW90(Vmin, Vmin);
-    moveRotateCCW90(Vmin, Vmin);
-    moveRotateCW90(Vmin, Vmin);
-    moveRotateCCW90(Vmin, Vmin);
-    moveRotateCW90(Vmin, Vmin);
-    moveRotateCCW90(Vmin, Vmin);
-    moveRotateCW90(Vmin, Vmin);
-    moveRotateCCW90(Vmin, Vmin);
+    moveRotateCW90(Vrotate, Vrotate);
+    moveCell(2, Vmax, Vmin);
+    moveRotateCW90(Vrotate, Vrotate);
+    moveRotateCCW90(Vrotate, Vrotate);
 
-    moveRotateCW90(Vmin, Vmin);
+    moveRotateCCW90(Vrotate, Vrotate);
+    moveCell(2, Vmax, Vmin);
+    moveRotateCW90(Vrotate, Vrotate);
     moveCell(1, Vmax, Vmin);
-    //    moveRotateCCW90(Vmin, Vmin);
+    moveRotateCCW90(Vrotate, Vrotate);
+    moveRotateCCW90(Vrotate, Vrotate);
+    moveCell(1, Vmax, Vmin);
+    moveRotateCW90(Vrotate, Vrotate);
+    moveCell(2, Vmax, Vmin);
+    moveRotateCW90(Vrotate, Vrotate);
+    moveUTurn(Vrotate, Vmax, Vmin);
+    moveRotateCCW90(Vrotate, Vrotate);
+    moveCell(1, Vmax, Vmin);
+    moveRotateCCW90(Vrotate, Vrotate);
+    moveRotateCCW90(Vrotate, Vrotate);
+    moveRotateCW90(Vrotate, Vrotate);
+    moveRotateCCW90(Vrotate, Vrotate);
+    moveRotateCW90(Vrotate, Vrotate);
+    moveCell(1, Vmax, Vmin);
 
-    //    moveRotateCCW90(Vmin, Vmin);
-    //    //    moveHalfCell_IN(Vmin, Vmin);
-    //    moveCell(2, Vmax, Vmin);
-    //    moveRotateCW90(Vmin, Vmin);
-    //    moveCell(1, Vmax, Vmin);
-    //    moveRotateCCW90(Vmin, Vmin);
-    //    moveRotateCCW90(Vmin, Vmin);
-    //    moveCell(1, Vmax, Vmin);
-    //    moveRotateCW90(Vmin, Vmin);
-    //    moveRotateCW90(Vmin, Vmin);
-    //    moveRotateCCW90(Vmin, Vmin);
-    //    moveRotateCW90(Vmin, Vmin);
-    //    moveRotateCCW90(Vmin, Vmin);
-    //    moveRotateCW90(Vmin, Vmin);
-    //    moveCell(1, Vmax, Vmin);
-    //	moveCell(5, Vmax, Vmin);
-    //	moveRotateCW90(Vmin, Vmin);
-    //	moveCell(2, Vmax, Vmin);
-    //	moveUTurn(Vrotate, Vmax, Vmin);
-    //	moveRotateCCW90(Vmin, Vmin);
-    //	moveCell(2, Vmax, Vmin);
-    //	moveRotateCW90(Vmin, Vmin);
-    //	moveCell(2, Vmax, Vmin);
-    //	moveRotateCCW90(Vmin, Vmin);
-    //	moveCell(1, Vmax, Vmin);
-    //	moveRotateCW90(Vmin, 0);
+    return;
+
+    // zigzag
+    moveStartCell(Vmax, Vmax);
+    moveCell(1, Vmax, Vmin);
+    moveRotateCW90(Vrotate, Vrotate);
+    moveRotateCCW90(Vrotate, Vrotate);
+    moveRotateCW90(Vrotate, Vrotate);
+    moveRotateCCW90(Vrotate, Vrotate);
+    moveRotateCW90(Vrotate, Vrotate);
+    moveRotateCCW90(Vrotate, Vrotate);
+    moveRotateCW90(Vrotate, Vrotate);
+    moveRotateCCW90(Vrotate, Vrotate);
+    moveRotateCW90(Vrotate, Vrotate);
+    moveRotateCCW90(Vrotate, Vrotate);
+    moveRotateCW90(Vrotate, Vrotate);
+    moveRotateCCW90(Vrotate, Vrotate);
+    moveCell(1, Vmax, Vmin);
 
     telemetersStop();
     mainControlDisplayTest();

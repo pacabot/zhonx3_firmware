@@ -216,6 +216,7 @@ uint32_t spyPostGetOffset(spyPostGetOffsetsStruct *offset)
         {
             offset->left_x = ref_left->wallToNoWall.center_x_distance - current_left.center_x_distance;
             offset->left_y = ref_left->wallToNoWall.center_y_distance - current_left.center_y_distance;
+            offset->left_spyPostType = WALL_TO_NO_WALL;
         }
 #ifdef DEBUG_SPYPOST
         bluetoothPrintf("L_WTNW x = %d, L_WTNW y = %d, stat = %d\n", (int32_t) offset->left_x,
@@ -241,6 +242,7 @@ uint32_t spyPostGetOffset(spyPostGetOffsetsStruct *offset)
             {
                 offset->left_x = ref_left->singlePost.center_x_distance - current_left.center_x_distance;
                 offset->left_y = ref_left->singlePost.center_y_distance - current_left.center_y_distance;
+                offset->left_spyPostType = SINGLE_POST;
             }
 #ifdef DEBUG_SPYPOST
             bluetoothPrintf("L_SP x = %d, L_SP y = %d, stat = %d\n", (int32_t) offset->left_x,
@@ -253,6 +255,7 @@ uint32_t spyPostGetOffset(spyPostGetOffsetsStruct *offset)
             {
                 offset->left_x = ref_left->perpendicularWall.center_x_distance - current_left.center_x_distance;
                 offset->left_y = ref_left->perpendicularWall.center_y_distance - current_left.center_y_distance;
+                offset->left_spyPostType = PERPENDICULAR_WALL;
             }
 #ifdef DEBUG_SPYPOST
             if (left_singlePost_stat == left_perpendicularWall_stat)
@@ -283,6 +286,7 @@ uint32_t spyPostGetOffset(spyPostGetOffsetsStruct *offset)
         {
             offset->right_x = ref_right->wallToNoWall.center_x_distance - current_right.center_x_distance;
             offset->right_y = ref_right->wallToNoWall.center_y_distance - current_right.center_y_distance;
+            offset->right_spyPostType = WALL_TO_NO_WALL;
         }
 #ifdef DEBUG_SPYPOST
         bluetoothPrintf("R_WTNW x = %d, R_WTNW = y %d, stat = %d\n", (int32_t) offset->right_x,
@@ -308,6 +312,7 @@ uint32_t spyPostGetOffset(spyPostGetOffsetsStruct *offset)
             {
                 offset->right_x = ref_right->singlePost.center_x_distance - current_right.center_x_distance;
                 offset->right_y = ref_right->singlePost.center_y_distance - current_right.center_y_distance;
+                offset->right_spyPostType = SINGLE_POST;
             }
 #ifdef DEBUG_SPYPOST
             bluetoothPrintf("R_SP x = %d, R_SP y = %d, stat = %d\n", (int32_t) offset->right_x,
@@ -320,6 +325,7 @@ uint32_t spyPostGetOffset(spyPostGetOffsetsStruct *offset)
             {
                 offset->right_x = ref_right->perpendicularWall.center_x_distance - current_right.center_x_distance;
                 offset->right_y = ref_right->perpendicularWall.center_y_distance - current_right.center_y_distance;
+                offset->right_spyPostType = PERPENDICULAR_WALL;
             }
 #ifdef DEBUG_SPYPOST
             if (right_singlePost_stat == right_perpendicularWall_stat)

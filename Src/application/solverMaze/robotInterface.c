@@ -128,7 +128,7 @@ void move_zhonx_arc(int direction_to_go, positionRobot *positionZhonx, int numbe
     }
     else // so endMidOfCase=true and positionZhonx->midOfCase=false
     {
- //       moveHalfCell_IN(MAX_SPEED_TRANSLATION, END_SPEED_TRANSLATION); //todo add finish move?
+ //       moveHalfCell_IN(MAX_SPEED_TRANSLATION, END_SPEED_TRANSLATION); //todo add finish move?________________________________________
     }
     moveCell(numberOfCell, MAX_SPEED_TRANSLATION, END_SPEED_TRANSLATION);
     positionZhonx->midOfCell = end_mid_of_case;

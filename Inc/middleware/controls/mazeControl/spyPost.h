@@ -8,12 +8,20 @@
 #ifndef _SPYPOST_H_
 #define _SPYPOST_H_
 
+/* Types definitions */
+typedef enum
+{
+    WALL_TO_NO_WALL = 1, SINGLE_POST = 2, PERPENDICULAR_WALL = 3
+} spyPostEnum;
+
 typedef struct
 {
     int32_t left_x;
     int32_t right_x;
     int32_t left_y;
     int32_t right_y;
+    spyPostEnum left_spyPostType;
+    spyPostEnum right_spyPostType;
 } spyPostGetOffsetsStruct;
 
 #define SPYPOST_DRIVER_E_SUCCESS        0

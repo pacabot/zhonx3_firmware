@@ -26,8 +26,8 @@ enum telemeters_used
 void repositionSetInitialPosition(double initial_position);
 void repositionResetTelemeterUsed(void);
 enum telemeters_used repositionGetTelemeterUsed(void);
-double repositionGetFrontDist(void);
+int  repositionGetFrontDist(void);
 void repositionGetFrontDistCal(void);
-int frontCal(float max_speed);
+int  frontCal(float max_speed);
 
 #endif
