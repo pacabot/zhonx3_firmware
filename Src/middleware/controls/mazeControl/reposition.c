@@ -126,7 +126,6 @@ int repositionGetFrontDist(void)
         error_distance = 120 * 2 - (int)(getTelemeterDist(TELEMETER_FL) + getTelemeterDist(TELEMETER_FR));
         if (fabs(error_distance) > MAX_FRONT_DIST_ERROR)
         {
-            bluetoothPrintf("\n\r FRONT ERROR DIST OVER RANGE \n\r", (int32_t)error_distance);
             bluetoothWaitReady();
             error_distance = 0;
         }
