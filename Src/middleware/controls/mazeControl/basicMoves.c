@@ -201,7 +201,7 @@ int moveCell(unsigned int nb_cell, double max_speed, double end_speed)
     moveMainDist(max_speed, max_speed);
     spyPostGetOffset(&offset);
 
-    if (repositionGetFrontDist() == 0)
+    if (repositionGetFrontDist() != 0)
     {
         moveOffsetDist(repositionGetFrontDist(), max_speed, end_speed);
 #ifdef DEBUG_BASIC_MOVES
@@ -230,7 +230,7 @@ int moveCell(unsigned int nb_cell, double max_speed, double end_speed)
         moveOffsetDist(0, max_speed, end_speed);
 #ifdef DEBUG_BASIC_MOVES
         bluetoothWaitReady();
-        bluetoothPrintf("MOVE CELL\n\r");
+        bluetoothPrintf("\rMOVE CELL\n");
 #endif
     }
     return POSITION_CONTROL_E_SUCCESS;
@@ -252,7 +252,10 @@ int moveStartCell(double max_speed, double end_speed)
 
 #ifdef DEBUG_BASIC_MOVES
     if (repositionGetFrontDist() == 0)
+    {
+        bluetoothWaitReady();
         bluetoothPrintf("\rMOVE START CELL\n");
+    }
     else
     {
         bluetoothWaitReady();
@@ -278,7 +281,10 @@ int moveRotateCW90(double max_speed, double end_speed)
 
 #ifdef DEBUG_BASIC_MOVES
     if (repositionGetFrontDist() == 0)
+    {
+        bluetoothWaitReady();
         bluetoothPrintf("\rMOVE ROTATE CW90\n");
+    }
     else
     {
         bluetoothWaitReady();
@@ -304,7 +310,10 @@ int moveRotateCCW90(double max_speed, double end_speed)
 
 #ifdef DEBUG_BASIC_MOVES
     if (repositionGetFrontDist() == 0)
+    {
+        bluetoothWaitReady();
         bluetoothPrintf("\rMOVE ROTATE CCW90\n");
+    }
     else
     {
         bluetoothWaitReady();
@@ -419,7 +428,10 @@ int moveUTurn(double speed_rotation, double max_speed, double end_speed)
 
 #ifdef DEBUG_BASIC_MOVES
     if (repositionGetFrontDist() == 0)
+    {
+        bluetoothWaitReady();
         bluetoothPrintf("\rMOVE U TURN\n");
+    }
     else
     {
         bluetoothWaitReady();

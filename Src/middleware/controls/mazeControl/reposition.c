@@ -123,7 +123,7 @@ int repositionGetFrontDist(void)
     double error_distance;
     if (getWallPresence(FRONT_WALL) == WALL_PRESENCE)
     {
-        error_distance = 120 * 2 - (int)(getTelemeterDist(TELEMETER_FL) + getTelemeterDist(TELEMETER_FR));
+        error_distance = 117 * 2 - (int)(getTelemeterDist(TELEMETER_FL) + getTelemeterDist(TELEMETER_FR));
         if (fabs(error_distance) > MAX_FRONT_DIST_ERROR)
         {
             bluetoothWaitReady();
@@ -161,12 +161,12 @@ void repositionGetFrontDistCal(void)
 
     mainControlInit();
     mainControlSetFollowType(NO_FOLLOW);
-    HAL_Delay(4000);
+    HAL_Delay(2000);
     telemetersStart();
     ssd1306ClearScreen(MAIN_AREA);
 
-    repositionSetInitialPosition(Z3_CENTER_BACK_DIST + HALF_WALL_THICKNESS);
-    move(0, ((CELL_LENGTH - (Z3_CENTER_BACK_DIST + HALF_WALL_THICKNESS)) - OFFSET_DIST), 100, 100);
+    repositionSetInitialPosition(CELL_LENGTH - (Z3_CENTER_FRONT_DIST + HALF_WALL_THICKNESS));
+    move(0, -1.00 * ((CELL_LENGTH - (Z3_CENTER_FRONT_DIST + HALF_WALL_THICKNESS)) + OFFSET_DIST), 50, 50);
     while (hasMoveEnded() != TRUE);
     dist = (getTelemeterDist(TELEMETER_FL) + getTelemeterDist(TELEMETER_FR)) / 2.00;
 

@@ -102,10 +102,11 @@
 /***************                  Robot Dimensions                 ********************/
 /******** you can see also Inc/application/solverMaze.h for more properties ***********/
 /**************************************************************************************/
-#define Z3_CENTER_BACK_DIST	    34.00
 #define Z3_WIDTH				72.50
 #define Z3_LENGHT				98.40
 #define Z3_HEIGHT				23.70
+#define Z3_CENTER_BACK_DIST     34.00
+#define Z3_CENTER_FRONT_DIST    (Z3_LENGHT - Z3_CENTER_BACK_DIST)
 
 /**************************************************************************************/
 /***************                   Maze Properties                 ********************/
