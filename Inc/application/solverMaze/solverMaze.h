@@ -48,10 +48,6 @@
 
 //#define DEBUG 2
 
-#ifdef DEBUG
-//#undef END_SPEED_TRANSLATION
-//#define END_SPEED_TRANSLATION 10
-#endif
 #define END_OF_LIST 255
 
 #define DISPLAY_OFFSET	12	//offset for maze print on ssd1306
@@ -75,7 +71,7 @@ typedef struct
 
 typedef struct
 {
-    coordinate cordinate;
+    coordinate coordinate_robot;
     char orientation;
     char midOfCell;
 } positionRobot;

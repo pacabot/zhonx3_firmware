@@ -1,7 +1,7 @@
 /*
- * @file : run.c
+ * @file : solverMaze.c
  * @author : Colin
- * @version : V 2.1
+ * @version : V 2.1.1
  * @date : 4 juin 2015
  * @brief : this file contain all maze solver application.
  *            this file need robotInterface.c for make hard interface and need
@@ -128,38 +128,38 @@ int maze(void)
 
     /*init zhonx start position for nime micromouse competition*/
 
-    zhonx_position.cordinate.x = 8;
-    zhonx_position.cordinate.y = 8; // the robot start in the center of the maze
-    zhonx_position.orientation = zhonxSettings.start_orientation;
+    zhonx_position.coordinate_robot.x = 8;
+    zhonx_position.coordinate_robot.y = 8; // the robot start in the center of the maze
+    zhonx_position.orientation = zhonxSettings.start_orientation % 4;
     /*end of initialization for nime micromouse competition*/
 
 #if defined ZHONX3 || defined SIMULATOR
-    zhonx_position.midOfCell = false;
+    zhonx_position.midOfCell = true;
 #elif defined ZHONX2
     zhonx_position.midOfCell = true;
 #endif
     memcpy(&start_position, &zhonx_position, sizeof(positionRobot));
 
 #ifdef ZHONX3
-    move (0, -CELL_LENGTH/2, 50, 0);
+    //move (0, -CELL_LENGTH/2, 50, 0);
     while(hasMoveEnded() != true);
     motorsDriverSleep(ON);
 #endif
     start_position.orientation += 2;
     start_position.orientation = start_position.orientation % 4;
-    //newCell(ask_cell_state(), &maze, start_position);
+//    newCell(ask_cell_state(), &maze, start_position);
     newCell((walls){WALL_PRESENCE,WALL_PRESENCE,WALL_PRESENCE}, &maze, start_position);
     printLength(maze,8,8);
     start_position.orientation += 2;
     start_position.orientation = start_position.orientation % 4;
-    printMaze(maze, zhonx_position.cordinate);
+    printMaze(maze, zhonx_position.coordinate_robot);
     waitStart();
 #ifdef ZHONX3
     telemetersStart();
     motorsDriverSleep(OFF);
 #endif
 #ifdef ZHONX2
-    if (zhonx_settings.calibration_enabled==true)
+    if (zhonxSettings.calibration_enabled==true)
     {
         hal_os_sleep(1000);
         calibrateSimple();
@@ -174,7 +174,7 @@ int maze(void)
     motorsDriverSleep(ON);
 #endif
 #ifdef ZHONX2
-    if (zhonx_settings.calibration_enabled==true)
+    if (zhonxSettings.calibration_enabled==true)
     {
         hal_os_sleep(1000);
         calibrateSimple();
@@ -189,13 +189,13 @@ int maze(void)
 #ifdef ZHONX2
     hal_step_motor_enable();
 #endif
-    goToPosition(&maze, &zhonx_position, start_position.cordinate);	//goto start position
+    goToPosition(&maze, &zhonx_position, start_position.coordinate_robot);	//goto start position
 #ifdef ZHONX3
     telemetersStart();
     motorsDriverSleep(OFF);
 #endif
 #ifdef ZHONX2
-    if (zhonx_settings.calibration_enabled==true)
+    if (zhonxSettings.calibration_enabled==true)
     {
         hal_os_sleep(1000);
         calibrateSimple();
@@ -218,7 +218,7 @@ int maze(void)
     motorsDriverSleep(ON);
 #endif
 #ifdef ZHONX2
-    if (zhonx_settings.calibration_enabled==true)
+    if (zhonxSettings.calibration_enabled==true)
     {
         hal_os_sleep(1000);
         calibrateSimple();
@@ -233,7 +233,7 @@ int maze(void)
 #ifdef ZHONX2
     hal_step_motor_enable();
 #endif
-    goToPosition(&maze, &zhonx_position, start_position.cordinate);	//goto start position
+    goToPosition(&maze, &zhonx_position, start_position.coordinate_robot);	//goto start position
     doUTurn(&zhonx_position);					// make 180° for be ready to go
 #ifdef ZHONX3
     telemetersStop();
@@ -249,15 +249,15 @@ int maze(void)
     motorsDriverSleep(OFF);
 #endif
 #ifdef ZHONX2
-    if (zhonx_settings.calibration_enabled==true)
+    if (zhonxSettings.calibration_enabled==true)
     {
-        hal_os_sleep(1000);
+        HAL_Delay(1000);
         calibrateSimple();
     }
     hal_step_motor_disable();
 #endif
-    run1(&maze, &zhonx_position, start_position.cordinate, end_coordinate);
-    run2(&maze, &zhonx_position, start_position.cordinate, end_coordinate);
+    run1(&maze, &zhonx_position, start_position.coordinate_robot, end_coordinate);
+    run2(&maze, &zhonx_position, start_position.coordinate_robot, end_coordinate);
 
 #ifdef ZHONX3
     motorsDriverSleep(OFF);
@@ -280,7 +280,7 @@ int exploration(labyrinthe *maze, positionRobot* positionZhonx,
     coordinate way[MAZE_SIZE * MAZE_SIZE] = { { -1, -1 }, { END_OF_LIST,
     END_OF_LIST } };
     coordinate last_coordinate;
-    poids(maze, positionZhonx->cordinate, true, false);
+    poids(maze, positionZhonx->coordinate_robot, true, false);
 
     while (findArrival(*maze, end_coordinate) != MAZE_SOLVER_E_SUCCESS)
     {
@@ -290,9 +290,13 @@ int exploration(labyrinthe *maze, positionRobot* positionZhonx,
         rv = moveVirtualZhonx(*maze, *positionZhonx, way, *end_coordinate);
         if (rv != MAZE_SOLVER_E_SUCCESS)
         {
+            #ifdef ZHONX3
+                motorsDriverSleep(ON);
+                telemetersStop();
+            #endif
             ssd1306Printf(60, 20, &Font_5x8, "no solution");
             bluetoothPrintf("no solution");
-            printMaze(*maze, positionZhonx->cordinate);
+            printMaze(*maze, positionZhonx->coordinate_robot);
             ssd1306Refresh();
             printLength(*maze, -1, -1);
             while (1)
@@ -302,12 +306,12 @@ int exploration(labyrinthe *maze, positionRobot* positionZhonx,
         }
         moveRealZhonxArc(maze, positionZhonx, way);
         clearMazelength(maze);
-        poids(maze, positionZhonx->cordinate, true, false);
-        printLength(*maze, positionZhonx->cordinate.x,
-                positionZhonx->cordinate.y);
+        poids(maze, positionZhonx->coordinate_robot, true, false);
+        printLength(*maze, positionZhonx->coordinate_robot.x,
+                positionZhonx->coordinate_robot.y);
     }
 #ifdef ZHONX2
-    if (zhonx_settings.calibration_enabled==true)
+    if (zhonxSettings.calibration_enabled==true)
     {
         hal_os_sleep(1000);
         calibrateSimple();
@@ -330,9 +334,9 @@ int exploration(labyrinthe *maze, positionRobot* positionZhonx,
     } while ((last_coordinate.x != end_coordinate->x)
             || (last_coordinate.y != end_coordinate->y));
 #ifdef ZHONX2
-    if (zhonx_settings.calibration_enabled==true)
+    if (zhonxSettings.calibration_enabled==true)
     {
-        hal_os_sleep(1000);
+        HAL_Delay(1000);
         calibrateSimple();
     }
 #endif
@@ -345,8 +349,8 @@ int goToPosition(labyrinthe *maze, positionRobot* positionZhonx,
     coordinate way[MAZE_SIZE * MAZE_SIZE];
     int rv;
     newCell(getCellState(), maze, *positionZhonx);
-    while (positionZhonx->cordinate.x != end_coordinate.x
-            || positionZhonx->cordinate.y != end_coordinate.y)
+    while (positionZhonx->coordinate_robot.x != end_coordinate.x
+            || positionZhonx->coordinate_robot.y != end_coordinate.y)
     {
         clearMazelength(maze);	// clear the length for make it with new walls
         poids(maze, end_coordinate, true, false);// calculate length into the new maze
@@ -365,37 +369,37 @@ int moveVirtualZhonx(labyrinthe maze, positionRobot positionZhonxVirtuel,
         coordinate way[], coordinate end_coordinate)
 {
     int i = 0;
-    while (positionZhonxVirtuel.cordinate.x != end_coordinate.x
-            || positionZhonxVirtuel.cordinate.y != end_coordinate.y)
+    while (positionZhonxVirtuel.coordinate_robot.x != end_coordinate.x
+            || positionZhonxVirtuel.coordinate_robot.y != end_coordinate.y)
     {
-        if (maze.cell[(int)(positionZhonxVirtuel.cordinate.x + 1)][(int)(positionZhonxVirtuel.cordinate.y)].length
-                < maze.cell[(int)(positionZhonxVirtuel.cordinate.x)][(int)(positionZhonxVirtuel.cordinate.y)].length&& positionZhonxVirtuel.cordinate.x+1<MAZE_SIZE
-                && maze.cell[(int)(positionZhonxVirtuel.cordinate.x)][(int)(positionZhonxVirtuel.cordinate.y)].wall_east==NO_WALL)
+        if (maze.cell[(int)(positionZhonxVirtuel.coordinate_robot.x + 1)][(int)(positionZhonxVirtuel.coordinate_robot.y)].length
+                < maze.cell[(int)(positionZhonxVirtuel.coordinate_robot.x)][(int)(positionZhonxVirtuel.coordinate_robot.y)].length&& positionZhonxVirtuel.coordinate_robot.x+1<MAZE_SIZE
+                && maze.cell[(int)(positionZhonxVirtuel.coordinate_robot.x)][(int)(positionZhonxVirtuel.coordinate_robot.y)].wall_east==NO_WALL)
         {
-            positionZhonxVirtuel.cordinate.x = positionZhonxVirtuel.cordinate.x
+            positionZhonxVirtuel.coordinate_robot.x = positionZhonxVirtuel.coordinate_robot.x
                     + 1;
         }
-        else if (maze.cell[(int)(positionZhonxVirtuel.cordinate.x)][(int)(positionZhonxVirtuel.cordinate.y
+        else if (maze.cell[(int)(positionZhonxVirtuel.coordinate_robot.x)][(int)(positionZhonxVirtuel.coordinate_robot.y
                 + 1)].length
-                < maze.cell[(int)(positionZhonxVirtuel.cordinate.x)][(int)(positionZhonxVirtuel.cordinate.y)].length&& positionZhonxVirtuel.cordinate.y+1<MAZE_SIZE
-                && maze.cell[(int)(positionZhonxVirtuel.cordinate.x)][(int)(positionZhonxVirtuel.cordinate.y)].wall_south==NO_WALL)
+                < maze.cell[(int)(positionZhonxVirtuel.coordinate_robot.x)][(int)(positionZhonxVirtuel.coordinate_robot.y)].length&& positionZhonxVirtuel.coordinate_robot.y+1<MAZE_SIZE
+                && maze.cell[(int)(positionZhonxVirtuel.coordinate_robot.x)][(int)(positionZhonxVirtuel.coordinate_robot.y)].wall_south==NO_WALL)
         {
-            positionZhonxVirtuel.cordinate.y = positionZhonxVirtuel.cordinate.y
+            positionZhonxVirtuel.coordinate_robot.y = positionZhonxVirtuel.coordinate_robot.y
                     + 1;
         }
-        else if (maze.cell[(int)(positionZhonxVirtuel.cordinate.x - 1)][(int)(positionZhonxVirtuel.cordinate.y)].length
-                < maze.cell[(int)(positionZhonxVirtuel.cordinate.x)][(int)(positionZhonxVirtuel.cordinate.y)].length&& positionZhonxVirtuel.cordinate.x>0
-                && maze.cell[(int)(positionZhonxVirtuel.cordinate.x)][(int)(positionZhonxVirtuel.cordinate.y)].wall_west==NO_WALL)
+        else if (maze.cell[(int)(positionZhonxVirtuel.coordinate_robot.x - 1)][(int)(positionZhonxVirtuel.coordinate_robot.y)].length
+                < maze.cell[(int)(positionZhonxVirtuel.coordinate_robot.x)][(int)(positionZhonxVirtuel.coordinate_robot.y)].length&& positionZhonxVirtuel.coordinate_robot.x>0
+                && maze.cell[(int)(positionZhonxVirtuel.coordinate_robot.x)][(int)(positionZhonxVirtuel.coordinate_robot.y)].wall_west==NO_WALL)
         {
-            positionZhonxVirtuel.cordinate.x = positionZhonxVirtuel.cordinate.x
+            positionZhonxVirtuel.coordinate_robot.x = positionZhonxVirtuel.coordinate_robot.x
                     - 1;
         }
-        else if (maze.cell[(int)(positionZhonxVirtuel.cordinate.x)][(int)(positionZhonxVirtuel.cordinate.y
+        else if (maze.cell[(int)(positionZhonxVirtuel.coordinate_robot.x)][(int)(positionZhonxVirtuel.coordinate_robot.y
                 - 1)].length
-                < maze.cell[(int)(positionZhonxVirtuel.cordinate.x)][(int)(positionZhonxVirtuel.cordinate.y)].length&& positionZhonxVirtuel.cordinate.y>0
-                && maze.cell[(int)(positionZhonxVirtuel.cordinate.x)][(int)(positionZhonxVirtuel.cordinate.y)].wall_north==NO_WALL)
+                < maze.cell[(int)(positionZhonxVirtuel.coordinate_robot.x)][(int)(positionZhonxVirtuel.coordinate_robot.y)].length&& positionZhonxVirtuel.coordinate_robot.y>0
+                && maze.cell[(int)(positionZhonxVirtuel.coordinate_robot.x)][(int)(positionZhonxVirtuel.coordinate_robot.y)].wall_north==NO_WALL)
         {
-            positionZhonxVirtuel.cordinate.y = positionZhonxVirtuel.cordinate.y
+            positionZhonxVirtuel.coordinate_robot.y = positionZhonxVirtuel.coordinate_robot.y
                     - 1;
         }
         else
@@ -410,9 +414,9 @@ int moveVirtualZhonx(labyrinthe maze, positionRobot positionZhonxVirtuel,
                 return MAZE_SOLVER_E_ERROR;
             }
         }
-        printMaze(maze, positionZhonxVirtuel.cordinate);
-        way[i].x = positionZhonxVirtuel.cordinate.x, way[i].y =
-                positionZhonxVirtuel.cordinate.y;
+        printMaze(maze, positionZhonxVirtuel.coordinate_robot);
+        way[i].x = positionZhonxVirtuel.coordinate_robot.x, way[i].y =
+                positionZhonxVirtuel.coordinate_robot.y;
         i++;
     }
     way[i].x = END_OF_LIST, way[i].y = END_OF_LIST;
@@ -432,30 +436,30 @@ void moveRealZhonxArc(labyrinthe *maze, positionRobot *positionZhonx,
     while (way[i].x != END_OF_LIST)
     {
         length = 0;
-        if (way[i].x == (positionZhonx->cordinate.x + 1)
-                && way[i].y == positionZhonx->cordinate.y)
+        if (way[i].x == (positionZhonx->coordinate_robot.x + 1)
+                && way[i].y == positionZhonx->coordinate_robot.y)
         {
             additionX = 1;
             additionY = 0;
             orientaionToGo = EAST;
         }
-        else if (way[i].x == (positionZhonx->cordinate.x - 1)
-                && way[i].y == positionZhonx->cordinate.y)
+        else if (way[i].x == (positionZhonx->coordinate_robot.x - 1)
+                && way[i].y == positionZhonx->coordinate_robot.y)
         {
             additionX = -1;
             additionY = 0;
             orientaionToGo = WEST;
         }
-        else if (way[i].y == (positionZhonx->cordinate.y - 1)
-                && way[i].x == positionZhonx->cordinate.x)
+        else if (way[i].y == (positionZhonx->coordinate_robot.y - 1)
+                && way[i].x == positionZhonx->coordinate_robot.x)
         {
 
             additionX = 0;
             additionY = -1;
             orientaionToGo = NORTH;
         }
-        else if (way[i].y == (positionZhonx->cordinate.y + 1)
-                && way[i].x == positionZhonx->cordinate.x)
+        else if (way[i].y == (positionZhonx->coordinate_robot.y + 1)
+                && way[i].x == positionZhonx->coordinate_robot.x)
         {
 
             additionX = 0;
@@ -466,8 +470,9 @@ void moveRealZhonxArc(labyrinthe *maze, positionRobot *positionZhonx,
         {
 #ifdef ZHONX3
             bluetoothPrintf("Error way : position zhonx x= %d y=%d \t way x= %d y=%d \n",
-                    positionZhonx->cordinate.x,positionZhonx->cordinate.y, way[i].x, way[i].y);
+                    positionZhonx->coordinate_robot.x,positionZhonx->coordinate_robot.y, way[i].x, way[i].y);
             HAL_Delay(200);
+            telemetersStop();
             motorsDriverSleep(ON);
 #elif defined ZHONX2
             hal_step_motor_disable();
@@ -482,11 +487,11 @@ void moveRealZhonxArc(labyrinthe *maze, positionRobot *positionZhonx,
         }
 
         while ((way[i].x != END_OF_LIST)
-                && way[i].y == (positionZhonx->cordinate.y + additionY)
-                && way[i].x == positionZhonx->cordinate.x + additionX)
+                && way[i].y == (positionZhonx->coordinate_robot.y + additionY)
+                && way[i].x == positionZhonx->coordinate_robot.x + additionX)
         {
-            positionZhonx->cordinate.x = way[i].x;
-            positionZhonx->cordinate.y = way[i].y;
+            positionZhonx->coordinate_robot.x = way[i].x;
+            positionZhonx->coordinate_robot.y = way[i].y;
             i++;
             length++;
         }
@@ -716,52 +721,52 @@ void printLength(const labyrinthe maze, const int x_robot, const int y_robot)
 {
 #if DEBUG > 2 && !defined ZHONX2
     bluetoothPrintf("zhonx : %d; %d\n", x_robot, y_robot);
-    bluetoothPrintf("  ");
-    for (int i = 0; i < MAZE_SIZE; i++)
-    {
-        bluetoothPrintf("%5d", i);
-    }
-    bluetoothPrintf("\n\n");
-    for (int i = 0; i < MAZE_SIZE; i++)
-    {
-        bluetoothPrintf("%2d  ", i);
-        for (int j = 0; j < MAZE_SIZE; j++)
-        {
-            if (maze.cell[j][i].wall_north == NO_KNOWN)
-            {
-                bluetoothPrintf("= = *");
-            }
-            else if (maze.cell[j][i].wall_north == WALL_PRESENCE)
-            {
-                bluetoothPrintf("====*");
-            }
-            else
-            {
-                bluetoothPrintf("    *");
-            }
-        }
-        bluetoothPrintf("\n ");
-
-        bluetoothPrintf("%2d ", i);
-        for (int j = 0; j < MAZE_SIZE; j++)
-        {
-            bluetoothPrintf("%4d", maze.cell[j][i].length);
-            if (maze.cell[j][i].wall_east == NO_KNOWN)
-            {
-                bluetoothPrintf("!");
-            }
-            else if (maze.cell[j][i].wall_east == WALL_PRESENCE)
-            {
-                bluetoothPrintf("|");
-            }
-            else
-            {
-                bluetoothPrintf(" ");
-            }
-        }
-        bluetoothPrintf("\n");
-    }
-    bluetoothPrintf("\n");
+//    bluetoothPrintf("  ");
+//    for (int i = 0; i < MAZE_SIZE; i++)
+//    {
+//        bluetoothPrintf("%5d", i);
+//    }
+//    bluetoothPrintf("\n\n");
+//    for (int i = 0; i < MAZE_SIZE; i++)
+//    {
+//        bluetoothPrintf("%2d  ", i);
+//        for (int j = 0; j < MAZE_SIZE; j++)
+//        {
+//            if (maze.cell[j][i].wall_north == NO_KNOWN)
+//            {
+//                bluetoothPrintf("= = *");
+//            }
+//            else if (maze.cell[j][i].wall_north == WALL_PRESENCE)
+//            {
+//                bluetoothPrintf("====*");
+//            }
+//            else
+//            {
+//                bluetoothPrintf("    *");
+//            }
+//        }
+//        bluetoothPrintf("\n ");
+//
+//        bluetoothPrintf("%2d ", i);
+//        for (int j = 0; j < MAZE_SIZE; j++)
+//        {
+//            bluetoothPrintf("%4d", maze.cell[j][i].length);
+//            if (maze.cell[j][i].wall_east == NO_KNOWN)
+//            {
+//                bluetoothPrintf("!");
+//            }
+//            else if (maze.cell[j][i].wall_east == WALL_PRESENCE)
+//            {
+//                bluetoothPrintf("|");
+//            }
+//            else
+//            {
+//                bluetoothPrintf(" ");
+//            }
+//        }
+//        bluetoothPrintf("\n");
+//    }
+//    bluetoothPrintf("\n");
 #endif
 }
 
@@ -788,7 +793,7 @@ char miniwayFind(labyrinthe *maze, coordinate start_coordinate,
     printMaze(*maze, (coordinate ) { -1, -1 });
     positionRobot position;
     position.midOfCell = true;
-    position.cordinate = start_coordinate;
+    position.coordinate_robot = start_coordinate;
     position.orientation = NORTH;
     moveVirtualZhonx(*maze, position, way1, end_coordinate);
     clearMazelength(maze);
