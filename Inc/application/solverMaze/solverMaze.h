@@ -46,7 +46,7 @@
 #define MAX_SPEED_TRANSLATION   (300)
 #define END_SPEED_TRANSLATION	(300)
 
-#define DEBUG 3
+//#define DEBUG 2
 
 #define END_OF_LIST 255
 

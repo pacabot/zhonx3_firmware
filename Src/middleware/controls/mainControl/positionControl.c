@@ -84,9 +84,9 @@ int positionControlInit(void)
     memset(&position_params, 0, sizeof(position_params_struct));
     positionProfileCompute(0, 0, 0);
 
-    encoder_or_gyro_pid_instance.Kp = 80;
+    encoder_or_gyro_pid_instance.Kp = 100;
     encoder_or_gyro_pid_instance.Ki = 0;
-    encoder_or_gyro_pid_instance.Kd = 2000;
+    encoder_or_gyro_pid_instance.Kd = 1000;
 
     position_control.position_pid.instance = &encoder_or_gyro_pid_instance;
 
@@ -174,15 +174,16 @@ int positionControlLoop(void)
     }
 
     position_control.position_error = position_control.current_angle_consign - position_control.current_angle;//for distance control
-    if (fabs(position_control.position_error) > MAX_POSITION_ERROR)
-    {
-        pid_loop.start_state = FALSE;
-        motorsDriverSleep(ON);
-        ssd1306ClearScreen(MAIN_AREA);
-        ssd1306DrawStringAtLine(10, 1, "POSITION ERROR!!!", &Font_5x8);
-//        ssd1306WaitReady();
-        ssd1306Refresh();
-    }
+//    if (fabs(position_control.position_error) > MAX_POSITION_ERROR)
+//    {
+//    bluetoothPrintf("POSITION ERROR = %d\n", (int32_t) position_control.position_error);
+//        pid_loop.start_state = FALSE;
+//        motorsDriverSleep(ON);
+//        ssd1306ClearScreen(MAIN_AREA);
+//        ssd1306DrawStringAtLine(10, 1, "POSITION ERROR!!!", &Font_5x8);
+////        ssd1306WaitReady();
+//        ssd1306Refresh();
+//    }
 
     position_control.position_command = (pidController(position_control.position_pid.instance,
                                                        position_control.position_error)) * (float) position_params.sign;
