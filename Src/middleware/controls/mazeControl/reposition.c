@@ -48,7 +48,7 @@
 #include "middleware/controls/mazeControl/reposition.h"
 
 #define DEADZONE_DIST		 80.00	//Distance between the start of the cell and doubt area
-#define DEADZONE			 80.00	//doubt area
+#define DEADZONE			 90.00	//doubt area
 #define GETWALLPRESENCEZONE  5.00
 
 static enum telemeters_used telemeter_used = NO_SIDE;

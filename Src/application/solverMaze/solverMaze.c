@@ -95,11 +95,6 @@
 #include "ssd1306.h"
 #include "pcf8574.h"
 #endif // simulator
-#define debug
-#ifdef debug
-#undef END_SPEED_TRANSLATION
-#define END_SPEED_TRANSLATION 0
-#endif
 /*
  *  ********************** int maze (void) **********************
  *  this function is the main function of the maze solver
@@ -108,8 +103,6 @@
 
 int maze(void)
 {
-    ssd1306ClearScreen(MAIN_AREA);
-    ssd1306Refresh();
     coordinate end_coordinate; // it's the coordinates which Zhonx have at the start
     labyrinthe maze;
     mazeInit(&maze);
@@ -117,6 +110,7 @@ int maze(void)
 #ifdef ZHONX3
     mainControlInit();
     mainControlSetFollowType(WALL_FOLLOW);
+    positionControlSetPositionType(GYRO);
     motorsDriverSleep(ON);
 #endif
 #ifdef SIMULATOR
@@ -162,14 +156,10 @@ int maze(void)
     hal_step_motor_disable();
     HAL_Delay(5000);
 #endif
-    // TODO : begging debug
-    coordinate way[] = {{8,7},{8,8},{8,7},{8,6},{9,6},{9,7},{9,8},{9,7},{10,7},{10,6},{10,7},{END_OF_LIST,END_OF_LIST}};
-    //moveRealZhonxArc(&maze, &zhonx_position, way);
-    //return MAZE_SOLVER_E_SUCCESS;
-    // TODO : end debug
 
     exploration(&maze, &zhonx_position, &start_position, &end_coordinate); //make exploration for go from the robot position and the end of the maze
-#ifdef ZHONX3
+
+    #ifdef ZHONX3
     telemetersStop();
     motorsDriverSleep(ON);
 #endif
@@ -295,6 +285,7 @@ int exploration(labyrinthe *maze, positionRobot* positionZhonx,
                 telemetersStop();
             #endif
             ssd1306Printf(60, 20, &Font_5x8, "no solution");
+            bluetoothWaitReady();
             bluetoothPrintf("no solution");
             printMaze(*maze, positionZhonx->coordinate_robot);
             ssd1306Refresh();
@@ -469,6 +460,7 @@ void moveRealZhonxArc(labyrinthe *maze, positionRobot *positionZhonx, coordinate
         else
         {
 #ifdef ZHONX3
+            bluetoothWaitReady();
             bluetoothPrintf("Error way : position zhonx x= %d y=%d \t way x= %d y=%d \n",
                     positionZhonx->coordinate_robot.x,positionZhonx->coordinate_robot.y, way[i].x, way[i].y);
             HAL_Delay(200);
@@ -643,21 +635,21 @@ void printMaze(labyrinthe maze, coordinate robot_coordinate)
             if (maze.cell[x][y].wall_north == WALL_PRESENCE)
             {
                 ssd1306DrawLine(x * size_cell_on_oled,
-                        (y + HEAD_MARGIN / 4) * size_cell_on_oled,
+                        y  * size_cell_on_oled + HEAD_MARGIN,
                         x * size_cell_on_oled + size_cell_on_oled + 1,
                         (y + HEAD_MARGIN / 4) * size_cell_on_oled);
             }
             else if (maze.cell[x][y].wall_north == NO_KNOWN)
             {
                 ssd1306DrawDashedLine(x * size_cell_on_oled,
-                        (y + HEAD_MARGIN / 4) * size_cell_on_oled,
+                        y  * size_cell_on_oled + HEAD_MARGIN,
                         x * size_cell_on_oled + size_cell_on_oled + 1,
                         (y + HEAD_MARGIN / 4) * size_cell_on_oled);
             }
             if (maze.cell[x][y].wall_west == WALL_PRESENCE)
             {
                 ssd1306DrawLine(x * size_cell_on_oled,
-                        (y + HEAD_MARGIN / 4) * size_cell_on_oled,
+                        y  * size_cell_on_oled + HEAD_MARGIN,
                         x * size_cell_on_oled,
                         (y + HEAD_MARGIN / 4) * size_cell_on_oled
                                 + size_cell_on_oled + 1);
@@ -665,7 +657,7 @@ void printMaze(labyrinthe maze, coordinate robot_coordinate)
             else if (maze.cell[x][y].wall_west == NO_KNOWN)
             {
                 ssd1306DrawDashedLine(x * size_cell_on_oled,
-                        (y + HEAD_MARGIN / 4) * size_cell_on_oled,
+                        y  * size_cell_on_oled + HEAD_MARGIN,
                         x * size_cell_on_oled,
                         (y + HEAD_MARGIN / 4) * size_cell_on_oled
                                 + size_cell_on_oled + 1);
@@ -688,7 +680,7 @@ void printMaze(labyrinthe maze, coordinate robot_coordinate)
             if (maze.cell[x][y].wall_east == WALL_PRESENCE)
             {
                 ssd1306DrawLine((x + 1) * size_cell_on_oled,
-                        (y + HEAD_MARGIN / 4) * size_cell_on_oled,
+                        y  * size_cell_on_oled + HEAD_MARGIN,
                         (x + 1) * size_cell_on_oled,
                         (y + HEAD_MARGIN / 4) * size_cell_on_oled
                                 + size_cell_on_oled + 1);
@@ -696,7 +688,7 @@ void printMaze(labyrinthe maze, coordinate robot_coordinate)
             else if (maze.cell[x][y].wall_east == NO_KNOWN)
             {
                 ssd1306DrawDashedLine((x + 1) * size_cell_on_oled,
-                        (y + HEAD_MARGIN / 4) * size_cell_on_oled,
+                        y  * size_cell_on_oled + HEAD_MARGIN,
                         (x + 1) * size_cell_on_oled,
                         (y + HEAD_MARGIN / 4) * size_cell_on_oled
                                 + size_cell_on_oled + 1);
@@ -705,7 +697,7 @@ void printMaze(labyrinthe maze, coordinate robot_coordinate)
     }
     printLength(maze, robot_coordinate.x, robot_coordinate.y);
     ssd1306DrawRect((robot_coordinate.x * size_cell_on_oled) + 1,
-            ((robot_coordinate.y + HEAD_MARGIN / 4) * size_cell_on_oled) + 1, 2,
+            ((robot_coordinate.y) * size_cell_on_oled) + 1 + HEAD_MARGIN, 2,
             2);
     ssd1306Refresh();
 #endif
@@ -714,6 +706,7 @@ void printMaze(labyrinthe maze, coordinate robot_coordinate)
 void printLength(const labyrinthe maze, const int x_robot, const int y_robot)
 {
 #if DEBUG > 2 && !defined ZHONX2
+    bluetoothWaitReady();
     bluetoothPrintf("zhonx : %d; %d\n", x_robot, y_robot);
 //    bluetoothPrintf("  ");
 //    for (int i = 0; i < MAZE_SIZE; i++)
@@ -903,10 +896,12 @@ int findArrival(labyrinthe maze, coordinate *end_coordinate)
 }
 void print_way (coordinate *way)
 {
+#if defined DEBUG && DEBUG > 3
     int i = 0;
     while (way[i].x != END_OF_LIST)
     {
         bluetoothWaitReady();
         bluetoothPrintf("%d,%d\n", way[i].x ,way[i].y );
     }
+#endif
 }

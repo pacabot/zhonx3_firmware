@@ -66,6 +66,7 @@ extern void spyPostCalibration(void);
 extern void spyPostTest(void);
 extern int spyPostReadCalibration(void);
 extern void repositionGetFrontDistCal(void);
+extern int test_move_zhonx ();
 extern int _Factor;
 extern int _KP;
 /*
@@ -102,6 +103,7 @@ const menuItem maze_menu=
 		"MAZE",
 		{
 				{"new maze",'f',		(void*)maze},
+				{"test_maze",'f',       (void*)test_move_zhonx},
 				{"calibration",'b',		(void*)&zhonxSettings.calibration_enabled},
 				{"color finish",'b',	(void*)&zhonxSettings.nime_competition},
 				{"x finish",'i',		(void*)&zhonxSettings.maze_end_coordinate.x},

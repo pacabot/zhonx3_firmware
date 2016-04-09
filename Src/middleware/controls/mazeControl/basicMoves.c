@@ -429,13 +429,17 @@ int moveUTurn(double speed_rotation, double max_speed, double end_speed)
     moveHalfCell_IN(max_speed, 0);
     // chose the correct turn for re-calibrate the robot if possible
     rotate180WithCal(wall_presence, speed_rotation);
-    // go back and go out for maximize correct alignment
-    repositionSetInitialPosition(HALF_CELL_LENGTH);
     while (hasMoveEnded() != TRUE);
-    move(0, -1.00 * (HALF_CELL_LENGTH - (Z3_CENTER_BACK_DIST + HALF_WALL_THICKNESS + UTURN_OFFSET)), max_speed, 0);
+    // go back and go out for maximize correct alignment
+    mainControlSetFollowType(NO_FOLLOW); //todo this is the shit
+    positionControlSetPositionType(ENCODERS);
+    repositionSetInitialPosition(HALF_CELL_LENGTH);
+    move(0, -1.00 * (HALF_CELL_LENGTH - (Z3_CENTER_BACK_DIST + HALF_WALL_THICKNESS - UTURN_OFFSET)), max_speed, 0);
+    mainControlSetFollowType(WALL_FOLLOW); //todo this is the shit
+    positionControlSetPositionType(GYRO);
     repositionSetInitialPosition(Z3_CENTER_BACK_DIST + HALF_WALL_THICKNESS + UTURN_OFFSET);
     while (hasMoveEnded() != TRUE);
-    move(0, (HALF_CELL_LENGTH - (Z3_CENTER_BACK_DIST + HALF_WALL_THICKNESS - UTURN_OFFSET)), max_speed, end_speed);
+    move(0, (HALF_CELL_LENGTH - (Z3_CENTER_BACK_DIST + HALF_WALL_THICKNESS + UTURN_OFFSET)), max_speed, end_speed);
 
     moveHalfCell_OUT(max_speed, max_speed);
     moveOffsetDist(repositionGetFrontDist(), max_speed, end_speed);
@@ -492,9 +496,9 @@ void movesTest()
     Vrotate = 300;
 
     //test Uturn
-//    moveStartCell(Vmax, Vmax);
-//    moveUTurn(Vrotate, Vmax, Vmax);
-//    return;
+    //moveStartCell(Vmax, Vmax);
+    moveUTurn(Vrotate, Vmax, Vmax);
+    return;
 
     //maze
     moveStartCell(Vmax, Vmax);

@@ -19,10 +19,9 @@
 
 /* meddleware include */
 #include "application/solverMaze/solverMaze.h"
-
-/* Middleware declarations */
 #include "middleware/controls/mazeControl/basicMoves.h"
 #include "middleware/controls/mainControl/mainControl.h"
+#include "middleware/controls/mainControl/positionControl.h"
 
 #include "application/solverMaze/robotInterface.h"
 
@@ -33,28 +32,36 @@ void goOrientation(char *orientationZhonx, char directionToGo)
 	switch (turn)
 	{
 		case FORWARD :
+#ifdef DEBUG_ROBOT_INTERFACE
 		    bluetoothWaitReady();
 			bluetoothPrintf("FORWARD");
+#endif
 			break;
 		case RIGHT :
 			while(hasMoveEnded() != TRUE);
 			move (-90, 0, MAX_SPEED_ROTATION, 0);
+#ifdef DEBUG_ROBOT_INTERFACE
 			bluetoothWaitReady();
 			bluetoothPrintf("RIGHT");
+#endif
 			while(hasMoveEnded() != TRUE);
 			break;
 		case UTURN :
 			while(hasMoveEnded() != TRUE);
 			move (180, 0, MAX_SPEED_ROTATION, 0);
-			bluetoothWaitReady();
+#ifdef DEBUG_ROBOT_INTERFACE
+            bluetoothWaitReady();
 			bluetoothPrintf("UTURN");
+#endif
 			while(hasMoveEnded() != TRUE);
 			break;
 		case LEFT :
 			while(hasMoveEnded() != TRUE);
 			move (90, 0, MAX_SPEED_ROTATION, 0);
+#ifdef DEBUG_ROBOT_INTERFACE
 			bluetoothWaitReady();
 			bluetoothPrintf("LEFT");
+#endif
 			while(hasMoveEnded() != TRUE);
 			break;
 	}
@@ -95,7 +102,7 @@ void move_zhonx(int direction_to_go, positionRobot *positionZhonx, int numberOfC
     }
     else // so endMidOfCase=true and positionZhonx->midOfCase=false
     {
-        //moveHalfCell_IN(MAX_SPEED_TRANSLATION, END_SPEED_TRANSLATION); //TODO : change that
+        //moveHalfCell_IN(MAX_SPEED_TRANSLATION, END_SPEED_TRANSLATION); //TODO : change that to end cell
     }
     switch (turn)
     {
@@ -157,7 +164,10 @@ void move_zhonx(int direction_to_go, positionRobot *positionZhonx, int numberOfC
 
             break;
     }
-    moveCell(numberOfCell, MAX_SPEED_TRANSLATION, END_SPEED_TRANSLATION);
+    if (numberOfCell > 0)
+    {
+        moveCell(numberOfCell, MAX_SPEED_TRANSLATION, END_SPEED_TRANSLATION);
+    }
     positionZhonx->midOfCell = end_mid_of_case;
 
 }
@@ -395,4 +405,25 @@ void waitStart()
    HAL_Delay(20);
    while(getWallPresence(FRONT_WALL) == true);
    HAL_Delay(500);
+}
+
+int test_move_zhonx ()
+{
+    positionRobot zhonx_position;
+    zhonx_position.coordinate_robot.x = 8;
+    zhonx_position.coordinate_robot.y = 8;
+    zhonx_position.midOfCell = TRUE;
+    zhonx_position.orientation = NORTH;
+    coordinate way[] = {{8,7},{8,8},{8,7},{8,6},{7,6},{7,7},{7,8},{7,7},{7,6},{8,6},{8,7},{8,8},{END_OF_LIST, END_OF_LIST}}; //,{9,6},{9,7},{9,8},{9,7},{10,7},{10,6},{10,7},{END_OF_LIST,END_OF_LIST}};
+
+    motorsInit();
+    HAL_Delay(2000);
+    telemetersStart();
+    mainControlSetFollowType(WALL_FOLLOW);
+    positionControlSetPositionType(GYRO);
+    moveRealZhonxArc(&maze, &zhonx_position, way);
+    HAL_Delay(500);
+    motorsDriverSleep(ON);
+    telemetersStop();
+    return MAZE_SOLVER_E_SUCCESS;
 }
