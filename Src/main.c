@@ -53,6 +53,7 @@
 #include "middleware/cmdline/cmdline_parser.h"
 #include "middleware/cmdline/commands/commads.h"
 #include "middleware/ring_buffer/ring_buffer.h"
+#include "middleware/controls/mazeControl/spyPost.h"
 
 /* USER CODE END Includes */
 
