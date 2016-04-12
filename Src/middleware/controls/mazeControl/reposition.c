@@ -119,13 +119,29 @@ enum telemeters_used repositionGetTelemeterUsed(void)
 int repositionGetFrontDist(void)
 {
     int error_distance;
+    const char FRONT_DIST_OFFSET = 114;
     if (getWallPresence(FRONT_WALL) == WALL_PRESENCE)
     {
-        error_distance = (int)(getTelemeterDist(TELEMETER_FL) + getTelemeterDist(TELEMETER_FR)) - (114 * 2);
+        if(getWallPresence(LEFT_WALL) == WALL_PRESENCE && getWallPresence(RIGHT_WALL) == WALL_PRESENCE)
+        {
+            return 0;
+        }
+        else if (getWallPresence(LEFT_WALL) == WALL_PRESENCE)
+        {
+            error_distance = (int)(getTelemeterDist(TELEMETER_FR)) - FRONT_DIST_OFFSET;
+        }
+        else if (getWallPresence(RIGHT_WALL) == WALL_PRESENCE)
+        {
+            error_distance = (int)(getTelemeterDist(TELEMETER_FL)) - FRONT_DIST_OFFSET;
+        }
+        else
+        {
+            error_distance = (int)(getTelemeterDist(TELEMETER_FL) + getTelemeterDist(TELEMETER_FR)) - (FRONT_DIST_OFFSET * 2);
 #ifdef DEBUG_DISPLACEMENT
-        // Calculating average distance detected by FR and FL Telemeters
-        bluetoothPrintf("distance = %d \n", (int)distance);
+            // Calculating average distance detected by FR and FL Telemeters
+            bluetoothPrintf("distance = %d \n", (int)distance);
 #endif
+        }
         return error_distance;
     }
     else

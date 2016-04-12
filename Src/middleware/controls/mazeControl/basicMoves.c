@@ -226,7 +226,7 @@ int moveCell(unsigned int nb_cell, double max_speed, double end_speed)
         moveOffsetDist(offset.left_x, max_speed, end_speed);
 #ifdef DEBUG_BASIC_MOVES
         bluetoothWaitReady();
-        bluetoothPrintf("\rMOVE CELL, L_OFFSET = %d, TYPE = %d\n", (int32_t)offset.left_x, offset.left_spyPostType);
+        bluetoothPrintf("\rMOVE %d CELL, L_OFFSET = %d, TYPE = %d\n", nb_cell, (int32_t)offset.left_x, offset.left_spyPostType);
 #endif
     }
     else if (offset.right_x != 0)
@@ -234,7 +234,7 @@ int moveCell(unsigned int nb_cell, double max_speed, double end_speed)
         moveOffsetDist(offset.right_x, max_speed, end_speed);
 #ifdef DEBUG_BASIC_MOVES
         bluetoothWaitReady();
-        bluetoothPrintf("\rMOVE CELL, R_OFFSET = %d, TYPE = %d\n", (int32_t)offset.right_x, offset.right_spyPostType);
+        bluetoothPrintf("\rMOVE %d CELL, R_OFFSET = %d, TYPE = %d\n", nb_cell, (int32_t)offset.right_x, offset.right_spyPostType);
 #endif
     }
     else
@@ -242,7 +242,7 @@ int moveCell(unsigned int nb_cell, double max_speed, double end_speed)
         moveOffsetDist(0, max_speed, end_speed);
 #ifdef DEBUG_BASIC_MOVES
         bluetoothWaitReady();
-        bluetoothPrintf("\rMOVE CELL\n");
+        bluetoothPrintf("\rMOVE %d CELL\n", nb_cell);
 #endif
     }
     return POSITION_CONTROL_E_SUCCESS;
