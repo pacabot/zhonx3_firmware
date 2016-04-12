@@ -113,7 +113,7 @@ int spyPostInit(void)
     int rv;
 
     ref_left  = spyPost_profiles;
-    ref_right = ((unsigned char *)spyPost_profiles) + sizeof(spyPostRefTypeProfileStruct);
+    ref_right = (spyPostRefTypeProfileStruct *)(((unsigned char *)spyPost_profiles) + sizeof(spyPostRefTypeProfileStruct));
 
     // Check whether Left and Right profiles are initialized
     if ((ref_left->initializer != 0xDEADBEEF) || (ref_right->initializer != 0xDEADBEEF))
