@@ -394,7 +394,7 @@ void getTelemetersADC(telemeterStruct *tel, ADC_HandleTypeDef *hadc)
     if (tel->isActivated == TX_OFF)
     {
         tel->adc_ref = HAL_ADC_GetValue(hadc);
-        tel->avrg_ref = mobileAvrgInt(&tel->mAvrgStruct_ref, tel->adc_ref);
+        tel->avrg_ref =  mobileAvrgInt(&tel->mAvrgStruct_ref, tel->adc_ref);
 
         tel->isActivated = FALSE;
     }

@@ -215,9 +215,8 @@ char hasMoveEnded(void)
 {
     if (positionControlHasMoveEnded() == TRUE && speedControlHasMoveEnded() == TRUE)
     {
-        return TRUE;
         pid_loop.start_state = FALSE;
+        return TRUE;
     }
-    else
-        return FALSE;
+    return FALSE;
 }

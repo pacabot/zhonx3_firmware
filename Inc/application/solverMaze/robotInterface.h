@@ -8,7 +8,7 @@
 #ifndef ROBOTINTERFACE_H_
 #define ROBOTINTERFACE_H_
 
-#define DEBUG_ROBOT_INTERFACE
+//#define DEBUG_ROBOT_INTERFACE
 
 #include "middleware/wall_sensors/wall_sensors.h"
 

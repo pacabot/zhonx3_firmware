@@ -47,7 +47,7 @@
 /* Declarations for this module */
 #include "middleware/controls/mazeControl/reposition.h"
 
-#define DEADZONE_DIST		 90.00	//Distance between the start of the cell and doubt area
+#define DEADZONE_DIST		 80.00	//Distance between the start of the cell and doubt area
 #define DEADZONE			 90.00	//doubt area
 #define GETWALLPRESENCEZONE  5.00
 
@@ -119,7 +119,7 @@ enum telemeters_used repositionGetTelemeterUsed(void)
 int repositionGetFrontDist(void)
 {
     int error_distance;
-    const char FRONT_DIST_OFFSET = 114;
+    const char FRONT_DIST_OFFSET = 123;
     if (getWallPresence(FRONT_WALL) == WALL_PRESENCE)
     {
         if(getWallPresence(LEFT_WALL) == WALL_PRESENCE && getWallPresence(RIGHT_WALL) == WALL_PRESENCE)
