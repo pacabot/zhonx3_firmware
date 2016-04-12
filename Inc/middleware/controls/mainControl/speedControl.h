@@ -34,6 +34,6 @@ double speedControlGetSpeedCommand(void);
 double speedControlSetSign(double sign);
 int speedControlLoop(void);
 int speedCompute(void);
-double speedProfileCompute(double distance, double max_speed, double end_speed);
+double speedProfileCompute(double distance, double max_speed, double end_speed, double max_accel);
 
 #endif

@@ -62,9 +62,9 @@
 #define SPYPOST_CAL_DISTANCE			       (uint32_t)MAIN_DIST
 #define SPYPOST_ARRAY_PROFILE_LENGTH 		   ((SPYPOST_CAL_DISTANCE)/SPYPOST_ENCODERS_STEPS_MEASURE_MM)
 
-#define SPYPOST_TELEMETER_STEPS_MEASURE_MM     2
+#define SPYPOST_TELEMETER_STEPS_MEASURE_MM     3
 #define SPYPOST_NBITS_SAMPLING_RESOLUTION 	   32
-#define SPYPOST_MIN_DIAG_SENSOR_DISTANCE 	   65
+#define SPYPOST_MIN_DIAG_SENSOR_DISTANCE 	   55
 #define SPYPOST_MAX_DIAG_SENSOR_DISTANCE 	   (SPYPOST_TELEMETER_STEPS_MEASURE_MM * SPYPOST_NBITS_SAMPLING_RESOLUTION) + SPYPOST_MIN_DIAG_SENSOR_DISTANCE
 
 #define SPYPOST_REFERENCE_SAMPLE_HEIGHT 	   16	//16 bit height
@@ -72,7 +72,7 @@
 
 #define SPYPOST_MOVE_SPEED 					   50
 
-#define MIN_STAT                               16
+#define MIN_STAT                               14
 
 #if (SPYPOST_MAX_DIAG_SENSOR_DISTANCE - SPYPOST_MIN_DIAG_SENSOR_DISTANCE) % (SPYPOST_NBITS_SAMPLING_RESOLUTION) != 0
 #error  MAX DIAG - MIN_DIAG must be a multiple of SAMPLING_RESOLUTION
@@ -82,8 +82,8 @@
 typedef struct
 {
     uint32_t sample[SPYPOST_ARRAY_PROFILE_LENGTH + 1];
-    uint32_t center_x_distance;
-    uint32_t center_y_distance;
+    int32_t center_x_distance;
+    int32_t center_y_distance;
 } spyPostProfileStruct;
 
 typedef struct
@@ -94,27 +94,6 @@ typedef struct
     unsigned int         initializer;
 } spyPostRefTypeProfileStruct;
 
-//spyPostRefTypeProfileStruct ref_left = //todo add saved value uint32_to flash
-//{ .wallToNoWall =
-//{ .sample =
-//{ 14, 28, 14, 28, 28, 28, 28, 28, 56, 56, 56, 56, 112, 224, 224, 448, 896, 1792, 3584, 14336 }, .center_x_distance =
-//        58 }, .singlePost =
-//        { .sample = { 896, 224, 112, 56, 28, 14, 7, 7, 7, 7, 7, 7, 14, 56, 56, 112, 224, 896, 3584, 28672 }, .center_x_distance =
-//                62 }, .perpendicularWall =
-//                { .sample = { 224, 224, 56, 56, 28, 28, 14, 14, 14, 7, 14, 14, 14, 28, 56, 112, 224, 896, 3584, 28672 }, .center_x_distance =
-//                        62 } };
-//
-//spyPostRefTypeProfileStruct ref_right = //todo add saved value uint32_to flash
-//{ .wallToNoWall =
-//{ .sample =
-//{ 14, 14, 14, 14, 14, 14, 14, 14, 28, 28, 28, 56, 56, 112, 224, 448, 896, 1792, 7168, 28672 }, .center_x_distance =
-//        56 }, .singlePost =
-//        { .sample =
-//        { 7168, 1792, 896, 448, 112, 56, 28, 14, 14, 14, 7, 7, 14, 14, 28, 112, 224, 896, 3584, 14336 }, .center_x_distance =
-//                59 }, .perpendicularWall =
-//                { .sample = { 448, 112, 56, 28, 28, 14, 7, 7, 7, 7, 7, 7, 14, 28, 56, 224, 448, 1792, 7168, 28672 }, .center_x_distance =
-//                        60 }, };
-
 // Declare Reference SpyPost profiles in Flash memory
 spyPostRefTypeProfileStruct *spyPost_profiles = (spyPostRefTypeProfileStruct *)ADDR_FLASH_SECTOR_9;
 
@@ -123,7 +102,7 @@ spyPostRefTypeProfileStruct *ref_right = NULL;
 
 /* Static functions */
 static void spyPostStartMeasure(spyPostProfileStruct *currentProfile, enum telemeterName telemeterName);
-static void spyPostPrintProfile(uint32_t x, uint32_t y, uint32_t *sample, uint32_t center_x_distance);
+static void spyPostPrintProfile(uint32_t x, uint32_t y, uint32_t *sample, uint32_t center_x_distance, uint32_t center_y_distance);
 static void spyPostSendBTProfile(uint32_t *buf32, uint32_t lenght_buf32);
 static void spyPostKeepUsefulPart(spyPostProfileStruct *typeProfile);
 static void spyPostSampleThicken(spyPostProfileStruct *profile, char stroke_width);
@@ -234,8 +213,9 @@ uint32_t spyPostGetOffset(spyPostGetOffsetsStruct *offset)
         }
         if (left_wallToNoWall_stat > MIN_STAT)
         {
-            offset->left_x = ref_left->wallToNoWall.center_x_distance - current_left.center_x_distance;
-            offset->left_y = ref_left->wallToNoWall.center_y_distance - current_left.center_y_distance;
+            offset->left_x = current_left.center_x_distance - ref_left->wallToNoWall.center_x_distance;
+            offset->left_y = current_left.center_y_distance - ref_left->wallToNoWall.center_y_distance;
+            offset->left_spyPostType = WALL_TO_NO_WALL;
         }
 #ifdef DEBUG_SPYPOST
         bluetoothPrintf("L_WTNW x = %d, L_WTNW y = %d, stat = %d\n", (int32_t) offset->left_x,
@@ -259,8 +239,9 @@ uint32_t spyPostGetOffset(spyPostGetOffsetsStruct *offset)
         {
             if (left_singlePost_stat > MIN_STAT)
             {
-                offset->left_x = ref_left->singlePost.center_x_distance - current_left.center_x_distance;
-                offset->left_y = ref_left->singlePost.center_y_distance - current_left.center_y_distance;
+                offset->left_x = current_left.center_x_distance - ref_left->singlePost.center_x_distance;
+                offset->left_y = current_left.center_y_distance - ref_left->singlePost.center_y_distance;
+                offset->left_spyPostType = SINGLE_POST;
             }
 #ifdef DEBUG_SPYPOST
             bluetoothPrintf("L_SP x = %d, L_SP y = %d, stat = %d\n", (int32_t) offset->left_x,
@@ -271,8 +252,9 @@ uint32_t spyPostGetOffset(spyPostGetOffsetsStruct *offset)
         {
             if (left_perpendicularWall_stat >= MIN_STAT)
             {
-                offset->left_x = ref_left->perpendicularWall.center_x_distance - current_left.center_x_distance;
-                offset->left_y = ref_left->perpendicularWall.center_y_distance - current_left.center_y_distance;
+                offset->left_x = current_left.center_x_distance - ref_left->perpendicularWall.center_x_distance;
+                offset->left_y = current_left.center_y_distance - ref_left->perpendicularWall.center_y_distance;
+                offset->left_spyPostType = PERPENDICULAR_WALL;
             }
 #ifdef DEBUG_SPYPOST
             if (left_singlePost_stat == left_perpendicularWall_stat)
@@ -301,8 +283,9 @@ uint32_t spyPostGetOffset(spyPostGetOffsetsStruct *offset)
         }
         if (right_wallToNoWall_stat > MIN_STAT)
         {
-            offset->right_x = ref_right->wallToNoWall.center_x_distance - current_right.center_x_distance;
-            offset->right_y = ref_right->wallToNoWall.center_y_distance - current_right.center_y_distance;
+            offset->right_x = current_right.center_x_distance - ref_right->wallToNoWall.center_x_distance;
+            offset->right_y = current_right.center_y_distance - ref_right->wallToNoWall.center_y_distance;
+            offset->right_spyPostType = WALL_TO_NO_WALL;
         }
 #ifdef DEBUG_SPYPOST
         bluetoothPrintf("R_WTNW x = %d, R_WTNW = y %d, stat = %d\n", (int32_t) offset->right_x,
@@ -326,8 +309,9 @@ uint32_t spyPostGetOffset(spyPostGetOffsetsStruct *offset)
         {
             if (right_singlePost_stat > MIN_STAT)
             {
-                offset->right_x = ref_right->singlePost.center_x_distance - current_right.center_x_distance;
-                offset->right_y = ref_right->singlePost.center_y_distance - current_right.center_y_distance;
+                offset->right_x = current_right.center_x_distance - ref_right->singlePost.center_x_distance;
+                offset->right_y = current_right.center_y_distance - ref_right->singlePost.center_y_distance;
+                offset->right_spyPostType = SINGLE_POST;
             }
 #ifdef DEBUG_SPYPOST
             bluetoothPrintf("R_SP x = %d, R_SP y = %d, stat = %d\n", (int32_t) offset->right_x,
@@ -338,8 +322,9 @@ uint32_t spyPostGetOffset(spyPostGetOffsetsStruct *offset)
         {
             if (right_perpendicularWall_stat >= MIN_STAT)
             {
-                offset->right_x = ref_right->perpendicularWall.center_x_distance - current_right.center_x_distance;
-                offset->right_y = ref_right->perpendicularWall.center_y_distance - current_right.center_y_distance;
+                offset->right_x = current_right.center_x_distance - ref_right->perpendicularWall.center_x_distance;
+                offset->right_y = current_right.center_y_distance - ref_right->perpendicularWall.center_y_distance;
+                offset->right_spyPostType = PERPENDICULAR_WALL;
             }
 #ifdef DEBUG_SPYPOST
             if (right_singlePost_stat == right_perpendicularWall_stat)
@@ -354,6 +339,7 @@ uint32_t spyPostGetOffset(spyPostGetOffsetsStruct *offset)
     }
     //    spyPostPrintProfile(0, 64, current_left.sample, current_left.center_x_distance);
     //    spyPostPrintProfile(43, 64, current_right.sample, current_right.center_x_distance);
+    while (hasMoveEnded() != TRUE);
     return SPYPOST_DRIVER_E_SUCCESS;
 }
 
@@ -380,9 +366,7 @@ uint32_t spyPostCalibration(void)
             ssd1306DrawBmp(spyPostRight, 1, 24, 128, 40);
             ssd1306DrawStringAtLine(30, 0, "RIGHT CALIBRATION", &Font_3x6);
             ssd1306Refresh();
-//            refProfiles = ref_right;
             refProfile_flash = ref_right;
-            //memset((spyPostRefTypeProfileStruct*) ref_right, 0, sizeof(spyPostRefTypeProfileStruct));   //reinit stucts
         }
         if (expanderJoyState() == JOY_DOWN)
         {
@@ -390,9 +374,7 @@ uint32_t spyPostCalibration(void)
             ssd1306DrawBmp(spyPostLeft, 1, 24, 128, 40);
             ssd1306DrawStringAtLine(30, 0, "LEFT CALIBRATION", &Font_3x6);
             ssd1306Refresh();
-//            refProfiles = ref_left;
             refProfile_flash = ref_left;
-            //memset((spyPostRefTypeProfileStruct*) ref_left, 0, sizeof(spyPostRefTypeProfileStruct));    //reinit stucts
         }
         if (expanderJoyFiltered() == JOY_LEFT)
         {
@@ -406,6 +388,7 @@ uint32_t spyPostCalibration(void)
 
     mainControlInit();
     mainControlSetFollowType(NO_FOLLOW);
+    positionControlSetPositionType(ENCODERS);
     HAL_Delay(4000);
 
     for (i = 0; i < 3; i++)
@@ -462,10 +445,10 @@ uint32_t spyPostCalibration(void)
         return rv;
     }
 
-    spyPostPrintProfile(0, 64, refProfile_flash->wallToNoWall.sample, refProfile_flash->wallToNoWall.center_x_distance);
-    spyPostPrintProfile(43, 64, refProfile_flash->singlePost.sample, refProfile_flash->singlePost.center_x_distance);
+    spyPostPrintProfile(0, 64, refProfile_flash->wallToNoWall.sample, refProfile_flash->wallToNoWall.center_x_distance, refProfile_flash->wallToNoWall.center_y_distance);
+    spyPostPrintProfile(43, 64, refProfile_flash->singlePost.sample, refProfile_flash->singlePost.center_x_distance, refProfile_flash->singlePost.center_y_distance);
     spyPostPrintProfile(86, 64, refProfile_flash->perpendicularWall.sample,
-                        refProfile_flash->perpendicularWall.center_x_distance);
+                        refProfile_flash->perpendicularWall.center_x_distance, refProfile_flash->perpendicularWall.center_y_distance);
 
     //send BT profiles
     bluetoothPrintf("\n wallToNoWall x = %d\n", refProfile_flash->wallToNoWall.center_x_distance);
@@ -475,9 +458,7 @@ uint32_t spyPostCalibration(void)
     bluetoothPrintf("\n perpendicularWall x = %d\n", refProfile_flash->perpendicularWall.center_x_distance);
     spyPostSendBTProfile((uint32_t*) &refProfile_flash->perpendicularWall.sample, SPYPOST_REFERENCE_SAMPLE_WIDTH);
 
-    while (expanderJoyFiltered() != JOY_LEFT)
-    {
-    }
+    while (expanderJoyFiltered() != JOY_LEFT);
     return SPYPOST_DRIVER_E_SUCCESS;
 }
 
@@ -501,9 +482,7 @@ void spyPostStartMeasure(spyPostProfileStruct *currentProfile, enum telemeterNam
     //offset dist
     repositionSetInitialPosition(0); //absolute position into a cell
     move(0, OFFSET_DIST, SPYPOST_MOVE_SPEED, SPYPOST_MOVE_SPEED);
-    while (hasMoveEnded() != TRUE)
-    {
-    }
+    while (hasMoveEnded() != TRUE);
 //    mainControlSetFollowType(WALL_FOLLOW);
     repositionSetInitialPosition(OFFSET_DIST); //absolute position into a cell
     //take the measures
@@ -511,8 +490,7 @@ void spyPostStartMeasure(spyPostProfileStruct *currentProfile, enum telemeterNam
     for (i = 0; i < SPYPOST_ARRAY_PROFILE_LENGTH; i++)
     {
         while ((((uint32_t) (encoderGetDist(ENCODER_L) + encoderGetDist(ENCODER_R))
-                <= (SPYPOST_ENCODERS_STEPS_MEASURE_MM * 2 * i))) && (hasMoveEnded() != TRUE))
-            ;
+                <= (SPYPOST_ENCODERS_STEPS_MEASURE_MM * 2 * i))) && (hasMoveEnded() != TRUE));
 
         sample = (uint32_t) getTelemeterDist(telemeterName);
 
@@ -550,12 +528,13 @@ void spyPostStartMeasure(spyPostProfileStruct *currentProfile, enum telemeterNam
     ssd1306ClearScreen(MAIN_AREA);
 }
 
-void spyPostPrintProfile(uint32_t x, uint32_t y, uint32_t *sample, uint32_t center_x_distance)
+void spyPostPrintProfile(uint32_t x, uint32_t y, uint32_t *sample, uint32_t center_x_distance, uint32_t center_y_distance)
 {
     ssd1306DrawRect(0 + x, y - 2 - (SPYPOST_REFERENCE_SAMPLE_HEIGHT * 2),
                     SPYPOST_REFERENCE_SAMPLE_WIDTH * 2 + 2,
                     SPYPOST_REFERENCE_SAMPLE_HEIGHT * 2 + 2);
-    ssd1306PrintfAtLine(x, 1, &Font_3x6, "%d\n", (uint32_t) center_x_distance);
+    ssd1306PrintfAtLine(x + 5, 1, &Font_3x6, "%d\n", (uint32_t) center_x_distance);
+    ssd1306PrintfAtLine(x + 30, 1, &Font_3x6, "%d\n", (uint32_t) center_y_distance);
     for (uint32_t i = 0; i < SPYPOST_REFERENCE_SAMPLE_WIDTH; i++)
     {
         for (uint32_t j = SPYPOST_REFERENCE_SAMPLE_HEIGHT; j > 0; j--)
@@ -596,7 +575,7 @@ void spyPostKeepUsefulPart(spyPostProfileStruct *currentProfile)
         }
     }
     //save the central y distance
-    currentProfile->center_y_distance = y_min * SPYPOST_TELEMETER_STEPS_MEASURE_MM;
+    currentProfile->center_x_distance = (y_min + (SPYPOST_REFERENCE_SAMPLE_HEIGHT / 2)) * SPYPOST_TELEMETER_STEPS_MEASURE_MM;
     //shift buffer (y axis)
     for (i = 0; i < SPYPOST_ARRAY_PROFILE_LENGTH; i++)
     {
@@ -651,7 +630,7 @@ uint32_t spyPostReadCalibration(void)
     ssd1306DrawStringAtLine(4, 1, "USE UP OR DOWN KEYS TO SELECT", &Font_3x6);
     ssd1306Refresh();
 
-    while (expanderJoyState() != JOY_RIGHT || refProfiles == NULL)
+    while (1)
     {
         if (expanderJoyState() == JOY_UP)
         {
@@ -659,6 +638,10 @@ uint32_t spyPostReadCalibration(void)
             ssd1306DrawStringAtLine(30, 0, "RIGHT CALIBRATION", &Font_3x6);
             ssd1306Refresh();
             refProfiles = ref_right;
+            spyPostPrintProfile(0, 64, refProfiles->wallToNoWall.sample, refProfiles->wallToNoWall.center_x_distance, refProfiles->wallToNoWall.center_y_distance);
+            spyPostPrintProfile(43, 64, refProfiles->singlePost.sample, refProfiles->singlePost.center_x_distance, refProfiles->singlePost.center_y_distance);
+            spyPostPrintProfile(86, 64, refProfiles->perpendicularWall.sample,
+                                refProfiles->perpendicularWall.center_x_distance, refProfiles->perpendicularWall.center_y_distance);
         }
         if (expanderJoyState() == JOY_DOWN)
         {
@@ -666,18 +649,15 @@ uint32_t spyPostReadCalibration(void)
             ssd1306DrawStringAtLine(30, 0, "LEFT CALIBRATION", &Font_3x6);
             ssd1306Refresh();
             refProfiles = ref_left;
+            spyPostPrintProfile(0, 64, refProfiles->wallToNoWall.sample, refProfiles->wallToNoWall.center_x_distance, refProfiles->wallToNoWall.center_y_distance);
+            spyPostPrintProfile(43, 64, refProfiles->singlePost.sample, refProfiles->singlePost.center_x_distance, refProfiles->singlePost.center_y_distance);
+            spyPostPrintProfile(86, 64, refProfiles->perpendicularWall.sample,
+                                refProfiles->perpendicularWall.center_x_distance, refProfiles->perpendicularWall.center_y_distance);
         }
         if (expanderJoyFiltered() == JOY_LEFT)
             return SPYPOST_DRIVER_E_SUCCESS;
     }
-    spyPostPrintProfile(0, 64, refProfiles->wallToNoWall.sample, refProfiles->wallToNoWall.center_x_distance);
-    spyPostPrintProfile(43, 64, refProfiles->singlePost.sample, refProfiles->singlePost.center_x_distance);
-    spyPostPrintProfile(86, 64, refProfiles->perpendicularWall.sample,
-                        refProfiles->perpendicularWall.center_x_distance);
 
-    while (expanderJoyFiltered() != JOY_LEFT)
-    {
-    }
     return SPYPOST_DRIVER_E_SUCCESS;
 }
 

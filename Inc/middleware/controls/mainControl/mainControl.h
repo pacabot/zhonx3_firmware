@@ -64,10 +64,26 @@ double positionControlSetSign(double sign);
  *
  * angle => angle of rotation in degres (0° for strait move)
  * radius_or_distance => radius in mm of rotate if angle > 0 or distance in mm if angle = 0°
- * speed_rate => speed ratio in percent of max value
+ * max_speed => max speed
+ * end_speed => end speed for chain
  *
  * @retval status
  */
 int move(double angle, double radius_or_distance, double max_speed, double end_speed);
+/**
+ * @brief compute and start a new straight movement
+ *
+ * This function outputs all params for pids controller (speedControl and positionControl).
+ *
+ * @param
+ *
+ * angle => angle of rotation in degres (0° for strait move)
+ * distance => distance in mm
+ * max_speed => max speed
+ * end_speed => end speed for chain
+ * accel     => acceleration mm/s²
+ * @retval status
+ */
+int moveStraight(double distance, double max_speed, double end_speed, double accel);
 
 #endif // __MAINCONTROL_H

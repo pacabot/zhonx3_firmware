@@ -72,9 +72,6 @@
 #define SSD1306_EXTERNALVCC             0x01
 #define SSD1306_SWITCHCAPVCC            0x02
 
-#define LINE_SPACING 					10
-#define HEAD_MARGIN						11
-
 /* extern variables ---------------------------------------------------------*/
 extern I2C_HandleTypeDef hi2c1;
 //extern DMA_HandleTypeDef hdma_i2c1_tx;
@@ -343,6 +340,20 @@ void ssd1306ClearScreen(enum refreshTypeEnum clearType)
             memset(display_buffer + (SSD1306_BANNERSIZE + SSD1306_CMDSIZE), 0,
             SSD1306_MAINSIZE);
             break;
+    }
+}
+
+/**************************************************************************/
+/*!
+ @brief wait I2C_STATE_READY
+ */
+/**************************************************************************/
+void ssd1306WaitReady(void)
+{
+    if (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY)
+    {
+        HAL_I2C_MspDeInit(&hi2c1);
+        HAL_I2C_MspInit(&hi2c1);
     }
 }
 

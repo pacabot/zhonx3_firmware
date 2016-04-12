@@ -18,9 +18,13 @@
 #define SSD1306_DRIVER_E_SUCCESS  0
 #define SSD1306_DRIVER_E_ERROR    MAKE_ERROR(SSD1306_DRIVER_MODULE_ID, 1)
 
+/* screen specification */
 #define SSD1306_LCDWIDTH                128
 #define SSD1306_LCDHEIGHT               64
 #define SSD1306_LCDPAGEHEIGHT           8   //8 lines per page
+
+#define LINE_SPACING                    10
+#define HEAD_MARGIN                     11
 
 enum refreshTypeEnum
 {
@@ -34,6 +38,7 @@ void ssd1306ClearPixel(unsigned char x, unsigned char y);
 void ssd1306InvertPixel(unsigned char x, unsigned char y);
 unsigned char ssd1306GetPixel(unsigned char x, unsigned char y);
 void ssd1306ClearScreen(enum refreshTypeEnum refreshType);
+void ssd1306WaitReady(void);
 void ssd1306Refresh(void);
 void ssd1306DrawString(unsigned int x, unsigned int y, const char *text, const FONT_DEF *font);
 void ssd1306DrawStringAtLine(unsigned int x, unsigned int line, const char *text, const FONT_DEF *font);

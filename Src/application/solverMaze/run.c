@@ -33,11 +33,11 @@ void run1(labyrinthe *maze, positionRobot *positionZhonx, coordinate start_oordi
     {
         choice = -1;
         waitStart();
-        exploration(maze, positionZhonx, end_coordinate);
+        goToPosition(maze, positionZhonx, end_coordinate);
 //		if(zhonxSettings.calibration_enabled == true)
 //			calibrateSimple();
         HAL_Delay(2000);
-        exploration(maze, positionZhonx, start_oordinate);
+        goToPosition(maze, positionZhonx, start_oordinate);
 //		if(zhonxSettings.calibration_enabled == true)
 //			calibrateSimple();
         doUTurn(positionZhonx);
@@ -69,15 +69,15 @@ void run2(labyrinthe *maze, positionRobot *positionZhonx, coordinate start_oordi
     {
         choice = -1;
         clearMazelength(maze);
-        poids(maze, zhonxSettings.maze_end_coordinate, true);
-        printMaze(*maze, positionZhonx->cordinate);
+        poids(maze, zhonxSettings.maze_end_coordinate, true, false);
+        printMaze(*maze, positionZhonx->coordinate_robot);
         waitStart();
         moveVirtualZhonx(*maze, *positionZhonx, way, end_coordinate);
         moveRealZhonxArc(maze, positionZhonx, way);
 //		if(zhonxSettings.calibration_enabled == true)
 //			calibrateSimple();
         HAL_Delay(2000);
-        exploration(maze, positionZhonx, start_oordinate);
+        goToPosition(maze, positionZhonx, start_oordinate);
 //		if(zhonxSettings.calibration_enabled == true)
 //			calibrateSimple();
         doUTurn(positionZhonx);
