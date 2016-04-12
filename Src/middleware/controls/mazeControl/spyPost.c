@@ -72,7 +72,7 @@
 
 #define SPYPOST_MOVE_SPEED 					   50
 
-#define MIN_STAT                               16
+#define MIN_STAT                               14
 
 #if (SPYPOST_MAX_DIAG_SENSOR_DISTANCE - SPYPOST_MIN_DIAG_SENSOR_DISTANCE) % (SPYPOST_NBITS_SAMPLING_RESOLUTION) != 0
 #error  MAX DIAG - MIN_DIAG must be a multiple of SAMPLING_RESOLUTION

@@ -8,7 +8,7 @@
 #ifndef ROBOTINTERFACE_H_
 #define ROBOTINTERFACE_H_
 
-//#define DEBUG_ROBOT_INTERFACE
+#define DEBUG_ROBOT_INTERFACE
 
 #include "middleware/wall_sensors/wall_sensors.h"
 
@@ -18,7 +18,7 @@ void moveZhonxArc(int direction_to_go, positionRobot *positionZhonx, int numberO
 int floorSensorCalibrate(void);
 int waitValidation(unsigned long timeout);
 void newCell(walls new_walls, labyrinthe *maze, positionRobot positionZhonx);
-void move_zhonx_arc(int direction_to_go, positionRobot *positionZhonx, int numberOfCell, char end_mid_of_case,
+void move_zhonx(int direction_to_go, positionRobot *positionZhonx, int numberOfCell, char end_mid_of_case,
                     char chain);
 walls getCellState();
 walls ask_cell_state ();
