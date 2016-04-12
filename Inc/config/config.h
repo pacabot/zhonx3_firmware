@@ -102,10 +102,11 @@
 /***************                  Robot Dimensions                 ********************/
 /******** you can see also Inc/application/solverMaze.h for more properties ***********/
 /**************************************************************************************/
-#define Z3_CENTER_BACK_DIST	    34.00
 #define Z3_WIDTH				72.50
 #define Z3_LENGHT				98.40
 #define Z3_HEIGHT				23.70
+#define Z3_CENTER_BACK_DIST     34.00
+#define Z3_CENTER_FRONT_DIST    (Z3_LENGHT - Z3_CENTER_BACK_DIST)
 
 /**************************************************************************************/
 /***************                   Maze Properties                 ********************/
@@ -113,19 +114,25 @@
 /**************************************************************************************/
 #define WALL_THICKNESS			12.00
 #define HALF_WALL_THICKNESS		WALL_THICKNESS / 2.00
-#define CELL_LENGTH				179.20
+#define CELL_LENGTH				179.00
 #define HALF_CELL_LENGTH		CELL_LENGTH / 2.00
-#define MAZE_SIZE				16
+#define MAZE_SIZE				17
+
+/**************************************************************************************/
+/***************                  Moves Constants                  ********************/
+/**************************************************************************************/
+#define OFFSET_DIST             15.00
+#define MAIN_DIST               (int)CELL_LENGTH - ((int)OFFSET_DIST * 2)
 
 /**************************************************************************************/
 /***************                 Physical Constants                ********************/
 /**************************************************************************************/
-#define MAX_SPEED				4000.0	//mm/s
-#define MAX_ACCEL				4000.0	//mm/s�
+#define MAX_SPEED				4000.00	//mm/s
+#define MAX_ACCEL				4000.00	//mm/s�
 //#define MAX_DECEL				8000.0	//mm/s�
 
-#define MAX_TURN_SPEED			500.0	//mm/s
-#define MAX_TURN_ACCEL			8000.0	//mm/s�
+#define MAX_TURN_SPEED			500.00	//mm/s
+#define MAX_TURN_ACCEL			8000.00	//mm/s�
 
 /**************************************************************************************/
 /***************                 Motors Constants                  ********************/

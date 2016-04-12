@@ -1,9 +1,9 @@
 /**************************************************************************/
 /*!
-    @file    transfertFunction.h
-    @author  PLF (PACABOT)
-    @date
-    @version  0.0
+ @file    transfertFunction.h
+ @author  PLF (PACABOT)
+ @date
+ @version  0.0
  */
 /**************************************************************************/
 #ifndef __TRANSFERTFUNCTION_H__
@@ -19,11 +19,11 @@
 /* Types definitions */
 typedef struct
 {
-	int left_motor_pwm;
-	int right_motor_pwm;
-	float pwm_ratio;
+    int left_motor_pwm;
+    int right_motor_pwm;
+    float pwm_ratio;
 
-}transfert_function_struct;
+} transfert_function_struct;
 
 extern transfert_function_struct transfert_function;
 

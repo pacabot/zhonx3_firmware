@@ -28,75 +28,75 @@
 #endif // codebloc
 void run1(labyrinthe *maze, positionRobot *positionZhonx, coordinate start_oordinate, coordinate end_coordinate)
 {
-	char choice;
-	do
-	{
-		choice = -1;
-		waitStart();
-		exploration(maze, positionZhonx, end_coordinate);
+    char choice;
+    do
+    {
+        choice = -1;
+        waitStart();
+        goToPosition(maze, positionZhonx, end_coordinate);
 //		if(zhonxSettings.calibration_enabled == true)
 //			calibrateSimple();
-		HAL_Delay(2000);
-		exploration(maze, positionZhonx, start_oordinate);
+        HAL_Delay(2000);
+        goToPosition(maze, positionZhonx, start_oordinate);
 //		if(zhonxSettings.calibration_enabled == true)
 //			calibrateSimple();
-		doUTurn(positionZhonx);
+        doUTurn(positionZhonx);
 
-		ssd1306ClearScreen(MAIN_AREA);
-		ssd1306DrawStringAtLine(10, 0, "press \"RIGHT\" to ", &Font_5x8);
-		ssd1306DrawStringAtLine(10, 1, "do a new run 1", &Font_5x8);
-		ssd1306Refresh();
-		while(choice == -1)
-		{
-			if(expanderJoyFiltered() == JOY_RIGHT)
-			{
-				choice = 1;
-			}
+        ssd1306ClearScreen(MAIN_AREA);
+        ssd1306DrawStringAtLine(10, 0, "press \"RIGHT\" to ", &Font_5x8);
+        ssd1306DrawStringAtLine(10, 1, "do a new run 1", &Font_5x8);
+        ssd1306Refresh();
+        while (choice == -1)
+        {
+            if (expanderJoyFiltered() == JOY_RIGHT)
+            {
+                choice = 1;
+            }
 
-			if(expanderJoyFiltered() != JOY_RIGHT
-					&& expanderJoyFiltered() != 0)
-			{
-				choice = 0;
-			}
-		}
-	}while(choice == 1);
+            if (expanderJoyFiltered() != JOY_RIGHT && expanderJoyFiltered() != 0)
+            {
+                choice = 0;
+            }
+        }
+    }
+    while (choice == 1);
 }
 void run2(labyrinthe *maze, positionRobot *positionZhonx, coordinate start_oordinate, coordinate end_coordinate)
 {
-	coordinate way[MAZE_SIZE*MAZE_SIZE];
-	char choice;
-	do
-	{
-		choice = -1;
-		clearMazelength(maze);
-		poids(maze,zhonxSettings.maze_end_coordinate, true);
-		printMaze(*maze,positionZhonx->cordinate);
-		waitStart();
-		moveVirtualZhonx(*maze, *positionZhonx, way, end_coordinate);
-		moveRealZhonxArc(maze, positionZhonx, way);
+    coordinate way[MAZE_SIZE * MAZE_SIZE];
+    char choice;
+    do
+    {
+        choice = -1;
+        clearMazelength(maze);
+        poids(maze, zhonxSettings.maze_end_coordinate, true, false);
+        printMaze(*maze, positionZhonx->coordinate_robot);
+        waitStart();
+        moveVirtualZhonx(*maze, *positionZhonx, way, end_coordinate);
+        moveRealZhonxArc(maze, positionZhonx, way);
 //		if(zhonxSettings.calibration_enabled == true)
 //			calibrateSimple();
-		HAL_Delay(2000);
-		exploration(maze, positionZhonx, start_oordinate);
+        HAL_Delay(2000);
+        goToPosition(maze, positionZhonx, start_oordinate);
 //		if(zhonxSettings.calibration_enabled == true)
 //			calibrateSimple();
-		doUTurn(positionZhonx);
-		ssd1306ClearScreen(MAIN_AREA);
-		ssd1306DrawStringAtLine(10, 0, "press \"RIGHT\" to ", &Font_5x8);
-		ssd1306DrawStringAtLine(10, 1, "do a new run 2", &Font_5x8);
-		ssd1306Refresh();
-		while(choice == -1)
-		{
-			if(expanderJoyFiltered() == JOY_RIGHT)
-			{
-				choice = 1;
-			}
+        doUTurn(positionZhonx);
+        ssd1306ClearScreen(MAIN_AREA);
+        ssd1306DrawStringAtLine(10, 0, "press \"RIGHT\" to ", &Font_5x8);
+        ssd1306DrawStringAtLine(10, 1, "do a new run 2", &Font_5x8);
+        ssd1306Refresh();
+        while (choice == -1)
+        {
+            if (expanderJoyFiltered() == JOY_RIGHT)
+            {
+                choice = 1;
+            }
 
-			if(expanderJoyFiltered() != JOY_RIGHT
-					&& expanderJoyFiltered() != 0)
-			{
-				choice = 0;
-			}
-		}
-	}while(choice == 1);
+            if (expanderJoyFiltered() != JOY_RIGHT && expanderJoyFiltered() != 0)
+            {
+                choice = 0;
+            }
+        }
+    }
+    while (choice == 1);
 }

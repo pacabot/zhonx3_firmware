@@ -1,10 +1,10 @@
 /**************************************************************************/
 /*!
-    @file     Bluetooth.h
-    @author   PLF Pacabot.com
-    @date     03 August 2014
-    @version  0.10
-*/
+ @file     Bluetooth.h
+ @author   PLF Pacabot.com
+ @date     03 August 2014
+ @version  0.10
+ */
 /**************************************************************************/
 #ifndef __BLUETOOTH_H__
 #define __BLUETOOTH_H__
@@ -24,6 +24,24 @@
  * @return 	none
  */
 void bluetoothInit(void);
+
+/**
+ * @brief Enables Bluetooth peripheral
+ *
+ * @param   none
+ *
+ * @return  none
+ */
+void bluetoothEnable(void);
+
+/**
+ * @brief Disables Bluetooth peripheral
+ *
+ * @param   none
+ *
+ * @return  none
+ */
+void bluetoothDisable(void);
 
 /**
  * @brief Prints a formatted string on Bluetooth peripheral
@@ -58,16 +76,17 @@ int bluetoothSend(unsigned char *data, int length);
  */
 int bluetoothReceive(unsigned char *data, int length);
 
-
 /**
  * @brief Send an AT command to Bluetooth module
+ *
+ * Note: Bluetooth module can receive AT commands only when no connection has
+ *       been established with another device.
  *
  * @param cmd       The command to send
  *
  * @return          The response of bluetooth module
  */
 char *bluetoothCmd(const char *cmd);
-
 
 /**
  * @brief Waits until Bluetooth UART becomes ready

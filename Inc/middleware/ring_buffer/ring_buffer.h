@@ -1,9 +1,9 @@
 /**************************************************************************/
 /*!
-    @file    ring_buffer.h
-    @author  Netanel (PACABOT)
-    @date    24/04/2015
-    @version 0.1
+ @file    ring_buffer.h
+ @author  Netanel (PACABOT)
+ @date    24/04/2015
+ @version 0.1
  */
 /**************************************************************************/
 
@@ -20,11 +20,11 @@ typedef struct
     // Address of the end of the buffer
     char *tail;
     // Maximum length of the ring buffer
-    int  max_len;
+    int max_len;
     // Pointer to the beginning of the available data
     char *data;
     // Length of available data
-    int  data_len;
+    int data_len;
 } ring_buffer_s;
 
 // Minimum input buffer size
@@ -106,7 +106,6 @@ int RingBuffer_write(const char *buffer, int length);
  * @return  Number of available bytes into the Ring Buffer
  */
 int RingBuffer_get_data_len(void);
-
 
 /*****************************************************************************
  * TEST FUNCTIONS

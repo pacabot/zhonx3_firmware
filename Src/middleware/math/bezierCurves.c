@@ -8,12 +8,12 @@
 #include <math.h>
 #include "middleware/math/bezierCurves.h"
 
-void courbe_de_bezier (int pointA[2],int pointB[2],int pointC[2],int pointD[2],point *tableOfPoint,int numberOfStep)
+void courbe_de_bezier(int pointA[2], int pointB[2], int pointC[2], int pointD[2], point *tableOfPoint, int numberOfStep)
 {
     int i;
     for (i = 0; i <= numberOfStep; ++i)
     {
-        double t = (double)i / (double)numberOfStep;
+        double t = (double) i / (double) numberOfStep;
 
         double a = pow((1.0 - t), 3.0);
         double b = 3.0 * t * pow((1.0 - t), 2.0);

@@ -1,10 +1,10 @@
 /**************************************************************************/
 /*! 
-    @file     smallfonts.h
-    @author   PLF (PACABOT)
-    @date     26 March 2011
-    @version  0.10
-*/
+ @file     smallfonts.h
+ @author   PLF (PACABOT)
+ @date     26 March 2011
+ @version  0.10
+ */
 /**************************************************************************/
 #ifndef __SMALLFONTS_H_
 #define __SMALLFONTS_H_
@@ -14,10 +14,10 @@
 
 typedef struct
 {
-    unsigned char u8Width;             /* Character width for storage         */
-    unsigned char u8Height;            /* Character height for storage        */
-    unsigned char u8FirstChar;         /* The first character available       */
-    unsigned char u8LastChar;          /* The last character available        */
+    unsigned char u8Width; /* Character width for storage         */
+    unsigned char u8Height; /* Character height for storage        */
+    unsigned char u8FirstChar; /* The first character available       */
+    unsigned char u8LastChar; /* The last character available        */
     const unsigned char *au8FontTable; /* Font table start address in memory  */
 } FONT_DEF;
 

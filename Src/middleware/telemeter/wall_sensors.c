@@ -36,27 +36,27 @@
 /* Middleware declarations */
 #include "middleware/wall_sensors/wall_sensors.h"
 
-walls cell_state = {NO_WALL,NO_WALL,NO_WALL,NO_WALL};
+walls cell_state = { NO_WALL, NO_WALL, NO_WALL, NO_WALL };
 
-char getWallPresence(enum wallSelectorEnum wallSelector)
+char getWallPresence(wallSelectorEnum wallSelector)
 {
-	switch (wallSelector)
-	{
-	case LEFT_WALL:
-		if (getTelemeterDist(TELEMETER_DL) <= DISTANCE_WALL_DIAG)
-			return TRUE;
-		else
-			return FALSE;
-	case RIGHT_WALL:
-		if (getTelemeterDist(TELEMETER_DR) <= DISTANCE_WALL_DIAG)
-			return TRUE;
-		else
-			return FALSE;
-	case FRONT_WALL:
-		if ((getTelemeterDist(TELEMETER_FL) + getTelemeterDist(TELEMETER_FR) / 2.00) <= DISTANCE_WALL_FRONT)
-			return TRUE;
-		else
-			return FALSE;
-	}
-	return 3;
+    switch (wallSelector)
+    {
+        case LEFT_WALL:
+            if (getTelemeterDist(TELEMETER_DL) <= DISTANCE_WALL_DIAG)
+                return TRUE;
+            else
+                return FALSE;
+        case RIGHT_WALL:
+            if (getTelemeterDist(TELEMETER_DR) <= DISTANCE_WALL_DIAG)
+                return TRUE;
+            else
+                return FALSE;
+        case FRONT_WALL:
+            if ((getTelemeterDist(TELEMETER_FL) + getTelemeterDist(TELEMETER_FR) / 2.00) <= DISTANCE_WALL_FRONT)
+                return TRUE;
+            else
+                return FALSE;
+    }
+    return 3;
 }

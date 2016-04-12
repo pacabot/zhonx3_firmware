@@ -1,9 +1,9 @@
 /**************************************************************************/
 /*!
-    @file    ring_buffer.c
-    @author  Nathy (PACABOT)
-    @date    24/04/2015
-    @version  0.0
+ @file    ring_buffer.c
+ @author  Nathy (PACABOT)
+ @date    24/04/2015
+ @version  0.0
  */
 /**************************************************************************/
 
@@ -31,12 +31,10 @@
 // Declare Ring Buffer variable
 static ring_buffer_s ring_buffer;
 
-
 int RingBuffer_init(char *input_buffer, int input_buffer_len)
 {
     // Perform sanity checks
-    if ((input_buffer == NULL) ||
-        (input_buffer_len < RING_BUFFER_MIN_SIZE))
+    if ((input_buffer == NULL) || (input_buffer_len < RING_BUFFER_MIN_SIZE))
     {
         // Invalid argument
         return RING_BUFFER_E_INVAL;
@@ -45,14 +43,14 @@ int RingBuffer_init(char *input_buffer, int input_buffer_len)
     // Initialize Ring Buffer structure
 
     // Register the external buffer and set its maximum length
-    ring_buffer.head        = input_buffer;
-    ring_buffer.max_len     = input_buffer_len;
+    ring_buffer.head = input_buffer;
+    ring_buffer.max_len = input_buffer_len;
     // Compute the end address of the buffer
-    ring_buffer.tail        = (ring_buffer.data + ring_buffer.max_len);
+    ring_buffer.tail = (ring_buffer.data + ring_buffer.max_len);
     // Initialize the available data length
-    ring_buffer.data_len    = 0;
+    ring_buffer.data_len = 0;
     // Initialize the internal pointer
-    ring_buffer.data        = ring_buffer.head;
+    ring_buffer.data = ring_buffer.head;
 
     return RING_BUFFER_E_SUCCESS;
 }
@@ -215,7 +213,6 @@ int RingBuffer_get_data_len(void)
     return ring_buffer.data_len;
 }
 
-
 /*****************************************************************************
  * TEST FUNCTIONS
  *****************************************************************************/
@@ -225,10 +222,10 @@ void RingBuffer_test(void)
     // Return Value
     int rv;
     // External buffer to register as Ring Buffer
-    char ext_buffer[20] = {0};
+    char ext_buffer[20] = { 0 };
     // Temporary buffers for test purposes
-    char read_buffer[40] = {0};
-    char write_buffer[40] = {0};
+    char read_buffer[40] = { 0 };
+    char write_buffer[40] = { 0 };
 
     // Initialize Ring Buffer module
     rv = RingBuffer_init(ext_buffer, sizeof(ext_buffer));
@@ -274,5 +271,4 @@ void RingBuffer_test(void)
         // TODO: Complete this statement
     }
 }
-
 

@@ -1,9 +1,9 @@
 /**************************************************************************/
 /*!
-    @file    commands.h
-    @author  Netanel (PACABOT)
-    @date    02/05/2015
-    @version 0.1
+ @file    commands.h
+ @author  Netanel (PACABOT)
+ @date    02/05/2015
+ @version 0.1
  */
 /**************************************************************************/
 
@@ -27,7 +27,6 @@
 /* Output function not registered */
 #define COMMAND_E_NO_OUTPUT      MAKE_ERROR(CMDLINE_PARSER_MODULE_ID, 4)
 
-
 /* Command handler */
 typedef struct
 {
@@ -42,7 +41,6 @@ typedef struct
 /* Exported variables */
 extern const CMD_HANDLER cmd_handlers[];
 
-
 /**
  * @brief Week output function
  *
@@ -56,7 +54,6 @@ void cmd_output(const char *format, ...);
  * @retval none
  */
 void cmd_displayPrompt(void);
-
 
 /*********************
  * Command functions

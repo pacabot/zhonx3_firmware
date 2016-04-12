@@ -1,9 +1,9 @@
 /**************************************************************************/
 /*!
-    @file    pidCalculator.h
-    @author  PLF (PACABOT)
-    @date
-    @version  0.0
+ @file    pidCalculator.h
+ @author  PLF (PACABOT)
+ @date
+ @version  0.0
  */
 /**************************************************************************/
 #ifndef __PIDCALCULATOR_H__

@@ -1,9 +1,9 @@
 /**************************************************************************/
 /*!
-    @file    lineFollowControl.c
-    @author  PLF (PACABOT)
-    @date
-    @version  0.0
+ @file    lineFollowControl.c
+ @author  PLF (PACABOT)
+ @date
+ @version  0.0
  */
 /**************************************************************************/
 /* STM32 hal library declarations */
@@ -55,33 +55,31 @@
 line_follow_control_struct line_follow_control;
 line_follow_params_struct line_follow_params;
 arm_pid_instance_f32 line_follow_pid_instance;
-int _KP=0;
-
+int _KP = 0;
 
 int lineFollowControlInit(void)
 {
 
-	line_follow_pid_instance.Kp = 151+_KP;
-	line_follow_pid_instance.Ki = 0;
-	line_follow_pid_instance.Kd = 6000;//810
+    line_follow_pid_instance.Kp = 151 + _KP;
+    line_follow_pid_instance.Ki = 0;
+    line_follow_pid_instance.Kd = 6000; //810
 
-	line_follow_control.line_follow_pid.instance = &line_follow_pid_instance;
+    line_follow_control.line_follow_pid.instance = &line_follow_pid_instance;
 
-	line_follow_control.succes = FALSE;
+    line_follow_control.succes = FALSE;
 
-	pidControllerInit(line_follow_control.line_follow_pid.instance);
+    pidControllerInit(line_follow_control.line_follow_pid.instance);
 
-	return POSITION_CONTROL_E_SUCCESS;
+    return POSITION_CONTROL_E_SUCCESS;
 }
 
 int lineFollowControlLoop(void)
 {
-	line_follow_control.line_follow_error = line_follower.position;
+    line_follow_control.line_follow_error = line_follower.position;
 
-	line_follow_control.line_follow_command = (pidController(line_follow_control.line_follow_pid.instance, line_follow_control.line_follow_error));
+    line_follow_control.line_follow_command = (pidController(line_follow_control.line_follow_pid.instance,
+                                                             line_follow_control.line_follow_error));
 
-	return SPEED_CONTROL_E_SUCCESS;
+    return SPEED_CONTROL_E_SUCCESS;
 }
-
-
 

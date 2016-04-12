@@ -1,9 +1,9 @@
 /**************************************************************************/
 /*!
-    @file    followControl.h
-    @author  PLF (PACABOT)
-    @date
-    @version  0.0
+ @file    followControl.h
+ @author  PLF (PACABOT)
+ @date
+ @version  0.0
  */
 /**************************************************************************/
 #ifndef __WALLFOLLOWCONTROL_H__
@@ -16,11 +16,8 @@
 #define WALL_FOLLOW_CONTROL_E_SUCCESS  0
 #define WALL_FOLLOW_CONTROL_E_ERROR    MAKE_ERROR(WALL_FOLLOW_CONTROL_MODULE_ID, 1)
 
-
-int 	wallFollowControlInit(void);
-double 	wallFollowGetCommand(void);
-char 	isDeadZone(void);
-int 	wallFollowControlLoop(void);
-double 	wallFollowMaintainCompute(void);
+int wallFollowControlInit(void);
+double wallFollowGetCommand(void);
+int wallFollowControlLoop(void);
 
 #endif

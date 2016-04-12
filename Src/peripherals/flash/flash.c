@@ -1,9 +1,9 @@
 /**************************************************************************/
 /*!
-    @file    flash.c
-    @author  Netanel (PACABOT)
-    @date    08/10/2015
-    @version 0.1
+ @file    flash.c
+ @author  Netanel (PACABOT)
+ @date    08/10/2015
+ @version 0.1
  */
 /**************************************************************************/
 
@@ -44,7 +44,6 @@
 # define ASSERT(_c_,_msg_)
 #endif
 
-
 /* Internal types */
 /** @brief The actual Flash handle type, internal to this module, must not be exposed
  * 
@@ -54,8 +53,8 @@
  */
 typedef struct
 {
-    int              	is_used;
-    FLASH_DRIVER_DESC	drv_desc;
+    int is_used;
+    FLASH_DRIVER_DESC drv_desc;
 } FLASH_INTERNAL_HANDLE;
 
 /*
@@ -77,7 +76,6 @@ static unsigned char flash_sector_buffer[CONFIG_FLASH_SECTOR_BUFFER_SIZE];
 #endif
 static FLASH_INTERNAL_HANDLE flash_internal_handles[CONFIG_FLASH_NB_FLASH_DEVICES];
 
-
 uintptr_t ptr_align(uintptr_t ptr, size_t alignment)
 {
     uintptr_t p = ptr;
@@ -93,16 +91,14 @@ int is_ptr_aligned(uintptr_t ptr, size_t alignment)
 
 uintptr_t get_align_mask(size_t alignment)
 {
-    return ~((uintptr_t)alignment - 1);
+    return ~((uintptr_t) alignment - 1);
 }
-
 
 /* local helpers */
 static int check_addr_range(FLASH_INTERNAL_HANDLE *ihandle, unsigned int p, unsigned int len);
 // factorize code for flash_erase and flash_write. flash_read differs
-static int update_flash_with_buffer(FLASH_INTERNAL_HANDLE *ihandle, unsigned int p, unsigned int length, unsigned char *buf);
-
-
+static int update_flash_with_buffer(FLASH_INTERNAL_HANDLE *ihandle, unsigned int p, unsigned int length,
+                                    unsigned char *buf);
 
 /* API */
 /*
@@ -118,12 +114,11 @@ int flash_init(void)
 {
     int rv = FLASH_E_SUCCESS;
 
-
-    memset(flash_internal_handles, 0 , sizeof(flash_internal_handles));
+    memset(flash_internal_handles, 0, sizeof(flash_internal_handles));
 
     /* Internal flash */
     _flash_driver_desc.props.flash_base = FLASH_DRIVER_FLASH_BASE;
-    _flash_driver_desc.props.flash_size= FLASH_DRIVER_FLASH_SIZE;
+    _flash_driver_desc.props.flash_size = FLASH_DRIVER_FLASH_SIZE;
     _flash_driver_desc.props.quantum_size = FLASH_DRIVER_QUANTUM_SIZE;
     _flash_driver_desc.props.sector_size = FLASH_DRIVER_SECTOR_SIZE;
     _flash_driver_desc.props.virgin_byte = FLASH_DRIVER_VIRGIN_BYTE;
@@ -137,12 +132,11 @@ int flash_init(void)
     return rv;
 }
 
-
 int flash_terminate(void)
 {
     int rv = FLASH_E_SUCCESS;
     unsigned int i;
-    
+
     /* clear any handle that was not closed */
     for (i = 0; i < CONFIG_FLASH_NB_FLASH_DEVICES; ++i)
     {
@@ -156,12 +150,11 @@ int flash_terminate(void)
     return rv;
 }
 
-
 int flash_open(FLASH_DRIVER_DESC *flash_driver_desc, FLASH_HANDLE *handle)
 {
     int rv = FLASH_E_SUCCESS;
     unsigned int i;
-    
+
     if (handle == NULL)
     {
         TRACE("ERROR: provided pointer to handle is NULL");
@@ -185,7 +178,6 @@ int flash_open(FLASH_DRIVER_DESC *flash_driver_desc, FLASH_HANDLE *handle)
 //        TRACE("ERROR: provided flash driver descriptor has some undefined operation(s)");
 //        return FLASH_E_WRONG_PARAMS;
 //    }
-    
     for (i = 0; i < CONFIG_FLASH_NB_FLASH_DEVICES; ++i)
     {
         if (!flash_internal_handles[i].is_used)
@@ -196,48 +188,44 @@ int flash_open(FLASH_DRIVER_DESC *flash_driver_desc, FLASH_HANDLE *handle)
         TRACE("ERROR: all handles are already in use");
         return FLASH_E_ERROR;
     }
-    
+
     /* init the provided flash */
     _flash_driver_desc.ops.flash_driver_init();
-    
+
     /* copy the provided driver descriptor */
     memcpy(&(flash_internal_handles[i].drv_desc), &_flash_driver_desc, sizeof(FLASH_DRIVER_DESC));
     flash_internal_handles[i].is_used = TRUE;
-    
+
     /* return the handle */
-    *handle = (FLASH_HANDLE)(&flash_internal_handles[i]);
-    
+    *handle = (FLASH_HANDLE) (&flash_internal_handles[i]);
+
     return rv;
 }
-
 
 int flash_close(FLASH_HANDLE handle)
 {
     int rv = FLASH_E_SUCCESS;
-    FLASH_INTERNAL_HANDLE *ihandle = (FLASH_INTERNAL_HANDLE*)handle;
-    
+    FLASH_INTERNAL_HANDLE *ihandle = (FLASH_INTERNAL_HANDLE*) handle;
+
     if (handle == NULL)
     {
         TRACE("ERROR: provided handle is NULL");
         return FLASH_E_WRONG_PARAMS;
     }
     /* XXX from that point the handle is trusted */
-    
+
     /* terminate the provided flash and free the handle */
     ihandle->drv_desc.ops.flash_driver_terminate();
     ihandle->is_used = FALSE;
-    
-    return rv;    
+
+    return rv;
 }
 
-
-int flash_erase(FLASH_HANDLE handle,
-                    unsigned char *p_dest,
-                    unsigned int   length)
+int flash_erase(FLASH_HANDLE handle, unsigned char *p_dest, unsigned int length)
 {
     int rv;
-    FLASH_INTERNAL_HANDLE *ihandle = (FLASH_INTERNAL_HANDLE*)handle;
-    
+    FLASH_INTERNAL_HANDLE *ihandle = (FLASH_INTERNAL_HANDLE*) handle;
+
     if (handle == NULL)
     {
         TRACE("ERROR: provided handle is NULL");
@@ -252,7 +240,8 @@ int flash_erase(FLASH_HANDLE handle,
         return FLASH_E_SUCCESS;
     }
 
-    rv = update_flash_with_buffer(ihandle, (unsigned int)p_dest, length, NULL/*no buffer, just erase*/);
+    rv = update_flash_with_buffer(ihandle, (unsigned int) p_dest, length,
+    NULL/*no buffer, just erase*/);
 
     if (rv != FLASH_E_SUCCESS)
     {
@@ -266,15 +255,11 @@ int flash_erase(FLASH_HANDLE handle,
     return rv;
 }
 
-
-int flash_write(FLASH_HANDLE handle,
-                unsigned char *p_dest,
-                unsigned char *p_src,
-                unsigned int   length)
+int flash_write(FLASH_HANDLE handle, unsigned char *p_dest, unsigned char *p_src, unsigned int length)
 {
     int rv;
-    FLASH_INTERNAL_HANDLE *ihandle = (FLASH_INTERNAL_HANDLE*)handle;
-    
+    FLASH_INTERNAL_HANDLE *ihandle = (FLASH_INTERNAL_HANDLE*) handle;
+
     if (handle == NULL)
     {
         TRACE("ERROR: provided handle is NULL");
@@ -289,14 +274,14 @@ int flash_write(FLASH_HANDLE handle,
         return FLASH_E_SUCCESS;
     }
     /* Check p_src is NOT in Flash */
-    if ( ((unsigned int)p_src >= ihandle->drv_desc.props.flash_base)
-            && ((unsigned int)p_src < (ihandle->drv_desc.props.flash_base + ihandle->drv_desc.props.flash_size)) )
+    if (((unsigned int) p_src >= ihandle->drv_desc.props.flash_base)
+            && ((unsigned int) p_src < (ihandle->drv_desc.props.flash_base + ihandle->drv_desc.props.flash_size)))
     {
         TRACE("ERROR: src pointer is in Flash");
         return FLASH_E_WRONG_PARAMS;
     }
 
-    rv = update_flash_with_buffer(ihandle, (unsigned int)p_dest, length, p_src);
+    rv = update_flash_with_buffer(ihandle, (unsigned int) p_dest, length, p_src);
 
     if (rv != FLASH_E_SUCCESS)
     {
@@ -310,22 +295,18 @@ int flash_write(FLASH_HANDLE handle,
     return rv;
 }
 
-
-int flash_read(FLASH_HANDLE handle,
-               unsigned char *p_dest,
-               unsigned char *p_src,
-               unsigned int   length)
+int flash_read(FLASH_HANDLE handle, unsigned char *p_dest, unsigned char *p_src, unsigned int length)
 {
     int rv = FLASH_E_SUCCESS;
     unsigned int size = 0;
     unsigned int base_sector_addr = 0, end_sector_addr = 0, num_sectors = 0, i;
     unsigned int base_offset = 0, base_offset_algn = 0;
-    unsigned int end_offset  = 0, end_bytes_to_read_algn  = 0;
-    unsigned int p = (unsigned int)p_src;
+    unsigned int end_offset = 0, end_bytes_to_read_algn = 0;
+    unsigned int p = (unsigned int) p_src;
     unsigned int aligned_p;
     unsigned int sector_mask;
-    FLASH_INTERNAL_HANDLE *ihandle = (FLASH_INTERNAL_HANDLE*)handle;
-    
+    FLASH_INTERNAL_HANDLE *ihandle = (FLASH_INTERNAL_HANDLE*) handle;
+
     if (handle == NULL)
     {
         TRACE("ERROR: provided handle is NULL");
@@ -344,8 +325,8 @@ int flash_read(FLASH_HANDLE handle,
         return FLASH_E_SUCCESS;
     }
     /* Check p_dest is NOT in Flash */
-    if ( ((unsigned int)p_dest >= ihandle->drv_desc.props.flash_base)
-            && ((unsigned int)p_dest < (ihandle->drv_desc.props.flash_base + ihandle->drv_desc.props.flash_size)) )
+    if (((unsigned int) p_dest >= ihandle->drv_desc.props.flash_base)
+            && ((unsigned int) p_dest < (ihandle->drv_desc.props.flash_base + ihandle->drv_desc.props.flash_size)))
     {
         TRACE("ERROR: dest pointer is in Flash");
         return FLASH_E_WRONG_PARAMS;
@@ -360,10 +341,10 @@ int flash_read(FLASH_HANDLE handle,
 
     /* compute address of 1st and last sector to read */
     base_sector_addr = p & sector_mask;
-    end_sector_addr  = (p + length - 1) & sector_mask;
+    end_sector_addr = (p + length - 1) & sector_mask;
 
     // the number of sectors to be read
-    num_sectors = (end_sector_addr - base_sector_addr)/ihandle->drv_desc.props.sector_size + 1;
+    num_sectors = (end_sector_addr - base_sector_addr) / ihandle->drv_desc.props.sector_size + 1;
 
     /*
      * NOTE:
@@ -371,16 +352,18 @@ int flash_read(FLASH_HANDLE handle,
      * 'xxx_offset' might not be aligned.
      * For things to work properly, align addresses and erase the little extra in the RAM buffer
      */
-    aligned_p        = ptr_align(p, ihandle->drv_desc.props.quantum_size);
+    aligned_p = ptr_align(p, ihandle->drv_desc.props.quantum_size);
     // starting offset
-    base_offset      = p & ~(sector_mask);
+    base_offset = p & ~(sector_mask);
     // quantum aligned, backwards
-    base_offset_algn = (aligned_p == p) ? base_offset : ((aligned_p - ihandle->drv_desc.props.quantum_size) & ~(sector_mask));
+    base_offset_algn =
+            (aligned_p == p) ? base_offset : ((aligned_p - ihandle->drv_desc.props.quantum_size) & ~(sector_mask));
     // ending offset
-    end_offset       = (p + length - 1) & ~(sector_mask);
+    end_offset = (p + length - 1) & ~(sector_mask);
     // the number of bytes to read in the last sector is thus (end_offset+1)
     // the following is the number of bytes to actually read to be compatible with Flash access requirement
-    end_bytes_to_read_algn = ptr_align((unsigned int)(end_offset+1), ihandle->drv_desc.props.quantum_size) % ihandle->drv_desc.props.sector_size; // not a pointer, but same operation
+    end_bytes_to_read_algn = ptr_align((unsigned int) (end_offset + 1), ihandle->drv_desc.props.quantum_size)
+            % ihandle->drv_desc.props.sector_size; // not a pointer, but same operation
 
     // NOTE: the 'length' variable is now only used as p_dest's length
 
@@ -398,9 +381,9 @@ int flash_read(FLASH_HANDLE handle,
          * This would require to split the reading
          */
         rv = ihandle->drv_desc.ops.flash_driver_sector_read_buf(base_sector_addr,
-                base_offset_algn/*need to respect flash quantum*/,
-                flash_sector_buffer,
-                ihandle->drv_desc.props.sector_size - base_offset_algn);
+                                                                base_offset_algn/*need to respect flash quantum*/,
+                                                                flash_sector_buffer,
+                                                                ihandle->drv_desc.props.sector_size - base_offset_algn);
         if (rv != FLASH_DRIVER_E_SUCCESS)
         {
             TRACE3("ERROR: flash driver failed at reading %u bytes at 0x%0X with error code 0x%0X",
@@ -415,9 +398,7 @@ int flash_read(FLASH_HANDLE handle,
 
         /* copy the data into the destination buffer, skipping any additional data present due to alignment */
         size = MIN(ihandle->drv_desc.props.sector_size - base_offset, length);
-        memcpy(p_dest,
-               flash_sector_buffer + (base_offset - base_offset_algn),
-               size);
+        memcpy(p_dest, flash_sector_buffer + (base_offset - base_offset_algn), size);
         length -= size;
         p_dest += size;
 
@@ -442,10 +423,8 @@ int flash_read(FLASH_HANDLE handle,
          * not have enough space to store the additional data due to alignment issues.
          * This would require to split the reading
          */
-        rv = ihandle->drv_desc.ops.flash_driver_sector_read_buf(end_sector_addr,
-                0,
-                flash_sector_buffer,
-                end_bytes_to_read_algn/*need to respect flash quantum*/);
+        rv = ihandle->drv_desc.ops.flash_driver_sector_read_buf(
+                end_sector_addr, 0, flash_sector_buffer, end_bytes_to_read_algn/*need to respect flash quantum*/);
         if (rv != FLASH_DRIVER_E_SUCCESS)
         {
             TRACE3("ERROR: flash driver failed at reading %u bytes at 0x%0X with error code 0x%0X",
@@ -459,9 +438,7 @@ int flash_read(FLASH_HANDLE handle,
 
         /* copy the data into the destination buffer, skipping any additional data present due to alignment */
         // NOTE: the whole "end" thing has been computed based on 'length', so (end_offset+1) <= length
-        memcpy(p_dest + length - (end_offset+1),
-               flash_sector_buffer,
-               end_offset+1);
+        memcpy(p_dest + length - (end_offset + 1), flash_sector_buffer, end_offset + 1);
 
         length -= (end_offset + 1);
 
@@ -470,12 +447,11 @@ int flash_read(FLASH_HANDLE handle,
         num_sectors--;
     }
 
-    for (i = 0; i < num_sectors; ++i, base_sector_addr += ihandle->drv_desc.props.sector_size, p_dest += ihandle->drv_desc.props.sector_size)
+    for (i = 0; i < num_sectors;
+            ++i, base_sector_addr += ihandle->drv_desc.props.sector_size, p_dest += ihandle->drv_desc.props.sector_size)
     {
-        rv = ihandle->drv_desc.ops.flash_driver_sector_read_buf(base_sector_addr,
-                0,
-                p_dest,
-                ihandle->drv_desc.props.sector_size);
+        rv = ihandle->drv_desc.ops.flash_driver_sector_read_buf(base_sector_addr, 0, p_dest,
+                                                                ihandle->drv_desc.props.sector_size);
         if (rv != FLASH_DRIVER_E_SUCCESS)
         {
             TRACE2("ERROR: flash driver failed at reading sector at 0x%0X with error code 0x%0X",
@@ -488,11 +464,8 @@ int flash_read(FLASH_HANDLE handle,
         }
     }
 
-out:
-    return rv;
+    out: return rv;
 }
-
-
 
 /* local helpers */
 static int check_addr_range(FLASH_INTERNAL_HANDLE *ihandle, unsigned int p, unsigned int len)
@@ -509,7 +482,7 @@ static int check_addr_range(FLASH_INTERNAL_HANDLE *ihandle, unsigned int p, unsi
         TRACE2("ERROR: address 0x%0X is below flash area (starts at 0x%0X)", p, ihandle->drv_desc.props.flash_base);
         return FLASH_E_UNDERFLOW;
     }
-    if ( (ihandle->drv_desc.props.flash_base + ihandle->drv_desc.props.flash_size) < (p + len))
+    if ((ihandle->drv_desc.props.flash_base + ihandle->drv_desc.props.flash_size) < (p + len))
     {
         TRACE2("ERROR: end address 0x%0X is beyond flash area (ends at 0x%0X)",
                 p + len,
@@ -519,13 +492,14 @@ static int check_addr_range(FLASH_INTERNAL_HANDLE *ihandle, unsigned int p, unsi
     return FLASH_E_SUCCESS;
 }
 
-static int update_flash_with_buffer(FLASH_INTERNAL_HANDLE *ihandle, unsigned int p, unsigned int length, unsigned char *buf)
+static int update_flash_with_buffer(FLASH_INTERNAL_HANDLE *ihandle, unsigned int p, unsigned int length,
+                                    unsigned char *buf)
 {
     int rv = FLASH_E_SUCCESS;
     unsigned int size = 0;
     unsigned int base_sector_addr = 0, end_sector_addr = 0, num_sectors = 0, i;
     unsigned int base_offset = 0, base_bytes_to_save = 0, base_bytes_to_save_algn = 0;
-    unsigned int end_offset  = 0, end_offset_algn  = 0, end_bytes_to_save = 0;
+    unsigned int end_offset = 0, end_offset_algn = 0, end_bytes_to_save = 0;
     unsigned int aligned_end;
     unsigned int sector_mask = get_align_mask(ihandle->drv_desc.props.sector_size);
 
@@ -539,10 +513,10 @@ static int update_flash_with_buffer(FLASH_INTERNAL_HANDLE *ihandle, unsigned int
 
     /* compute address of 1st and last sector to erase */
     base_sector_addr = p & sector_mask;
-    end_sector_addr  = (p + length - 1) & sector_mask;
+    end_sector_addr = (p + length - 1) & sector_mask;
 
     // the number of sectors to be erased
-    num_sectors = (end_sector_addr - base_sector_addr)/ihandle->drv_desc.props.sector_size + 1;
+    num_sectors = (end_sector_addr - base_sector_addr) / ihandle->drv_desc.props.sector_size + 1;
 
     /*
      * NOTE:
@@ -550,16 +524,18 @@ static int update_flash_with_buffer(FLASH_INTERNAL_HANDLE *ihandle, unsigned int
      * 'xxx_offset' might not be aligned.
      * For things to work properly, align addresses and erase the little extra in the RAM buffer
      */
-    aligned_end      = ptr_align((p + length - 1), ihandle->drv_desc.props.quantum_size) - ihandle->drv_desc.props.quantum_size; // quantum aligned, backwards
+    aligned_end = ptr_align((p + length - 1), ihandle->drv_desc.props.quantum_size)
+            - ihandle->drv_desc.props.quantum_size; // quantum aligned, backwards
     // starting offset
-    base_offset      = p & ~(sector_mask);
+    base_offset = p & ~(sector_mask);
     // ending offset
-    end_offset       = (p + length - 1) & ~(sector_mask);
-    end_offset_algn  = aligned_end & ~(sector_mask);
+    end_offset = (p + length - 1) & ~(sector_mask);
+    end_offset_algn = aligned_end & ~(sector_mask);
     // bytes to save
-    base_bytes_to_save      = base_offset;/*base_offset is the offset of the first erased/updated cell*/
-    base_bytes_to_save_algn = ptr_align((unsigned int)base_bytes_to_save, ihandle->drv_desc.props.quantum_size);//not a pointer but the operation is the same
-    end_bytes_to_save       = ihandle->drv_desc.props.sector_size - end_offset - 1/*end_offset is the offset of the last erased/updated cell*/;
+    base_bytes_to_save = base_offset;/*base_offset is the offset of the first erased/updated cell*/
+    base_bytes_to_save_algn = ptr_align((unsigned int) base_bytes_to_save, ihandle->drv_desc.props.quantum_size); //not a pointer but the operation is the same
+    end_bytes_to_save = ihandle->drv_desc.props.sector_size - end_offset
+            - 1/*end_offset is the offset of the last erased/updated cell*/;
 
     // NOTE: the 'length' variable is now only used as buf's length
 
@@ -573,9 +549,8 @@ static int update_flash_with_buffer(FLASH_INTERNAL_HANDLE *ihandle, unsigned int
         /* first chunk of sector data must be saved */
         if (base_bytes_to_save)
         {
-            rv = ihandle->drv_desc.ops.flash_driver_sector_read_buf(base_sector_addr,
-                    0/*offset*/,
-                    flash_sector_buffer,
+            rv = ihandle->drv_desc.ops.flash_driver_sector_read_buf(
+                    base_sector_addr, 0/*offset*/, flash_sector_buffer,
                     base_bytes_to_save_algn/*qty of data must match flash quantum*/);
             if (rv != FLASH_DRIVER_E_SUCCESS)
             {
@@ -590,15 +565,15 @@ static int update_flash_with_buffer(FLASH_INTERNAL_HANDLE *ihandle, unsigned int
             /* remove any additional data copied due to alignment corrections */
             if (base_bytes_to_save_algn - base_bytes_to_save)
             {
-                memset(flash_sector_buffer + base_offset, ihandle->drv_desc.props.virgin_byte, base_bytes_to_save_algn - base_bytes_to_save);
+                memset(flash_sector_buffer + base_offset, ihandle->drv_desc.props.virgin_byte,
+                       base_bytes_to_save_algn - base_bytes_to_save);
             }
         }
         /* last chunk of sector data must be saved */
         if (end_bytes_to_save)
         {
-            rv = ihandle->drv_desc.ops.flash_driver_sector_read_buf(end_sector_addr/*== base_sector_addr*/,
-                    end_offset_algn,
-                    &flash_sector_buffer[end_offset_algn],
+            rv = ihandle->drv_desc.ops.flash_driver_sector_read_buf(
+                    end_sector_addr/*== base_sector_addr*/, end_offset_algn, &flash_sector_buffer[end_offset_algn],
                     ihandle->drv_desc.props.sector_size - end_offset_algn);
             if (rv != FLASH_DRIVER_E_SUCCESS)
             {
@@ -612,7 +587,8 @@ static int update_flash_with_buffer(FLASH_INTERNAL_HANDLE *ihandle, unsigned int
                         ihandle->drv_desc.props.sector_size - end_offset_algn, end_sector_addr + end_offset_algn);
             }
             /* remove any additional data copied due to alignment corrections */
-            memset(flash_sector_buffer + end_offset_algn, ihandle->drv_desc.props.virgin_byte, end_offset - end_offset_algn + 1);
+            memset(flash_sector_buffer + end_offset_algn, ihandle->drv_desc.props.virgin_byte,
+                   end_offset - end_offset_algn + 1);
         }
         /* treat the update buffer, if any */
         if (buf != NULL)
@@ -636,10 +612,8 @@ static int update_flash_with_buffer(FLASH_INTERNAL_HANDLE *ihandle, unsigned int
         if (base_bytes_to_save || end_bytes_to_save || buf)
         {
             /* program back the data that was saved */
-            rv = ihandle->drv_desc.ops.flash_driver_sector_write_buf(base_sector_addr,
-                    0/*offset*/,
-                    flash_sector_buffer,
-                    ihandle->drv_desc.props.sector_size);
+            rv = ihandle->drv_desc.ops.flash_driver_sector_write_buf(base_sector_addr, 0/*offset*/, flash_sector_buffer,
+                                                                     ihandle->drv_desc.props.sector_size);
             if (rv != FLASH_DRIVER_E_SUCCESS)
             {
                 TRACE2("ERROR: flash driver failed at writing sector at 0x%0X with error code 0x%0X", base_sector_addr, rv);
@@ -660,9 +634,8 @@ static int update_flash_with_buffer(FLASH_INTERNAL_HANDLE *ihandle, unsigned int
             memset(flash_sector_buffer, ihandle->drv_desc.props.virgin_byte, sizeof(flash_sector_buffer));
 
             /* first chunk of sector data must be saved */
-            rv = ihandle->drv_desc.ops.flash_driver_sector_read_buf(base_sector_addr,
-                    0/*offset*/,
-                    flash_sector_buffer,
+            rv = ihandle->drv_desc.ops.flash_driver_sector_read_buf(
+                    base_sector_addr, 0/*offset*/, flash_sector_buffer,
                     base_bytes_to_save_algn/*qty of data must match flash quantum*/);
             if (rv != FLASH_DRIVER_E_SUCCESS)
             {
@@ -677,16 +650,18 @@ static int update_flash_with_buffer(FLASH_INTERNAL_HANDLE *ihandle, unsigned int
             /* remove any additional data copied due to alignment corrections */
             if (base_bytes_to_save_algn - base_bytes_to_save)
             {
-                memset(flash_sector_buffer + base_offset, ihandle->drv_desc.props.virgin_byte, base_bytes_to_save_algn - base_bytes_to_save);
+                memset(flash_sector_buffer + base_offset, ihandle->drv_desc.props.virgin_byte,
+                       base_bytes_to_save_algn - base_bytes_to_save);
             }
             /* treat the update buffer, if any */
             if (buf != NULL)
             {
                 size = ihandle->drv_desc.props.sector_size - base_offset;
-                memcpy(flash_sector_buffer + base_offset, buf, size/*multi sector case, so length is greater than this*/);
+                memcpy(flash_sector_buffer + base_offset, buf,
+                       size/*multi sector case, so length is greater than this*/);
 
                 length -= size; // multi sector case, so length is greater than this
-                buf    += size; // buf is (unsigned char*), pointer arithmetic is OK then (buf++ <==> addr in buf + 1)
+                buf += size; // buf is (unsigned char*), pointer arithmetic is OK then (buf++ <==> addr in buf + 1)
             }
 
             /* erase the first sector */
@@ -702,11 +677,9 @@ static int update_flash_with_buffer(FLASH_INTERNAL_HANDLE *ihandle, unsigned int
             }
 
             /* program back the data that was saved */
-            rv = ihandle->drv_desc.ops.flash_driver_sector_write_buf(base_sector_addr,
-                    0/*offset*/,
-                    flash_sector_buffer,
-                    /*NOTE: it is easier to write the whole sector, no quantum size issue*/
-                    ihandle->drv_desc.props.sector_size);
+            rv = ihandle->drv_desc.ops.flash_driver_sector_write_buf(base_sector_addr, 0/*offset*/, flash_sector_buffer,
+            /*NOTE: it is easier to write the whole sector, no quantum size issue*/
+            ihandle->drv_desc.props.sector_size);
             if (rv != FLASH_DRIVER_E_SUCCESS)
             {
                 TRACE2("ERROR: flash driver failed at writing sector at 0x%0X with error code 0x%0X", base_sector_addr, rv);
@@ -728,9 +701,8 @@ static int update_flash_with_buffer(FLASH_INTERNAL_HANDLE *ihandle, unsigned int
             memset(flash_sector_buffer, ihandle->drv_desc.props.virgin_byte, sizeof(flash_sector_buffer));
 
             /* last chunk of sector data must be saved */
-            rv = ihandle->drv_desc.ops.flash_driver_sector_read_buf(end_sector_addr,
-                    end_offset_algn,
-                    &flash_sector_buffer[end_offset_algn],
+            rv = ihandle->drv_desc.ops.flash_driver_sector_read_buf(
+                    end_sector_addr, end_offset_algn, &flash_sector_buffer[end_offset_algn],
                     ihandle->drv_desc.props.sector_size - end_offset_algn);
             if (rv != FLASH_DRIVER_E_SUCCESS)
             {
@@ -743,14 +715,13 @@ static int update_flash_with_buffer(FLASH_INTERNAL_HANDLE *ihandle, unsigned int
                         ihandle->drv_desc.props.sector_size - end_offset_algn, end_sector_addr + end_offset_algn);
             }
             /* remove any additional data copied due to alignment corrections */
-            memset(flash_sector_buffer + end_offset_algn, ihandle->drv_desc.props.virgin_byte, end_offset - end_offset_algn + 1);
+            memset(flash_sector_buffer + end_offset_algn, ihandle->drv_desc.props.virgin_byte,
+                   end_offset - end_offset_algn + 1);
             /* treat the update buffer, if any */
             if (buf != NULL)
             {
                 size = end_offset + 1;
-                memcpy(flash_sector_buffer,
-                       (buf + length) - size,
-                       size);
+                memcpy(flash_sector_buffer, (buf + length) - size, size);
 
                 length -= size;
             }
@@ -768,11 +739,9 @@ static int update_flash_with_buffer(FLASH_INTERNAL_HANDLE *ihandle, unsigned int
             }
 
             /* program back the data that was saved */
-            rv = ihandle->drv_desc.ops.flash_driver_sector_write_buf(end_sector_addr,
-                    0/*offset*/,
-                    flash_sector_buffer,
-                    /*NOTE: it is easier to write the whole sector, no quantum size issue*/
-                    ihandle->drv_desc.props.sector_size);
+            rv = ihandle->drv_desc.ops.flash_driver_sector_write_buf(end_sector_addr, 0/*offset*/, flash_sector_buffer,
+            /*NOTE: it is easier to write the whole sector, no quantum size issue*/
+            ihandle->drv_desc.props.sector_size);
             if (rv != FLASH_DRIVER_E_SUCCESS)
             {
                 TRACE2("ERROR: flash driver failed at writing sector at 0x%0X with error code 0x%0X", end_sector_addr, rv);
@@ -807,10 +776,8 @@ static int update_flash_with_buffer(FLASH_INTERNAL_HANDLE *ihandle, unsigned int
             /* program update data */
             if (buf)
             {
-                rv = ihandle->drv_desc.ops.flash_driver_sector_write_buf(base_sector_addr,
-                        0/*offset*/,
-                        buf,
-                        ihandle->drv_desc.props.sector_size);
+                rv = ihandle->drv_desc.ops.flash_driver_sector_write_buf(base_sector_addr, 0/*offset*/, buf,
+                                                                         ihandle->drv_desc.props.sector_size);
                 if (rv != FLASH_DRIVER_E_SUCCESS)
                 {
                     TRACE2("ERROR: flash driver failed at writing sector at 0x%0X with error code 0x%0X", base_sector_addr, rv);
@@ -827,8 +794,7 @@ static int update_flash_with_buffer(FLASH_INTERNAL_HANDLE *ihandle, unsigned int
     return rv;
 }
 
-
-unsigned char *TEST_FLASH_VALUE = (unsigned char *)ADDR_FLASH_SECTOR_8;
+unsigned char *TEST_FLASH_VALUE = (unsigned char *) ADDR_FLASH_SECTOR_8;
 
 void testFlash(void)
 {
