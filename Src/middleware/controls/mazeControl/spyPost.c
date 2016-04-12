@@ -176,7 +176,7 @@ uint32_t spyPostGetOffset(spyPostGetOffsetsStruct *offset)
         left_sample = (uint32_t) getTelemeterDist(TELEMETER_DL);
         right_sample = (uint32_t) getTelemeterDist(TELEMETER_DR);
         // left statement
-        if (((left_sample - SPYPOST_MIN_DIAG_SENSOR_DISTANCE) / SPYPOST_TELEMETER_STEPS_MEASURE_MM) < 32)
+        if (((left_sample - SPYPOST_MIN_DIAG_SENSOR_DISTANCE) / SPYPOST_TELEMETER_STEPS_MEASURE_MM) < SPYPOST_NBITS_SAMPLING_RESOLUTION)
         {
             current_left.sample[i] = 1 << ((left_sample - SPYPOST_MIN_DIAG_SENSOR_DISTANCE) /
                     SPYPOST_TELEMETER_STEPS_MEASURE_MM);
@@ -187,7 +187,7 @@ uint32_t spyPostGetOffset(spyPostGetOffsetsStruct *offset)
         }
 
         // right statement
-        if (((right_sample - SPYPOST_MIN_DIAG_SENSOR_DISTANCE) / SPYPOST_TELEMETER_STEPS_MEASURE_MM) < 32)
+        if (((right_sample - SPYPOST_MIN_DIAG_SENSOR_DISTANCE) / SPYPOST_TELEMETER_STEPS_MEASURE_MM) < SPYPOST_NBITS_SAMPLING_RESOLUTION)
         {
             current_right.sample[i] = 1 << ((right_sample - SPYPOST_MIN_DIAG_SENSOR_DISTANCE) /
                     SPYPOST_TELEMETER_STEPS_MEASURE_MM);
@@ -575,7 +575,7 @@ void spyPostKeepUsefulPart(spyPostProfileStruct *currentProfile)
         }
     }
     //save the central y distance
-    currentProfile->center_x_distance = (y_min + (SPYPOST_REFERENCE_SAMPLE_HEIGHT / 2)) * SPYPOST_TELEMETER_STEPS_MEASURE_MM;
+    currentProfile->center_y_distance = (y_min + (SPYPOST_REFERENCE_SAMPLE_HEIGHT / 2)) * SPYPOST_TELEMETER_STEPS_MEASURE_MM;
     //shift buffer (y axis)
     for (i = 0; i < SPYPOST_ARRAY_PROFILE_LENGTH; i++)
     {
