@@ -3,7 +3,7 @@
  *
  *  Created on: 19 mars 2016
  *      Author: zhonx
- *  v1.5
+ *  v1.7
  */
 
 #include "stm32f4xx_hal.h"
@@ -68,7 +68,7 @@
 #define SPYPOST_MAX_DIAG_SENSOR_DISTANCE 	   (SPYPOST_TELEMETER_STEPS_MEASURE_MM * SPYPOST_NBITS_SAMPLING_RESOLUTION) + SPYPOST_MIN_DIAG_SENSOR_DISTANCE
 
 #define SPYPOST_REFERENCE_SAMPLE_HEIGHT 	   16	//16 bit height
-#define SPYPOST_REFERENCE_SAMPLE_WIDTH 		   25	//array length
+#define SPYPOST_REFERENCE_SAMPLE_WIDTH 		   30	//array length
 
 #define SPYPOST_MOVE_SPEED 					   50
 
