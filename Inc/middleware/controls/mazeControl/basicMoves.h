@@ -28,7 +28,7 @@ int moveEndCell(double max_speed, double end_speed);
 int moveStartCell(double max_speed, double end_speed);
 int moveRotateCW90(double max_speed, double end_speed);
 int moveRotateCCW90(double max_speed, double end_speed);
-int moveRotate180WithCal(wallSelectorEnum wall_presence, double speed_rotation);
+int moveRotateInPlace180WithCal(wallSelectorEnum wall_presence, double speed_rotation);
 int moveRotateInPlaceWithCalCW90(wallSelectorEnum wall_presence, double speed_rotation);
 int moveRotateInPlaceWithCalCCW90(wallSelectorEnum wall_presence, double speed_rotation);
 int moveUTurn(double speed_rotation, double max_speed, double end_speed);

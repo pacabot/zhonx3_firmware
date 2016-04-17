@@ -380,7 +380,7 @@ int moveRotateCCW90(double max_speed, double end_speed)
  *      :   '-<
  *      o_________o
  */
-int moveRotate180WithCal(wallSelectorEnum wall_presence, double speed_rotation)
+int moveRotateInPlace180WithCal(wallSelectorEnum wall_presence, double speed_rotation)
 {
     // chose the correct turn for re-calibrate the robot if possible
     if (wall_presence == RIGHT_WALL)
@@ -463,7 +463,7 @@ int moveUTurn(double speed_rotation, double max_speed, double end_speed)
     // move HALF CELL IN
     moveHalfCell_IN(max_speed, 0);
     // chose the correct turn for re-calibrate the robot if possible
-    moveRotate180WithCal(wall_presence, speed_rotation);
+    moveRotateInPlace180WithCal(wall_presence, speed_rotation);
     while (hasMoveEnded() != TRUE);
     // go back and go out for maximize correct alignment
     mainControlSetFollowType(NO_FOLLOW); //todo this is the shit

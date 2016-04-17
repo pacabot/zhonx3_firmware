@@ -2,8 +2,8 @@
 /*!
  @file    repositon.c
  @author  PLF (PACABOT)
- @date
- @version  0.0
+ @date    18 April 2016
+ @version  1.0
  */
 /**************************************************************************/
 /* STM32 hal library declarations */
@@ -123,25 +123,17 @@ int repositionGetFrontDist(repositionGetOffsetsStruct *offset)
     while (hasMoveEnded() != TRUE);
     if (getWallPresence(FRONT_WALL) == WALL_PRESENCE)
     {
-        if(getWallPresence(LEFT_WALL) == WALL_PRESENCE && getWallPresence(RIGHT_WALL) == WALL_PRESENCE)
+        if (getWallPresence(LEFT_WALL) == WALL_PRESENCE && getWallPresence(RIGHT_WALL) == WALL_PRESENCE)
         {
-            return 0;
+            error_distance = (int)(getTelemeterDist(TELEMETER_FL) + getTelemeterDist(TELEMETER_FR)) - (FRONT_DIST_OFFSET * 2);
         }
-        else if (getWallPresence(LEFT_WALL) == WALL_PRESENCE)
+        if (getWallPresence(LEFT_WALL) == WALL_PRESENCE)
         {
             error_distance = (int)(getTelemeterDist(TELEMETER_FR)) - FRONT_DIST_OFFSET;
         }
         else if (getWallPresence(RIGHT_WALL) == WALL_PRESENCE)
         {
             error_distance = (int)(getTelemeterDist(TELEMETER_FL)) - FRONT_DIST_OFFSET;
-        }
-        else
-        {
-            error_distance = (int)(getTelemeterDist(TELEMETER_FL) + getTelemeterDist(TELEMETER_FR)) - (FRONT_DIST_OFFSET * 2);
-#ifdef DEBUG_DISPLACEMENT
-            // Calculating average distance detected by FR and FL Telemeters
-            bluetoothPrintf("distance = %d \n", (int)distance);
-#endif
         }
         offset->front_dist = error_distance;
     }
@@ -227,7 +219,6 @@ void repositionFrontTest(void)
     move(0, OFFSET_DIST, Vmax, Vmax);
     while (hasMoveEnded() != TRUE);
     moveCell(1, Vmax, Vmin);
-    while (hasMoveEnded() != TRUE);
     telemetersStop();
     HAL_Delay(1000);
     motorsDriverSleep(ON);

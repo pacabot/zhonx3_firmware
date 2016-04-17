@@ -1,11 +1,11 @@
-/*
- * spyPost.c
- *
- *  Created on: 19 mars 2016
- *      Author: zhonx
- *  v1.7
+/**************************************************************************/
+/*!
+ @file      spyPost.c
+ @author    PLF (PACABOT)
+ @date      Created on: 19 mars 2016
+ @version   1.7
  */
-
+/**************************************************************************/
 #include "stm32f4xx_hal.h"
 
 /* General declarations */
@@ -360,8 +360,10 @@ uint32_t spyPostGetOffset(spyPostGetOffsetsStruct *offset)
 #endif
         }
     }
+#ifdef DEBUG_SPYPOST
     spyPostPrintProfile(0, 64, current_left.sample,current_left.center_x_distance, current_left.center_y_distance);
     spyPostPrintProfile(43, 64, current_right.sample, current_right.center_x_distance, current_right.center_y_distance);
+#endif
     return SPYPOST_DRIVER_E_SUCCESS;
 }
 
@@ -716,7 +718,6 @@ void spyPostTest()
     move(0, OFFSET_DIST, Vmax, Vmax);
     while (hasMoveEnded() != TRUE);
     moveCell(1, Vmax, Vmin);
-    while (hasMoveEnded() != TRUE);
     telemetersStop();
     HAL_Delay(1000);
     motorsDriverSleep(ON);
