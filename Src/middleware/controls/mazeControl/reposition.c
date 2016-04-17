@@ -155,7 +155,7 @@ void repositionGetFrontDistCal(void)
     while (expanderJoyFiltered() != JOY_RIGHT)
     {
         ssd1306ClearScreen(MAIN_AREA);
-        ssd1306DrawBmp(frontCalImg, 35, 33, 59, 31);
+        ssd1306DrawBmp(frontCal_Img, 35, 33, 59, 31);
         ssd1306DrawStringAtLine(30, 0, "FRONT CALIBRATION", &Font_3x6);
         ssd1306Refresh();
         if (expanderJoyFiltered() == JOY_LEFT)

@@ -3,7 +3,7 @@
  *
  *  Created on: 19 mars 2016
  *      Author: zhonx
- *  V1.2
+ *  v1.3
  */
 
 #include "stm32f4xx_hal.h"
@@ -230,15 +230,18 @@ uint32_t spyPostGetOffset(spyPostGetOffsetsStruct *offset)
     {
         for (i = 0; i < SPYPOST_REFERENCE_SAMPLE_WIDTH; i++)
         {
+#ifdef SINGLE_POST
             if (~(current_left.sample[i] ^ ref_left->singlePost.sample[i]))
             {
                 left_singlePost_stat++;
             }
+#endif
             if (~(current_left.sample[i] ^ ref_left->perpendicularWall.sample[i]))
             {
                 left_perpendicularWall_stat++;
             }
         }
+#ifdef DEBUG_SPYPOST
         if (left_singlePost_stat > left_perpendicularWall_stat)
         {
             if (left_singlePost_stat > MIN_STAT)
@@ -253,6 +256,7 @@ uint32_t spyPostGetOffset(spyPostGetOffsetsStruct *offset)
 #endif
         }
         else
+#endif
         {
             if (left_perpendicularWall_stat >= MIN_STAT)
             {
@@ -300,15 +304,18 @@ uint32_t spyPostGetOffset(spyPostGetOffsetsStruct *offset)
     {
         for (i = 0; i < SPYPOST_REFERENCE_SAMPLE_WIDTH; i++)
         {
+#ifdef SINGLE_POST
             if (~(current_right.sample[i] ^ ref_right->singlePost.sample[i]))
             {
                 right_singlePost_stat++;
             }
+#endif
             if (~(current_right.sample[i] ^ ref_right->perpendicularWall.sample[i]))
             {
                 right_perpendicularWall_stat++;
             }
         }
+#ifdef SINGLE_POST
         if (right_singlePost_stat > right_perpendicularWall_stat)
         {
             if (right_singlePost_stat > MIN_STAT)
@@ -323,6 +330,7 @@ uint32_t spyPostGetOffset(spyPostGetOffsetsStruct *offset)
 #endif
         }
         else
+#endif
         {
             if (right_perpendicularWall_stat >= MIN_STAT)
             {
@@ -366,7 +374,7 @@ uint32_t spyPostCalibration(void)
         if (expanderJoyState() == JOY_UP)
         {
             ssd1306ClearScreen(MAIN_AREA);
-            ssd1306DrawBmp(spyPostRight, 1, 24, 128, 40);
+            ssd1306DrawBmp(spyPostRight_Img, 1, 24, 128, 40);
             ssd1306DrawStringAtLine(30, 0, "RIGHT CALIBRATION", &Font_3x6);
             ssd1306Refresh();
             refProfile_flash = ref_right;
@@ -374,7 +382,7 @@ uint32_t spyPostCalibration(void)
         if (expanderJoyState() == JOY_DOWN)
         {
             ssd1306ClearScreen(MAIN_AREA);
-            ssd1306DrawBmp(spyPostLeft, 1, 24, 128, 40);
+            ssd1306DrawBmp(spyPostLeft_Img, 1, 24, 128, 40);
             ssd1306DrawStringAtLine(30, 0, "LEFT CALIBRATION", &Font_3x6);
             ssd1306Refresh();
             refProfile_flash = ref_left;
@@ -386,7 +394,7 @@ uint32_t spyPostCalibration(void)
     }
 
     ssd1306ClearScreen(MAIN_AREA);
-    ssd1306DrawStringAtLine(40, 1, "Wait", &Font_3x6);
+    ssd1306DrawStringAtLine(50, 1, "Wait", &Font_3x6);
     ssd1306Refresh();
 
     mainControlInit();
@@ -402,7 +410,8 @@ uint32_t spyPostCalibration(void)
         else if (refProfile_flash == ref_right)
             spyPostStartMeasure(&currentProfile, TELEMETER_DR);
         spyPostKeepUsefulPart(&currentProfile);
-        currentProfile.center_x_distance += OFFSET_DIST;
+        if (currentProfile.center_x_distance != 0)
+            currentProfile.center_x_distance += OFFSET_DIST; //removed OFFSET DIST for calib, see spyPostKeepUsefulPart
         spyPostSampleThicken(&currentProfile, 3);
 
         switch (i)
@@ -663,44 +672,46 @@ uint32_t spyPostReadCalibration(void)
 
 void spyPostTest()
 {
+    uint32_t Vmin, Vmax, Vrotate;
     spyPostGetOffsetsStruct offset;
-    memset((spyPostGetOffsetsStruct*) &offset, 0, sizeof(spyPostGetOffsetsStruct));
 
-    ssd1306ClearScreen(MAIN_AREA);
-    mainControlInit();
-    telemetersStart();
+    memset((spyPostGetOffsetsStruct*) &offset, 0, sizeof(spyPostGetOffsetsStruct));
 
     positionControlSetPositionType(GYRO);
     mainControlSetFollowType(NO_FOLLOW);
 
-    HAL_Delay(2000);
+    while (expanderJoyFiltered() != JOY_RIGHT)
+    {
+        ssd1306ClearScreen(MAIN_AREA);
+        ssd1306DrawBmp(spyPostTest_Img, 25, 24, 74, 31);
+        ssd1306DrawStringAtLine(35, 0, "SPYPOST TEST", &Font_3x6);
+        ssd1306Refresh();
 
-    uint32_t Vmin, Vmax, Vrotate;
+        if (expanderJoyFiltered() == JOY_LEFT)
+        {
+            return;
+        }
+        HAL_Delay(100);
+    }
+    ssd1306ClearScreen(MAIN_AREA);
+    ssd1306DrawStringAtLine(50, 1, "Wait", &Font_3x6);
+    ssd1306Refresh();
+
+    mainControlInit();
+    HAL_Delay(2000);
+    telemetersStart();
+
     Vmin = 100;
     Vmax = 100;
 
-    moveStartCell(Vmax, Vmax);
-    while (hasMoveEnded() != TRUE);
+    move(0, OFFSET_DIST, Vmax, Vmax);
+    moveCell(1, Vmax, Vmin);
+
     move(0, MAIN_DIST, Vmax, Vmax); //distance with last move offset
     spyPostGetOffset(&offset);
-    while (hasMoveEnded() != TRUE);
-    if (offset.left_x != 0)
-    {
-        move(0, (OFFSET_DIST * 2.00) + offset.left_x, Vmax, Vmax);
-        while (hasMoveEnded() != TRUE);
-        ssd1306PrintfAtLine(90, 2, &Font_3x6, "L_x = %d", offset.left_x);
-    }
-    else
-    {
-        move(0, (OFFSET_DIST * 2.00) + offset.right_x, Vmax, Vmax);
-        while (hasMoveEnded() != TRUE);
-        ssd1306PrintfAtLine(90, 2, &Font_3x6, "R_x = %d", offset.right_x);
-    }
-    bluetoothPrintf("offset left = %d, offset right = %d\n", (uint32_t) offset.left_x, (uint32_t) offset.right_x);
 
-    ssd1306Refresh();
     telemetersStop();
     HAL_Delay(1000);
     motorsDriverSleep(ON);
-    while (expanderJoyFiltered() != JOY_LEFT);
+    //    while (expanderJoyFiltered() != JOY_LEFT);
 }

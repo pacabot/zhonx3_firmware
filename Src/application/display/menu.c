@@ -775,7 +775,7 @@ void welcomeDisplay()
 {
 
     ssd1306ClearScreen(MAIN_AREA);
-    ssd1306DrawBmp(Pacabot_bmp, 1, 1, 128, 40);
+    ssd1306DrawBmp(pacabot_Img, 1, 1, 128, 40);
     ssd1306Refresh();
     while (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY)
         ;
@@ -787,7 +787,7 @@ void welcomeDisplay()
         HAL_Delay(5);
     }
     ssd1306ClearScreen(MAIN_AREA);
-    ssd1306DrawBmp(five_years, 1, 1, 128, 54);
+    ssd1306DrawBmp(fiveYears_Img, 1, 1, 128, 54);
     ssd1306Refresh();
 }
 

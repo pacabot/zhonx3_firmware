@@ -881,7 +881,7 @@ void ssd1306Test(void)
 {
     int i;
 
-    ssd1306DrawBmp(Pacabot_bmp, 1, 10, 128, 40);
+    ssd1306DrawBmp(pacabot_Img, 1, 10, 128, 40);
     ssd1306Refresh();
 
     for (i = 0; i <= 100; i += 1)

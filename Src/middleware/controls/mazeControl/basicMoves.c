@@ -130,13 +130,20 @@ int moveMainDist(getOffsetsStruct *offset, double max_speed, double end_speed)
 int moveOffsetDist(getOffsetsStruct *offset, double max_speed, double end_speed)
 {
     double offset_error = 0;
-
-    if (offset->spyPost.left_x != 0)
+    if (offset->frontCal.front_dist != 0)
+    {
+        offset_error = (double)offset->frontCal.front_dist;
+#ifdef DEBUG_BASIC_MOVES
+        bluetoothWaitReady();
+        bluetoothPrintf(" F_OFFSET = %d\n", (int32_t)offset->frontCal.front_dist);
+#endif
+    }
+    else if (offset->spyPost.left_x != 0)
     {
         offset_error = (double)offset->spyPost.left_x;
 #ifdef DEBUG_BASIC_MOVES
         bluetoothWaitReady();
-        bluetoothPrintf(" L_OFFSET = %d, TYPE = %d\n", (int32_t)offset.left_x, offset.left_spyPostType);
+        bluetoothPrintf(" L_OFFSET = %d, TYPE = %d\n", (int32_t)offset->spyPost.left_x, offset->spyPost.left_spyPostType);
 #endif
     }
     else if (offset->spyPost.right_x != 0)
@@ -144,7 +151,7 @@ int moveOffsetDist(getOffsetsStruct *offset, double max_speed, double end_speed)
         offset_error = (double)offset->spyPost.left_y;
 #ifdef DEBUG_BASIC_MOVES
         bluetoothWaitReady();
-        bluetoothPrintf(" R_OFFSET = %d, TYPE = %d\n", (int32_t)offset.right_x, offset.right_spyPostType);
+        bluetoothPrintf(" R_OFFSET = %d, TYPE = %d\n", (int32_t)offset->spyPost.right_x, offset->spyPost.right_spyPostType);
 #endif
     }
     else
@@ -427,16 +434,8 @@ int moveUTurn(double speed_rotation, double max_speed, double end_speed)
     moveOffsetDist(&offset, max_speed, end_speed);
 
 #ifdef DEBUG_BASIC_MOVES
-    if (repositionGetFrontDist() == 0)
-    {
-        bluetoothWaitReady();
-        bluetoothPrintf("\rMOVE U TURN\n");
-    }
-    else
-    {
-        bluetoothWaitReady();
-        bluetoothPrintf("\rMOVE U TURN, FRONT OFFSET = %d\n", (int32_t)repositionGetFrontDist());
-    }
+    bluetoothWaitReady();
+    bluetoothPrintf("\rMOVE U TURN");
 #endif
     return POSITION_CONTROL_E_SUCCESS;
 }
