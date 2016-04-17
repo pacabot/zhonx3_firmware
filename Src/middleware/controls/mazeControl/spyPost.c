@@ -3,7 +3,7 @@
  *
  *  Created on: 19 mars 2016
  *      Author: zhonx
- *  v1.3
+ *  v1.4
  */
 
 #include "stm32f4xx_hal.h"
@@ -72,8 +72,8 @@
 
 #define SPYPOST_MOVE_SPEED 					   50
 
-#define MIN_STAT                               14
-#define DIST_FOR_TIME_CALCULATION              10
+#define MIN_STAT                               75   //minimum percentage for validate
+#define DIST_FOR_TIME_CALCULATION              20   //stop record before end to have time to calculate
 
 #if (SPYPOST_MAX_DIAG_SENSOR_DISTANCE - SPYPOST_MIN_DIAG_SENSOR_DISTANCE) % (SPYPOST_NBITS_SAMPLING_RESOLUTION) != 0
 #error  MAX DIAG - MIN_DIAG must be a multiple of SAMPLING_RESOLUTION
@@ -142,12 +142,12 @@ uint32_t spyPostGetOffset(spyPostGetOffsetsStruct *offset)
     spyPostProfileStruct current_right;
 
     //clear stats
-    uint8_t left_wallToNoWall_stat = 0;
-    uint8_t left_singlePost_stat = 0;
-    uint8_t left_perpendicularWall_stat = 0;
-    uint8_t right_wallToNoWall_stat = 0;
-    uint8_t right_singlePost_stat = 0;
-    uint8_t right_perpendicularWall_stat = 0;
+    uint16_t left_wallToNoWall_stat = 0;
+    uint16_t left_singlePost_stat = 0;
+    uint16_t left_perpendicularWall_stat = 0;
+    uint16_t right_wallToNoWall_stat = 0;
+    uint16_t right_singlePost_stat = 0;
+    uint16_t right_perpendicularWall_stat = 0;
 
     memset(&current_right.sample, 0, sizeof(current_right.sample));
     memset(&current_left.sample, 0, sizeof(current_left.sample));
@@ -214,6 +214,7 @@ uint32_t spyPostGetOffset(spyPostGetOffsetsStruct *offset)
             {
                 left_wallToNoWall_stat++;
             }
+            left_wallToNoWall_stat *= 100 / SPYPOST_REFERENCE_SAMPLE_WIDTH;
         }
         if (left_wallToNoWall_stat > MIN_STAT)
         {
@@ -235,11 +236,13 @@ uint32_t spyPostGetOffset(spyPostGetOffsetsStruct *offset)
             {
                 left_singlePost_stat++;
             }
+            left_singlePost_stat *= 100 / SPYPOST_REFERENCE_SAMPLE_WIDTH;
 #endif
             if (~(current_left.sample[i] ^ ref_left->perpendicularWall.sample[i]))
             {
                 left_perpendicularWall_stat++;
             }
+            left_perpendicularWall_stat *= 100 / SPYPOST_REFERENCE_SAMPLE_WIDTH;
         }
 #ifdef DEBUG_SPYPOST
         if (left_singlePost_stat > left_perpendicularWall_stat)
@@ -288,6 +291,7 @@ uint32_t spyPostGetOffset(spyPostGetOffsetsStruct *offset)
             {
                 right_wallToNoWall_stat++;
             }
+            right_wallToNoWall_stat *= 100 / SPYPOST_REFERENCE_SAMPLE_WIDTH;
         }
         if (right_wallToNoWall_stat > MIN_STAT)
         {
@@ -309,11 +313,13 @@ uint32_t spyPostGetOffset(spyPostGetOffsetsStruct *offset)
             {
                 right_singlePost_stat++;
             }
+            right_singlePost_stat *= 100 / SPYPOST_REFERENCE_SAMPLE_WIDTH;
 #endif
             if (~(current_right.sample[i] ^ ref_right->perpendicularWall.sample[i]))
             {
                 right_perpendicularWall_stat++;
             }
+            right_perpendicularWall_stat *= 100 / SPYPOST_REFERENCE_SAMPLE_WIDTH;
         }
 #ifdef SINGLE_POST
         if (right_singlePost_stat > right_perpendicularWall_stat)
