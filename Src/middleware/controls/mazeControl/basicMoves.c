@@ -148,7 +148,7 @@ int moveOffsetDist(getOffsetsStruct *offset, double max_speed, double end_speed)
     }
     else if (offset->spyPost.right_x != 0)
     {
-        offset_error = (double)offset->spyPost.left_y;
+        offset_error = (double)offset->spyPost.right_x;
 #ifdef DEBUG_BASIC_MOVES
         bluetoothWaitReady();
         bluetoothPrintf(" R_OFFSET = %d, TYPE = %d\n", (int32_t)offset->spyPost.right_x, offset->spyPost.right_spyPostType);
@@ -160,7 +160,7 @@ int moveOffsetDist(getOffsetsStruct *offset, double max_speed, double end_speed)
     }
     if (fabs(offset_error) > MAX_FRONT_DIST_ERROR - 1) // -1 for non null move
     {
-        if(offset_error < 0)
+        if(offset_error < 0.00)
         {
             offset_error = -MAX_FRONT_DIST_ERROR;
         }
@@ -169,6 +169,7 @@ int moveOffsetDist(getOffsetsStruct *offset, double max_speed, double end_speed)
             offset_error = MAX_FRONT_DIST_ERROR;
         }
     }
+    while (hasMoveEnded() != TRUE);
     repositionSetInitialPosition(CELL_LENGTH - OFFSET_DIST);    //absolute position into a cell
     move(0, (OFFSET_DIST * 2.00) + offset_error, max_speed, end_speed);
     return POSITION_CONTROL_E_SUCCESS;
@@ -234,6 +235,7 @@ int moveCell(unsigned int nb_cell, double max_speed, double end_speed)
 {
     unsigned int i;
     getOffsetsStruct offset;
+    memset(&offset, 0, sizeof(getOffsetsStruct));
 #ifdef DEBUG_BASIC_MOVES
     bluetoothWaitReady();
     bluetoothPrintf("\rMOVE %d CELL,", nb_cell);
@@ -263,6 +265,7 @@ int moveCell(unsigned int nb_cell, double max_speed, double end_speed)
 int moveStartCell(double max_speed, double end_speed)
 {
     getOffsetsStruct offset;
+    memset(&offset, 0, sizeof(getOffsetsStruct));
 #ifdef DEBUG_BASIC_MOVES
     bluetoothWaitReady();
     bluetoothPrintf("\rMOVE START CELL");
@@ -288,6 +291,7 @@ int moveStartCell(double max_speed, double end_speed)
 int moveRotateCW90(double max_speed, double end_speed)
 {
     getOffsetsStruct offset;
+    memset(&offset, 0, sizeof(getOffsetsStruct));
 #ifdef DEBUG_BASIC_MOVES
     bluetoothWaitReady();
     bluetoothPrintf("\rMOVE ROTATE CW90");
@@ -312,6 +316,7 @@ int moveRotateCW90(double max_speed, double end_speed)
 int moveRotateCCW90(double max_speed, double end_speed)
 {
     getOffsetsStruct offset;
+    memset(&offset, 0, sizeof(getOffsetsStruct));
 #ifdef DEBUG_BASIC_MOVES
     bluetoothWaitReady();
     bluetoothPrintf("\rMOVE ROTATE CCW90");
@@ -402,6 +407,7 @@ int rotateInPlaceWithCalCCW90(wallSelectorEnum wall_presence, double speed_rotat
 int moveUTurn(double speed_rotation, double max_speed, double end_speed)
 {
     getOffsetsStruct offset;
+    memset(&offset, 0, sizeof(getOffsetsStruct));
     wallSelectorEnum wall_presence = FALSE;
     // memorize wall presence before move HALF CELL IN
     if (getWallPresence(RIGHT_WALL) == TRUE)

@@ -28,8 +28,8 @@ typedef struct
 #define SPYPOST_DRIVER_E_ERROR          MAKE_ERROR(SPYPOST_DRIVER_MODULE_ID, 1)
 #define SPYPOST_DRIVER_E_NOT_CALIBRATED MAKE_ERROR(SPYPOST_DRIVER_MODULE_ID, 2)
 
-//#define DEBUG_SPYPOST
-//#define SINGLE_POST
+#define DEBUG_SPYPOST
+#define ENABLE_SINGLE_POST
 
 int spyPostInit(void);
 uint32_t spyPostGetOffset(spyPostGetOffsetsStruct *offset);

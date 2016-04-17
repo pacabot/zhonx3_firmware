@@ -120,6 +120,7 @@ int repositionGetFrontDist(repositionGetOffsetsStruct *offset)
 {
     int error_distance;
     const char FRONT_DIST_OFFSET = 123;
+    while (hasMoveEnded() != TRUE);
     if (getWallPresence(FRONT_WALL) == WALL_PRESENCE)
     {
         if(getWallPresence(LEFT_WALL) == WALL_PRESENCE && getWallPresence(RIGHT_WALL) == WALL_PRESENCE)
