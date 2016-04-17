@@ -192,38 +192,44 @@ void repositionGetFrontDistCal(void)
     return;
 }
 
-int frontCal(float max_speed)
+void repositionFrontTest(void)
 {
-    double relative_dist = 0.00;
-    while (hasMoveEnded() != TRUE);
-    if (getWallPresence(FRONT_WALL) == WALL_PRESENCE)
+    uint32_t Vmin, Vmax, Vrotate;
+
+    positionControlSetPositionType(GYRO);
+    mainControlSetFollowType(NO_FOLLOW);
+
+    while (expanderJoyFiltered() != JOY_RIGHT)
     {
-        if (getTelemeterDist(TELEMETER_FR) > getTelemeterDist(TELEMETER_FL))
+        ssd1306ClearScreen(MAIN_AREA);
+        ssd1306DrawBmp(frontTest_Img, 25, 24, 74, 31);
+        ssd1306DrawStringAtLine(5, 0, "FRONT REPOSITION TEST", &Font_3x6);
+        ssd1306Refresh();
+
+        if (expanderJoyFiltered() == JOY_LEFT)
         {
-            move(-30, 0, max_speed, max_speed);
-            while (((getTelemeterDist(TELEMETER_FR) - getTelemeterDist(TELEMETER_FL))) > 1.00)
-            {
-                if (hasMoveEnded() == TRUE)
-                {
-                    move(30, 0, max_speed, max_speed);
-                    return 0xFF;
-                }
-            }
+            return;
         }
-        else
-        {
-            move(30, 0, max_speed, max_speed);
-            while (((getTelemeterDist(TELEMETER_FL) - getTelemeterDist(TELEMETER_FR))) > 1.00)
-            {
-                if (hasMoveEnded() == TRUE)
-                {
-                    move(-30, 0, max_speed, max_speed);
-                    return 0xFF;
-                }
-            }
-        }
-        relative_dist = ((getTelemeterDist(TELEMETER_FL) + getTelemeterDist(TELEMETER_FR)) / 2.00) - 21.00;
-        move(0, relative_dist, 100, 100);
+        HAL_Delay(100);
     }
-    return 0;
+    ssd1306ClearScreen(MAIN_AREA);
+    ssd1306DrawStringAtLine(50, 1, "Wait", &Font_3x6);
+    ssd1306Refresh();
+
+    mainControlInit();
+    HAL_Delay(2000);
+    ssd1306ClearScreen(MAIN_AREA);
+    telemetersStart();
+
+    Vmin = 100;
+    Vmax = 100;
+
+    move(0, OFFSET_DIST, Vmax, Vmax);
+    while (hasMoveEnded() != TRUE);
+    moveCell(1, Vmax, Vmin);
+    while (hasMoveEnded() != TRUE);
+    telemetersStop();
+    HAL_Delay(1000);
+    motorsDriverSleep(ON);
+    while (expanderJoyFiltered() != JOY_LEFT);
 }

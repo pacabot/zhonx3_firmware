@@ -65,6 +65,7 @@ static int moveOffsetDist(getOffsetsStruct *offset, double max_speed, double end
 static int moveRotateInPlaceCW90(double speed_rotation);
 static int moveRotateInPlaceCCW90(double speed_rotation);
 static int moveRotateInPlaceCW180(double speed_rotation);
+static int frontAlignment(float max_speed);
 
 /**************************************************************************************/
 /***************                    Basic Moves                    ********************/
@@ -221,6 +222,45 @@ int moveRotateInPlaceCW180(double speed_rotation)
 }
 
 /**************************************************************************************/
+/***************                  Specials Moves                   ********************/
+/**************************************************************************************/
+int frontAlignment(float max_speed)
+{
+    double relative_dist = 0.00;
+    while (hasMoveEnded() != TRUE);
+    if (getWallPresence(FRONT_WALL) == WALL_PRESENCE)
+    {
+        if (getTelemeterDist(TELEMETER_FR) > getTelemeterDist(TELEMETER_FL))
+        {
+            move(-30, 0, max_speed, max_speed);
+            while (((getTelemeterDist(TELEMETER_FR) - getTelemeterDist(TELEMETER_FL))) > 1.00)
+            {
+                if (hasMoveEnded() == TRUE)
+                {
+                    move(30, 0, max_speed, max_speed);
+                    return 0xFF;
+                }
+            }
+        }
+        else
+        {
+            move(30, 0, max_speed, max_speed);
+            while (((getTelemeterDist(TELEMETER_FL) - getTelemeterDist(TELEMETER_FR))) > 1.00)
+            {
+                if (hasMoveEnded() == TRUE)
+                {
+                    move(-30, 0, max_speed, max_speed);
+                    return 0xFF;
+                }
+            }
+        }
+        relative_dist = ((getTelemeterDist(TELEMETER_FL) + getTelemeterDist(TELEMETER_FR)) / 2.00) - 21.00;
+        move(0, relative_dist, 100, 100);
+    }
+    return 0;
+}
+
+/**************************************************************************************/
 /***************                   Avanced Moves                   ********************/
 /**************************************************************************************/
 
@@ -247,9 +287,11 @@ int moveCell(unsigned int nb_cell, double max_speed, double end_speed)
     for (i = 0; i < (nb_cell - 1); i++)
     {
         moveMainDist(&offset, max_speed, max_speed);
+        repositionGetFrontDist(&offset.frontCal);
         moveOffsetDist(&offset, max_speed, end_speed);
     }
     moveMainDist(&offset, max_speed, max_speed);
+    repositionGetFrontDist(&offset.frontCal);
     moveOffsetDist(&offset, max_speed, end_speed);
 
     return POSITION_CONTROL_E_SUCCESS;
@@ -338,17 +380,17 @@ int moveRotateCCW90(double max_speed, double end_speed)
  *      :   '-<
  *      o_________o
  */
-int rotate180WithCal(wallSelectorEnum wall_presence, double speed_rotation)
+int moveRotate180WithCal(wallSelectorEnum wall_presence, double speed_rotation)
 {
     // chose the correct turn for re-calibrate the robot if possible
     if (wall_presence == RIGHT_WALL)
     {
-        rotateInPlaceWithCalCW90(wall_presence, speed_rotation);
+        moveRotateInPlaceWithCalCW90(wall_presence, speed_rotation);
         moveRotateInPlaceCW90(speed_rotation);
     }
     else if (wall_presence == LEFT_WALL)
     {
-        rotateInPlaceWithCalCCW90(wall_presence, speed_rotation);
+        moveRotateInPlaceWithCalCCW90(wall_presence, speed_rotation);
         moveRotateInPlaceCCW90(speed_rotation);
     }
     else
@@ -366,13 +408,13 @@ int rotate180WithCal(wallSelectorEnum wall_presence, double speed_rotation)
  *      :    !
  *      o_________o
  */
-int rotateInPlaceWithCalCW90(wallSelectorEnum wall_presence, double speed_rotation)
+int moveRotateInPlaceWithCalCW90(wallSelectorEnum wall_presence, double speed_rotation)
 {
     moveRotateInPlaceCW90(speed_rotation);
     // chose re-calibrate the robot if possible
     if (wall_presence == RIGHT_WALL)
     {
-        frontCal(speed_rotation);
+        frontAlignment(speed_rotation);
     }
 
     return POSITION_CONTROL_E_SUCCESS;
@@ -385,13 +427,13 @@ int rotateInPlaceWithCalCW90(wallSelectorEnum wall_presence, double speed_rotati
  *      :    !
  *      o_________o
  */
-int rotateInPlaceWithCalCCW90(wallSelectorEnum wall_presence, double speed_rotation)
+int moveRotateInPlaceWithCalCCW90(wallSelectorEnum wall_presence, double speed_rotation)
 {
     moveRotateInPlaceCCW90(speed_rotation);
     // chose re-calibrate the robot if possible
     if (wall_presence == LEFT_WALL)
     {
-        frontCal(speed_rotation);
+        frontAlignment(speed_rotation);
     }
 
     return POSITION_CONTROL_E_SUCCESS;
@@ -421,7 +463,7 @@ int moveUTurn(double speed_rotation, double max_speed, double end_speed)
     // move HALF CELL IN
     moveHalfCell_IN(max_speed, 0);
     // chose the correct turn for re-calibrate the robot if possible
-    rotate180WithCal(wall_presence, speed_rotation);
+    moveRotate180WithCal(wall_presence, speed_rotation);
     while (hasMoveEnded() != TRUE);
     // go back and go out for maximize correct alignment
     mainControlSetFollowType(NO_FOLLOW); //todo this is the shit

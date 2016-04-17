@@ -66,6 +66,7 @@ extern void spyPostCalibration(void);
 extern void spyPostTest(void);
 extern int spyPostReadCalibration(void);
 extern void repositionGetFrontDistCal(void);
+extern void repositionFrontTest(void);
 extern int test_move_zhonx ();
 extern int _Factor;
 extern int _KP;
@@ -153,13 +154,23 @@ const menuItem pidCal=
         }
 };
 
+const menuItem frontCal=
+{
+        "FRONT CAL",    //9 characters max
+        {
+                { "Start calibration",  'f', (void*)repositionGetFrontDistCal},
+                { "Reposition test",    'f', (void*)repositionFrontTest},
+        }
+};
+
 const menuItem calibration_menu=
 {
         "CALIB.",        //9 characters max
         {
-                {"Telemeters",  'm',  (void*)&telemetersCal},
-                {"SpyPost",     'm',  (void*)&spyPostCal},
-                {"PID",         'm',  (void*)&pidCal},
+                {"Telemeters",      'm',  (void*)&telemetersCal},
+                {"SpyPost",         'm',  (void*)&spyPostCal},
+                {"Front reposition",'m',  (void*)&frontCal},
+                {"PID",             'm',  (void*)&pidCal},
         }
 };
 
@@ -189,7 +200,6 @@ const menuItem control_menu =
         {
                 { "Follow the wall",    'f', (void*)movesTest },
                 { "Rotate",             'f', (void*)rotateTest },
-                { "Front Cal.",         'f', (void*)repositionGetFrontDistCal}
         }
 };
 

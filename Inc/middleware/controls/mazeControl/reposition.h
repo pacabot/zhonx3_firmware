@@ -35,6 +35,6 @@ void repositionResetTelemeterUsed(void);
 enum telemeters_used repositionGetTelemeterUsed(void);
 int  repositionGetFrontDist(repositionGetOffsetsStruct *offset);
 void repositionGetFrontDistCal(void);
-int  frontCal(float max_speed);
+void repositionFrontTest(void);
 
 #endif
