@@ -116,7 +116,7 @@ enum telemeters_used repositionGetTelemeterUsed(void)
 /* This function returns the maintain loop count according to front wall detection to avoid early turns leading to wall collision.
  *  void
  */
-int repositionGetFrontDist(void)
+int repositionGetFrontDist(repositionGetOffsetsStruct *offset)
 {
     int error_distance;
     const char FRONT_DIST_OFFSET = 123;
@@ -142,10 +142,11 @@ int repositionGetFrontDist(void)
             bluetoothPrintf("distance = %d \n", (int)distance);
 #endif
         }
-        return error_distance;
+        offset->front_dist = error_distance;
     }
     else
-        return 0;
+        offset->front_dist = 0;
+    return REPOSITION_E_SUCCESS;
 }
 
 void repositionGetFrontDistCal(void)
