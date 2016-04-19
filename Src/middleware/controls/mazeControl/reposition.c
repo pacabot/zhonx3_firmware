@@ -3,7 +3,7 @@
  @file    repositon.c
  @author  PLF (PACABOT)
  @date    18 April 2016
- @version  1.0
+ @version  1.1
  */
 /**************************************************************************/
 /* STM32 hal library declarations */
@@ -109,6 +109,10 @@ enum telemeters_used repositionGetTelemeterUsed(void)
         else
             telemeter_used = NO_SIDE;
     }
+    else if (getWallPresence(FRONT_WALL) == TRUE)
+    {
+        telemeter_used = ALL_FRONT;
+    }
 
     return telemeter_used;
 }
@@ -119,7 +123,7 @@ enum telemeters_used repositionGetTelemeterUsed(void)
 int repositionGetFrontDist(repositionGetOffsetsStruct *offset)
 {
     int error_distance;
-
+    const char FRONT_DIST_OFFSET = 124;
     while (hasMoveEnded() != TRUE);
     if (getWallPresence(FRONT_WALL) == WALL_PRESENCE)
     {
@@ -144,20 +148,24 @@ int repositionGetFrontDist(repositionGetOffsetsStruct *offset)
 
 void repositionFrontDistCal(void)
 {
-    double dist = 0; // Save to flash
-    int rv;
 
+	int rv;
+	double medium_dist = 0.0;
+    double right_dist = 0;
+    double left_dist = 0;
+    int max_speed = 50;
+    int end_speed = 50;
     while (expanderJoyFiltered() != JOY_RIGHT)
     {
         ssd1306ClearScreen(MAIN_AREA);
-        ssd1306DrawBmp(frontCal_Img, 35, 33, 59, 31);
+        ssd1306DrawBmp(frontCal_Img, 25, 24, 74, 31);
         ssd1306DrawStringAtLine(30, 0, "FRONT CALIBRATION", &Font_3x6);
         ssd1306Refresh();
         if (expanderJoyFiltered() == JOY_LEFT)
         {
             return;
         }
-        HAL_Delay(20);
+        HAL_Delay(10);
     }
     ssd1306ClearScreen(MAIN_AREA);
     ssd1306DrawStringAtLine(40, 1, "Wait", &Font_3x6);
@@ -169,15 +177,34 @@ void repositionFrontDistCal(void)
     telemetersStart();
     ssd1306ClearScreen(MAIN_AREA);
 
-    repositionSetInitialPosition(CELL_LENGTH - (Z3_CENTER_FRONT_DIST + HALF_WALL_THICKNESS));
-    move(0, -1.00 * ((CELL_LENGTH - (Z3_CENTER_FRONT_DIST + HALF_WALL_THICKNESS)) + OFFSET_DIST), 50, 50);
     while (hasMoveEnded() != TRUE);
-    dist = (getTelemeterDist(TELEMETER_FL) + getTelemeterDist(TELEMETER_FR)) / 2.00;
+    repositionSetInitialPosition(0); //absolute position into a cell
+    move(0, MAIN_DIST + OFFSET_DIST, max_speed, max_speed); //distance with last move offset
+
+    while (hasMoveEnded() != TRUE);
+    left_dist = getTelemeterDist(TELEMETER_FL);
+    right_dist = getTelemeterDist(TELEMETER_FR);
+
+    repositionSetInitialPosition(CELL_LENGTH - OFFSET_DIST);    //absolute position into a cell
+    move(0, OFFSET_DIST, max_speed, end_speed);
+    while (hasMoveEnded() != TRUE);
+
+    telemetersStop();
+    HAL_Delay(1000);
+    motorsDriverSleep(ON);
+
+    medium_dist = (right_dist + left_dist) / 2.00;
+
+    ssd1306PrintfAtLine(0, 1, &Font_5x8, "left dist  = %d", (uint32_t)(left_dist * 10.00));
+    ssd1306PrintfAtLine(0, 2, &Font_5x8, "right dist = %d", (uint32_t)(right_dist * 10.00));
+    ssd1306PrintfAtLine(0, 3, &Font_5x8, "moy dist   = %d", (uint32_t)(medium_dist * 10.00));
+
+
 
     // Save the calibration value to flash memory
     rv = flash_write(zhonxSettings.h_flash,
                      (unsigned char *)&(zhonxCalib_data->reposition.calib_value),
-                     (unsigned char *)&dist, sizeof(double));
+                     (unsigned char *)&medium_dist, sizeof(double));
     if (rv != FLASH_DRIVER_E_SUCCESS)
     {
         ssd1306PrintfAtLine(0, 1, &Font_5x8, "FAILED To write calibration value");
@@ -185,15 +212,9 @@ void repositionFrontDistCal(void)
         HAL_Delay(2000);
     }
 
-    ssd1306PrintfAtLine(0, 1, &Font_5x8, "dist = %d", (uint32_t)(dist * 10.00));
     ssd1306Refresh();
 
-#ifdef DEBUG_BASIC_MOVES
-    bluetoothPrintf("FRONT DIST CAL (1/10mm) = %d\n\r", (uint32_t)(dist * 10.00));
-#endif
-    telemetersStop();
     while (expanderJoyFiltered() != JOY_LEFT);
-    motorsDriverSleep(ON);
     return;
 }
 
@@ -215,7 +236,7 @@ void repositionFrontTest(void)
         {
             return;
         }
-        HAL_Delay(100);
+        HAL_Delay(10);
     }
     ssd1306ClearScreen(MAIN_AREA);
     ssd1306DrawStringAtLine(50, 1, "Wait", &Font_3x6);

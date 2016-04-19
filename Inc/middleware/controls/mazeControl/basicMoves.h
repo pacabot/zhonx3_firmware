@@ -21,7 +21,7 @@
 #define BASIC_MOVES_E_SUCCESS  0
 #define BASIC_MOVES_E_ERROR    MAKE_ERROR(BASIC_MOVES_MODULE_ID, 1)
 
-#define DEBUG_BASIC_MOVES
+//#define DEBUG_BASIC_MOVES
 
 int moveCell(unsigned int nb_cell, double max_speed, double end_speed);
 int moveEndCell(double max_speed, double end_speed);
