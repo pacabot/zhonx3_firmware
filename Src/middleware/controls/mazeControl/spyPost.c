@@ -58,10 +58,6 @@
 // Index of right profile in the array
 #define SPYPOST_RIGHT_PROFILE_IDX   1
 
-#define SPYPOST_ENCODERS_STEPS_MEASURE_MM 	   1
-#define SPYPOST_CAL_DISTANCE			       (uint32_t)CELL_LENGTH
-#define SPYPOST_ARRAY_PROFILE_LENGTH 		   ((SPYPOST_CAL_DISTANCE)/SPYPOST_ENCODERS_STEPS_MEASURE_MM)
-
 #define SPYPOST_TELEMETER_STEPS_MEASURE_MM     3
 #define SPYPOST_NBITS_SAMPLING_RESOLUTION 	   64
 #define SPYPOST_MIN_DIAG_SENSOR_DISTANCE 	   40
@@ -79,27 +75,8 @@
 #error  MAX DIAG - MIN_DIAG must be a multiple of SAMPLING_RESOLUTION
 #endif
 
-// Machine Definitions
-typedef struct
-{
-    uint64_t sample[SPYPOST_ARRAY_PROFILE_LENGTH + 1];
-    int32_t center_x_distance;
-    int32_t center_y_distance;
-} spyPostProfileStruct;
-
-typedef struct
-{
-    spyPostProfileStruct wallToNoWall;
-    spyPostProfileStruct singlePost;
-    spyPostProfileStruct perpendicularWall;
-    unsigned int         initializer;
-} spyPostRefTypeProfileStruct;
-
-// Declare Reference SpyPost profiles in Flash memory
-spyPostRefTypeProfileStruct *spyPost_profiles = (spyPostRefTypeProfileStruct *)ADDR_FLASH_SECTOR_9;
-
-spyPostRefTypeProfileStruct *ref_left = NULL;
-spyPostRefTypeProfileStruct *ref_right = NULL;
+spyPostRefProfileStruct *ref_left = NULL;
+spyPostRefProfileStruct *ref_right = NULL;
 
 /* Static functions */
 static void spyPostStartMeasure(spyPostProfileStruct *currentProfile, enum telemeterName telemeterName);
@@ -113,8 +90,8 @@ int spyPostInit(void)
 {
     int rv;
 
-    ref_left  = spyPost_profiles;
-    ref_right = (spyPostRefTypeProfileStruct *)(((unsigned char *)spyPost_profiles) + sizeof(spyPostRefTypeProfileStruct));
+    ref_left  = &(zhonxCalib_data->spyPost[0]);
+    ref_right = &(zhonxCalib_data->spyPost[1]);
 
     // Check whether Left and Right profiles are initialized
     if ((ref_left->initializer != 0xDEADBEEF) || (ref_right->initializer != 0xDEADBEEF))
@@ -369,11 +346,11 @@ uint32_t spyPostGetOffset(spyPostGetOffsetsStruct *offset)
 
 uint32_t spyPostCalibration(void)
 {
-    spyPostRefTypeProfileStruct refProfiles_ram;
-    spyPostProfileStruct        currentProfile;
-    uint32_t                    i;
-    spyPostRefTypeProfileStruct *refProfile_flash = NULL;
-    int                         rv = 0;
+    spyPostRefProfileStruct refProfiles_ram;
+    spyPostProfileStruct    currentProfile;
+    uint32_t                i;
+    spyPostRefProfileStruct *refProfile_flash = NULL;
+    int                     rv = 0;
 
     // Initialize structure
     refProfiles_ram.initializer = 0;
@@ -453,7 +430,7 @@ uint32_t spyPostCalibration(void)
     // Save calibration parameters to flash memory
     refProfiles_ram.initializer = 0xDEADBEEF;
     rv = flash_write(zhonxSettings.h_flash, (unsigned char *)refProfile_flash,
-                     (unsigned char *)&refProfiles_ram, sizeof(spyPostRefTypeProfileStruct));
+                     (unsigned char *)&refProfiles_ram, sizeof(spyPostRefProfileStruct));
     if (rv != FLASH_E_SUCCESS)
     {
         bluetoothPrintf("Error writing into flash memory (%d)", rv);
@@ -646,7 +623,7 @@ void spyPostSampleThicken(spyPostProfileStruct *profile)
 
 uint32_t spyPostReadCalibration(void)
 {
-    spyPostRefTypeProfileStruct *refProfiles = NULL;
+    spyPostRefProfileStruct *refProfiles = NULL;
 
     ssd1306ClearScreen(MAIN_AREA);
     ssd1306DrawStringAtLine(4, 1, "USE UP OR DOWN KEYS TO SELECT", &Font_3x6);

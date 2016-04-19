@@ -66,10 +66,6 @@ static inline int bluetoothDeInit_IT(void)
 
 void bluetoothInit(void)
 {
-    char *resp;
-    unsigned char c;
-    int rv;
-
     ssd1306ClearScreen(MAIN_AREA);
     ssd1306Printf(12, 30, &Font_3x6, "%s", "Initializing Bluetooth...");
     ssd1306Refresh();
@@ -167,13 +163,12 @@ int bluetoothSetBaudrate(int baudrate, void *param)
 {
     int rv;
     char cmd[40];
-    char *response;
 
     UNUSED(param);
 
     // Send command to Bluetooth module
     sprintf(cmd, "AT+AB ChangeBaud %i", baudrate);
-    response = bluetoothCmd(cmd);
+    bluetoothCmd(cmd);
 
     // Set baudrate of CPU USART
     __HAL_UART_DISABLE(&huart3);

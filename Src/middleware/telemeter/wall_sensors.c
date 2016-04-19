@@ -58,5 +58,5 @@ char getWallPresence(wallSelectorEnum wallSelector)
             else
                 return FALSE;
     }
-    return 3;
+    return WALL_SENSORS_E_ERROR;
 }
