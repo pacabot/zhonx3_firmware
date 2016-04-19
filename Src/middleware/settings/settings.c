@@ -6,13 +6,15 @@
  */
 
 #include "config/basetypes.h"
-
+#include "config/config.h"
 #include "middleware/settings/settings.h"
 #include "peripherals/eeprom/24lc64.h"
 
 #include "gpio.h"
 
 settings zhonxSettings;
+
+calibration_data *zhonxCalib_data = (calibration_data *)ADDR_FLASH_SECTOR_9;
 
 int settingsInit(void)
 {

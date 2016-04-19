@@ -129,15 +129,15 @@ int repositionGetFrontDist(repositionGetOffsetsStruct *offset)
     {
         if (getWallPresence(LEFT_WALL) == WALL_PRESENCE && getWallPresence(RIGHT_WALL) == WALL_PRESENCE)
         {
-            error_distance = (int)(getTelemeterDist(TELEMETER_FL) + getTelemeterDist(TELEMETER_FR)) - (FRONT_DIST_OFFSET * 2);
+            error_distance = (int)(getTelemeterDist(TELEMETER_FL) + getTelemeterDist(TELEMETER_FR)) - (zhonxCalib_data->reposition.calib_value * 2);
         }
         if (getWallPresence(LEFT_WALL) == WALL_PRESENCE)
         {
-            error_distance = (int)(getTelemeterDist(TELEMETER_FR)) - FRONT_DIST_OFFSET;
+            error_distance = (int)(getTelemeterDist(TELEMETER_FR)) - zhonxCalib_data->reposition.calib_value;
         }
         else if (getWallPresence(RIGHT_WALL) == WALL_PRESENCE)
         {
-            error_distance = (int)(getTelemeterDist(TELEMETER_FL)) - FRONT_DIST_OFFSET;
+            error_distance = (int)(getTelemeterDist(TELEMETER_FL)) - zhonxCalib_data->reposition.calib_value;
         }
         offset->front_dist = error_distance;
     }
@@ -146,8 +146,11 @@ int repositionGetFrontDist(repositionGetOffsetsStruct *offset)
     return REPOSITION_E_SUCCESS;
 }
 
-void repositionGetFrontDistCal(void)
+void repositionFrontDistCal(void)
 {
+
+	int rv;
+	double medium_dist = 0.0;
     double right_dist = 0;
     double left_dist = 0;
     int max_speed = 50;
@@ -190,9 +193,24 @@ void repositionGetFrontDistCal(void)
     HAL_Delay(1000);
     motorsDriverSleep(ON);
 
+    medium_dist = (right_dist + left_dist) / 2.00;
+
     ssd1306PrintfAtLine(0, 1, &Font_5x8, "left dist  = %d", (uint32_t)(left_dist * 10.00));
     ssd1306PrintfAtLine(0, 2, &Font_5x8, "right dist = %d", (uint32_t)(right_dist * 10.00));
-    ssd1306PrintfAtLine(0, 3, &Font_5x8, "moy dist   = %d", (uint32_t)(((right_dist + left_dist) / 2.00) * 10.00));
+    ssd1306PrintfAtLine(0, 3, &Font_5x8, "moy dist   = %d", (uint32_t)(medium_dist * 10.00));
+
+
+
+    // Save the calibration value to flash memory
+    rv = flash_write(zhonxSettings.h_flash,
+                     (unsigned char *)&(zhonxCalib_data->reposition.calib_value),
+                     (unsigned char *)&medium_dist, sizeof(double));
+    if (rv != FLASH_DRIVER_E_SUCCESS)
+    {
+        ssd1306PrintfAtLine(0, 1, &Font_5x8, "FAILED To write calibration value");
+        ssd1306Refresh();
+        HAL_Delay(2000);
+    }
 
     ssd1306Refresh();
 

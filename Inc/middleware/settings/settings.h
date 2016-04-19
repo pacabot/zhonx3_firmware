@@ -12,6 +12,9 @@
 #include "config/module_id.h"
 #include "peripherals/flash/flash.h"
 #include "config/basetypes.h"
+#include "middleware/controls/mazeControl/spyPost.h"
+#include "middleware/controls/mazeControl/reposition.h"
+#include "peripherals/gyroscope/adxrs620.h"
 
 /*********************** ZHONX generation and version *********************************/
 #define ZHONX_GENERATION          "Z3"
@@ -41,8 +44,16 @@ typedef struct
 	unsigned long threshold_color;
 	unsigned long threshold_greater;
 	FLASH_HANDLE h_flash;
-}settings;
+} settings;
 
+typedef struct
+{
+    spyPostRefProfileStruct spyPost[2];
+    gyro_calib_struct       gyro;
+    reposition_calib_struct reposition;
+} calibration_data;
+
+extern calibration_data *zhonxCalib_data;
 extern settings zhonxSettings;
 
 /* Exported Bluetooth parameters */
