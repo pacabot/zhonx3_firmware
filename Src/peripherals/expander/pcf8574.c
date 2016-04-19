@@ -67,8 +67,7 @@ static char getData(void)
     // I2C
     static uint8_t aRxBuffer;
 
-    while (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY)
-        ;
+    while (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY);
     while (HAL_I2C_Master_Receive(&hi2c1, (uint16_t) 65, (uint8_t *) &aRxBuffer, 1, 1000) != HAL_OK)
     {
         /* Error_Handler() function is called when Timout error occurs.
@@ -76,7 +75,7 @@ static char getData(void)
          Master restarts communication */
         if (HAL_I2C_GetError(&hi2c1) != HAL_I2C_ERROR_AF)
         {
-            bluetoothPrintf("I2C getExpander error \r\n");
+//            bluetoothPrintf("I2C getExpander error \r\n");
         }
     }
 

@@ -21,16 +21,16 @@
 #define BASIC_MOVES_E_SUCCESS  0
 #define BASIC_MOVES_E_ERROR    MAKE_ERROR(BASIC_MOVES_MODULE_ID, 1)
 
-//#define DEBUG_BASIC_MOVES
+#define DEBUG_BASIC_MOVES
 
 int moveCell(unsigned int nb_cell, double max_speed, double end_speed);
 int moveEndCell(double max_speed, double end_speed);
 int moveStartCell(double max_speed, double end_speed);
 int moveRotateCW90(double max_speed, double end_speed);
 int moveRotateCCW90(double max_speed, double end_speed);
-int rotate180WithCal(wallSelectorEnum wall_presence, double speed_rotation);
-int rotateInPlaceWithCalCW90(wallSelectorEnum wall_presence, double speed_rotation);
-int rotateInPlaceWithCalCCW90(wallSelectorEnum wall_presence, double speed_rotation);
+int moveRotateInPlace180WithCal(wallSelectorEnum wall_presence, double speed_rotation);
+int moveRotateInPlaceWithCalCW90(wallSelectorEnum wall_presence, double speed_rotation);
+int moveRotateInPlaceWithCalCCW90(wallSelectorEnum wall_presence, double speed_rotation);
 int moveUTurn(double speed_rotation, double max_speed, double end_speed);
 void movesTest(void);
 void rotateTest(void);

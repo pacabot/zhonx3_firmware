@@ -2,8 +2,8 @@
 /*!
  @file    repositon.c
  @author  PLF (PACABOT)
- @date
- @version  0.0
+ @date    18 April 2016
+ @version  1.0
  */
 /**************************************************************************/
 /* STM32 hal library declarations */
@@ -47,7 +47,7 @@
 /* Declarations for this module */
 #include "middleware/controls/mazeControl/reposition.h"
 
-#define DEADZONE_DIST		 90.00	//Distance between the start of the cell and doubt area
+#define DEADZONE_DIST		 80.00	//Distance between the start of the cell and doubt area
 #define DEADZONE			 90.00	//doubt area
 #define GETWALLPRESENCEZONE  5.00
 
@@ -116,17 +116,18 @@ enum telemeters_used repositionGetTelemeterUsed(void)
 /* This function returns the maintain loop count according to front wall detection to avoid early turns leading to wall collision.
  *  void
  */
-int repositionGetFrontDist(void)
+int repositionGetFrontDist(repositionGetOffsetsStruct *offset)
 {
     int error_distance;
-    const char FRONT_DIST_OFFSET = 114;
+    const char FRONT_DIST_OFFSET = 123;
+    while (hasMoveEnded() != TRUE);
     if (getWallPresence(FRONT_WALL) == WALL_PRESENCE)
     {
-        if(getWallPresence(LEFT_WALL) == WALL_PRESENCE && getWallPresence(RIGHT_WALL) == WALL_PRESENCE)
+        if (getWallPresence(LEFT_WALL) == WALL_PRESENCE && getWallPresence(RIGHT_WALL) == WALL_PRESENCE)
         {
-            return 0;
+            error_distance = (int)(getTelemeterDist(TELEMETER_FL) + getTelemeterDist(TELEMETER_FR)) - (FRONT_DIST_OFFSET * 2);
         }
-        else if (getWallPresence(LEFT_WALL) == WALL_PRESENCE)
+        if (getWallPresence(LEFT_WALL) == WALL_PRESENCE)
         {
             error_distance = (int)(getTelemeterDist(TELEMETER_FR)) - FRONT_DIST_OFFSET;
         }
@@ -134,18 +135,11 @@ int repositionGetFrontDist(void)
         {
             error_distance = (int)(getTelemeterDist(TELEMETER_FL)) - FRONT_DIST_OFFSET;
         }
-        else
-        {
-            error_distance = (int)(getTelemeterDist(TELEMETER_FL) + getTelemeterDist(TELEMETER_FR)) - (FRONT_DIST_OFFSET * 2);
-#ifdef DEBUG_DISPLACEMENT
-            // Calculating average distance detected by FR and FL Telemeters
-            bluetoothPrintf("distance = %d \n", (int)distance);
-#endif
-        }
-        return error_distance;
+        offset->front_dist = error_distance;
     }
     else
-        return 0;
+        offset->front_dist = 0;
+    return REPOSITION_E_SUCCESS;
 }
 
 void repositionGetFrontDistCal(void)
@@ -154,7 +148,7 @@ void repositionGetFrontDistCal(void)
     while (expanderJoyFiltered() != JOY_RIGHT)
     {
         ssd1306ClearScreen(MAIN_AREA);
-        ssd1306DrawBmp(frontCalImg, 35, 33, 59, 31);
+        ssd1306DrawBmp(frontCal_Img, 35, 33, 59, 31);
         ssd1306DrawStringAtLine(30, 0, "FRONT CALIBRATION", &Font_3x6);
         ssd1306Refresh();
         if (expanderJoyFiltered() == JOY_LEFT)
@@ -190,38 +184,43 @@ void repositionGetFrontDistCal(void)
     return;
 }
 
-int frontCal(float max_speed)
+void repositionFrontTest(void)
 {
-    double relative_dist = 0.00;
-    while (hasMoveEnded() != TRUE);
-    if (getWallPresence(FRONT_WALL) == WALL_PRESENCE)
+    uint32_t Vmin, Vmax, Vrotate;
+
+    positionControlSetPositionType(GYRO);
+    mainControlSetFollowType(NO_FOLLOW);
+
+    while (expanderJoyFiltered() != JOY_RIGHT)
     {
-        if (getTelemeterDist(TELEMETER_FR) > getTelemeterDist(TELEMETER_FL))
+        ssd1306ClearScreen(MAIN_AREA);
+        ssd1306DrawBmp(frontTest_Img, 25, 24, 74, 31);
+        ssd1306DrawStringAtLine(5, 0, "FRONT REPOSITION TEST", &Font_3x6);
+        ssd1306Refresh();
+
+        if (expanderJoyFiltered() == JOY_LEFT)
         {
-            move(-30, 0, max_speed, max_speed);
-            while (((getTelemeterDist(TELEMETER_FR) - getTelemeterDist(TELEMETER_FL))) > 1.00)
-            {
-                if (hasMoveEnded() == TRUE)
-                {
-                    move(30, 0, max_speed, max_speed);
-                    return 0xFF;
-                }
-            }
+            return;
         }
-        else
-        {
-            move(30, 0, max_speed, max_speed);
-            while (((getTelemeterDist(TELEMETER_FL) - getTelemeterDist(TELEMETER_FR))) > 1.00)
-            {
-                if (hasMoveEnded() == TRUE)
-                {
-                    move(-30, 0, max_speed, max_speed);
-                    return 0xFF;
-                }
-            }
-        }
-        relative_dist = ((getTelemeterDist(TELEMETER_FL) + getTelemeterDist(TELEMETER_FR)) / 2.00) - 21.00;
-        move(0, relative_dist, 100, 100);
+        HAL_Delay(100);
     }
-    return 0;
+    ssd1306ClearScreen(MAIN_AREA);
+    ssd1306DrawStringAtLine(50, 1, "Wait", &Font_3x6);
+    ssd1306Refresh();
+
+    mainControlInit();
+    HAL_Delay(2000);
+    ssd1306ClearScreen(MAIN_AREA);
+    telemetersStart();
+
+    Vmin = 100;
+    Vmax = 100;
+
+    move(0, OFFSET_DIST, Vmax, Vmax);
+    while (hasMoveEnded() != TRUE);
+    moveCell(1, Vmax, Vmin);
+    telemetersStop();
+    HAL_Delay(1000);
+    motorsDriverSleep(ON);
+    while (expanderJoyFiltered() != JOY_LEFT);
 }
