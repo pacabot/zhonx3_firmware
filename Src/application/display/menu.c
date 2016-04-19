@@ -573,7 +573,6 @@ int modifyPresetParam(char *param_name, presetParam *param)
     int *p_preset_val;
     int presetBufferLen = 0;
     int *p_presetBuffer = (int *) (preset->presetBuffer);
-    int rv;
 
     preset_val = *(p_presetBuffer);
 
