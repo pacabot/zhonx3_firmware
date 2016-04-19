@@ -131,15 +131,8 @@ int moveMainDist(getOffsetsStruct *offset, double max_speed, double end_speed)
 int moveOffsetDist(getOffsetsStruct *offset, double max_speed, double end_speed)
 {
     double offset_error = 0;
-    if (offset->frontCal.front_dist != 0)
-    {
-        offset_error = (double)offset->frontCal.front_dist;
-#ifdef DEBUG_BASIC_MOVES
-        bluetoothWaitReady();
-        bluetoothPrintf(" F_OFFSET = %d\n", (int32_t)offset->frontCal.front_dist);
-#endif
-    }
-    else if (offset->spyPost.left_x != 0)
+
+    if (offset->spyPost.left_x != 0)
     {
         offset_error = (double)offset->spyPost.left_x;
 #ifdef DEBUG_BASIC_MOVES
@@ -153,6 +146,14 @@ int moveOffsetDist(getOffsetsStruct *offset, double max_speed, double end_speed)
 #ifdef DEBUG_BASIC_MOVES
         bluetoothWaitReady();
         bluetoothPrintf(" R_OFFSET = %d, TYPE = %d\n", (int32_t)offset->spyPost.right_x, offset->spyPost.right_spyPostType);
+#endif
+    }
+    else if (offset->frontCal.front_dist != 0)
+    {
+        offset_error = (double)offset->frontCal.front_dist;
+#ifdef DEBUG_BASIC_MOVES
+        bluetoothWaitReady();
+        bluetoothPrintf(" F_OFFSET = %d\n", (int32_t)offset->frontCal.front_dist);
 #endif
     }
     else
