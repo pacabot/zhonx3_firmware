@@ -62,10 +62,10 @@ extern int setMeddle(void);
 extern int setDark(void);
 extern int pidCalculator(void);
 extern void telemetersGetCalibrationValues(void);
-extern void spyPostCalibration(void);
+extern uint32_t spyPostCalibration(void);
 extern void spyPostTest(void);
-extern int spyPostReadCalibration(void);
-extern void repositionGetFrontDistCal(void);
+extern uint32_t spyPostReadCalibration(void);
+extern void repositionFrontDistCal(void);
 extern void repositionFrontTest(void);
 extern int test_move_zhonx ();
 extern int _Factor;
@@ -158,7 +158,7 @@ const menuItem frontCal=
 {
         "FRONT CAL",    //9 characters max
         {
-                { "Start calibration",  'f', (void*)repositionGetFrontDistCal},
+                { "Start calibration",  'f', (void*)repositionFrontDistCal},
                 { "Reposition test",    'f', (void*)repositionFrontTest},
         }
 };
@@ -514,7 +514,7 @@ int modifyLongParam(char *param_name, long *param)
     int step = 1;
     char str[40];
     long param_copy = *param;
-    char collone = 0;
+    char column = 0;
 
     ssd1306ClearScreen(MAIN_AREA);
 
@@ -528,8 +528,8 @@ int modifyLongParam(char *param_name, long *param)
     ssd1306DrawStringAtLine(0, 3, "PRESS 'RIGHT' TO VALIDATE", &Font_3x6);
     ssd1306DrawStringAtLine(0, 4, "      'LEFT'  TO RETURN", &Font_3x6);
 
-    ssd1306DrawStringAtLine((10 - collone) * 8, 0, "-", &Font_8x8);
-    ssd1306DrawStringAtLine((10 - collone) * 8, 2, "-", &Font_8x8);
+    ssd1306DrawStringAtLine((10 - column) * 8, 0, "-", &Font_8x8);
+    ssd1306DrawStringAtLine((10 - column) * 8, 2, "-", &Font_8x8);
     ssd1306Refresh();
 
     while (1)
@@ -539,22 +539,22 @@ int modifyLongParam(char *param_name, long *param)
         switch (joystick)
         {
             case JOY_LEFT:
-                if (collone == 10)
+                if (column == 10)
                     return SUCCESS;
                 else
                 {
-                    collone++;
+                    column++;
                     ssd1306ClearRectAtLine(0, 0, 128);
                     ssd1306ClearRectAtLine(0, 2, 128);
-                    ssd1306DrawStringAtLine((9 - collone) * 9, 0, "-", &Font_8x8);
-                    ssd1306DrawStringAtLine((9 - collone) * 9, 2, "-", &Font_8x8);
+                    ssd1306DrawStringAtLine((9 - column) * 9, 0, "-", &Font_8x8);
+                    ssd1306DrawStringAtLine((9 - column) * 9, 2, "-", &Font_8x8);
                     ssd1306Refresh();
                 }
                 break;
             case JOY_UP:
 
                 //param_copy +=1;
-                param_copy += (step * pow(10, collone));
+                param_copy += (step * pow(10, column));
                 sprintf(str, "%10i", (int) param_copy);
                 ssd1306ClearRectAtLine(0, 1, 128);
                 ssd1306DrawStringAtLine(0, 1, str, &Font_8x8);
@@ -562,7 +562,7 @@ int modifyLongParam(char *param_name, long *param)
                 break;
             case JOY_DOWN:
 
-                param_copy -= (step * pow(10, collone));
+                param_copy -= (step * pow(10, column));
                 //param_copy -= 1;
                 sprintf(str, "%10i", (int) param_copy);
                 ssd1306ClearRectAtLine(0, 1, 128);
@@ -570,7 +570,7 @@ int modifyLongParam(char *param_name, long *param)
                 ssd1306Refresh();
                 break;
             case JOY_RIGHT:
-                if (collone == 0)
+                if (column == 0)
                 {
                     *param = param_copy;
                     ssd1306Refresh();
@@ -578,11 +578,11 @@ int modifyLongParam(char *param_name, long *param)
                 }
                 else
                 {
-                    collone--;
+                    column--;
                     ssd1306ClearRectAtLine(0, 0, 128);
                     ssd1306ClearRectAtLine(0, 2, 128);
-                    ssd1306DrawStringAtLine((9 - collone) * 9, 0, "-", &Font_8x8);
-                    ssd1306DrawStringAtLine((9 - collone) * 9, 2, "-", &Font_8x8);
+                    ssd1306DrawStringAtLine((9 - column) * 9, 0, "-", &Font_8x8);
+                    ssd1306DrawStringAtLine((9 - column) * 9, 2, "-", &Font_8x8);
                     ssd1306Refresh();
                 }
                 break;

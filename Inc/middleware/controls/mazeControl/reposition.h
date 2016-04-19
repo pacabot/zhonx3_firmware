@@ -27,6 +27,11 @@ enum telemeters_used
 
 typedef struct
 {
+    double calib_value;
+} reposition_calib_struct;
+
+typedef struct
+{
     int32_t front_dist;
 } repositionGetOffsetsStruct;
 
@@ -34,7 +39,7 @@ void repositionSetInitialPosition(double initial_position);
 void repositionResetTelemeterUsed(void);
 enum telemeters_used repositionGetTelemeterUsed(void);
 int  repositionGetFrontDist(repositionGetOffsetsStruct *offset);
-void repositionGetFrontDistCal(void);
+void repositionFrontDistCal(void);
 void repositionFrontTest(void);
 
 #endif

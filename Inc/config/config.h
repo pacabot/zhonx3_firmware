@@ -44,8 +44,7 @@
 #define GYRO_T_COEFF_A			(GYRO_VRATIO/(4095.00*GYRO_T_OUT_SENSITIVITY))
 #define GYRO_T_COEFF_B			(-GYRO_VRATIO/(2.00*GYRO_T_OUT_SENSITIVITY)+25.00)
 
-#define GYRO_B_COEFF			(1237.5938788750565 / GYRO_TIME_FREQ)
-//#define GYRO_B_COEFF			1.2400995740599703// / GYRO_TIME_FREQ)//FORCE COEFF_B
+//#define GYRO_B_COEFF			(1237.5938788750565 / GYRO_TIME_FREQ)
 
 /**************************************************************************************/
 /***************                 Temperature STM32                 ********************/
