@@ -340,7 +340,7 @@ int moveRotateCW90(double max_speed, double end_speed)
     bluetoothPrintf("\rMOVE ROTATE CW90");
 #endif
     while (hasMoveEnded() != TRUE);
-    move(90, (HALF_CELL_LENGTH - OFFSET_DIST), max_speed, max_speed);
+    move(90, (HALF_CELL_LENGTH - OFFSET_DIST - 3.00), max_speed, max_speed);
     while (hasMoveEnded() != TRUE);
 
     repositionGetFrontDist(&offset.frontCal);
@@ -365,7 +365,7 @@ int moveRotateCCW90(double max_speed, double end_speed)
     bluetoothPrintf("\rMOVE ROTATE CCW90");
 #endif
     while (hasMoveEnded() != TRUE);
-    move(-90, (HALF_CELL_LENGTH - OFFSET_DIST), max_speed, max_speed);
+    move(-90, (HALF_CELL_LENGTH - OFFSET_DIST - 3.00), max_speed, max_speed);
     while (hasMoveEnded() != TRUE);
 
     repositionGetFrontDist(&offset.frontCal);

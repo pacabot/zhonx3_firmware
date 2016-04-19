@@ -109,6 +109,10 @@ enum telemeters_used repositionGetTelemeterUsed(void)
         else
             telemeter_used = NO_SIDE;
     }
+    else if (getWallPresence(FRONT_WALL) == TRUE)
+    {
+        telemeter_used = ALL_FRONT;
+    }
 
     return telemeter_used;
 }
@@ -175,8 +179,8 @@ void repositionGetFrontDistCal(void)
     move(0, MAIN_DIST + OFFSET_DIST, max_speed, max_speed); //distance with last move offset
 
     while (hasMoveEnded() != TRUE);
-    left_dist = (int)getTelemeterDist(TELEMETER_FL);
-    right_dist = (int)getTelemeterDist(TELEMETER_FR);
+    left_dist = getTelemeterDist(TELEMETER_FL);
+    right_dist = getTelemeterDist(TELEMETER_FR);
 
     repositionSetInitialPosition(CELL_LENGTH - OFFSET_DIST);    //absolute position into a cell
     move(0, OFFSET_DIST, max_speed, end_speed);
