@@ -109,10 +109,6 @@ enum telemeters_used repositionGetTelemeterUsed(void)
         else
             telemeter_used = NO_SIDE;
     }
-    else if (getWallPresence(FRONT_WALL) == TRUE)
-    {
-        telemeter_used = ALL_FRONT;
-    }
 
     return telemeter_used;
 }
@@ -122,24 +118,21 @@ enum telemeters_used repositionGetTelemeterUsed(void)
  */
 int repositionGetFrontDist(repositionGetOffsetsStruct *offset)
 {
-    int error_distance;
-    const char FRONT_DIST_OFFSET = 124;
     while (hasMoveEnded() != TRUE);
     if (getWallPresence(FRONT_WALL) == WALL_PRESENCE)
     {
-        if (getWallPresence(LEFT_WALL) == WALL_PRESENCE && getWallPresence(RIGHT_WALL) == WALL_PRESENCE)
-        {
-            error_distance = (int)(getTelemeterDist(TELEMETER_FL) + getTelemeterDist(TELEMETER_FR)) - (zhonxCalib_data->reposition.calib_value * 2);
-        }
-        if (getWallPresence(LEFT_WALL) == WALL_PRESENCE)
-        {
-            error_distance = (int)(getTelemeterDist(TELEMETER_FR)) - zhonxCalib_data->reposition.calib_value;
-        }
-        else if (getWallPresence(RIGHT_WALL) == WALL_PRESENCE)
-        {
-            error_distance = (int)(getTelemeterDist(TELEMETER_FL)) - zhonxCalib_data->reposition.calib_value;
-        }
-        offset->front_dist = error_distance;
+//        if (getWallPresence(LEFT_WALL) == WALL_PRESENCE && getWallPresence(RIGHT_WALL) == WALL_PRESENCE)
+//        {
+        offset->front_dist = (int)(getTelemeterDist(TELEMETER_FL) + getTelemeterDist(TELEMETER_FR)) - (zhonxCalib_data->reposition.calib_value * 2);
+//        }
+//        if (getWallPresence(LEFT_WALL) == WALL_PRESENCE)
+//        {
+//            error_distance = (int)(getTelemeterDist(TELEMETER_FR)) - zhonxCalib_data->reposition.calib_value;
+//        }
+//        else if (getWallPresence(RIGHT_WALL) == WALL_PRESENCE)
+//        {
+//            error_distance = (int)(getTelemeterDist(TELEMETER_FL)) - zhonxCalib_data->reposition.calib_value;
+//        }
     }
     else
         offset->front_dist = 0;

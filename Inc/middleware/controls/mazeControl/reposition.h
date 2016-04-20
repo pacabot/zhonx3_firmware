@@ -22,7 +22,7 @@
 
 enum telemeters_used
 {
-    NO_SIDE, ALL_SIDE, LEFT_SIDE, RIGHT_SIDE, ALL_FRONT
+    NO_SIDE, ALL_SIDE, LEFT_SIDE, RIGHT_SIDE
 };
 
 typedef struct

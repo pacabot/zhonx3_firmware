@@ -67,6 +67,7 @@ extern void spyPostTest(void);
 extern uint32_t spyPostReadCalibration(void);
 extern void repositionFrontDistCal(void);
 extern void repositionFrontTest(void);
+extern void adxrs620Cal(void);
 extern int test_move_zhonx ();
 extern int _Factor;
 extern int _KP;
@@ -163,6 +164,15 @@ const menuItem frontCal=
         }
 };
 
+const menuItem gyroCal=
+{
+        "GYRO CAL",    //9 characters max
+        {
+                { "Start calibration",  'f', (void*)adxrs620Cal},
+                { "Gyro test",          'f', (void*)adxrs620Test},
+        }
+};
+
 const menuItem calibration_menu=
 {
         "CALIB.",        //9 characters max
@@ -170,6 +180,7 @@ const menuItem calibration_menu=
                 {"Telemeters",      'm',  (void*)&telemetersCal},
                 {"SpyPost",         'm',  (void*)&spyPostCal},
                 {"Front reposition",'m',  (void*)&frontCal},
+                {"Gyroscope",       'm',  (void*)&gyroCal},
                 {"PID",             'm',  (void*)&pidCal},
         }
 };

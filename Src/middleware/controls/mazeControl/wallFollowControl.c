@@ -121,12 +121,6 @@ int wallFollowControlLoop(void)
             wall_follow_control.follow_error = -1.00 * (DIAG_DIST_FOR_FOLLOW - (double) getTelemeterDist(TELEMETER_DR));
             expanderSetLeds(0b001);
             break;
-        case ALL_FRONT:
-            positionControlEnablePositionCtrl(NO_POSITION_CTRL);
-            wall_follow_control.follow_error = (double) getTelemeterDist(TELEMETER_FR)
-                    - (double) getTelemeterDist(TELEMETER_FL);
-            expanderSetLeds(0b010);
-            break;
     }
 
 //    if (getWallPresence(FRONT_WALL) == TRUE)

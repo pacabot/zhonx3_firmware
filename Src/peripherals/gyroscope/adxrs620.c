@@ -137,7 +137,7 @@ void adxrs620Cal(void)
 
     adxrs620Init();
     ssd1306ClearScreen(MAIN_AREA);
-    ssd1306DrawStringAtLine(0, 5, "DON'T TOUTCH Z3!!", &Font_3x6);
+    ssd1306DrawStringAtLine(0, 1, "DON'T TOUTCH Z3!!", &Font_3x6);
     ssd1306Refresh();
     HAL_Delay(3000);
     cal = adxrs620Calibrate(5000);
@@ -146,14 +146,14 @@ void adxrs620Cal(void)
                      (unsigned char *)&cal, sizeof(double));
     if (rv != FLASH_DRIVER_E_SUCCESS)
     {
-        ssd1306PrintfAtLine(0, 1, &Font_5x8, "FAILED To write calibration value");
+        ssd1306PrintfAtLine(0, 2, &Font_5x8, "FAILED To write calibration value");
         ssd1306Refresh();
         HAL_Delay(2000);
     }
     while (expanderJoyFiltered() != JOY_LEFT)
     {
         ssd1306ClearScreen(MAIN_AREA);
-        ssd1306PrintIntAtLine(10, 1, "B =", (int32_t) (cal * 100000.00), &Font_5x8);
+        ssd1306PrintIntAtLine(10, 3, "B =", (int32_t) (cal * 100000.00), &Font_5x8);
         ssd1306Refresh();
     }
 }
