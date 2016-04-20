@@ -817,10 +817,10 @@ void powerOffConfirmation()
     modifyBoolParam("TURN POWER OFF ?", &confirm);
     if (confirm == TRUE)
     {
-        modifyBoolParam("SAVE PARAM ?", &confirm);
+        //modifyBoolParam("SAVE PARAM ?", &confirm);
         if (confirm == TRUE)
         {
-            //			save_setting();
+//            save_setting();
         }
         halt();
         while (1)
