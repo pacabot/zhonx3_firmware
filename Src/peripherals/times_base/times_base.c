@@ -71,7 +71,7 @@ void timesBaseInit(void)
 	      ----------------------------------------------------------------------- */
 
 	/* Compute the prescaler value to have TIM7 counter clock equal to 1 KHz */
-	uwPrescalerValue = (uint32_t) ((SystemCoreClock /2) / (HI_TIME_FREQ * 2));
+	uwPrescalerValue = (uint32_t) ((SystemCoreClock /2) / (CONTROL_TIME_FREQ * 2));
 	htim7.Instance = TIM7;
 	htim7.Init.Prescaler =  uwPrescalerValue;
 	htim7.Init.CounterMode = TIM_COUNTERMODE_UP;

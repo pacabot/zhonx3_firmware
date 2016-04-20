@@ -14,13 +14,14 @@
 /**************************************************************************************/
 /***************                 Times definitions                 ********************/
 /**************************************************************************************/
-#define LOW_TIME_FREQ			100
-#define HI_TIME_FREQ			1000.00 	//use for pids inner loop
+#define HI_TIME_FREQ			16000 	    //use for pids inner loop
+#define LOW_TIME_FREQ           100
+#define CONTROL_TIME_FREQ       1000         //use for pids inner loop
 #define TELEMETERS_TIME_FREQ	1600 * 10  		//each telemeter use 1/10 of TELEMETERS_TIME_FREQ
-#define GYRO_TIME_FREQ			4000.00
-#define LINESENSORS_TIME_FREQ	GYRO_TIME_FREQ 	//same timer
+#define GYRO_TIME_FREQ			4000         //for adc injected freq
+#define LINESENSORS_TIME_FREQ	1000
 #define MULTIMMETER_TIME_FREQ	0.1f
-#define MOTORS_FREQ				20000	//motor pwm freq
+#define MOTORS_FREQ				20000	        //motor pwm freq
 
 /**************************************************************************************/
 /***************                 Gyro definitions                  ********************/
@@ -39,8 +40,8 @@
 #define GYRO_OUT_SENSITIVITY	(GYRO_OUTPUT_RATIO*(GYRO_VRATIO/5000.00)*GYRO_SENSITIVITY) 	//1,32mV/deg/sec (3.3v Req 60K)
 #define GYRO_A_COEFF		    (GYRO_VRATIO/(4095.00*GYRO_OUT_SENSITIVITY*GYRO_TIME_FREQ)) //integration multiplier coeff
 
-#define GYRO_T_SENSITIVITY 		9.00   //The temperature coefficient is ~9 mV/°C at 25°C
-#define GYRO_T_OUT_SENSITIVITY	(GYRO_T_SENSITIVITY*(GYRO_VRATIO/5000.00)) // ~3,564 mV/°C at 25Â°C (3.3v)
+#define GYRO_T_SENSITIVITY 		9.00   //The temperature coefficient is ~9 mV/ï¿½C at 25ï¿½C
+#define GYRO_T_OUT_SENSITIVITY	(GYRO_T_SENSITIVITY*(GYRO_VRATIO/5000.00)) // ~3,564 mV/ï¿½C at 25Â°C (3.3v)
 #define GYRO_T_COEFF_A			(GYRO_VRATIO/(4095.00*GYRO_T_OUT_SENSITIVITY))
 #define GYRO_T_COEFF_B			(-GYRO_VRATIO/(2.00*GYRO_T_OUT_SENSITIVITY)+25.00)
 
@@ -51,8 +52,8 @@
 /***************                 Temperature STM32                 ********************/
 /**************************************************************************************/
 #define STM32_VREFINT			3300.00	//1210.00 if use Vrefint
-#define STM32_T_SENSITIVITY		2.50	//The temperature coefficient is ~2.5 mV/°C at 25°C
-#define STM32_T_V25				760.00	//Voltage at 25 °C
+#define STM32_T_SENSITIVITY		2.50	//The temperature coefficient is ~2.5 mV/ï¿½C at 25ï¿½C
+#define STM32_T_V25				760.00	//Voltage at 25 ï¿½C
 #define STM32_T_COEFF_A			(STM32_VREFINT/(4095.00*STM32_T_SENSITIVITY))
 #define STM32_T_COEFF_B			((-STM32_T_V25/STM32_T_SENSITIVITY)+25)
 
@@ -129,11 +130,11 @@
 /***************                 Physical Constants                ********************/
 /**************************************************************************************/
 #define MAX_SPEED				4000.0	//mm/s
-#define MAX_ACCEL				4000.0	//mm/s²
-//#define MAX_DECEL				8000.0	//mm/s²
+#define MAX_ACCEL				4000.0	//mm/sï¿½
+//#define MAX_DECEL				8000.0	//mm/sï¿½
 
 #define MAX_TURN_SPEED			500.0	//mm/s
-#define MAX_TURN_ACCEL			8000.0	//mm/s²
+#define MAX_TURN_ACCEL			8000.0	//mm/sï¿½
 
 /**************************************************************************************/
 /***************                 Motors Constants                  ********************/
