@@ -8,8 +8,11 @@
 #ifndef BANNER_H_
 #define BANNER_H_
 
-#define BANNER_HEIGHT	8
+enum iconType
+{
+    LINESENSORS, TELEMETERS, GYROMETER, BEEPER, BLUETOOTH, BATTERY, USB
+};
 
-void banner_IT(void);
+void bannerSetIcon(enum iconType icon, int val);
 
 #endif /* BANNER_H_ */

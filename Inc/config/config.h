@@ -45,15 +45,14 @@
 #define GYRO_T_COEFF_A			(GYRO_VRATIO/(4095.00*GYRO_T_OUT_SENSITIVITY))
 #define GYRO_T_COEFF_B			(-GYRO_VRATIO/(2.00*GYRO_T_OUT_SENSITIVITY)+25.00)
 
-#define GYRO_B_COEFF			(1237.5938788750565 / GYRO_TIME_FREQ)
-//#define GYRO_B_COEFF			1.2400995740599703// / GYRO_TIME_FREQ)//FORCE COEFF_B
+//#define GYRO_B_COEFF			(1237.5938788750565 / GYRO_TIME_FREQ)
 
 /**************************************************************************************/
 /***************                 Temperature STM32                 ********************/
 /**************************************************************************************/
 #define STM32_VREFINT			3300.00	//1210.00 if use Vrefint
 #define STM32_T_SENSITIVITY		2.50	//The temperature coefficient is ~2.5 mV/�C at 25�C
-#define STM32_T_V25				760.00	//Voltage at 25 �C
+#define STM32_T_V25				760.00	//Voltage at 25 °C
 #define STM32_T_COEFF_A			(STM32_VREFINT/(4095.00*STM32_T_SENSITIVITY))
 #define STM32_T_COEFF_B			((-STM32_T_V25/STM32_T_SENSITIVITY)+25)
 
@@ -79,10 +78,12 @@
 /**************************************************************************************/
 /***************                       Battery                     ********************/
 /**************************************************************************************/
-#define BATTERY_CELL_NUMBER					2	//2S
-#define BATTERY_LOWER_VOLTAGE_NO_LOAD		(3.6f * BATTERY_CELL_NUMBER)
-#define BATTERY_UPPER_VOLTAGE_NO_LOAD		(4.2f * BATTERY_CELL_NUMBER)
-#define BATTERY_LOWER_VOLTAGE_OFFSET		(-0.1f * BATTERY_CELL_NUMBER)	//-0.1V/A
+#define BATTERY_CELL_NUMBER					2.00	//2S
+#define BATTERY_LOWER_VOLTAGE_NO_LOAD		(3000 * BATTERY_CELL_NUMBER)	//https://learn.sparkfun.com/tutorials/battery-technologies/lithium-polymer
+#define BATTERY_UPPER_VOLTAGE_NO_LOAD		(3700 * BATTERY_CELL_NUMBER)
+#define BATTERY_LOWER_VOLTAGE_OFFSET		(-0.10 * BATTERY_CELL_NUMBER)	//-0.1V/A
+#define BATTERY_COEFF_A						((BATTERY_UPPER_VOLTAGE_NO_LOAD - BATTERY_LOWER_VOLTAGE_NO_LOAD) / 100.00)
+#define BATTERY_COEFF_B						(BATTERY_LOWER_VOLTAGE_NO_LOAD / BATTERY_COEFF_A)
 
 /**************************************************************************************/
 /***************                 Mechanical Constants              ********************/
@@ -115,6 +116,8 @@
 #define Z3_WIDTH				72.50
 #define Z3_LENGHT				98.40
 #define Z3_HEIGHT				23.70
+#define Z3_CENTER_BACK_DIST     34.00
+#define Z3_CENTER_FRONT_DIST    (Z3_LENGHT - Z3_CENTER_BACK_DIST)
 
 /**************************************************************************************/
 /***************                   Maze Properties                 ********************/
@@ -122,19 +125,25 @@
 /**************************************************************************************/
 #define WALL_THICKNESS			12.00
 #define HALF_WALL_THICKNESS		WALL_THICKNESS / 2.00
-#define CELL_LENGTH				179.20
+#define CELL_LENGTH				179.00
 #define HALF_CELL_LENGTH		CELL_LENGTH / 2.00
-#define MAZE_SIZE				16
+#define MAZE_SIZE				17
+
+/**************************************************************************************/
+/***************                  Moves Constants                  ********************/
+/**************************************************************************************/
+#define OFFSET_DIST             20.00
+#define MAIN_DIST               CELL_LENGTH - (OFFSET_DIST * 2)
 
 /**************************************************************************************/
 /***************                 Physical Constants                ********************/
 /**************************************************************************************/
-#define MAX_SPEED				4000.0	//mm/s
-#define MAX_ACCEL				4000.0	//mm/s�
+#define MAX_SPEED				4000.00	//mm/s
+#define MAX_ACCEL				4000.00	//mm/s�
 //#define MAX_DECEL				8000.0	//mm/s�
 
-#define MAX_TURN_SPEED			500.0	//mm/s
-#define MAX_TURN_ACCEL			8000.0	//mm/s�
+#define MAX_TURN_SPEED			500.00	//mm/s
+#define MAX_TURN_ACCEL			8000.00	//mm/s�
 
 /**************************************************************************************/
 /***************                 Motors Constants                  ********************/
@@ -174,6 +183,17 @@
 #define CONFIG_EEPROM_SIZE              8192
 #define CONFIG_EEPROM_PAGE_SIZE         32
 #define CONFIG_EEPROM_MAX_PAGE_COUNT    ((CONFIG_EEPROM_SIZE) / (CONFIG_EEPROM_PAGE_SIZE))
+
+/**************************************************************************************/
+/***************                   Misc Constants                  ********************/
+/**************************************************************************************/
+// Define this variable to enable Command Line mode
+// Note: If not defined, Hexadecimal Command mode is used by default
+#define CONFIG_USE_CMDLINE
+/**************************************************************************************/
+/***************               sleep and kill params               ********************/
+/**************************************************************************************/
+#define KILL_WEN_UNUSED
 
 #endif // __CONFIG_H__
 

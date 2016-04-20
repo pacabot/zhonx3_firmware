@@ -1,9 +1,9 @@
 /**************************************************************************/
 /*!
-    @file     PID.c
-    @author  PLF (PACABOT)
-    @date
-    @version  0.0
+ @file     PID.c
+ @author  PLF (PACABOT)
+ @date
+ @version  0.0
  */
 /**************************************************************************/
 #include <string.h>
@@ -14,6 +14,7 @@
 
 #include "stdbool.h"
 #include <arm_math.h>
+#include <middleware/controls/mainControl/mainControl.h>
 
 #include "stm32f4xx_hal.h"
 
@@ -23,7 +24,6 @@
 #include "peripherals/expander/pcf8574.h"
 
 #include <middleware/controls/pidController/pidController.h>
-#include "middleware/controls/motionControl/mainControl.h"
 
 /* extern variables ---------------------------------------------------------*/
 /* global variables ---------------------------------------------------------*/
@@ -37,15 +37,15 @@ float32_t pidController(arm_pid_instance_f32 * instance, float32_t error);
 
 void pidControllerInit(arm_pid_instance_f32 * instance)
 {
-	arm_pid_init_f32(instance, 1);
+    arm_pid_init_f32(instance, 1);
 }
 
 void pidControllerReset(arm_pid_instance_f32 * instance)
 {
-	arm_pid_reset_f32(instance);
+    arm_pid_reset_f32(instance);
 }
 
 float32_t pidController(arm_pid_instance_f32 * instance, float32_t error)
 {
-	return (arm_pid_f32(instance, error));
+    return (arm_pid_f32(instance, error));
 }

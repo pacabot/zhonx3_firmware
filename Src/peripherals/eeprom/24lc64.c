@@ -1,13 +1,13 @@
 /**************************************************************************/
 /*!
-    @file    24LC64.c
-    @author  PLF (PACABOT)
-    @date
-    @version  0.0
+ @file    24LC64.c
+ @author  PLF (PACABOT)
+ @date
+ @version  0.0
 
-    Use the I2C bus with EEPROM 24LC64
+ Use the I2C bus with EEPROM 24LC64
 
-    inspired by Author: hkhijhe
+ inspired by Author: hkhijhe
  */
 /**************************************************************************/
 /* STM32 hal library declarations */
@@ -44,33 +44,33 @@ extern I2C_HandleTypeDef hi2c1;
 
 void eepromWP(char state)
 {
-	if (state == ON)
-		HAL_GPIO_WritePin(GPIOB, WRITE_PROTECT, SET);
-	else
-		HAL_GPIO_WritePin(GPIOB, WRITE_PROTECT, RESET);
+    if (state == ON)
+        HAL_GPIO_WritePin(GPIOB, WRITE_PROTECT, SET);
+    else
+        HAL_GPIO_WritePin(GPIOB, WRITE_PROTECT, RESET);
 }
 
-void eepromWriteByte(unsigned int eeaddress, unsigned char data )
+void eepromWriteByte(unsigned int eeaddress, unsigned char data)
 {
-	unsigned char aTxBuffer[3];
+    unsigned char aTxBuffer[3];
 
-	aTxBuffer[0] = (unsigned char)((eeaddress & 0xFF00)>> 8); //MSB
-	aTxBuffer[1] = (unsigned char) (eeaddress & 0x00FF);	  //LSB
-	aTxBuffer[2] = (unsigned char)(data);
+    aTxBuffer[0] = (unsigned char) ((eeaddress & 0xFF00) >> 8); //MSB
+    aTxBuffer[1] = (unsigned char) (eeaddress & 0x00FF);	  //LSB
+    aTxBuffer[2] = (unsigned char) (data);
 
-	HAL_I2C_Master_Transmit(&hi2c1, (unsigned char)0x50<<1, (unsigned char*)aTxBuffer, 3, 1000);
+    HAL_I2C_Master_Transmit(&hi2c1, (unsigned char) 0x50 << 1, (unsigned char*) aTxBuffer, 3, 1000);
 
-//	HAL_I2C_Master_Transmit_DMA(&hi2c1, (unsigned char)0x50<<1, (unsigned char*)aTxBuffer, 3);
-//	while (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY)
-//	{
-//	}
+    //	HAL_I2C_Master_Transmit_DMA(&hi2c1, (unsigned char)0x50<<1, (unsigned char*)aTxBuffer, 3);
+    //	while (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY)
+    //	{
+    //	}
 }
 
 int eepromWriteBuffer(unsigned int eeaddress, unsigned char *data, unsigned int length)
 {
-    int             page_count = 0;
-    unsigned int    remaining_bytes = 0;
-    int             i = 0;
+    int page_count = 0;
+    unsigned int remaining_bytes = 0;
+    int i = 0;
 
     // Sanity checks
     if (length > CONFIG_EEPROM_MAX_PAGE_COUNT)
@@ -103,71 +103,71 @@ int eepromWriteBuffer(unsigned int eeaddress, unsigned char *data, unsigned int 
 // WARNING: eeaddresspage is a page address, 6-bit end will wrap around
 int eepromWritePage(unsigned int eeaddresspage, unsigned char *data, unsigned char length)
 {
-	unsigned char aTxBuffer[34] = {0};
+    unsigned char aTxBuffer[34] = { 0 };
 
-	if (length > 32)
-	{
-	    return E24LC64_DRIVER_E_PAGE_OVERFLOW;
-	}
+    if (length > 32)
+    {
+        return E24LC64_DRIVER_E_PAGE_OVERFLOW;
+    }
 
-	aTxBuffer[0] = (unsigned char)((eeaddresspage & 0xFF00)>> 8); //MSB
-	aTxBuffer[1] = (unsigned char) (eeaddresspage & 0x00FF);	  //LSB
+    aTxBuffer[0] = (unsigned char) ((eeaddresspage & 0xFF00) >> 8); //MSB
+    aTxBuffer[1] = (unsigned char) (eeaddresspage & 0x00FF);	  //LSB
 
-	for (int c = 0; c < length; c++)
-	{
-		aTxBuffer[c+2] = data[c];
-	}
+    for (int c = 0; c < length; c++)
+    {
+        aTxBuffer[c + 2] = data[c];
+    }
 
-	HAL_I2C_Master_Transmit(&hi2c1, (unsigned char)0x50<<1, (unsigned char*)aTxBuffer, length+2, 1000);
-//	HAL_I2C_Master_Transmit_DMA(&hi2c1, (unsigned char)0x50<<1, (unsigned char*)aTxBuffer, length+2);
-//	while (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY)
-//	{
-//	}
+    HAL_I2C_Master_Transmit(&hi2c1, (unsigned char) 0x50 << 1, (unsigned char*) aTxBuffer, length + 2, 1000);
+    //	HAL_I2C_Master_Transmit_DMA(&hi2c1, (unsigned char)0x50<<1, (unsigned char*)aTxBuffer, length+2);
+    //	while (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY)
+    //	{
+    //	}
 
-	return E24LC64_DRIVER_E_SUCCESS;
+    return E24LC64_DRIVER_E_SUCCESS;
 }
 
 char eepromReadByte(unsigned int eeaddress)
 {
-	unsigned char aTxBuffer[2];
-	unsigned char aRxBuffer;
+    unsigned char aTxBuffer[2];
+    unsigned char aRxBuffer;
 
-	aTxBuffer[0] = (unsigned char)((eeaddress & 0xFF00)>> 8); //MSB
-	aTxBuffer[1] = (unsigned char) (eeaddress & 0x00FF);	  //LSB
+    aTxBuffer[0] = (unsigned char) ((eeaddress & 0xFF00) >> 8); //MSB
+    aTxBuffer[1] = (unsigned char) (eeaddress & 0x00FF);	  //LSB
 
-	HAL_I2C_Master_Transmit_DMA(&hi2c1, (unsigned char)0x50<<1, (unsigned char*)aTxBuffer, 2);
-	while (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY)
-	{
-	}
-	HAL_I2C_Master_Receive_DMA(&hi2c1, (unsigned char)0x50<<1, (unsigned char*)&aRxBuffer, 1);
-	while (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY)
-	{
-	}
+    HAL_I2C_Master_Transmit_DMA(&hi2c1, (unsigned char) 0x50 << 1, (unsigned char*) aTxBuffer, 2);
+    while (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY)
+    {
+    }
+    HAL_I2C_Master_Receive_DMA(&hi2c1, (unsigned char) 0x50 << 1, (unsigned char*) &aRxBuffer, 1);
+    while (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY)
+    {
+    }
 
-	return aRxBuffer;
+    return aRxBuffer;
 }
 
 void eepromReadBuffer(unsigned int eeaddress, unsigned char *buffer, int length)
 {
-	unsigned char aTxBuffer[2];
-	unsigned char aRxBuffer[34];
+    unsigned char aTxBuffer[2];
+    unsigned char aRxBuffer[34];
 
-	aTxBuffer[0] = (unsigned char)((eeaddress & 0xFF00)>> 8); //MSB
-	aTxBuffer[1] = (unsigned char) (eeaddress & 0x00FF);	  //LSB
+    aTxBuffer[0] = (unsigned char) ((eeaddress & 0xFF00) >> 8); //MSB
+    aTxBuffer[1] = (unsigned char) (eeaddress & 0x00FF);	  //LSB
 
-	HAL_I2C_Master_Transmit(&hi2c1, (unsigned char)0x50<<1, (unsigned char*)aTxBuffer, 2, 1000);
-//	HAL_I2C_Master_Transmit_DMA(&hi2c1, (unsigned char)0x50<<1, (unsigned char*)aTxBuffer, 2);
-//	while (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY)
-//	{
-//	}
+    HAL_I2C_Master_Transmit(&hi2c1, (unsigned char) 0x50 << 1, (unsigned char*) aTxBuffer, 2, 1000);
+    //	HAL_I2C_Master_Transmit_DMA(&hi2c1, (unsigned char)0x50<<1, (unsigned char*)aTxBuffer, 2);
+    //	while (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY)
+    //	{
+    //	}
 
-	HAL_I2C_Master_Receive(&hi2c1, (unsigned char)0x50<<1, (unsigned char*)aRxBuffer, length, 1000);
-//	HAL_I2C_Master_Receive_DMA(&hi2c1, (unsigned char)0x50<<1, (unsigned char*)aRxBuffer, length);
-//	while (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY)
-//	{
-//	}
+    HAL_I2C_Master_Receive(&hi2c1, (unsigned char) 0x50 << 1, (unsigned char*) aRxBuffer, length, 1000);
+    //	HAL_I2C_Master_Receive_DMA(&hi2c1, (unsigned char)0x50<<1, (unsigned char*)aRxBuffer, length);
+    //	while (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY)
+    //	{
+    //	}
 
-	buffer = aRxBuffer;
+    buffer = aRxBuffer;
 }
 
 void eepromTest(void)
@@ -212,31 +212,30 @@ void eepromTest(void)
 
     HAL_Delay(10); //add a small delay
 
-//	Eeprom_Write_Page(addr, (unsigned char *)somedata, sizeof(somedata)); // write to EEPROM
-//	eepromWritePage(addr, (unsigned char *)somedata, 32); // write to EEPROM
-//
-//	HAL_Delay(10); //add a small delay
+    //	Eeprom_Write_Page(addr, (unsigned char *)somedata, sizeof(somedata)); // write to EEPROM
+    //	eepromWritePage(addr, (unsigned char *)somedata, 32); // write to EEPROM
+    //
+    //	HAL_Delay(10); //add a small delay
 
     ssd1306ClearScreen(MAIN_AREA);
-    ssd1306DrawString(10, 10, "Memory written", &Font_5x8);
-    ssd1306Refresh(MAIN_AREA);
+    ssd1306DrawStringAtLine(10, 0, "Memory written", &Font_5x8);
+    ssd1306Refresh();
 
     for (i = 0; i < sizeof(somedata); i++) //increase address
     {
         b = eepromReadByte(i + addr); //access an address from the memory
 
         if (i < 8)
-            ssd1306PrintInt((i * 15), 20, " ", (char) b, &Font_5x8);
+            ssd1306PrintIntAtLine((i * 15), 1, " ", (char) b, &Font_5x8);
         else if (i < 16)
-            ssd1306PrintInt(((i - 8) * 15), 30, " ", (char) b, &Font_5x8);
+            ssd1306PrintIntAtLine(((i - 8) * 15), 2, " ", (char) b, &Font_5x8);
         else if (i < 24)
-            ssd1306PrintInt(((i - 16) * 15), 40, " ", (char) b, &Font_5x8);
+            ssd1306PrintIntAtLine(((i - 16) * 15), 3, " ", (char) b, &Font_5x8);
         else if (i < 32)
-            ssd1306PrintInt(((i - 24) * 15), 50, " ", (char) b, &Font_5x8);
-        ssd1306Refresh(MAIN_AREA);
+            ssd1306PrintIntAtLine(((i - 24) * 15), 4, " ", (char) b, &Font_5x8);
+        ssd1306Refresh();
         HAL_Delay(100);
     }
-//	ssd1306DrawString(10, 50, "End Cycle", &Font_5x8);
-    ssd1306Refresh(MAIN_AREA);
+    ssd1306Refresh();
     HAL_Delay(2000);
 }

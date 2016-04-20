@@ -15,8 +15,16 @@
 #include <stdint.h>
 
 /* Peripheral declarations */
+#include "peripherals/gyroscope/adxrs620.h"
+#include "peripherals/telemeters/telemeters.h"
+#include "peripherals/multimeter/multimeter.h"
+#include "peripherals/lineSensors/lineSensors.h"
+#include "peripherals/encoders/ie512.h"
+#include "peripherals/times_base/times_base.h"
+#include "peripherals/tone/tone.h"
 
 /* Middleware declarations */
+#include "middleware/powerManagement/powerManagement.h"
 
 /* Declarations for this module */
 #include "peripherals/callback/user_it_callback.h"
@@ -33,15 +41,6 @@ extern TIM_HandleTypeDef htim7;
 extern ADC_HandleTypeDef hadc1;
 extern ADC_HandleTypeDef hadc2;
 extern ADC_HandleTypeDef hadc3;
-
-#include "config/basetypes.h"
-#include "peripherals/gyroscope/adxrs620.h"
-#include "peripherals/telemeters/telemeters.h"
-#include "peripherals/multimeter/multimeter.h"
-#include "peripherals/lineSensors/lineSensors.h"
-#include "peripherals/encoders/ie512.h"
-#include "middleware/controls/motionControl/mainControl.h"
-#include "peripherals/times_base/times_base.h"
 
 /* Application declarations */
 #include "application/lineFollower/lineFollower.h"
@@ -61,14 +60,15 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
         if (line_follower.active_state == TRUE)
             lineFollower_IT();
     }
-    if (htim == &htim7)
+    if (htim == &htim7)	//hight time freq
     {
-        //		  highFreq_IT();
         mainControl_IT();
     }
-    if (htim == &htim6)
+    if (htim == &htim6)	//low time freq
     {
-        lowFreq_IT();
+        tone_IT();
+        //sleep_mode_IT();
+        ledBlink_IT();
     }
 #else
     static uint32_t cnt = 0;
@@ -99,9 +99,10 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 
 void HAL_TIM_OC_DelayElapsedCallback(TIM_HandleTypeDef *htim)
 {
-    if( htim == &htim4)
+    if (htim == &htim4)
     {
         multimeter_IT();
+        batteryGauge_IT();
     }
 }
 

@@ -1,9 +1,9 @@
 /**************************************************************************/
 /*!
-    @file    cmdline_parser.c
-    @author  Netanel (PACABOT)
-    @date    02/05/2015
-    @version 0.1
+ @file    cmdline_parser.c
+ @author  Netanel (PACABOT)
+ @date    02/05/2015
+ @version 0.1
  */
 /**************************************************************************/
 
@@ -19,6 +19,11 @@
 
 #include "usart.h"
 #include "stm32f4xx_hal_uart.h"
+#include "stm32f4xx_hal_def.h"
+
+#include "peripherals/bluetooth/bluetooth.h"
+#include "peripherals/display/ssd1306.h"
+#include "peripherals/display/smallfonts.h"
 
 /* Declarations for this module */
 #include "middleware/cmdline/cmdline_parser.h"
@@ -27,16 +32,22 @@
 #define MAX_COMMAND_LEN 100 + 1
 
 /* Context of this module */
-CMDLINE_CONTEXT cmdline_ctxt;
+CMDLINE_CONTEXT cmdline_ctxt = {
+NULL,   // output callback
+FALSE,  // cmd_received flag
+NULL,   // Pointer to command line
+0,      // command line length
+FALSE   // is_initialized flag
+        };
 // Buffer used for Command line parser
 extern char serial_buffer[100];
 
 /* Private functions */
 static CMD_HANDLER *cmdline_check_cmd(const char *cmd);
 
-
 int cmdline_init(CMDLINE_CONTEXT *context)
 {
+#ifdef CONFIG_USE_CMDLINE
     // Initialize Command line context
     cmdline_ctxt.cmdline = serial_buffer;
     cmdline_ctxt.cmd_received = FALSE;
@@ -51,32 +62,23 @@ int cmdline_init(CMDLINE_CONTEXT *context)
         cmdline_ctxt.out = cmd_output;
     }
     cmd_displayPrompt();
-    __HAL_LOCK(&huart3);
-    // Enable interrupts on UART3
-    while (huart3.State != HAL_UART_STATE_READY);
-    huart3.ErrorCode = HAL_UART_ERROR_NONE;
 
-    /* Enable the UART Parity Error Interrupt */
-//	__HAL_UART_ENABLE_IT(&huart3, UART_IT_PE);
-
-	/* Enable the UART Error Interrupt: (Frame error, noise error, overrun error) */
-	__HAL_UART_ENABLE_IT(&huart3, UART_IT_ERR);
-
-    __HAL_UNLOCK(&huart3);
-
-    __HAL_UART_ENABLE_IT(&huart3, UART_IT_RXNE);
+    cmdline_ctxt.is_initialized = TRUE;
+#else
+    UNUSED(context);
+#endif
 
     return CMDLINE_PARSER_E_SUCCESS;
 }
 
 int cmdline_parse(void)
 {
-    const char  *params = NULL;
+    const char *params = NULL;
     CMD_HANDLER *hcmd = NULL;
-    char        command[MAX_COMMAND_LEN];
-    char        *cmd_end;
-    int         cmd_len = 0;
-    int         rv;
+    char command[MAX_COMMAND_LEN];
+    char *cmd_end;
+    int cmd_len = 0;
+    int rv;
 
     if (cmdline_ctxt.cmd_received == FALSE)
     {
@@ -86,11 +88,24 @@ int cmdline_parse(void)
     // Reset fields
     cmdline_ctxt.cmd_received = FALSE;
 
-    // Search SPACE character
+    // Checks whether this is a Bluetooth event
+    if (isBluetoothEvent(cmdline_ctxt.cmdline))
+    {
+//        static int line = 0;
+//
+//        ssd1306ClearScreen(MAIN_AREA);
+//        ssd1306Printf(0, line * 6, &Font_3x6, "%s", cmdline_ctxt.cmdline);
+//        ssd1306Refresh(MAIN_AREA);
+//        line++;
+//        line %= 10;
+        return CMDLINE_PARSER_E_SUCCESS;
+    }
+
+    // Search for SPACE character
     cmd_end = strchr(cmdline_ctxt.cmdline, ' ');
     if (cmd_end == NULL)
     {
-        // SPACE character not found. Search Carriage Return
+        // SPACE character not found. Search for Carriage Return
         cmd_end = strchr(cmdline_ctxt.cmdline, CMDLINE_CR);
         if (cmd_end == NULL)
         {
@@ -136,7 +151,7 @@ int cmdline_parse(void)
      ******************/
     rv = hcmd->pCmdCallback(params);
 
-out:
+    out:
     // Reset Command line buffer
     memset(cmdline_ctxt.cmdline, 0x00, cmdline_ctxt.cmd_len);
     // Display back prompt message
@@ -153,7 +168,6 @@ void cmdline_setCmdReceived(int status, int cmd_length)
     cmdline_ctxt.cmd_received = status;
 }
 
-
 /**
  * @brief   Checks if command exists
  *
@@ -163,10 +177,10 @@ void cmdline_setCmdReceived(int status, int cmd_length)
  */
 static CMD_HANDLER *cmdline_check_cmd(const char *cmd)
 {
-    CMD_HANDLER *hcmd = (CMD_HANDLER *)cmd_handlers;
+    CMD_HANDLER *hcmd = (CMD_HANDLER *) cmd_handlers;
 
     /* Walk through commands array */
-    while(hcmd->command != NULL)
+    while (hcmd->command != NULL)
     {
         if (strcmp(hcmd->command, cmd) == 0)
         {

@@ -4,20 +4,35 @@
  *  Created on: 3 avr. 2015
  *      Author: Colin
  */
+
+#include "config/basetypes.h"
+#include "config/config.h"
 #include "middleware/settings/settings.h"
 #include "peripherals/eeprom/24lc64.h"
-#include "config/basetypes.h"
 
 #include "gpio.h"
 
-int settingsInit (void)
+settings zhonxSettings;
+
+calibration_data *zhonxCalib_data = (calibration_data *)ADDR_FLASH_SECTOR_9;
+
+int settingsInit(void)
 {
 	zhonxSettings.calibration_enabled=false;
-	zhonxSettings.color_sensor_enabled=false;
+	zhonxSettings.nime_competition=false;
 	zhonxSettings.maze_end_coordinate.x=7;
 	zhonxSettings.maze_end_coordinate.y=7;
 	zhonxSettings.sleep_delay_s=300; // the robot will go sleep in zhonxSettings.sleep_delay_s S
-	return SETTING_MODULE_E_SUCCESS;
+	zhonxSettings.wall_know_cost = 1;
+	zhonxSettings.cell_cost = 5;
+	zhonxSettings.start_orientation = 0;
+
+    // Flash Initialization
+    // TODO: Check returned values of the following functions
+    flash_init();
+    flash_open(NULL /* XXX: Not used */, &zhonxSettings.h_flash);
+
+    return SETTING_MODULE_E_SUCCESS;
 }
 
 // Shutdown the robot
