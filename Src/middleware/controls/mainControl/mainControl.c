@@ -26,7 +26,6 @@
 #include "middleware/controls/lineFollowerControl/lineFollowControl.h"
 #include "middleware/controls/mainControl/mainControl.h"
 #include "middleware/controls/mainControl/positionControl.h"
-#include "middleware/controls/mainControl/positionControl.h"
 #include "middleware/controls/mainControl/speedControl.h"
 #include "middleware/controls/mainControl/transfertFunction.h"
 

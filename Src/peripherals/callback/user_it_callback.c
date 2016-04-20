@@ -25,6 +25,7 @@
 
 /* Middleware declarations */
 #include "middleware/powerManagement/powerManagement.h"
+#include "middleware/controls/mainControl/mainControl.h"
 
 /* Declarations for this module */
 #include "peripherals/callback/user_it_callback.h"
@@ -73,19 +74,26 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 #else
     static uint32_t cnt = 0;
     cnt++;
-    if (cnt % (HI_TIME_FREQ / TELEMETERS_TIME_FREQ) == 0)
-        telemeters_IT();
-    if (cnt % (HI_TIME_FREQ / LINESENSORS_TIME_FREQ) == 0)
+    if (htim == &htim7) //hight time freq
     {
-        if (lineSensors.active_state == TRUE)
-            lineSensors_IT();
-        if (line_follower.active_state == TRUE)
-            lineFollower_IT();
+        if (cnt % (HI_TIME_FREQ / TELEMETERS_TIME_FREQ) == 0)
+            telemeters_IT();
+        if (cnt % (HI_TIME_FREQ / LINESENSORS_TIME_FREQ) == 0)
+        {
+            if (lineSensors.active_state == TRUE)
+                lineSensors_IT();
+            if (line_follower.active_state == TRUE)
+                lineFollower_IT();
+        }
+        if (cnt % (HI_TIME_FREQ / CONTROL_TIME_FREQ) == 0)
+            mainControl_IT();
+        if (cnt % (HI_TIME_FREQ / LOW_TIME_FREQ) == 0)
+        {
+            tone_IT();
+            //sleep_mode_IT();
+            ledBlink_IT();
+        }
     }
-    if (cnt % (HI_TIME_FREQ / CONTROL_TIME_FREQ) == 0)
-        mainControl_IT();
-    if (cnt % (HI_TIME_FREQ / LOW_TIME_FREQ) == 0)
-        lowFreq_IT();
 #endif
     if (htim == &htim1)
     {

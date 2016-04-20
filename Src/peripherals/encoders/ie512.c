@@ -210,8 +210,6 @@ void encoderTest(void)
 {
     encodersInit();
     encodersReset();
-    telemetersInit();
-    telemetersStart();
 
     while (expanderJoyFiltered() != JOY_LEFT)
     {

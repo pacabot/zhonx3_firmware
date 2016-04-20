@@ -18,8 +18,6 @@
 #include <arm_math.h>
 #include <math.h>
 #include <middleware/controls/mainControl/mainControl.h>
-#include <middleware/controls/mainControl/positionControl.h>
-#include <middleware/controls/mainControl/positionControl.h>
 #include <middleware/controls/mainControl/speedControl.h>
 #include <middleware/controls/mainControl/transfertFunction.h>
 #include <string.h>
@@ -37,6 +35,8 @@
 
 /* Middleware declarations */
 #include "middleware/controls/pidController/pidController.h"
+
+#include <middleware/controls/mainControl/positionControl.h>
 
 #define MAX_POSITION_ERROR     40.00 //Degrees
 

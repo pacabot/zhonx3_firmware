@@ -247,33 +247,13 @@ void joystickTest(void)
 
 void expenderLedTest()
 {
-    while (expanderJoyState() != JOY_LEFT)
-    {
-        //		expanderLedState(1,1);
-        //		HAL_Delay(250);
-        //		expanderLedState(2,1);
-        //		HAL_Delay(250);
-        //		expanderLedState(3,1);
-        //		HAL_Delay(250);
-        //		expanderLedState(1,0);
-        //		HAL_Delay(250);
-        //		expanderLedState(2,0);
-        //		HAL_Delay(250);
-        //		expanderLedState(3,0);
-        //		HAL_Delay(250);
-
         expanderSetLeds(0b100);
         HAL_Delay(250);
         expanderSetLeds(0b110);
         HAL_Delay(250);
         expanderSetLeds(0b111);
         HAL_Delay(250);
-        expanderSetLeds(0b110);
-        HAL_Delay(250);
-        expanderSetLeds(0b100);
-        HAL_Delay(250);
-        expanderSetLeds(0b000);
-        HAL_Delay(250);
-    }
+
     antiBounceJoystick();
+    return;
 }

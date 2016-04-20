@@ -71,7 +71,11 @@ void timesBaseInit(void)
      ----------------------------------------------------------------------- */
 
     /* Compute the prescaler value to have TIM7 counter clock equal to 1 KHz */
+#ifdef DEDICATED_TIMER
+    uwPrescalerValue = (uint32_t) ((SystemCoreClock / 2) / (CONTROL_TIME_FREQ * 2));
+#else
     uwPrescalerValue = (uint32_t) ((SystemCoreClock / 2) / (HI_TIME_FREQ * 2));
+#endif
     htim7.Instance = TIM7;
     htim7.Init.Prescaler = uwPrescalerValue;
     htim7.Init.CounterMode = TIM_COUNTERMODE_UP;
@@ -87,6 +91,7 @@ void timesBaseInit(void)
 
     uwPrescalerValue = (uint32_t) ((SystemCoreClock / 2) / (LOW_TIME_FREQ * 100));
 
+#ifdef DEDICATED_TIMER
     htim6.Instance = TIM6;
     htim6.Init.Prescaler = uwPrescalerValue;
     htim6.Init.CounterMode = TIM_COUNTERMODE_UP;
@@ -155,6 +160,7 @@ void timesBaseInit(void)
     HAL_TIMEx_MasterConfigSynchronization(&htim2, &sMasterConfig);
 
     HAL_TIM_Base_Start_IT(&htim2);
+#endif
 
     /*## Configure the TIM peripheral for ADC1 regular trigger ####################*/
     /* -----------------------------------------------------------------------

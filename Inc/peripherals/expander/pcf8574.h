@@ -44,5 +44,6 @@ void joystickTest(void);
 void antiBounceJoystick(void);
 char antiBounceJoystick2(char joystick);
 char expanderJoyFiltered(void);
+void expenderLedTest(void);
 
 #endif
