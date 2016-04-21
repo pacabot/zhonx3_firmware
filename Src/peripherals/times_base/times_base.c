@@ -28,6 +28,7 @@
 #include "peripherals/display/smallfonts.h"
 #include "peripherals/expander/pcf8574.h"
 #include "peripherals/tone/tone.h"
+#include "peripherals/callback/user_it_callback.h"
 
 /* Middleware declarations */
 #include "middleware/controls/pidController/pidController.h"
@@ -89,9 +90,9 @@ void timesBaseInit(void)
 
     HAL_TIM_Base_Start_IT(&htim7);
 
+#ifdef DEDICATED_TIMER
     uwPrescalerValue = (uint32_t) ((SystemCoreClock / 2) / (LOW_TIME_FREQ * 100));
 
-#ifdef DEDICATED_TIMER
     htim6.Instance = TIM6;
     htim6.Init.Prescaler = uwPrescalerValue;
     htim6.Init.CounterMode = TIM_COUNTERMODE_UP;

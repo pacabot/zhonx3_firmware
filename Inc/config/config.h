@@ -17,7 +17,7 @@
 #define HI_TIME_FREQ			16000 	    //use for pids inner loop
 #define LOW_TIME_FREQ           100
 #define CONTROL_TIME_FREQ       1000         //use for pids inner loop
-#define TELEMETERS_TIME_FREQ	1600 * 10  		//each telemeter use 1/10 of TELEMETERS_TIME_FREQ
+#define TELEMETERS_TIME_FREQ	(1600 * 10)  	    //each telemeter use 1/10 of TELEMETERS_TIME_FREQ
 #define GYRO_TIME_FREQ			4000         //for adc injected freq
 #define LINESENSORS_TIME_FREQ	1000
 #define MULTIMMETER_TIME_FREQ	0.1f
@@ -124,16 +124,16 @@
 /******** you can see also Inc/application/solverMaze.h for more properties ***********/
 /**************************************************************************************/
 #define WALL_THICKNESS			12.00
-#define HALF_WALL_THICKNESS		WALL_THICKNESS / 2.00
+#define HALF_WALL_THICKNESS		(WALL_THICKNESS / 2.00)
 #define CELL_LENGTH				179.00
-#define HALF_CELL_LENGTH		CELL_LENGTH / 2.00
+#define HALF_CELL_LENGTH		(CELL_LENGTH / 2.00)
 #define MAZE_SIZE				17
 
 /**************************************************************************************/
 /***************                  Moves Constants                  ********************/
 /**************************************************************************************/
 #define OFFSET_DIST             20.00
-#define MAIN_DIST               CELL_LENGTH - (OFFSET_DIST * 2)
+#define MAIN_DIST               (CELL_LENGTH - (OFFSET_DIST * 2))
 
 /**************************************************************************************/
 /***************                 Physical Constants                ********************/

@@ -527,17 +527,28 @@ void movesTest()
 
     //test Uturn
     //moveStartCell(Vmax, Vmax);
-    moveUTurn(Vrotate, Vmax, Vmax);
-    return;
+    //moveUTurn(Vrotate, Vmax, Vmax);
+    //return;
 
+    double abs_encoders = encoderGetAbsDist(ENCODER_L) + encoderGetAbsDist(ENCODER_R);
     //maze
-    moveStartCell(Vmax, Vmax);
+//    moveStartCell(Vmax, Vmax);
     moveCell(1, Vmax, Vmin);
-    moveRotateCW90(Vrotate, Vrotate);
-    moveCell(2, Vmax, Vmin);
-    moveRotateCW90(Vrotate, Vrotate);
-    moveRotateCCW90(Vrotate, Vrotate);
-    moveRotateCCW90(Vrotate, Vrotate);
+//    moveRotateCW90(Vrotate, Vrotate);
+//    moveCell(2, Vmax, Vmin);
+//    moveRotateCW90(Vrotate, Vrotate);
+//    moveRotateCCW90(Vrotate, Vrotate);
+//    moveRotateCCW90(Vrotate, Vrotate);
+
+    abs_encoders = (encoderGetAbsDist(ENCODER_L) + encoderGetAbsDist(ENCODER_R)) - abs_encoders;
+
+    ssd1306ClearScreen(MAIN_AREA);
+    ssd1306PrintIntAtLine(0, 1, "abs  dist =  ", (int)abs_encoders / 2, &Font_5x8);
+    ssd1306PrintIntAtLine(0, 1, "reel dist =  ", 239 + 179 + 109 + 179 + 179 + 109 + 109 + 109, &Font_5x8);
+    ssd1306Refresh();
+
+    while(1);
+
     moveCell(2, Vmax, Vmin);
     moveRotateCW90(Vrotate, Vrotate);
     moveCell(3, Vmax, Vmin);
