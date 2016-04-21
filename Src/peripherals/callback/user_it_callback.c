@@ -76,24 +76,22 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     if (htim == &htim7) //hight time freq
     {
         cnt++;
-        if (cnt % (HI_TIME_FREQ / CONTROL_TIME_FREQ) == 0)
+        if (cnt % (int)(HI_TIME_FREQ / CONTROL_TIME_FREQ) == 0)
         {
             mainControl_IT();
         }
-        if (cnt % ((uint32_t)HI_TIME_FREQ / (uint32_t)TELEMETERS_TIME_FREQ) == 0)
+        if (cnt % (int)(HI_TIME_FREQ / TELEMETERS_TIME_FREQ) == 0)
         {
- //           telemeters_IT();
-            static int i = 0;
-            i++;
+           telemeters_IT();
         }
-        if (cnt % (HI_TIME_FREQ / LINESENSORS_TIME_FREQ) == 0)
+        if (cnt % (int)(HI_TIME_FREQ / LINESENSORS_TIME_FREQ) == 0)
         {
             if (lineSensors.active_state == TRUE)
                 lineSensors_IT();
             if (line_follower.active_state == TRUE)
                 lineFollower_IT();
         }
-        if (cnt % (HI_TIME_FREQ / LOW_TIME_FREQ) == 0)
+        if (cnt % (int)(HI_TIME_FREQ / LOW_TIME_FREQ) == 0)
         {
             tone_IT();
             //sleep_mode_IT();

@@ -521,9 +521,9 @@ void movesTest()
     HAL_Delay(2000);
 
     int Vmin, Vmax, Vrotate;
-    Vmin = 300;
-    Vmax = 400;
-    Vrotate = 300;
+    Vmin = 100;
+    Vmax = 100;
+    Vrotate = 100;
 
     //test Uturn
     //moveStartCell(Vmax, Vmax);
@@ -539,12 +539,12 @@ void movesTest()
 //    moveRotateCW90(Vrotate, Vrotate);
 //    moveRotateCCW90(Vrotate, Vrotate);
 //    moveRotateCCW90(Vrotate, Vrotate);
-
+    while (hasMoveEnded() != TRUE);
     abs_encoders = (encoderGetAbsDist(ENCODER_L) + encoderGetAbsDist(ENCODER_R)) - abs_encoders;
 
     ssd1306ClearScreen(MAIN_AREA);
     ssd1306PrintIntAtLine(0, 1, "abs  dist =  ", (int)abs_encoders / 2, &Font_5x8);
-    ssd1306PrintIntAtLine(0, 1, "reel dist =  ", 239 + 179 + 109 + 179 + 179 + 109 + 109 + 109, &Font_5x8);
+    ssd1306PrintIntAtLine(0, 2, "reel dist =  ", 239 + 179 + 109 + 179 + 179 + 109 + 109 + 109, &Font_5x8);
     ssd1306Refresh();
 
     while(1);
