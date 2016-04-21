@@ -101,12 +101,12 @@
 //#define DARK
 #define MEDDLE
 
-#if defined MEDDLE && defined DARK
-#error you must define only one robot
-#endif
-#if (!defined MEDDLE) && (!defined DARK)
-#error  you must define one robot
-#endif
+//#if defined MEDDLE && defined DARK
+//#error you must define only one robot
+//#endif
+//#if (!defined MEDDLE) && (!defined DARK)
+//#error  you must define one robot
+//#endif
 
 /**************************************************************************************/
 /***************                  Robot Dimensions                 ********************/
