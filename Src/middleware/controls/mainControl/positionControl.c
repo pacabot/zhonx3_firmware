@@ -265,7 +265,7 @@ double positionProfileCompute(double angle, double loop_time, double max_turn_sp
     }
     if (lround(loop_time) == 0)
     {
-        loop_time = (angle / max_turn_speed) * HI_TIME_FREQ;
+        loop_time = (angle / max_turn_speed) * CONTROL_TIME_FREQ;
     }
 
     position_params.nb_loop = (int) loop_time;

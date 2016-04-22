@@ -187,7 +187,7 @@ int speedControlLoop(void)
 int speedCompute(void)
 {
     speed_control.gap_distance_per_loop = speed_control.current_distance - speed_control.old_distance;//delta distance per loop
-    speed_control.current_speed = (speed_control.gap_distance_per_loop * HI_TIME_FREQ);			//actual speed (mm/s)
+    speed_control.current_speed = (speed_control.gap_distance_per_loop * CONTROL_TIME_FREQ);			//actual speed (mm/s)
 
     return SPEED_CONTROL_E_SUCCESS;
 }
@@ -288,10 +288,10 @@ double speedProfileCompute(double distance, double max_speed, double end_speed, 
             * ((speed_params.end_speed - speed_params.max_speed) * (speed_params.end_speed + speed_params.max_speed))
             / speed_params.decel;
 
-    speed_params.accel_dist_per_loop = speed_params.accel / pow(HI_TIME_FREQ, 2);
-    speed_params.decel_dist_per_loop = speed_params.decel / pow(HI_TIME_FREQ, 2);
+    speed_params.accel_dist_per_loop = speed_params.accel / pow(CONTROL_TIME_FREQ, 2);
+    speed_params.decel_dist_per_loop = speed_params.decel / pow(CONTROL_TIME_FREQ, 2);
 
-    speed_control.speed_consign = (speed_params.initial_speed / HI_TIME_FREQ);
+    speed_control.speed_consign = (speed_params.initial_speed / CONTROL_TIME_FREQ);
     speed_control.current_distance_consign = 0.00;
     speed_control.end_control = 0;
 
@@ -307,10 +307,10 @@ double speedProfileCompute(double distance, double max_speed, double end_speed, 
 
     speed_params.nb_loop_accel = (((-1.00 * speed_params.initial_speed)
             + sqrt(pow(speed_params.initial_speed, 2) + 2.00 * speed_params.accel * speed_params.accel_dist))
-            / speed_params.accel) * HI_TIME_FREQ;
+            / speed_params.accel) * CONTROL_TIME_FREQ;
     speed_params.nb_loop_decel = (((speed_params.max_speed)
             - sqrt(pow(speed_params.max_speed, 2) - 2.00 * speed_params.decel * speed_params.decel_dist))
-            / speed_params.decel) * HI_TIME_FREQ;
+            / speed_params.decel) * CONTROL_TIME_FREQ;
 
     if ((speed_params.accel_dist + speed_params.decel_dist) > distance)
     {
@@ -322,13 +322,13 @@ double speedProfileCompute(double distance, double max_speed, double end_speed, 
         speed_params.maintain_dist = distance - (speed_params.accel_dist + speed_params.decel_dist);
         speed_params.nb_loop_maint = ((speed_params.maintain_dist
                 / (speed_params.initial_speed
-                        + (speed_params.accel * ((double) speed_params.nb_loop_accel / HI_TIME_FREQ)))) * //compute Speed
-                HI_TIME_FREQ);
+                        + (speed_params.accel * ((double) speed_params.nb_loop_accel / CONTROL_TIME_FREQ)))) * //compute Speed
+                CONTROL_TIME_FREQ);
     }
 
     speed_params.initial_speed = speed_params.initial_speed
-            + (((speed_params.nb_loop_accel / HI_TIME_FREQ) * speed_params.accel)
-                    - ((speed_params.nb_loop_decel / HI_TIME_FREQ) * speed_params.decel));
+            + (((speed_params.nb_loop_accel / CONTROL_TIME_FREQ) * speed_params.accel)
+                    - ((speed_params.nb_loop_decel / CONTROL_TIME_FREQ) * speed_params.decel));
 
     speed_params.distance_consign = distance;
 
