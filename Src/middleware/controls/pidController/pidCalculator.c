@@ -121,6 +121,14 @@ void accelMotor_GetStepResponse(void)
     bluetoothSend((uint8_t*) buff, i * 2);
 }
 
+void speedControl_GetCriticalPoint(void)
+{
+}
+
+void positionControl_GetCriticalPoint(void)
+{
+}
+
 void pidCalculator(void)
 {
     accelMotor_GetStepResponse();

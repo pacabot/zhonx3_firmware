@@ -35,7 +35,6 @@ extern TIM_HandleTypeDef htim1;
 extern TIM_HandleTypeDef htim2;
 extern TIM_HandleTypeDef htim3;
 extern TIM_HandleTypeDef htim4;
-extern TIM_HandleTypeDef htim5;
 extern TIM_HandleTypeDef htim6;
 extern TIM_HandleTypeDef htim7;
 
@@ -71,11 +70,19 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
         cnt++;
         if (cnt % (int)(HI_TIME_FREQ / TELEMETERS_TIME_FREQ) == 0)
         {
-           telemeters_IT();
+            telemeters_IT();
         }
         if (cnt % (int)(HI_TIME_FREQ / CONTROL_TIME_FREQ) == 0)
         {
             mainControl_IT();
+        }
+        if (cnt % (int)(HI_TIME_FREQ / LINESENSORS_TIME_FREQ) == 0)
+        {
+            lineSensors_IT();
+        }
+        if (cnt % (int)(HI_TIME_FREQ / LINE_FOLLOWER_TIME_FREQ) == 0)
+        {
+            lineFollower_IT();
         }
         if (cnt % (int)(HI_TIME_FREQ / LOW_TIME_FREQ) == 0)
         {
@@ -85,13 +92,6 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
         }
     }
 #endif
-    if (htim == &htim5)
-    {
-        if (lineSensors.active_state == TRUE)
-            lineSensors_IT();
-        if (line_follower.active_state == TRUE)
-            lineFollower_IT();
-    }
     if (htim == &htim1)
     {
         encoderLeft_IT();

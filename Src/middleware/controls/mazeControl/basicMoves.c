@@ -521,9 +521,9 @@ void movesTest()
     HAL_Delay(2000);
 
     int Vmin, Vmax, Vrotate;
-    Vmin = 500;
-    Vmax = 500;
-    Vrotate = 500;
+    Vmin = 600;
+    Vmax = 600;
+    Vrotate = 600;
 
     //test Uturn
     //moveStartCell(Vmax, Vmax);

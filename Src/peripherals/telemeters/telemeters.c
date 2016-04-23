@@ -40,7 +40,7 @@
 
 #include "middleware/wall_sensors/wall_sensors.h"
 
-#define TX_ON		1
+#define TX_ON	1
 #define TX_OFF	2
 
 //#define MIN_TELEMETERS_SPEED 20
@@ -274,7 +274,7 @@ void telemetersAdc3Start(void)
 void telemeters_IT(void)
 {
     if (telemeters.active_state == FALSE)
-        goto end;
+        return;
 
     telemeters.selector++;
 

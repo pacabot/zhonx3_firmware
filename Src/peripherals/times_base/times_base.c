@@ -115,7 +115,8 @@ void timesBaseInit(void)
     sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
     HAL_TIMEx_MasterConfigSynchronization(&htim5, &sMasterConfig);
 
-    HAL_TIM_Base_Start_IT(&htim5);
+//    HAL_TIM_Base_Start_IT(&htim5);
+    HAL_TIM_Base_Start(&htim5);
 
 #ifdef DEDICATED_TIMER
     uwPrescalerValue = (uint32_t) ((SystemCoreClock / 2) / (LOW_TIME_FREQ * 100));
