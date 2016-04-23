@@ -14,14 +14,14 @@
 /**************************************************************************************/
 /***************                 Times definitions                 ********************/
 /**************************************************************************************/
-#define HI_TIME_FREQ			16000 	    //use for pids inner loop
-#define LOW_TIME_FREQ           100
-#define CONTROL_TIME_FREQ       1000         //use for pids inner loop
-#define TELEMETERS_TIME_FREQ	(1600 * 10)  	    //each telemeter use 1/10 of TELEMETERS_TIME_FREQ
-#define GYRO_TIME_FREQ			4000         //for adc injected freq
-#define LINESENSORS_TIME_FREQ	1000
-#define MULTIMMETER_TIME_FREQ	0.1f
-#define MOTORS_FREQ				20000	        //motor pwm freq
+#define HI_TIME_FREQ			16000.00 	        //use for pids inner loop
+#define LOW_TIME_FREQ           100.00
+#define CONTROL_TIME_FREQ       1000.00             //use for pids inner loop
+#define TELEMETERS_TIME_FREQ	(1600.00 * 10.00)   //each telemeter use 1/10 of TELEMETERS_TIME_FREQ
+#define GYRO_TIME_FREQ			4000.00             //for adc injected freq
+#define LINESENSORS_TIME_FREQ	1000.00
+#define MULTIMMETER_TIME_FREQ	0.10
+#define MOTORS_FREQ				20000.00	        //motor pwm freq
 
 /**************************************************************************************/
 /***************                 Gyro definitions                  ********************/
