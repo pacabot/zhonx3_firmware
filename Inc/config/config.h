@@ -98,21 +98,10 @@
 #define MM_PER_WHEEL_REV		((M_PI) * (WHEEL_DIAMETER))		//Number of millimeters per wheel revolution
 #define STEPS_PER_MM			((STEPS_PER_WHEEL_REV) / (MM_PER_WHEEL_REV))	//Number of steps per millimeter
 
-//#define DARK
-#define MEDDLE
-
-//#if defined MEDDLE && defined DARK
-//#error you must define only one robot
-//#endif
-//#if (!defined MEDDLE) && (!defined DARK)
-//#error  you must define one robot
-//#endif
-
 /**************************************************************************************/
 /***************                  Robot Dimensions                 ********************/
 /******** you can see also Inc/application/solverMaze.h for more properties ***********/
 /**************************************************************************************/
-#define Z3_CENTER_BACK_DIST	    34.00
 #define Z3_WIDTH				72.50
 #define Z3_LENGHT				98.40
 #define Z3_HEIGHT				23.70
