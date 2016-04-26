@@ -18,8 +18,6 @@
 #include <arm_math.h>
 #include <math.h>
 #include <middleware/controls/mainControl/mainControl.h>
-#include <middleware/controls/mainControl/positionControl.h>
-#include <middleware/controls/mainControl/positionControl.h>
 #include <middleware/controls/mainControl/speedControl.h>
 #include <middleware/controls/mainControl/transfertFunction.h>
 #include <string.h>
@@ -37,6 +35,8 @@
 
 /* Middleware declarations */
 #include "middleware/controls/pidController/pidController.h"
+
+#include <middleware/controls/mainControl/positionControl.h>
 
 #define MAX_POSITION_ERROR     40.00 //Degrees
 
@@ -61,7 +61,6 @@ typedef struct
     char end_control;
     enum enablePositionCtrl enablePositionCtrl;
     enum positionType positionType;
-
     pid_control_struct position_pid;
 } position_control_struct;
 
@@ -76,7 +75,7 @@ typedef struct
 /* global variables */
 static position_control_struct position_control;
 static position_params_struct position_params;
-static arm_pid_instance_f32 encoder_or_gyro_pid_instance;
+//static arm_pid_instance_f32 encoder_or_gyro_pid_instance;
 
 int positionControlInit(void)
 {
@@ -84,11 +83,11 @@ int positionControlInit(void)
     memset(&position_params, 0, sizeof(position_params_struct));
     positionProfileCompute(0, 0, 0);
 
-    encoder_or_gyro_pid_instance.Kp = 90;
-    encoder_or_gyro_pid_instance.Ki = 0;
-    encoder_or_gyro_pid_instance.Kd = 2000;
+//    encoder_or_gyro_pid_instance.Kp = 90;
+//    encoder_or_gyro_pid_instance.Ki = 0.030 / CONTROL_TIME_FREQ;
+//    encoder_or_gyro_pid_instance.Kd = 0.7 * CONTROL_TIME_FREQ;
 
-    position_control.position_pid.instance = &encoder_or_gyro_pid_instance;
+    position_control.position_pid.instance = &(zhonxCalib_data->pid_gyro);
 
     position_control.positionType = ENCODERS;
     position_params.sign = 1;
@@ -265,7 +264,7 @@ double positionProfileCompute(double angle, double loop_time, double max_turn_sp
     }
     if (lround(loop_time) == 0)
     {
-        loop_time = (angle / max_turn_speed) * HI_TIME_FREQ;
+        loop_time = (angle / max_turn_speed) * CONTROL_TIME_FREQ;
     }
 
     position_params.nb_loop = (int) loop_time;

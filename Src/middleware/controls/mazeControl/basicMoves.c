@@ -521,14 +521,35 @@ void movesTest()
     HAL_Delay(2000);
 
     int Vmin, Vmax, Vrotate;
-    Vmin = 300;
-    Vmax = 400;
-    Vrotate = 300;
+    Vmin = 600;
+    Vmax = 600;
+    Vrotate = 600;
 
     //test Uturn
     //moveStartCell(Vmax, Vmax);
-    moveUTurn(Vrotate, Vmax, Vmax);
-    return;
+    //moveUTurn(Vrotate, Vmax, Vmax);
+    //return;
+
+    double abs_encoders = encoderGetAbsDist(ENCODER_L) + encoderGetAbsDist(ENCODER_R);
+    //test absolute vs relative distance
+    moveStartCell(Vmax, Vmax);
+    moveCell(1, Vmax, Vmin);
+    moveRotateCW90(Vrotate, Vrotate);
+    moveCell(2, Vmax, Vmin);
+    moveRotateCW90(Vrotate, Vrotate);
+    moveRotateCCW90(Vrotate, Vrotate);
+    moveRotateCCW90(Vrotate, Vrotate);
+    while (hasMoveEnded() != TRUE);
+    abs_encoders = (encoderGetAbsDist(ENCODER_L) + encoderGetAbsDist(ENCODER_R)) - abs_encoders;
+
+    ssd1306ClearScreen(MAIN_AREA);
+    ssd1306PrintIntAtLine(0, 1, "abs  dist =  ", (int)abs_encoders / 2, &Font_5x8);
+    ssd1306PrintIntAtLine(0, 2, "reel dist =  ", 239 + 179 + 129 + 179 + 179 + 129 + 129 + 129, &Font_5x8);
+    ssd1306Refresh();
+
+    telemetersStop();
+    motorsDriverSleep(ON);
+    while(1);
 
     //maze
     moveStartCell(Vmax, Vmax);
@@ -607,9 +628,12 @@ void rotateTest()
     telemetersStart();
 
     positionControlSetPositionType(GYRO);
-    mainControlSetFollowType(NO_FOLLOW);
+    mainControlSetFollowType(WALL_FOLLOW);
 
     HAL_Delay(2000);
+
+    move(0,0,0,0);
+    while(1);
 
     moveUTurn(100, 100, 100);
     return;

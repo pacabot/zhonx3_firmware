@@ -123,8 +123,7 @@ void bluetoothPrintf(const char *format, ...)
 void bluetoothWaitReady(void)
 {
     // Wait until UART becomes ready
-    while (HAL_UART_GetState(&huart3) != HAL_UART_STATE_READY)
-        ;
+    while (HAL_UART_GetState(&huart3) != HAL_UART_STATE_READY);
 }
 
 char *bluetoothCmd(const char *cmd)

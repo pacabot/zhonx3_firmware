@@ -16,6 +16,8 @@
 #define TIMESBASE_DRIVER_E_SUCCESS  0
 #define TIMESBASE_DRIVER_E_ERROR    MAKE_ERROR(TIMESBASE_DRIVER_MODULE_ID, 1)
 
+//#define DEDICATED_TIMER
+
 void timesBaseInit(void);
 void ledPowerBlink(unsigned int off_time, unsigned int on_time, unsigned int repeat);
 char timeOut(unsigned char second, int loop_nb);

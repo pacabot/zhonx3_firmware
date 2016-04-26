@@ -60,7 +60,6 @@ extern int wallSensorsCalibrationDiag(void);
 extern void testFlash(void);
 extern int setMeddle(void);
 extern int setDark(void);
-extern int pidCalculator(void);
 extern void telemetersGetCalibrationValues(void);
 extern uint32_t spyPostCalibration(void);
 extern void spyPostTest(void);
@@ -68,6 +67,8 @@ extern uint32_t spyPostReadCalibration(void);
 extern void repositionFrontDistCal(void);
 extern void repositionFrontTest(void);
 extern void adxrs620Cal(void);
+extern void pidGyro_GetCriticalPoint(void);
+extern void pidTelemeters_GetCriticalPoint(void);
 extern int test_move_zhonx ();
 extern int _Factor;
 extern int _KP;
@@ -151,7 +152,8 @@ const menuItem pidCal=
 {
         "PID",          //9 characters max
         {
-                { "PID calculator",     'f', (void*)pidCalculator },
+                { "Gyro Kp critic", 'f', (void*)pidGyro_GetCriticalPoint },
+                { "Telemeter Kp critic", 'f', (void*)pidTelemeters_GetCriticalPoint },
         }
 };
 

@@ -25,7 +25,6 @@
 #include "middleware/controls/lineFollowerControl/lineFollowControl.h"
 #include "middleware/controls/mainControl/mainControl.h"
 #include "middleware/controls/mainControl/positionControl.h"
-#include "middleware/controls/mainControl/positionControl.h"
 #include "middleware/controls/mainControl/speedControl.h"
 #include "middleware/controls/mainControl/transfertFunction.h"
 
@@ -81,21 +80,21 @@ void lineSensorSendBluetooth(void)
 	move(40, 0, 100, 0);
 	while(hasMoveEnded() != TRUE);
 	move(-80, 0, 25, 0);
-	max_Floor.left=lineSensors.left.adc_value;
-	max_Floor.front=lineSensors.front.adc_value;
-	max_Floor.right=lineSensors.right.adc_value;
-	max_Floor.leftExt=lineSensors.left_ext.adc_value;
-	max_Floor.rightExt=lineSensors.right_ext.adc_value;
+	max_Floor.left = getLineSensorAdc(LINESENSOR_L);
+	max_Floor.front = getLineSensorAdc(LINESENSOR_F);
+	max_Floor.right = getLineSensorAdc(LINESENSOR_R);
+	max_Floor.leftExt = getLineSensorAdc(LINESENSOR_EXT_L);
+	max_Floor.rightExt = getLineSensorAdc(LINESENSOR_EXT_R);
 	memcpy(&min_Floor, &max_Floor, sizeof(ground_sensors_struct) );
 	memcpy(&current, &min_Floor, sizeof(ground_sensors_struct) );
 
 	while(hasMoveEnded() != TRUE)
 	{
-		current.left=lineSensors.left.adc_value;
-		current.front=lineSensors.front.adc_value;
-		current.right=lineSensors.right.adc_value;
-		current.leftExt=lineSensors.left_ext.adc_value;
-		current.rightExt=lineSensors.right_ext.adc_value;
+		current.left = getLineSensorAdc(LINESENSOR_L);
+		current.front = getLineSensorAdc(LINESENSOR_F);
+		current.right = getLineSensorAdc(LINESENSOR_R);
+		current.leftExt = getLineSensorAdc(LINESENSOR_EXT_L);
+		current.rightExt = getLineSensorAdc(LINESENSOR_EXT_R);
 
 		if (current.left < min_Floor.left) min_Floor.left = current.left;
 		if (current.front < min_Floor.front) min_Floor.front = current.front;
@@ -163,22 +162,22 @@ void lineSensorsCalibration(void)
 	// -------------------------------------------------------------
 	// Init line Sensor
 
-	max_Floor.left=lineSensors.left.adc_value;
-	max_Floor.front=lineSensors.front.adc_value;
-	max_Floor.right=lineSensors.right.adc_value;
-	max_Floor.leftExt=lineSensors.left_ext.adc_value;
-	max_Floor.rightExt=lineSensors.right_ext.adc_value;
+	max_Floor.left=getLineSensorAdc(LINESENSOR_L);
+	max_Floor.front=getLineSensorAdc(LINESENSOR_F);
+	max_Floor.right=getLineSensorAdc(LINESENSOR_R);
+	max_Floor.leftExt=getLineSensorAdc(LINESENSOR_EXT_L);
+	max_Floor.rightExt=getLineSensorAdc(LINESENSOR_EXT_R);
 	memcpy(&min_Floor, &max_Floor, sizeof(ground_sensors_struct) );
 	memcpy(&current, &min_Floor, sizeof(ground_sensors_struct) );
 
 	while(hasMoveEnded() != TRUE)
 	{
 
-		current.left=lineSensors.left.adc_value;
-		current.front=lineSensors.front.adc_value;
-		current.right=lineSensors.right.adc_value;
-		current.leftExt=lineSensors.left_ext.adc_value;
-		current.rightExt=lineSensors.right_ext.adc_value;
+		current.left=getLineSensorAdc(LINESENSOR_L);
+		current.front=getLineSensorAdc(LINESENSOR_F);
+		current.right=getLineSensorAdc(LINESENSOR_R);
+		current.leftExt=getLineSensorAdc(LINESENSOR_EXT_L);
+		current.rightExt=getLineSensorAdc(LINESENSOR_EXT_R);
 
 		if (current.left < min_Floor.left) min_Floor.left = current.left;
 		if (current.front < min_Floor.front) min_Floor.front = current.front;
@@ -202,11 +201,11 @@ void lineSensorsCalibration(void)
 	while(hasMoveEnded() != TRUE)
 	{  //=($A$1*A3+$B$1*B3+$C$1*C3+$D$1*D3+$E$1*E3)/(A3+B3+C3+D3+E3)
 
-		current.left=lineSensors.left.adc_value;
-		current.front=lineSensors.front.adc_value;
-		current.right=lineSensors.right.adc_value;
-		current.leftExt=lineSensors.left_ext.adc_value;
-		current.rightExt=lineSensors.right_ext.adc_value;
+		current.left=getLineSensorAdc(LINESENSOR_L);
+		current.front=getLineSensorAdc(LINESENSOR_F);
+		current.right=getLineSensorAdc(LINESENSOR_R);
+		current.leftExt=getLineSensorAdc(LINESENSOR_EXT_L);
+		current.rightExt=getLineSensorAdc(LINESENSOR_EXT_R);
 
 		A=(double)(current.leftExt-min_Floor.leftExt)/max_Floor.leftExt*1000;
 		B=(double)(current.left-min_Floor.left)/max_Floor.left*1000;
@@ -233,11 +232,11 @@ void lineSensorsCalibration(void)
 
 		joystick = expanderJoyFiltered();
 
-		current.left=lineSensors.left.adc_value;
-		current.front=lineSensors.front.adc_value;
-		current.right=lineSensors.right.adc_value;
-		current.leftExt=lineSensors.left_ext.adc_value;
-		current.rightExt=lineSensors.right_ext.adc_value;
+		current.left=getLineSensorAdc(LINESENSOR_L);
+		current.front=getLineSensorAdc(LINESENSOR_F);
+		current.right=getLineSensorAdc(LINESENSOR_R);
+		current.leftExt=getLineSensorAdc(LINESENSOR_EXT_L);
+		current.rightExt=getLineSensorAdc(LINESENSOR_EXT_R);
 
 		A=(double)(current.leftExt-min_Floor.leftExt)/max_Floor.leftExt*1000;
 		B=(double)(current.left-min_Floor.left)/max_Floor.left*1000;
@@ -378,17 +377,17 @@ void lineFollower(void)
 	while(expanderJoyFiltered()!=JOY_LEFT && foreward)
 	{
 
-		sensor.leftExt =1000*(lineSensors.left_ext.adc_value-min_Floor.leftExt)/max_Floor.leftExt;
-		sensor.left    =1000*(lineSensors.left.adc_value-min_Floor.left)/max_Floor.left;
-		sensor.front   =1000*(lineSensors.front.adc_value-min_Floor.front)/max_Floor.front;
-		sensor.right   =1000*(lineSensors.right.adc_value-min_Floor.right)/max_Floor.right;
-		sensor.rightExt=1000*(lineSensors.right_ext.adc_value-min_Floor.rightExt)/max_Floor.rightExt;
+		sensor.leftExt =1000*(getLineSensorAdc(LINESENSOR_EXT_L)-min_Floor.leftExt)/max_Floor.leftExt;
+		sensor.left    =1000*(getLineSensorAdc(LINESENSOR_L)-min_Floor.left)/max_Floor.left;
+		sensor.front   =1000*(getLineSensorAdc(LINESENSOR_F)-min_Floor.front)/max_Floor.front;
+		sensor.right   =1000*(getLineSensorAdc(LINESENSOR_R)-min_Floor.right)/max_Floor.right;
+		sensor.rightExt=1000*(getLineSensorAdc(LINESENSOR_EXT_R)-min_Floor.rightExt)/max_Floor.rightExt;
 /*
-		current.left=lineSensors.left.adc_value;
-		current.front=lineSensors.front.adc_value;
-		current.right=lineSensors.right.adc_value;
-		current.leftExt=lineSensors.left_ext.adc_value;
-		current.rightExt=lineSensors.right_ext.adc_value;
+		current.left=getLineSensorAdc(LINESENSOR_L);
+		current.front=getLineSensorAdc(LINESENSOR_F);
+		current.right=getLineSensorAdc(LINESENSOR_R);
+		current.leftExt=getLineSensorAdc(LINESENSOR_EXT_L);
+		current.rightExt=getLineSensorAdc(LINESENSOR_EXT_R);
 
 		A=(double)(current.leftExt-min_Floor.leftExt)/max_Floor.leftExt*1000;
 		B=(double)(current.left-min_Floor.left)/max_Floor.left*1000;
@@ -466,7 +465,7 @@ ii++;
 		// -----------------------------------------------------------------------
 		// Condition to stop if right priority
 		// -----------------------------------------------------------------------
-		//		if (((double)lineSensors.left_ext.adc_value*1.2) > max_Floor.leftExt )
+		//		if (((double)getLineSensorAdc(LINESENSOR_EXT_L)*1.2) > max_Floor.leftExt )
 		//		{
 		//			move(0, 30, 30, 0);
 		//			tone(c, 500);
@@ -484,11 +483,11 @@ ii++;
 int EstAGauche()
 {
 	ground_sensors_struct current;
-	current.left=lineSensors.left.adc_value;
-	current.front=lineSensors.front.adc_value;
-	current.right=lineSensors.right.adc_value;
-	current.leftExt=lineSensors.left_ext.adc_value;
-	current.rightExt=lineSensors.right_ext.adc_value;
+	current.left=getLineSensorAdc(LINESENSOR_L);
+	current.front=getLineSensorAdc(LINESENSOR_F);
+	current.right=getLineSensorAdc(LINESENSOR_R);
+	current.leftExt=getLineSensorAdc(LINESENSOR_EXT_L);
+	current.rightExt=getLineSensorAdc(LINESENSOR_EXT_R);
 	if ( (current.left>current.right)||
 			(current.leftExt>max_Floor.leftExt/2))
 		return 1;
@@ -505,16 +504,16 @@ void controlLoop(void)
 	double cdg=0;
 	double cdg2=0.0;
 
-	sensor.leftExt =(unsigned int)1000*(lineSensors.left_ext.adc_value-min_Floor.leftExt)/max_Floor.leftExt;
-	sensor.left    =(unsigned int)1000*(lineSensors.left.adc_value-min_Floor.left)/max_Floor.left;
-	sensor.front   =(unsigned int)1000*(lineSensors.front.adc_value-min_Floor.front)/max_Floor.front;
-	sensor.right   =(unsigned int)1000*(lineSensors.right.adc_value-min_Floor.right)/max_Floor.right;
-	sensor.rightExt=(unsigned int)1000*(lineSensors.right_ext.adc_value-min_Floor.rightExt)/max_Floor.rightExt;
+	sensor.leftExt =(unsigned int)1000*(getLineSensorAdc(LINESENSOR_EXT_L)-min_Floor.leftExt)/max_Floor.leftExt;
+	sensor.left    =(unsigned int)1000*(getLineSensorAdc(LINESENSOR_L)-min_Floor.left)/max_Floor.left;
+	sensor.front   =(unsigned int)1000*(getLineSensorAdc(LINESENSOR_F)-min_Floor.front)/max_Floor.front;
+	sensor.right   =(unsigned int)1000*(getLineSensorAdc(LINESENSOR_R)-min_Floor.right)/max_Floor.right;
+	sensor.rightExt=(unsigned int)1000*(getLineSensorAdc(LINESENSOR_EXT_R)-min_Floor.rightExt)/max_Floor.rightExt;
 /*
-	current.front=lineSensors.front.adc_value;
-	current.right=lineSensors.right.adc_value;
-	current.leftExt=lineSensors.left_ext.adc_value;
-	current.rightExt=lineSensors.right_ext.adc_value;
+	current.front=getLineSensorAdc(LINESENSOR_F);
+	current.right=getLineSensorAdc(LINESENSOR_R);
+	current.leftExt=getLineSensorAdc(LINESENSOR_EXT_L);
+	current.rightExt=getLineSensorAdc(LINESENSOR_EXT_R);
 
 	A=(double)(current.leftExt-min_Floor.leftExt)/max_Floor.leftExt*1000;
 	B=(double)(current.left-min_Floor.left)/max_Floor.left*1000;
@@ -541,6 +540,8 @@ void controlLoop(void)
 }
 void lineFollower_IT(void)
 {
+    if (line_follower.active_state == FALSE)
+        return;
 	// Rapide
 	//	static int vitesse=0;
 
@@ -575,11 +576,11 @@ void lineFollower_IT(void)
 	// -----------------------------------------------------------------------
 	// Condition to stop zhonx if no line
 	// -----------------------------------------------------------------------
-	//if ((double)lineSensors.front.adc_value < min_Floor.front *1.2 &&
-		//	(double)lineSensors.left.adc_value < min_Floor.left *1.2 &&
-		//	(double)lineSensors.right.adc_value < min_Floor.right *1.2 &&
-		//	(double)lineSensors.left_ext.adc_value < min_Floor.leftExt *1.2 &&
-		//	(double)lineSensors.right_ext.adc_value < min_Floor.rightExt *1.2)
+	//if ((double)getLineSensorAdc(LINESENSOR_F) < min_Floor.front *1.2 &&
+		//	(double)getLineSensorAdc(LINESENSOR_L) < min_Floor.left *1.2 &&
+		//	(double)getLineSensorAdc(LINESENSOR_R) < min_Floor.right *1.2 &&
+		//	(double)getLineSensorAdc(LINESENSOR_EXT_L) < min_Floor.leftExt *1.2 &&
+		//	(double)getLineSensorAdc(LINESENSOR_EXT_R) < min_Floor.rightExt *1.2)
 	//{
 	//	move(0, 150, 250, 0);
 	//}

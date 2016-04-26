@@ -60,16 +60,16 @@ void testWallsSensors();
 void testPostSensors();
 
 /* Exported functions for telemeter.c */
-void telemetersInit(void);
-void telemetersStart(void);
-void telemetersStop(void);
-double getTelemeterDist(enum telemeterName telemeter_name);
-int getTelemeterAvrg(enum telemeterName telemeter_name);
-double getTelemeterSpeed(enum telemeterName telemeter_name);
-void telemeters_IT(void);
-void telemeters_DMA_IT(void);
-void telemeters_ADC2_IT(void);
-void telemeters_ADC3_IT(void);
-void telemetersTest(void);
+void    telemetersInit(void);
+void    telemetersStart(void);
+void    telemetersStop(void);
+double  getTelemeterDist(enum telemeterName telemeter_name);
+int     getTelemeterAvrg(enum telemeterName telemeter_name);
+double  getTelemeterSpeed(enum telemeterName telemeter_name);
+void    telemeters_IT(void);
+void    telemeters_DMA_IT(void);
+void    telemeters_ADC2_IT(void);
+void    telemeters_ADC3_IT(void);
+void    telemetersTest(void);
 
 #endif //__TELEMETERS_H__

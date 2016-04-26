@@ -210,18 +210,16 @@ void encoderTest(void)
 {
     encodersInit();
     encodersReset();
-    telemetersInit();
-    telemetersStart();
 
     while (expanderJoyFiltered() != JOY_LEFT)
     {
         ssd1306ClearScreen(MAIN_AREA);
 
-        ssd1306PrintIntAtLine(0, 0, "L_DIST_REL =  ", (signed int) encoderGetDist(ENCODER_L), &Font_5x8);
-        ssd1306PrintIntAtLine(0, 1, "L_DIST_ABS =  ", (signed int) left_encoder.abs_dist, &Font_5x8);
+        ssd1306PrintIntAtLine(0, 0, "L_DIST_REL =  ", (signed int)encoderGetDist(ENCODER_L), &Font_5x8);
+        ssd1306PrintIntAtLine(0, 1, "L_DIST_ABS =  ", (signed int)encoderGetAbsDist(ENCODER_L), &Font_5x8);
 
         ssd1306PrintIntAtLine(0, 2, "R_DIST_REL =  ", (signed int) encoderGetDist(ENCODER_R), &Font_5x8);
-        ssd1306PrintIntAtLine(0, 3, "R_DIST_ABS =  ", (signed int) right_encoder.abs_dist, &Font_5x8);
+        ssd1306PrintIntAtLine(0, 3, "R_DIST_ABS =  ", (signed int)encoderGetAbsDist(ENCODER_R), &Font_5x8);
         ssd1306Refresh();
         HAL_Delay(10);
     }

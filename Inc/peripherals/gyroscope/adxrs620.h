@@ -28,7 +28,7 @@ void adxrs620_IT(void);
 void adxrs620_ADC_IT(void);
 double gyroGetAngle(void);
 void gyroResetAngle(void);
-void adxrs620Test(void);
 void adxrs620Cal(void);
+void adxrs620Test(void);
 
 #endif
