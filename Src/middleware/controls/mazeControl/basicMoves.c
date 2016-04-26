@@ -628,9 +628,12 @@ void rotateTest()
     telemetersStart();
 
     positionControlSetPositionType(GYRO);
-    mainControlSetFollowType(NO_FOLLOW);
+    mainControlSetFollowType(WALL_FOLLOW);
 
     HAL_Delay(2000);
+
+    move(0,0,0,0);
+    while(1);
 
     moveUTurn(100, 100, 100);
     return;

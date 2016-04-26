@@ -39,6 +39,9 @@
 /* Middleware declarations */
 #include "middleware/controls/pidController/pidController.h"
 
+/* declaration for this module */
+#include "middleware/controls/pidController/pidCalculator.h"
+
 /* Macros */
 
 /* Static functions */
@@ -121,12 +124,158 @@ void accelMotor_GetStepResponse(void)
     bluetoothSend((uint8_t*) buff, i * 2);
 }
 
-void speedControl_GetCriticalPoint(void)
+void pidEncoder_GetCriticalPoint(void)
 {
 }
-
-void positionControl_GetCriticalPoint(void)
+/*
+ * Kcr => critical proportional gain
+ * Tcr => time period
+ * ___________________________________________________________
+ * |     Control Type       |   K_p     |   K_i     |   K_d     |
+ * |------------------------+-----------+-----------+-----------|
+ * |           P            |   0.5Kcr  |     -     |     -     |
+ * |------------------------+-----------+-----------+-----------|
+ * |           PI           |   0.45Kcr |   Tcr/1.2 |     -     |
+ * |------------------------+-----------+-----------+-----------|
+ * |           PD           |   0.8Kcr  |     -     |   Tcr/8   |
+ * |------------------------+-----------+-----------+-----------|
+ * |      classic PID       |   0.60Kcr |   Tcr/2   |   Tcr/8   |
+ * |------------------------+-----------+-----------+-----------|
+ * | Pessen Integral Rule2  |   0.7Kcr  |   Tcr/2.5 |  03Tcr/20 |
+ * |------------------------+-----------+-----------+-----------|
+ * |     some overshoot     |   0.33Kcr |   Tcr/2   |   Tcr/3   |
+ * |------------------------+-----------+-----------+-----------|
+ * |     no overshoot       |   0.2Kcr  |   Tcr/2   |   Tcr/3   |
+ * --------------------------------------------------------------
+ */
+void pidGyro_GetCriticalPoint(void)
 {
+    int Kp_avrg_cnt = 0;
+    int Kp_avrg = 0;
+    int cnt = 0;
+    int osc_cnt = 0;
+    int period_time_ms = 0;
+    int initial_time_ms = 0;
+    char old_sign = 0;
+    unsigned char rising_edge_counter = 0;
+    unsigned int period_time_cnt = 0;
+    double
+    position_command = 0;
+    arm_pid_instance_f32 position_pid;
+    mobileAvrgStruct mAvrgStruct;
+    memset((mobileAvrgStruct*) &mAvrgStruct, 0, sizeof(mobileAvrgStruct));
+    const double pwm_ratio = (PWM_RATIO_COEFF_A * 8000.00 + PWM_RATIO_COEFF_B);
+    const double error_max = 0.12; //angular error
+    const int pwm_move_offset = 200;
+    const int max_dist = 1000;
+    position_pid.Kp = 100;
+    position_pid.Ki = 0;
+    position_pid.Kd = 0;
+
+    encodersInit();
+    adxrs620Init();
+    motorsInit();
+
+    encodersReset();
+    gyroResetAngle();
+
+    pidControllerInit(&position_pid);
+
+    while (expanderJoyFiltered() != JOY_RIGHT)
+    {
+        ssd1306ClearScreen(MAIN_AREA);
+        ssd1306DrawStringAtLine(35, 0, "POSITION PID CAL", &Font_3x6);
+        ssd1306Refresh();
+
+        if (expanderJoyFiltered() == JOY_LEFT)
+        {
+            return;
+        }
+        HAL_Delay(100);
+    }
+    ssd1306ClearScreen(MAIN_AREA);
+    ssd1306DrawStringAtLine(50, 1, "Wait", &Font_3x6);
+    ssd1306Refresh();
+    HAL_Delay(1000);
+    motorsDriverSleep(OFF);
+    //start 1s for stabilise
+    for (cnt = 0; cnt < 1000; cnt++)
+    {
+        position_command = (pidController(&position_pid, gyroGetAngle()));
+
+        motorSet_DF(MOTOR_R, (int)(position_command * pwm_ratio));
+        motorSet_DF(MOTOR_L, (int)(-position_command * pwm_ratio));
+        HAL_Delay(1);
+    }
+    //measure loop
+    while ((encoderGetDist(ENCODER_L) + encoderGetDist(ENCODER_R)) / 2.00 < max_dist)
+    {
+        cnt++;
+        position_command = (pidController(&position_pid, gyroGetAngle()));
+
+        motorSet_DF(MOTOR_R, (int)(position_command * pwm_ratio) + pwm_move_offset);
+        motorSet_DF(MOTOR_L, (int)(-position_command * pwm_ratio) + pwm_move_offset);
+
+        //decrease Kp coeff
+        if (cnt > 5)
+        {
+            if (gyroGetAngle() < error_max && gyroGetAngle() > -error_max)
+            {
+                position_pid.Kp += 1;
+            }
+            else
+            {
+                position_pid.Kp -= 1;
+            }
+            Kp_avrg += position_pid.Kp;
+            Kp_avrg_cnt++;
+            if (position_pid.Kp < 100)
+                position_pid.Kp = 100;
+            pidControllerInit(&position_pid);
+            cnt = 0;
+        }
+
+        //compute oscillation time and decrease Kp for search critical point
+        if (gyroGetAngle() > error_max)
+        {
+            if (old_sign != POSITIVE)
+            {
+                old_sign = POSITIVE;
+                rising_edge_counter++;
+                if (rising_edge_counter >= 2)
+                {
+                    osc_cnt++;
+                    period_time_ms += (HAL_GetTick() - initial_time_ms);
+                    rising_edge_counter = 0;
+                }
+                else
+                {
+                    initial_time_ms = HAL_GetTick();
+                }
+            }
+        }
+        if (gyroGetAngle() < -error_max)
+        {
+            if (old_sign != NEGATIVE)
+            {
+                old_sign = NEGATIVE;
+            }
+        }
+        HAL_Delay(1);
+    }
+    motorsBrake();
+    period_time_ms /= osc_cnt;
+    Kp_avrg /= Kp_avrg_cnt;
+
+    ssd1306ClearScreen(MAIN_AREA);
+    ssd1306PrintfAtLine(0, 0, &Font_5x8, "Kcr= %d Tcr= %d ms",  (uint32_t)Kp_avrg, (uint32_t)period_time_ms);
+    ssd1306PrintfAtLine(0, 1, &Font_5x8, "Kp = %d", (uint32_t)(Kp_avrg * 0.2));
+    ssd1306PrintfAtLine(0, 2, &Font_5x8, "Ki = %d.10^-3", (uint32_t)(period_time_ms / 2.00));
+    ssd1306PrintfAtLine(0, 3, &Font_5x8, "Kd = %d.10^-3", (uint32_t)(period_time_ms / 3.00));
+    ssd1306Refresh();
+    HAL_Delay(2000);
+    motorsDriverSleep(ON);
+    while (expanderJoyFiltered() != JOY_LEFT);
 }
 
 void pidCalculator(void)

@@ -99,8 +99,8 @@ int speedControlInit(void)
     speedProfileCompute(0, 0, 0, 0);
 
     encoder_pid_instance.Kp = 638.00;
-    encoder_pid_instance.Ki = 0.02666 / 1000.00;
-    encoder_pid_instance.Kd = 0.00666 * 1000.00;
+    encoder_pid_instance.Ki = 0.02666 / CONTROL_TIME_FREQ;
+    encoder_pid_instance.Kd = 0.00666 * CONTROL_TIME_FREQ;
 
     speed_control.speed_pid.instance = &encoder_pid_instance;
 

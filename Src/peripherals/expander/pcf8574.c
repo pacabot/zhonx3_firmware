@@ -122,7 +122,7 @@ void expanderLedState(char led, char val)
 
 void expanderSetLeds(char leds)
 {
-    sendData((0b00001111 | (~leds << 4)));
+    sendData((0xF0| (~leds << 4)));
 }
 
 char expanderJoyState(void)

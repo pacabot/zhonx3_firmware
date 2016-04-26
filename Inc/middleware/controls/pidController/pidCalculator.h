@@ -22,6 +22,8 @@
 /* Types definitions */
 
 void accelMotor_GetStepResponse(void);
+void pidEncoder_GetCriticalPoint(void);
+void pidGyro_GetCriticalPoint(void);
 void pidCalculator(void);
 
 #endif

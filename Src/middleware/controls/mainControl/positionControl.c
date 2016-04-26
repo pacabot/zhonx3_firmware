@@ -61,7 +61,6 @@ typedef struct
     char end_control;
     enum enablePositionCtrl enablePositionCtrl;
     enum positionType positionType;
-
     pid_control_struct position_pid;
 } position_control_struct;
 
@@ -84,9 +83,9 @@ int positionControlInit(void)
     memset(&position_params, 0, sizeof(position_params_struct));
     positionProfileCompute(0, 0, 0);
 
-    encoder_or_gyro_pid_instance.Kp = 90;
-    encoder_or_gyro_pid_instance.Ki = 0;
-    encoder_or_gyro_pid_instance.Kd = 2000;
+    encoder_or_gyro_pid_instance.Kp = 34;
+    encoder_or_gyro_pid_instance.Ki = 0.032 / CONTROL_TIME_FREQ;
+    encoder_or_gyro_pid_instance.Kd = 0.021 * CONTROL_TIME_FREQ;
 
     position_control.position_pid.instance = &encoder_or_gyro_pid_instance;
 
