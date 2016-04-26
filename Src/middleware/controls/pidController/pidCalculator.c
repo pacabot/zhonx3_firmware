@@ -278,8 +278,8 @@ void pidGyro_GetCriticalPoint(void)
     Kp_avrg /= Kp_avrg_cnt;
 
     coefs.Kp = ((double)Kp_avrg * 0.60);
-    coefs.Ki = 2.00 * coefs.Kp / (period_time_ms * 1000.00);
-    coefs.Kd = coefs.Kp * (period_time_ms * 1000.00) / 8.00;
+    coefs.Ki = 2.00 * coefs.Kp / (period_time_ms / 1000.00);
+    coefs.Kd = coefs.Kp * (period_time_ms / 1000.00) / 8.00;
 
     // save PID coefficients in Flash memory
     rv = flash_write(zhonxSettings.h_flash,
@@ -296,9 +296,9 @@ void pidGyro_GetCriticalPoint(void)
 
     ssd1306ClearScreen(MAIN_AREA);
     ssd1306PrintfAtLine(0, 0, &Font_5x8, "Kcr= %d Tcr= %d ms",  (uint32_t)Kp_avrg, (uint32_t)period_time_ms);
-    ssd1306PrintfAtLine(0, 1, &Font_5x8, "Kp = %d", (uint32_t)Kp);
-    ssd1306PrintfAtLine(0, 2, &Font_5x8, "Ki = %d.10^-3", (uint32_t)(Ki));
-    ssd1306PrintfAtLine(0, 3, &Font_5x8, "Kd = %d", (uint32_t)(Kd * 1000));
+    ssd1306PrintfAtLine(0, 1, &Font_5x8, "Kp = %d", (uint32_t)coefs.Kp);
+    ssd1306PrintfAtLine(0, 2, &Font_5x8, "Ki = %d.10^-3", (uint32_t)(coefs.Ki));
+    ssd1306PrintfAtLine(0, 3, &Font_5x8, "Kd = %d", (uint32_t)(coefs.Kd * 1000));
     ssd1306Refresh();
     HAL_Delay(2000);
     motorsDriverSleep(ON);
