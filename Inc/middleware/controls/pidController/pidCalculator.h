@@ -20,6 +20,12 @@
 #define PID_CALCULATOR_E_ERROR    MAKE_ERROR(PID_CALCULATOR_MODULE_ID, 1)
 
 /* Types definitions */
+typedef struct
+{
+    double kp;
+    double ki;
+    double kd;
+} pid_coefs;
 
 void accelMotor_GetStepResponse(void);
 void pidEncoder_GetCriticalPoint(void);

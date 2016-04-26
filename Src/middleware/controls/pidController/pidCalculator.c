@@ -17,6 +17,7 @@
 #include "stdbool.h"
 #include <arm_math.h>
 #include <math.h>
+#include <middleware/settings/settings.h>
 #include <middleware/controls/mainControl/mainControl.h>
 #include <middleware/controls/mainControl/positionControl.h>
 #include <middleware/controls/mainControl/speedControl.h>
@@ -168,8 +169,7 @@ void pidGyro_GetCriticalPoint(void)
     char old_sign = 0;
     unsigned char rising_edge_counter = 0;
     unsigned int period_time_cnt = 0;
-    double
-    position_command = 0;
+    double position_command = 0;
     arm_pid_instance_f32 position_pid;
     mobileAvrgStruct mAvrgStruct;
     memset((mobileAvrgStruct*) &mAvrgStruct, 0, sizeof(mobileAvrgStruct));
@@ -180,6 +180,8 @@ void pidGyro_GetCriticalPoint(void)
     position_pid.Kp = 100;
     position_pid.Ki = 0;
     position_pid.Kd = 0;
+    arm_pid_instance_f32 coefs;
+    int rv;
 
     encodersInit();
     adxrs620Init();
@@ -275,9 +277,22 @@ void pidGyro_GetCriticalPoint(void)
     period_time_ms /= osc_cnt;
     Kp_avrg /= Kp_avrg_cnt;
 
-    double Kp = ((double)Kp_avrg * 0.60);
-    double Ki = 2.00 * Kp / ((double)period_time_ms / 1000.00);
-    double Kd = Kp * ((double)period_time_ms / 1000.00) / 8.00;
+    coefs.Kp = ((double)Kp_avrg * 0.60);
+    coefs.Ki = 2.00 * coefs.Kp / (period_time_ms * 1000.00);
+    coefs.Kd = coefs.Kp * (period_time_ms * 1000.00) / 8.00;
+
+    // save PID coefficients in Flash memory
+    rv = flash_write(zhonxSettings.h_flash,
+                     (unsigned char *)&zhonxCalib_data->pid_gyro,
+                     (unsigned char *)&coefs, sizeof(arm_pid_instance_f32));
+    if (rv != FLASH_DRIVER_E_SUCCESS)
+    {
+        ssd1306ClearScreen(MAIN_AREA);
+        ssd1306PrintfAtLine(0, 1, &Font_5x8, "FAILED To write Gyro PID values");
+        ssd1306Refresh();
+        HAL_Delay(2000);
+    }
+
 
     ssd1306ClearScreen(MAIN_AREA);
     ssd1306PrintfAtLine(0, 0, &Font_5x8, "Kcr= %d Tcr= %d ms",  (uint32_t)Kp_avrg, (uint32_t)period_time_ms);
