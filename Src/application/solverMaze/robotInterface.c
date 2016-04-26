@@ -427,3 +427,9 @@ int test_move_zhonx ()
     telemetersStop();
     return MAZE_SOLVER_E_SUCCESS;
 }
+
+int save_maze (*maze)
+{
+
+    return MAZE_SOLVER_E_SUCCESS;
+}
