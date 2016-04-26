@@ -428,7 +428,7 @@ int test_move_zhonx ()
     return MAZE_SOLVER_E_SUCCESS;
 }
 
-int save_maze (*maze)
+int save_maze (labyrinthe *maze)
 {
 
     return MAZE_SOLVER_E_SUCCESS;

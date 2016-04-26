@@ -156,6 +156,7 @@ int maze(void)
 #endif
 
     exploration(&maze, &zhonx_position, &start_position, &end_coordinate); //make exploration for go from the robot position and the end of the maze
+    HAL_Delay(100);
 #ifdef ZHONX3
     telemetersStop();
     motorsDriverSleep(ON);
