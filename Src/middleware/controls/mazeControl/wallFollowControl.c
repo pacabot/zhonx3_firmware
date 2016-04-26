@@ -71,8 +71,8 @@ static arm_pid_instance_f32 telemeters_pid_instance;
 int wallFollowControlInit(void)
 {
     telemeters_pid_instance.Kp = 10;
-    telemeters_pid_instance.Ki = 0;
-    telemeters_pid_instance.Kd = 50;
+    telemeters_pid_instance.Ki = 0.107;
+    telemeters_pid_instance.Kd = 107;
 
     wall_follow_control.follow_pid.instance = &telemeters_pid_instance;
 
@@ -136,7 +136,6 @@ int wallFollowControlLoop(void)
         wall_follow_control.follow_error = MAX_FOLLOW_ERROR * sign;
     }
 
-    wall_follow_control.follow_error = 0;
     wall_follow_control.follow_command = (pidController(wall_follow_control.follow_pid.instance,
                                                         wall_follow_control.follow_error));
 

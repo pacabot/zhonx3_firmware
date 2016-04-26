@@ -83,9 +83,9 @@ int positionControlInit(void)
     memset(&position_params, 0, sizeof(position_params_struct));
     positionProfileCompute(0, 0, 0);
 
-    encoder_or_gyro_pid_instance.Kp = 90;
-    encoder_or_gyro_pid_instance.Ki = 0.030 / CONTROL_TIME_FREQ;
-    encoder_or_gyro_pid_instance.Kd = 0.7 * CONTROL_TIME_FREQ;
+    encoder_or_gyro_pid_instance.Kp = 105;
+    encoder_or_gyro_pid_instance.Ki = 3.219 / CONTROL_TIME_FREQ;
+    encoder_or_gyro_pid_instance.Kd = 0.798 * CONTROL_TIME_FREQ;
 
     position_control.position_pid.instance = &encoder_or_gyro_pid_instance;
 

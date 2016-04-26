@@ -20,7 +20,6 @@
 #include <middleware/controls/mainControl/mainControl.h>
 #include <middleware/controls/mainControl/positionControl.h>
 #include <middleware/controls/mainControl/speedControl.h>
-#include <middleware/controls/mainControl/speedControl.h>
 #include <middleware/controls/mainControl/transfertFunction.h>
 #include <string.h>
 #include <stdio.h>
@@ -277,15 +276,151 @@ void pidGyro_GetCriticalPoint(void)
     Kp_avrg /= Kp_avrg_cnt;
 
     double Kp = ((double)Kp_avrg * 0.60);
-    double Ki = 2.00 * Kp / (period_time_ms * 1000.00);
-    double Kd = Kp * (period_time_ms * 1000.00) / 8.00;
+    double Ki = 2.00 * Kp / ((double)period_time_ms / 1000.00);
+    double Kd = Kp * ((double)period_time_ms / 1000.00) / 8.00;
 
     ssd1306ClearScreen(MAIN_AREA);
     ssd1306PrintfAtLine(0, 0, &Font_5x8, "Kcr= %d Tcr= %d ms",  (uint32_t)Kp_avrg, (uint32_t)period_time_ms);
     ssd1306PrintfAtLine(0, 1, &Font_5x8, "Kp = %d", (uint32_t)Kp);
-    ssd1306PrintfAtLine(0, 2, &Font_5x8, "Ki = %d.10^-3", (uint32_t)(Ki * 1000));
-    ssd1306PrintfAtLine(0, 3, &Font_5x8, "Kd = %d.10^-3", (uint32_t)(Kd * 1000));
+    ssd1306PrintfAtLine(0, 2, &Font_5x8, "Ki = %d.10^-3", (uint32_t)(Ki));
+    ssd1306PrintfAtLine(0, 3, &Font_5x8, "Kd = %d", (uint32_t)(Kd * 1000));
     ssd1306Refresh();
+    HAL_Delay(2000);
+    motorsDriverSleep(ON);
+    while (expanderJoyFiltered() != JOY_LEFT);
+}
+
+void pidTelemeters_GetCriticalPoint(void)
+{
+    int Kp_avrg_cnt = 0;
+    int Kp_avrg = 0;
+    int cnt = 0;
+    int osc_cnt = 0;
+    int period_time_ms = 0;
+    int initial_time_ms = 0;
+    char old_sign = 0;
+    unsigned char rising_edge_counter = 0;
+    unsigned int period_time_cnt = 0;
+    double position_command = 0;
+    arm_pid_instance_f32 position_pid;
+    mobileAvrgStruct mAvrgStruct;
+    memset((mobileAvrgStruct*) &mAvrgStruct, 0, sizeof(mobileAvrgStruct));
+    const double pwm_ratio = (PWM_RATIO_COEFF_A * 8000.00 + PWM_RATIO_COEFF_B);
+    const double error_max = 1.00; //distance error
+    const int pwm_move_offset = 200;
+    const int max_dist = 1000;
+    position_pid.Kp = 1;
+    position_pid.Ki = 0;
+    position_pid.Kd = 0;
+
+    encodersInit();
+    motorsInit();
+    telemetersInit();
+
+    encodersReset();
+
+    pidControllerInit(&position_pid);
+
+    while (expanderJoyFiltered() != JOY_RIGHT)
+    {
+        ssd1306ClearScreen(MAIN_AREA);
+        ssd1306DrawStringAtLine(35, 0, "POSITION PID CAL", &Font_3x6);
+        ssd1306Refresh();
+
+        if (expanderJoyFiltered() == JOY_LEFT)
+        {
+            return;
+        }
+        HAL_Delay(100);
+    }
+    ssd1306ClearScreen(MAIN_AREA);
+    ssd1306DrawStringAtLine(50, 1, "Wait", &Font_3x6);
+    ssd1306Refresh();
+    HAL_Delay(1000);
+    motorsDriverSleep(OFF);
+    telemetersStart();
+    //start 1s for stabilise
+    for (cnt = 0; cnt < 1000; cnt++)
+    {
+        position_command = (pidController(&position_pid, (double) getTelemeterDist(TELEMETER_DL)
+                                          - (double) getTelemeterDist(TELEMETER_DR)));
+
+        motorSet_DF(MOTOR_R, (int)(position_command * pwm_ratio));
+        motorSet_DF(MOTOR_L, (int)(-position_command * pwm_ratio));
+        HAL_Delay(1);
+    }
+    //measure loop
+    while ((encoderGetDist(ENCODER_L) + encoderGetDist(ENCODER_R)) / 2.00 < max_dist)
+    {
+        cnt++;
+        position_command = (pidController(&position_pid, (double) getTelemeterDist(TELEMETER_DL)
+                                          - (double) getTelemeterDist(TELEMETER_DR)));
+
+        motorSet_DF(MOTOR_R, (int)(position_command * pwm_ratio) + pwm_move_offset);
+        motorSet_DF(MOTOR_L, (int)(-position_command * pwm_ratio) + pwm_move_offset);
+
+        if (cnt > 5)
+        {
+            if ((((double) getTelemeterDist(TELEMETER_DL) - (double) getTelemeterDist(TELEMETER_DR)) < error_max) &&
+                    (((double) getTelemeterDist(TELEMETER_DL) - (double) getTelemeterDist(TELEMETER_DR) > -error_max)))
+            {
+                position_pid.Kp += 1;   //increase Kp coeff
+            }
+            else
+            {
+                position_pid.Kp -= 1;   //decrease Kp coeff
+            }
+            Kp_avrg += position_pid.Kp;
+            Kp_avrg_cnt++;
+            if (position_pid.Kp < 1)
+                position_pid.Kp = 1;
+            pidControllerInit(&position_pid);
+            cnt = 0;
+        }
+
+        //compute oscillation time and decrease Kp for search critical point
+        if (((double) getTelemeterDist(TELEMETER_DL) - (double) getTelemeterDist(TELEMETER_DR)) > error_max)
+        {
+            if (old_sign != POSITIVE)
+            {
+                old_sign = POSITIVE;
+                rising_edge_counter++;
+                if (rising_edge_counter >= 2)
+                {
+                    osc_cnt++;
+                    period_time_ms += (HAL_GetTick() - initial_time_ms);
+                    rising_edge_counter = 0;
+                }
+                else
+                {
+                    initial_time_ms = HAL_GetTick();
+                }
+            }
+        }
+        if (((double) getTelemeterDist(TELEMETER_DL) - (double) getTelemeterDist(TELEMETER_DR)) < -error_max)
+        {
+            if (old_sign != NEGATIVE)
+            {
+                old_sign = NEGATIVE;
+            }
+        }
+        HAL_Delay(1);
+    }
+    motorsBrake();
+    period_time_ms /= osc_cnt;
+    Kp_avrg /= Kp_avrg_cnt;
+
+    double Kp = ((double)Kp_avrg * 0.60);
+    double Ki = 2.00 * Kp / ((double)period_time_ms / 1000.00);
+    double Kd = Kp * ((double)period_time_ms / 1000.00) / 8.00;
+
+    ssd1306ClearScreen(MAIN_AREA);
+    ssd1306PrintfAtLine(0, 0, &Font_5x8, "Kcr= %d Tcr= %d ms",  (uint32_t)Kp_avrg, (uint32_t)period_time_ms);
+    ssd1306PrintfAtLine(0, 1, &Font_5x8, "Kp = %d", (uint32_t)Kp);
+    ssd1306PrintfAtLine(0, 2, &Font_5x8, "Ki = %d.10^-3", (uint32_t)(Ki));
+    ssd1306PrintfAtLine(0, 3, &Font_5x8, "Kd = %d", (uint32_t)(Kd * 1000));
+    ssd1306Refresh();
+    telemetersStop();
     HAL_Delay(2000);
     motorsDriverSleep(ON);
     while (expanderJoyFiltered() != JOY_LEFT);
