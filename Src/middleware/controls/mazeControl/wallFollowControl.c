@@ -136,6 +136,7 @@ int wallFollowControlLoop(void)
         wall_follow_control.follow_error = MAX_FOLLOW_ERROR * sign;
     }
 
+    wall_follow_control.follow_error = 0;
     wall_follow_control.follow_command = (pidController(wall_follow_control.follow_pid.instance,
                                                         wall_follow_control.follow_error));
 

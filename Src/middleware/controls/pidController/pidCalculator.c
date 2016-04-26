@@ -130,7 +130,7 @@ void pidEncoder_GetCriticalPoint(void)
 /*
  * Kcr => critical proportional gain
  * Tcr => time period
- * ___________________________________________________________
+ * ______________________________________________________________
  * |     Control Type       |   K_p     |   K_i     |   K_d     |
  * |------------------------+-----------+-----------+-----------|
  * |           P            |   0.5Kcr  |     -     |     -     |
@@ -146,6 +146,16 @@ void pidEncoder_GetCriticalPoint(void)
  * |     some overshoot     |   0.33Kcr |   Tcr/2   |   Tcr/3   |
  * |------------------------+-----------+-----------+-----------|
  * |     no overshoot       |   0.2Kcr  |   Tcr/2   |   Tcr/3   |
+ * --------------------------------------------------------------
+ *
+ * ______________________________________________________________
+ * |     Control Type       |   K_p     |   K_i     |   K_d     |
+ * |------------------------+-----------+-----------+-----------|
+ * |          P             |   0.5Kcr  |     -     |     -     |
+ * |------------------------+-----------+-----------+-----------|
+ * |          PI            |   0.45Kcr | 1.2Kp/Tcr |     -     |
+ * |------------------------+-----------+-----------+-----------|
+ * |          PID           |   0.6Kcr  |  2Kp/Tcr  | Kp*Tcr/8  |
  * --------------------------------------------------------------
  */
 void pidGyro_GetCriticalPoint(void)
@@ -216,16 +226,15 @@ void pidGyro_GetCriticalPoint(void)
         motorSet_DF(MOTOR_R, (int)(position_command * pwm_ratio) + pwm_move_offset);
         motorSet_DF(MOTOR_L, (int)(-position_command * pwm_ratio) + pwm_move_offset);
 
-        //decrease Kp coeff
         if (cnt > 5)
         {
-            if (gyroGetAngle() < error_max && gyroGetAngle() > -error_max)
+            if ((gyroGetAngle() < error_max) && (gyroGetAngle() > -error_max))
             {
-                position_pid.Kp += 1;
+                position_pid.Kp += 1;   //increase Kp coeff
             }
             else
             {
-                position_pid.Kp -= 1;
+                position_pid.Kp -= 1;   //decrease Kp coeff
             }
             Kp_avrg += position_pid.Kp;
             Kp_avrg_cnt++;
@@ -267,11 +276,15 @@ void pidGyro_GetCriticalPoint(void)
     period_time_ms /= osc_cnt;
     Kp_avrg /= Kp_avrg_cnt;
 
+    double Kp = ((double)Kp_avrg * 0.60);
+    double Ki = 2.00 * Kp / (period_time_ms * 1000.00);
+    double Kd = Kp * (period_time_ms * 1000.00) / 8.00;
+
     ssd1306ClearScreen(MAIN_AREA);
     ssd1306PrintfAtLine(0, 0, &Font_5x8, "Kcr= %d Tcr= %d ms",  (uint32_t)Kp_avrg, (uint32_t)period_time_ms);
-    ssd1306PrintfAtLine(0, 1, &Font_5x8, "Kp = %d", (uint32_t)(Kp_avrg * 0.2));
-    ssd1306PrintfAtLine(0, 2, &Font_5x8, "Ki = %d.10^-3", (uint32_t)(period_time_ms / 2.00));
-    ssd1306PrintfAtLine(0, 3, &Font_5x8, "Kd = %d.10^-3", (uint32_t)(period_time_ms / 3.00));
+    ssd1306PrintfAtLine(0, 1, &Font_5x8, "Kp = %d", (uint32_t)Kp);
+    ssd1306PrintfAtLine(0, 2, &Font_5x8, "Ki = %d.10^-3", (uint32_t)(Ki * 1000));
+    ssd1306PrintfAtLine(0, 3, &Font_5x8, "Kd = %d.10^-3", (uint32_t)(Kd * 1000));
     ssd1306Refresh();
     HAL_Delay(2000);
     motorsDriverSleep(ON);
