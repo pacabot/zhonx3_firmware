@@ -60,7 +60,7 @@ extern int wallSensorsCalibrationDiag(void);
 extern void testFlash(void);
 extern int setMeddle(void);
 extern int setDark(void);
-extern int pidCalculator(void);
+extern void pidCalculator(void);
 extern void telemetersGetCalibrationValues(void);
 extern uint32_t spyPostCalibration(void);
 extern void spyPostTest(void);
