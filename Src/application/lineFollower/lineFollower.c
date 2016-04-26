@@ -291,11 +291,11 @@ void lineSensorsCalibration(void)
 // Check if there is no line
 int lineFollowerStop()
 {
-	if ((double)sensor.front < min_Floor.front *1.2 &&
-		(double)sensor.left  < min_Floor.left *1.2 &&
-		(double)sensor.right < min_Floor.right *1.2 &&
-		(double)sensor.leftExt < min_Floor.leftExt *1.2 &&
-		(double)sensor.rightExt < min_Floor.rightExt *1.2)
+	if (sensor.front < 200 &&
+		sensor.left  < 200 &&
+		sensor.right < 200 &&
+		sensor.leftExt < 200 &&
+		sensor.rightExt < 200)
 	{
 		return 1;
 	}
@@ -305,11 +305,11 @@ int lineFollowerStop()
 int lineFollowerFigure()
 {
 	static int dist=0;
-	if ((double)sensor.front > (double)(max_Floor.front * 0.8) &&    // on est sur la ligne
-		(double)sensor.leftExt > (double)(max_Floor.leftExt * 0.8) &&  // A gauche on a une ligne
-		(double)sensor.rightExt < (double)(min_Floor.rightExt *1.2))  // a droite on a pas de ligne
+	if (sensor.front > 700 &&    // on est sur la ligne
+		sensor.leftExt > 700 &&  // A gauche on a une ligne
+		sensor.rightExt < 200)  // a droite on a pas de ligne
 	{
-        if (dist==0) dist = encoderGetDist(ENCODER_L)+20;
+        if (dist==0) dist = encoderGetDist(ENCODER_L)+35;
         if (encoderGetDist(ENCODER_L) > dist)
 		{
 			dist=0;
@@ -323,7 +323,7 @@ int lineFollowerFigure()
 // Intelligent function to manage zhonx on the line path
 void lineFollower(void)
 {
-	ground_sensors_struct current;
+
 //	double A,B,C,D,E;
 	double cdg=0;
 	double cdg2=0;
@@ -333,7 +333,7 @@ void lineFollower(void)
 	encodersInit();
 
 
-	positionControlSetPositionType(GYRO);
+//	positionControlSetPositionType(GYRO);
 	mainControlSetFollowType(LINE_FOLLOW);
 
 	lineSensorsStart();
@@ -368,11 +368,10 @@ void lineFollower(void)
 	//	HAL_Delay(500);
 
 	line_follower.active_state = TRUE;
-	move(0, 10000, MAXSPEED, MAXSPEED);
+//	move(0, 10000, MAXSPEED, MAXSPEED);
+	motorsDriverSleep(ON);
 	//	while(hasMoveEnded() != TRUE);
 	char foreward = TRUE;
-	char cpt=0;
-	int  error;
 	int ii=0;
 
 	while(expanderJoyFiltered()!=JOY_LEFT && foreward)
@@ -416,22 +415,23 @@ ii++;
 
 		//error=follow_control.follow_error*10;
 
-		error=(int) cdg2/1000.0;
 
+	//	error=(int) cdg2/1000.0;
 
 		ssd1306ClearScreen(MAIN_AREA);
-		ssd1306PrintIntAtLine(10, 0, "LEFT_EXT  =  ", current.leftExt, &Font_5x8);
-		ssd1306PrintIntAtLine(10, 1, "LEFT      =  ", current.left, &Font_5x8);
-		ssd1306PrintIntAtLine(10, 2, "FRONT --  =  ", current.front, &Font_5x8);
-		ssd1306PrintIntAtLine(10, 3, "RIGHT     =  ", current.right, &Font_5x8);
-		ssd1306PrintIntAtLine(1, 4, "", ii, &Font_5x8);
-	//	ssd1306PrintIntAtLine(10, 4, "RIGHT_EXT =  ", current.rightExt, &Font_5x8);
+		ssd1306PrintIntAtLine(2, 0, "ACTION    = ", _Action, &Font_5x8);
+		ssd1306PrintIntAtLine(2, 1, "LEFT_EXT  = ", sensor.leftExt, &Font_5x8);
+		ssd1306PrintIntAtLine(2, 2, "FRONT --  = ", cdg2, &Font_5x8);
+		ssd1306PrintIntAtLine(2, 3, "RIGHT_EXT = ", sensor.rightExt, &Font_5x8);
+		ssd1306PrintIntAtLine(2, 4, "Roue = ", (signed int) encoderGetDist(ENCODER_L), &Font_5x8);
 		ssd1306Refresh();
 
 
 		if (_Action>0)
 		{
 			line_follower.active_state = FALSE;
+			positionControlSetPositionType(GYRO);
+			mainControlSetFollowType(NO_FOLLOW);
 			lineSensorsStop();
 
 			// -----------------------------------------------------------------------
@@ -454,9 +454,12 @@ ii++;
 //				move(360, 0, 200, 0);
 				while(hasMoveEnded() != TRUE);
 				lineSensorsStart();
+				mainControlSetFollowType(LINE_FOLLOW);
 //				move(0, 10000, MAXSPEED, MAXSPEED);
+
+				_Action=0;
 			}
-			_Action=0;
+
 			//move(0, 10000, MAXSPEED, MAXSPEED);
 		}
 
