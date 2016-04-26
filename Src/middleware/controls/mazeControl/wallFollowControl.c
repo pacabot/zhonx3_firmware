@@ -72,7 +72,7 @@ int wallFollowControlInit(void)
 {
     telemeters_pid_instance.Kp = 10;
     telemeters_pid_instance.Ki = 0;
-    telemeters_pid_instance.Kd = 50;
+    telemeters_pid_instance.Kd = 51;
 
     wall_follow_control.follow_pid.instance = &telemeters_pid_instance;
 
