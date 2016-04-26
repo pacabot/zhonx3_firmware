@@ -28,6 +28,7 @@
 #include "peripherals/display/smallfonts.h"
 #include "peripherals/expander/pcf8574.h"
 #include "peripherals/tone/tone.h"
+#include "peripherals/callback/user_it_callback.h"
 
 /* Middleware declarations */
 #include "middleware/controls/pidController/pidController.h"
@@ -71,7 +72,11 @@ void timesBaseInit(void)
      ----------------------------------------------------------------------- */
 
     /* Compute the prescaler value to have TIM7 counter clock equal to 1 KHz */
+#ifdef DEDICATED_TIMER
+    uwPrescalerValue = (uint32_t) ((SystemCoreClock / 2) / (CONTROL_TIME_FREQ * 2));
+#else
     uwPrescalerValue = (uint32_t) ((SystemCoreClock / 2) / (HI_TIME_FREQ * 2));
+#endif
     htim7.Instance = TIM7;
     htim7.Init.Prescaler = uwPrescalerValue;
     htim7.Init.CounterMode = TIM_COUNTERMODE_UP;
@@ -85,6 +90,35 @@ void timesBaseInit(void)
 
     HAL_TIM_Base_Start_IT(&htim7);
 
+    /*## Configure the TIM peripheral for ADC123 injected trigger ####################*/
+    /* -----------------------------------------------------------------------
+     Use TIM5 for start Injected conversion on ADC1 (gyro rate).
+     Use TIM5 for start Injected conversion on ADC2 (not use).
+     Use TIM5 for start Injected conversion on ADC3 (not use).
+     ----------------------------------------------------------------------- */
+
+    /* Compute the prescaler value to have TIM5 counter clock equal to 4 KHz */
+    uwPrescalerValue = (uint32_t) ((SystemCoreClock / 2) / (GYRO_TIME_FREQ * 100));
+
+    htim5.Instance = TIM5;
+    htim5.Init.Prescaler = uwPrescalerValue;
+    htim5.Init.CounterMode = TIM_COUNTERMODE_UP;
+    htim5.Init.Period = 100 - 1;
+    htim5.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+    //    htim5.Init.RepetitionCounter = 0x0;
+    HAL_TIM_Base_Init(&htim5);
+
+    sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
+    HAL_TIM_ConfigClockSource(&htim5, &sClockSourceConfig);
+
+    sMasterConfig.MasterOutputTrigger = TIM_TRGO_UPDATE; //TIM_TRGO_UPDATE see adc.c => ADC1 injected section
+    sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+    HAL_TIMEx_MasterConfigSynchronization(&htim5, &sMasterConfig);
+
+//    HAL_TIM_Base_Start_IT(&htim5);
+    HAL_TIM_Base_Start(&htim5);
+
+#ifdef DEDICATED_TIMER
     uwPrescalerValue = (uint32_t) ((SystemCoreClock / 2) / (LOW_TIME_FREQ * 100));
 
     htim6.Instance = TIM6;
@@ -102,33 +136,6 @@ void timesBaseInit(void)
         /* Starting Error */
         //	    Error_Handler();
     }
-
-    /*## Configure the TIM peripheral for ADC123 injected trigger ####################*/
-    /* -----------------------------------------------------------------------
-     Use TIM5 for start Injected conversion on ADC1 (gyro rate).
-     Use TIM5 for start Injected conversion on ADC2 (not use).
-     Use TIM5 for start Injected conversion on ADC3 (not use).
-     ----------------------------------------------------------------------- */
-
-    /* Compute the prescaler value to have TIM5 counter clock equal to 4 KHz */
-    uwPrescalerValue = (uint32_t) ((SystemCoreClock / 2) / (GYRO_TIME_FREQ * 100));
-
-    htim5.Instance = TIM5;
-    htim5.Init.Prescaler = uwPrescalerValue;
-    htim5.Init.CounterMode = TIM_COUNTERMODE_UP;
-    htim5.Init.Period = 100 - 1;
-    htim5.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-    //	  htim5.Init.RepetitionCounter = 0x0;
-    HAL_TIM_Base_Init(&htim5);
-
-    sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
-    HAL_TIM_ConfigClockSource(&htim5, &sClockSourceConfig);
-
-    sMasterConfig.MasterOutputTrigger = TIM_TRGO_UPDATE; //TIM_TRGO_UPDATE see adc.c => ADC1 injected section
-    sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
-    HAL_TIMEx_MasterConfigSynchronization(&htim5, &sMasterConfig);
-
-    HAL_TIM_Base_Start_IT(&htim5);
 
     /*## Configure the TIM peripheral for ADC23 regular trigger ####################*/
     /* -----------------------------------------------------------------------
@@ -155,6 +162,7 @@ void timesBaseInit(void)
     HAL_TIMEx_MasterConfigSynchronization(&htim2, &sMasterConfig);
 
     HAL_TIM_Base_Start_IT(&htim2);
+#endif
 
     /*## Configure the TIM peripheral for ADC1 regular trigger ####################*/
     /* -----------------------------------------------------------------------

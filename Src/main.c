@@ -136,7 +136,7 @@ int main(void)
     toneInit();
     spyPostInit();
 
-    toneSetVolulme(20);
+    toneSetVolulme(10);
     tone(F3, 50);
     toneItMode(A3, 50);
 

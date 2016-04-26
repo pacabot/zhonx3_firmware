@@ -27,6 +27,9 @@
 #include "peripherals/expander/pcf8574.h"
 #include "peripherals/multimeter/multimeter.h"
 
+#include "middleware/settings/settings.h"
+#include "middleware/flash_driver/flash_driver.h"
+
 /* Middleware declarations */
 #include "middleware/display/banner.h"
 
@@ -84,7 +87,7 @@ void adxrs620Init(void)
 void adxrs620_ADC_IT(void)
 {
     gyro.current_angle += (GYRO_A_COEFF * (gyro.adc_value = HAL_ADCEx_InjectedGetValue(&hadc1, ADC_INJECTED_RANK_1)))
-            - GYRO_B_COEFF;  //optimized gyro integration DMA
+            - zhonxCalib_data->gyro.calib_value;  //optimized gyro integration DMA
 
     gyro.callback_cnt++;
 }
@@ -111,6 +114,34 @@ void gyroResetAngle(void)
 //	adxrs620Calibrate(10);
 }
 
+void adxrs620Cal(void)
+{
+    double cal;
+    int rv;
+
+    adxrs620Init();
+    ssd1306ClearScreen(MAIN_AREA);
+    ssd1306DrawStringAtLine(0, 1, "DON'T TOUTCH Z3!!", &Font_3x6);
+    ssd1306Refresh();
+    HAL_Delay(3000);
+    cal = adxrs620Calibrate(5000);
+    rv = flash_write(zhonxSettings.h_flash,
+                     (unsigned char *)&(zhonxCalib_data->gyro.calib_value),
+                     (unsigned char *)&cal, sizeof(double));
+    if (rv != FLASH_DRIVER_E_SUCCESS)
+    {
+        ssd1306PrintfAtLine(0, 2, &Font_5x8, "FAILED To write calibration value");
+        ssd1306Refresh();
+        HAL_Delay(2000);
+    }
+    while (expanderJoyFiltered() != JOY_LEFT)
+    {
+        ssd1306ClearScreen(MAIN_AREA);
+        ssd1306PrintIntAtLine(10, 3, "B =", (int32_t) (cal * 100000.00), &Font_5x8);
+        ssd1306Refresh();
+    }
+}
+
 void adxrs620Test(void)
 {
     adxrs620Init();
@@ -126,21 +157,3 @@ void adxrs620Test(void)
         ssd1306Refresh();
     }
 }
-
-void adxrs620Cal(void)
-{
-    double cal;
-    adxrs620Init();
-    ssd1306ClearScreen(MAIN_AREA);
-    ssd1306DrawStringAtLine(0, 5, "DON'T TOUTCH Z3!!", &Font_3x6);
-    ssd1306Refresh();
-    HAL_Delay(3000);
-    cal = adxrs620Calibrate(5000);
-    while (expanderJoyFiltered() != JOY_LEFT)
-    {
-        ssd1306ClearScreen(MAIN_AREA);
-        ssd1306PrintIntAtLine(10, 1, "B =", (int32_t) (cal * 100000.00), &Font_5x8);
-        ssd1306Refresh();
-    }
-}
-

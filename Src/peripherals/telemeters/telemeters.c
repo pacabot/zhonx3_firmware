@@ -40,7 +40,7 @@
 
 #include "middleware/wall_sensors/wall_sensors.h"
 
-#define TX_ON		1
+#define TX_ON	1
 #define TX_OFF	2
 
 //#define MIN_TELEMETERS_SPEED 20
@@ -274,7 +274,7 @@ void telemetersAdc3Start(void)
 void telemeters_IT(void)
 {
     if (telemeters.active_state == FALSE)
-        goto end;
+        return;
 
     telemeters.selector++;
 
@@ -394,7 +394,7 @@ void getTelemetersADC(telemeterStruct *tel, ADC_HandleTypeDef *hadc)
     if (tel->isActivated == TX_OFF)
     {
         tel->adc_ref = HAL_ADC_GetValue(hadc);
-        tel->avrg_ref = mobileAvrgInt(&tel->mAvrgStruct_ref, tel->adc_ref);
+        tel->avrg_ref =  mobileAvrgInt(&tel->mAvrgStruct_ref, tel->adc_ref);
 
         tel->isActivated = FALSE;
     }

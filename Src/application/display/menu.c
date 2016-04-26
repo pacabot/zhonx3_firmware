@@ -60,12 +60,15 @@ extern int wallSensorsCalibrationDiag(void);
 extern void testFlash(void);
 extern int setMeddle(void);
 extern int setDark(void);
-extern int pidCalculator(void);
 extern void telemetersGetCalibrationValues(void);
-extern void spyPostCalibration(void);
+extern uint32_t spyPostCalibration(void);
 extern void spyPostTest(void);
-extern int spyPostReadCalibration(void);
-extern void repositionGetFrontDistCal(void);
+extern uint32_t spyPostReadCalibration(void);
+extern void repositionFrontDistCal(void);
+extern void repositionFrontTest(void);
+extern void adxrs620Cal(void);
+extern void pidGyro_GetCriticalPoint(void);
+extern void pidTelemeters_GetCriticalPoint(void);
 extern int test_move_zhonx ();
 extern int _Factor;
 extern int _KP;
@@ -88,97 +91,137 @@ float tata = 4.0;
 
 const menuItem testGraphicMenu =
 {
-		"GRAPHICS",
+		"GRAPHICS",     //9 characters max
 		{
-				{"Default accel :",'a',			(void*)&toto},
-				{"Max speed dist:",'a',			(void*)&titi},
-				{"Default accel :",'a',			(void*)&tata},
-				{"graphique",'g',null},
-				{(char*)NULL,	0,				NULL}
+				{"Default accel :", 'a',    (void*)&toto},
+				{"Max speed dist:", 'a',	(void*)&titi},
+				{"Default accel :", 'a',    (void*)&tata},
+				{"Graphique",       'g',    NULL},
+				{(char*)NULL,	    0,		NULL}
 		}
 };
 
 const menuItem maze_menu=
 {
-		"MAZE",
+		"MAZE",         //9 characters max
 		{
-				{"new maze",'f',		(void*)maze},
-				{"test_maze",'f',       (void*)test_move_zhonx},
-				{"calibration",'b',		(void*)&zhonxSettings.calibration_enabled},
-				{"color finish",'b',	(void*)&zhonxSettings.nime_competition},
-				{"x finish",'i',		(void*)&zhonxSettings.maze_end_coordinate.x},
-				{"y finish",'i',		(void*)&zhonxSettings.maze_end_coordinate.y}
+				{"New maze",    'f',	(void*)maze},
+				{"Test_maze",   'f',    (void*)test_move_zhonx},
+				{"Calibration", 'b',    (void*)&zhonxSettings.calibration_enabled},
+				{"Color finish",'b',	(void*)&zhonxSettings.nime_competition},
+				{"X finish",    'i',	(void*)&zhonxSettings.maze_end_coordinate.x},
+				{"Y finish",    'i',	(void*)&zhonxSettings.maze_end_coordinate.y}
 		}
 
 };
 
 const menuItem follower_menu=
 {
-		"LINE FOLL",
+		"LINE FOLL",    //9 characters max
 		{
-				{"line follower",'f',	(void*)lineFollower},
-				{"calibration",'f',		(void*)lineSensorsCalibration},
+				{"line follower",   'f',	(void*)lineFollower},
+				{"Calibration",     'f',    (void*)lineSensorsCalibration},
 				//{"Sensor Bluetooth",'f', (void*)lineSensorSendBluetooth},
-				{"Set F. K",'i', (void*)&_Factor},
-				{"Set F. KP",'i', (void*)&_KP},
+				{"Set F. K",        'i',    (void*)&_Factor},
+				{"Set F. KP",       'i',    (void*)&_KP},
 		}
 };
 
-const menuItem parameters_menu=
+const menuItem telemetersCal=
 {
-		"PARAMS",
-		{
-				{"calibration front",'f',(void*)wallSensorsCalibrationFront},
-				{"calibration diag",'f',(void*)wallSensorsCalibrationDiag},
-				{"Send calib values", 'f', (void *)telemetersGetCalibrationValues},
-				{"Set BT baudrate", 'p', (void *)&BTpresetBaudRate}
-		}
+        "TELEMETER",    //9 characters max
+        {
+                {"Calibration front",   'f',    (void*)wallSensorsCalibrationFront},
+                {"Calibration diag",    'f',    (void*)wallSensorsCalibrationDiag},
+                {"Send calib values",   'f',    (void *)telemetersGetCalibrationValues},
+                {"Set BT baudrate",     'p',    (void *)&BTpresetBaudRate}
+        }
 };
-const menuItem peripheral_test_menu=
+
+const menuItem spyPostCal=
 {
-		"PERIPH.",
-		{0}
+        "SPYPOST",      //9 characters max
+        {
+                { "Start calibration",       'f', (void*)spyPostCalibration },
+                { "Read Calibration.",  'f', (void*)spyPostReadCalibration },
+                { "SpyPost test.",      'f', (void*)spyPostTest },
+        }
 };
+
+const menuItem pidCal=
+{
+        "PID",          //9 characters max
+        {
+                { "Gyro Kp critic", 'f', (void*)pidGyro_GetCriticalPoint },
+                { "Telemeter Kp critic", 'f', (void*)pidTelemeters_GetCriticalPoint },
+        }
+};
+
+const menuItem frontCal=
+{
+        "FRONT CAL",    //9 characters max
+        {
+                { "Start calibration",  'f', (void*)repositionFrontDistCal},
+                { "Reposition test",    'f', (void*)repositionFrontTest},
+        }
+};
+
+const menuItem gyroCal=
+{
+        "GYRO CAL",    //9 characters max
+        {
+                { "Start calibration",  'f', (void*)adxrs620Cal},
+                { "Gyro test",          'f', (void*)adxrs620Test},
+        }
+};
+
+const menuItem calibration_menu=
+{
+        "CALIB.",        //9 characters max
+        {
+                {"Telemeters",      'm',  (void*)&telemetersCal},
+                {"SpyPost",         'm',  (void*)&spyPostCal},
+                {"Front reposition",'m',  (void*)&frontCal},
+                {"Gyroscope",       'm',  (void*)&gyroCal},
+                {"PID",             'm',  (void*)&pidCal},
+        }
+};
+
 const menuItem tests_menu=
 {
-		"TESTS",
+		"TESTS",        //9 characters max
 		{
-				{"wall sensor",		'f', (void*)testWallsSensors},
-				{"bluetooth",		'f', (void*)bluetoothTest},
-				{"multimeter",		'f', (void*)mulimeterTest},
-				{"display",			'f', (void*)ssd1306Test},
-				{"eeprom",			'f', (void*)eepromTest},
-				{"encoders",		'f', (void*)encoderTest},
-				{"joystick",		'f', (void*)joystickTest},
-				{"gyroscope",		'f', (void*)adxrs620Test},
-				{"telemeters",		'f', (void*)telemetersTest},
-				{"beeper",			'f', (void*)toneTest},
-				{"motors",			'f', (void*)motorsTest},
-				{"line sensors",	'f', (void*)lineSensorsTest},
+				{"Wall sensor",		'f', (void*)testWallsSensors},
+				{"Bluetooth",		'f', (void*)bluetoothTest},
+				{"Multimeter",		'f', (void*)mulimeterTest},
+				{"Display",			'f', (void*)ssd1306Test},
+				{"Eeprom",			'f', (void*)eepromTest},
+				{"Encoders",		'f', (void*)encoderTest},
+				{"Joystick",		'f', (void*)joystickTest},
+				{"Gyroscope",		'f', (void*)adxrs620Test},
+				{"Telemeters",		'f', (void*)telemetersTest},
+				{"Beeper",			'f', (void*)toneTest},
+				{"Motors",			'f', (void*)motorsTest},
+				{"Line sensors",	'f', (void*)lineSensorsTest},
 				{"Expender LEDs",	'f', (void*)expenderLedTest},
 				{0,0,0}
 		}
 };
 
 const menuItem control_menu =
-{ "CONTROL",
+{       "CONTROL",      //9 characters max
         {
-                { "follow the wall", 'f', (void*) movesTest },
-                { "rotate", 'f', (void*) rotateTest },
-                { "PID calculator", 'f', (void*) pidCalculator },
-                { "spyPost Cal.", 'f', (void*) spyPostCalibration },
-                { "spyPost Read Cal.", 'f', (void*) spyPostReadCalibration },
-                { "spyPost test.", 'f', (void*) spyPostTest },
-                { "Front Cal.", 'f', (void*) repositionGetFrontDistCal}
+                { "Follow the wall",    'f', (void*)movesTest },
+                { "Rotate",             'f', (void*)rotateTest },
         }
 };
 
 const menuItem zhonxNameMenu =
 {
-		"SET MAME",
+		"SET MAME",     //9 characters max
 		{
-				{"Meddle", 'f', setMeddle},
-				{"Dark", 'f', setDark},
+				{"Meddle",  'f', setMeddle},
+				{"Dark",    'f', setDark},
 				{NULL, 0, NULL}
 		}
 };
@@ -188,14 +231,14 @@ const menuItem mainMenu =
 		CONFIG_ZHONX_INFO_ADDR,
 		{
 				//	{"telemeters calibration",'f',		(void*)telemeterFrontCalibration},
-				{"Maze menu",'m',			(void*)&maze_menu},
-				{"Unit tests",'m',			(void*)&tests_menu},
-				{"Control menu",'m',		(void*)&control_menu},
-				{"Line menu",'m', 			(void*)&follower_menu},
-				{"Parameters menu",'m',		(void*)&parameters_menu},
-				{"Test graph",'m',			(void*)&testGraphicMenu},
-				{"Test flash",'f',          (void*)&testFlash},
-				{"Zhonx Name",'m',          (void*)&zhonxNameMenu},
+				{"Maze menu",       'm',	(void*)&maze_menu},
+				{"Line menu",       'm',    (void*)&follower_menu},
+				{"Unit tests",      'm',    (void*)&tests_menu},
+				{"Calibration menu",'m',    (void*)&calibration_menu},
+                {"Control menu",    'm',    (void*)&control_menu},
+				{"Test graph",      'm',	(void*)&testGraphicMenu},
+				{"Test flash",      'f',    (void*)&testFlash},
+				{"Zhonx Name",      'm',    (void*)&zhonxNameMenu},
 				{0,0,0}
 		}
 };
@@ -484,7 +527,7 @@ int modifyLongParam(char *param_name, long *param)
     int step = 1;
     char str[40];
     long param_copy = *param;
-    char collone = 0;
+    char column = 0;
 
     ssd1306ClearScreen(MAIN_AREA);
 
@@ -498,8 +541,8 @@ int modifyLongParam(char *param_name, long *param)
     ssd1306DrawStringAtLine(0, 3, "PRESS 'RIGHT' TO VALIDATE", &Font_3x6);
     ssd1306DrawStringAtLine(0, 4, "      'LEFT'  TO RETURN", &Font_3x6);
 
-    ssd1306DrawStringAtLine((10 - collone) * 8, 0, "-", &Font_8x8);
-    ssd1306DrawStringAtLine((10 - collone) * 8, 2, "-", &Font_8x8);
+    ssd1306DrawStringAtLine((10 - column) * 8, 0, "-", &Font_8x8);
+    ssd1306DrawStringAtLine((10 - column) * 8, 2, "-", &Font_8x8);
     ssd1306Refresh();
 
     while (1)
@@ -509,22 +552,22 @@ int modifyLongParam(char *param_name, long *param)
         switch (joystick)
         {
             case JOY_LEFT:
-                if (collone == 10)
+                if (column == 10)
                     return SUCCESS;
                 else
                 {
-                    collone++;
+                    column++;
                     ssd1306ClearRectAtLine(0, 0, 128);
                     ssd1306ClearRectAtLine(0, 2, 128);
-                    ssd1306DrawStringAtLine((9 - collone) * 9, 0, "-", &Font_8x8);
-                    ssd1306DrawStringAtLine((9 - collone) * 9, 2, "-", &Font_8x8);
+                    ssd1306DrawStringAtLine((9 - column) * 9, 0, "-", &Font_8x8);
+                    ssd1306DrawStringAtLine((9 - column) * 9, 2, "-", &Font_8x8);
                     ssd1306Refresh();
                 }
                 break;
             case JOY_UP:
 
                 //param_copy +=1;
-                param_copy += (step * pow(10, collone));
+                param_copy += (step * pow(10, column));
                 sprintf(str, "%10i", (int) param_copy);
                 ssd1306ClearRectAtLine(0, 1, 128);
                 ssd1306DrawStringAtLine(0, 1, str, &Font_8x8);
@@ -532,7 +575,7 @@ int modifyLongParam(char *param_name, long *param)
                 break;
             case JOY_DOWN:
 
-                param_copy -= (step * pow(10, collone));
+                param_copy -= (step * pow(10, column));
                 //param_copy -= 1;
                 sprintf(str, "%10i", (int) param_copy);
                 ssd1306ClearRectAtLine(0, 1, 128);
@@ -540,7 +583,7 @@ int modifyLongParam(char *param_name, long *param)
                 ssd1306Refresh();
                 break;
             case JOY_RIGHT:
-                if (collone == 0)
+                if (column == 0)
                 {
                     *param = param_copy;
                     ssd1306Refresh();
@@ -548,11 +591,11 @@ int modifyLongParam(char *param_name, long *param)
                 }
                 else
                 {
-                    collone--;
+                    column--;
                     ssd1306ClearRectAtLine(0, 0, 128);
                     ssd1306ClearRectAtLine(0, 2, 128);
-                    ssd1306DrawStringAtLine((9 - collone) * 9, 0, "-", &Font_8x8);
-                    ssd1306DrawStringAtLine((9 - collone) * 9, 2, "-", &Font_8x8);
+                    ssd1306DrawStringAtLine((9 - column) * 9, 0, "-", &Font_8x8);
+                    ssd1306DrawStringAtLine((9 - column) * 9, 2, "-", &Font_8x8);
                     ssd1306Refresh();
                 }
                 break;
@@ -573,7 +616,6 @@ int modifyPresetParam(char *param_name, presetParam *param)
     int *p_preset_val;
     int presetBufferLen = 0;
     int *p_presetBuffer = (int *) (preset->presetBuffer);
-    int rv;
 
     preset_val = *(p_presetBuffer);
 
@@ -755,7 +797,7 @@ void welcomeDisplay()
 {
 
     ssd1306ClearScreen(MAIN_AREA);
-    ssd1306DrawBmp(Pacabot_bmp, 1, 1, 128, 40);
+    ssd1306DrawBmp(pacabot_Img, 1, 1, 128, 40);
     ssd1306Refresh();
     while (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY)
         ;
@@ -767,7 +809,7 @@ void welcomeDisplay()
         HAL_Delay(5);
     }
     ssd1306ClearScreen(MAIN_AREA);
-    ssd1306DrawBmp(five_years, 1, 1, 128, 54);
+    ssd1306DrawBmp(fiveYears_Img, 1, 1, 128, 54);
     ssd1306Refresh();
 }
 
@@ -777,10 +819,10 @@ void powerOffConfirmation()
     modifyBoolParam("TURN POWER OFF ?", &confirm);
     if (confirm == TRUE)
     {
-        modifyBoolParam("SAVE PARAM ?", &confirm);
+        //modifyBoolParam("SAVE PARAM ?", &confirm);
         if (confirm == TRUE)
         {
-            //			save_setting();
+//            save_setting();
         }
         halt();
         while (1)

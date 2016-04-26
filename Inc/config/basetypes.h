@@ -39,6 +39,13 @@ typedef struct
 #define FALSE	0
 #endif
 
+#ifndef POSITIVE
+#define POSITIVE   1
+#endif
+#ifndef NEGATIVE
+#define NEGATIVE   0
+#endif
+
 /*
  * Utility macros
  */

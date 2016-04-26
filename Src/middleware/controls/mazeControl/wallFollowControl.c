@@ -25,7 +25,6 @@
 #include "middleware/controls/lineFollowerControl/lineFollowControl.h"
 #include "middleware/controls/mainControl/mainControl.h"
 #include "middleware/controls/mainControl/positionControl.h"
-#include "middleware/controls/mainControl/positionControl.h"
 #include "middleware/controls/mainControl/speedControl.h"
 #include "middleware/controls/mainControl/transfertFunction.h"
 #include "middleware/controls/mazeControl/reposition.h"
@@ -71,15 +70,16 @@ static arm_pid_instance_f32 telemeters_pid_instance;
 
 int wallFollowControlInit(void)
 {
-    telemeters_pid_instance.Kp = 20;
+    telemeters_pid_instance.Kp = 10;
     telemeters_pid_instance.Ki = 0;
-    telemeters_pid_instance.Kd = 50;
+    telemeters_pid_instance.Kd = 51;
 
     wall_follow_control.follow_pid.instance = &telemeters_pid_instance;
 
     wall_follow_control.succes = FALSE;
 
     pidControllerInit(wall_follow_control.follow_pid.instance);
+    wall_follow_control.follow_error = 0;
 
     return POSITION_CONTROL_E_SUCCESS;
 }
@@ -123,12 +123,12 @@ int wallFollowControlLoop(void)
             break;
     }
 
-    if (getWallPresence(FRONT_WALL) == TRUE)
-    {
-        positionControlEnablePositionCtrl(POSITION_CTRL);
-        wall_follow_control.follow_error = 0;
-        pidControllerReset(wall_follow_control.follow_pid.instance);
-    }
+//    if (getWallPresence(FRONT_WALL) == TRUE)
+//    {
+//        positionControlEnablePositionCtrl(POSITION_CTRL);
+////        wall_follow_control.follow_error = 0;
+//        pidControllerReset(wall_follow_control.follow_pid.instance);
+//    }
 
     if (fabs(wall_follow_control.follow_error) > MAX_FOLLOW_ERROR)
     {

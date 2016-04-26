@@ -10,12 +10,9 @@
 #include "stdbool.h"
 #include <arm_math.h>
 #include <math.h>
-#include <middleware/controls/mainControl/mainControl.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdint.h>
-
-#include "config/basetypes.h"
 
 /* Peripheral declarations */
 #include "peripherals/gyroscope/adxrs620.h"
@@ -28,6 +25,7 @@
 
 /* Middleware declarations */
 #include "middleware/powerManagement/powerManagement.h"
+#include "middleware/controls/mainControl/mainControl.h"
 
 /* Declarations for this module */
 #include "peripherals/callback/user_it_callback.h"
@@ -37,7 +35,6 @@ extern TIM_HandleTypeDef htim1;
 extern TIM_HandleTypeDef htim2;
 extern TIM_HandleTypeDef htim3;
 extern TIM_HandleTypeDef htim4;
-extern TIM_HandleTypeDef htim5;
 extern TIM_HandleTypeDef htim6;
 extern TIM_HandleTypeDef htim7;
 
@@ -51,16 +48,10 @@ extern ADC_HandleTypeDef hadc3;
 /* TIM callback --------------------------------------------------------------*/
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
-    if (htim == &htim2)
+#ifdef DEDICATED_TIMER
+    if( htim == &htim2)
     {
         telemeters_IT();
-    }
-    if (htim == &htim5)
-    {
-        if (lineSensors.active_state == TRUE)
-            lineSensors_IT();
-        if (line_follower.active_state == TRUE)
-            lineFollower_IT();
     }
     if (htim == &htim7)	//hight time freq
     {
@@ -72,6 +63,35 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
         //sleep_mode_IT();
         ledBlink_IT();
     }
+#else
+    static uint32_t cnt = 0;
+    if (htim == &htim7) //hight time freq
+    {
+        cnt++;
+        if (cnt % (int)(HI_TIME_FREQ / TELEMETERS_TIME_FREQ) == 0)
+        {
+            telemeters_IT();
+        }
+        if (cnt % (int)(HI_TIME_FREQ / CONTROL_TIME_FREQ) == 0)
+        {
+            mainControl_IT();
+        }
+        if (cnt % (int)(HI_TIME_FREQ / LINESENSORS_TIME_FREQ) == 0)
+        {
+            lineSensors_IT();
+        }
+        if (cnt % (int)(HI_TIME_FREQ / LINE_FOLLOWER_TIME_FREQ) == 0)
+        {
+            lineFollower_IT();
+        }
+        if (cnt % (int)(HI_TIME_FREQ / LOW_TIME_FREQ) == 0)
+        {
+            tone_IT();
+            //sleep_mode_IT();
+            ledBlink_IT();
+        }
+    }
+#endif
     if (htim == &htim1)
     {
         encoderLeft_IT();

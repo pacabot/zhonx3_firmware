@@ -25,11 +25,21 @@ enum telemeters_used
     NO_SIDE, ALL_SIDE, LEFT_SIDE, RIGHT_SIDE
 };
 
+typedef struct
+{
+    double calib_value;
+} reposition_calib_struct;
+
+typedef struct
+{
+    int32_t front_dist;
+} repositionGetOffsetsStruct;
+
 void repositionSetInitialPosition(double initial_position);
 void repositionResetTelemeterUsed(void);
 enum telemeters_used repositionGetTelemeterUsed(void);
-int  repositionGetFrontDist(void);
-void repositionGetFrontDistCal(void);
-int  frontCal(float max_speed);
+int  repositionGetFrontDist(repositionGetOffsetsStruct *offset);
+void repositionFrontDistCal(void);
+void repositionFrontTest(void);
 
 #endif

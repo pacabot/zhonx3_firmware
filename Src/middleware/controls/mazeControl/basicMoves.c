@@ -50,15 +50,22 @@
 /* Declarations for this module */
 #include "middleware/controls/mazeControl/basicMoves.h"
 
-#define UTURN_OFFSET 15
+#define UTURN_OFFSET 25
+
+typedef struct
+{
+    repositionGetOffsetsStruct frontCal;
+    spyPostGetOffsetsStruct spyPost;
+} getOffsetsStruct;
 
 static int moveHalfCell_IN(double max_speed, double end_speed);
 static int moveHalfCell_OUT(double max_speed, double end_speed);
-static int moveMainDist(double max_speed, double end_speed);
-static int moveOffsetDist(int offset, double max_speed, double end_speed);
+static int moveMainDist(getOffsetsStruct *offset, double max_speed, double end_speed);
+static int moveOffsetDist(getOffsetsStruct *offset, double max_speed, double end_speed);
 static int moveRotateInPlaceCW90(double speed_rotation);
 static int moveRotateInPlaceCCW90(double speed_rotation);
 static int moveRotateInPlaceCW180(double speed_rotation);
+static int frontAlignment(float max_speed);
 
 /**************************************************************************************/
 /***************                    Basic Moves                    ********************/
@@ -104,11 +111,12 @@ int moveHalfCell_OUT(double max_speed, double end_speed)
  *      :    |    :
  *      o         :
  */
-int moveMainDist(double max_speed, double end_speed)
+int moveMainDist(getOffsetsStruct *offset, double max_speed, double end_speed)
 {
     while (hasMoveEnded() != TRUE);
     repositionSetInitialPosition(OFFSET_DIST); //absolute position into a cell
     move(0, MAIN_DIST, max_speed, max_speed); //distance with last move offset
+    spyPostGetOffset(&offset->spyPost);
 
     return POSITION_CONTROL_E_SUCCESS;
 }
@@ -120,22 +128,52 @@ int moveMainDist(double max_speed, double end_speed)
  *      :         :
  *      o         :
  */
-int moveOffsetDist(int offset, double max_speed, double end_speed)
+int moveOffsetDist(getOffsetsStruct *offset, double max_speed, double end_speed)
 {
-    if (fabs(offset) > MAX_FRONT_DIST_ERROR - 1) // -1 for non null move
+    double offset_error = 0;
+
+    if (offset->spyPost.left_x != 0)
     {
-        if(offset < 0)
+        offset_error = (double)offset->spyPost.left_x;
+#ifdef DEBUG_BASIC_MOVES
+        bluetoothWaitReady();
+        bluetoothPrintf(" L_OFFSET = %d, TYPE = %d\n", (int32_t)offset->spyPost.left_x, offset->spyPost.left_spyPostType);
+#endif
+    }
+    else if (offset->spyPost.right_x != 0)
+    {
+        offset_error = (double)offset->spyPost.right_x;
+#ifdef DEBUG_BASIC_MOVES
+        bluetoothWaitReady();
+        bluetoothPrintf(" R_OFFSET = %d, TYPE = %d\n", (int32_t)offset->spyPost.right_x, offset->spyPost.right_spyPostType);
+#endif
+    }
+    else if (offset->frontCal.front_dist != 0)
+    {
+        offset_error = (double)offset->frontCal.front_dist;
+#ifdef DEBUG_BASIC_MOVES
+        bluetoothWaitReady();
+        bluetoothPrintf(" F_OFFSET = %d\n", (int32_t)offset->frontCal.front_dist);
+#endif
+    }
+    else
+    {
+        offset_error = 0.00;
+    }
+    if (fabs(offset_error) > MAX_FRONT_DIST_ERROR - 1) // -1 for non null move
+    {
+        if(offset_error < 0.00)
         {
-            offset = -MAX_FRONT_DIST_ERROR;
+            offset_error = -MAX_FRONT_DIST_ERROR;
         }
         else
         {
-            offset = MAX_FRONT_DIST_ERROR;
+            offset_error = MAX_FRONT_DIST_ERROR;
         }
     }
+    while (hasMoveEnded() != TRUE);
     repositionSetInitialPosition(CELL_LENGTH - OFFSET_DIST);    //absolute position into a cell
-    move(0, (OFFSET_DIST * 2.00) + (double)offset, max_speed, end_speed);
-
+    move(0, (OFFSET_DIST * 2.00) + offset_error, max_speed, end_speed);
     return POSITION_CONTROL_E_SUCCESS;
 }
 
@@ -185,6 +223,45 @@ int moveRotateInPlaceCW180(double speed_rotation)
 }
 
 /**************************************************************************************/
+/***************                  Specials Moves                   ********************/
+/**************************************************************************************/
+int frontAlignment(float max_speed)
+{
+    double relative_dist = 0.00;
+    while (hasMoveEnded() != TRUE);
+    if (getWallPresence(FRONT_WALL) == WALL_PRESENCE)
+    {
+        if (getTelemeterDist(TELEMETER_FR) > getTelemeterDist(TELEMETER_FL))
+        {
+            move(-30, 0, max_speed, max_speed);
+            while (((getTelemeterDist(TELEMETER_FR) - getTelemeterDist(TELEMETER_FL))) > 1.00)
+            {
+                if (hasMoveEnded() == TRUE)
+                {
+                    move(30, 0, max_speed, max_speed);
+                    return 0xFF;
+                }
+            }
+        }
+        else
+        {
+            move(30, 0, max_speed, max_speed);
+            while (((getTelemeterDist(TELEMETER_FL) - getTelemeterDist(TELEMETER_FR))) > 1.00)
+            {
+                if (hasMoveEnded() == TRUE)
+                {
+                    move(-30, 0, max_speed, max_speed);
+                    return 0xFF;
+                }
+            }
+        }
+        relative_dist = ((getTelemeterDist(TELEMETER_FL) + getTelemeterDist(TELEMETER_FR)) / 2.00) - 21.00;
+        move(0, relative_dist, 100, 100);
+    }
+    return 0;
+}
+
+/**************************************************************************************/
 /***************                   Avanced Moves                   ********************/
 /**************************************************************************************/
 
@@ -198,53 +275,26 @@ int moveRotateInPlaceCW180(double speed_rotation)
 int moveCell(unsigned int nb_cell, double max_speed, double end_speed)
 {
     unsigned int i;
-    spyPostGetOffsetsStruct offset;
+    getOffsetsStruct offset;
+    memset(&offset, 0, sizeof(getOffsetsStruct));
+#ifdef DEBUG_BASIC_MOVES
+    bluetoothWaitReady();
+    bluetoothPrintf("\rMOVE %d CELL,", nb_cell);
+#endif
 
     if (nb_cell == 0)
         return POSITION_CONTROL_E_SUCCESS;
 
     for (i = 0; i < (nb_cell - 1); i++)
     {
-        while (hasMoveEnded() != TRUE);
-        repositionSetInitialPosition(OFFSET_DIST); //absolute position into a cell
-        move(0, (CELL_LENGTH), max_speed, max_speed);
-        while (hasMoveEnded() != TRUE);
+        moveMainDist(&offset, max_speed, max_speed);
+        repositionGetFrontDist(&offset.frontCal);
+        moveOffsetDist(&offset, max_speed, end_speed);
     }
-    moveMainDist(max_speed, max_speed);
-    spyPostGetOffset(&offset);
+    moveMainDist(&offset, max_speed, max_speed);
+    repositionGetFrontDist(&offset.frontCal);
+    moveOffsetDist(&offset, max_speed, end_speed);
 
-//    if (repositionGetFrontDist() != 0)
-//    {
-//        moveOffsetDist(repositionGetFrontDist(), max_speed, end_speed);
-//#ifdef DEBUG_BASIC_MOVES
-//        bluetoothWaitReady();
-//        bluetoothPrintf("\rMOVE CELL, FRONT OFFSET = %d\n", (int32_t)repositionGetFrontDist());
-//#endif
-//    }
-     if (offset.left_x != 0)
-    {
-        moveOffsetDist(offset.left_x, max_speed, end_speed);
-#ifdef DEBUG_BASIC_MOVES
-        bluetoothWaitReady();
-        bluetoothPrintf("\rMOVE %d CELL, L_OFFSET = %d, TYPE = %d\n", nb_cell, (int32_t)offset.left_x, offset.left_spyPostType);
-#endif
-    }
-    else if (offset.right_x != 0)
-    {
-        moveOffsetDist(offset.right_x, max_speed, end_speed);
-#ifdef DEBUG_BASIC_MOVES
-        bluetoothWaitReady();
-        bluetoothPrintf("\rMOVE %d CELL, R_OFFSET = %d, TYPE = %d\n", nb_cell, (int32_t)offset.right_x, offset.right_spyPostType);
-#endif
-    }
-    else
-    {
-        moveOffsetDist(0, max_speed, end_speed);
-#ifdef DEBUG_BASIC_MOVES
-        bluetoothWaitReady();
-        bluetoothPrintf("\rMOVE %d CELL\n", nb_cell);
-#endif
-    }
     return POSITION_CONTROL_E_SUCCESS;
 }
 
@@ -257,25 +307,19 @@ int moveCell(unsigned int nb_cell, double max_speed, double end_speed)
  */
 int moveStartCell(double max_speed, double end_speed)
 {
+    getOffsetsStruct offset;
+    memset(&offset, 0, sizeof(getOffsetsStruct));
+#ifdef DEBUG_BASIC_MOVES
+    bluetoothWaitReady();
+    bluetoothPrintf("\rMOVE START CELL");
+#endif
     while (hasMoveEnded() != TRUE);
     repositionSetInitialPosition(Z3_CENTER_BACK_DIST + HALF_WALL_THICKNESS);
     move(0, ((CELL_LENGTH - (Z3_CENTER_BACK_DIST + HALF_WALL_THICKNESS)) - OFFSET_DIST), max_speed, end_speed);
     while (hasMoveEnded() != TRUE);
 
-    moveOffsetDist(repositionGetFrontDist(), max_speed, end_speed);
-
-#ifdef DEBUG_BASIC_MOVES
-    if (repositionGetFrontDist() == 0)
-    {
-        bluetoothWaitReady();
-        bluetoothPrintf("\rMOVE START CELL\n");
-    }
-    else
-    {
-        bluetoothWaitReady();
-        bluetoothPrintf("\rMOVE START CELL, FRONT OFFSET = %d\n", (int32_t)repositionGetFrontDist());
-    }
-#endif
+    repositionGetFrontDist(&offset.frontCal);
+    moveOffsetDist(&offset, max_speed, end_speed);
 
     return POSITION_CONTROL_E_SUCCESS;
 }
@@ -289,23 +333,18 @@ int moveStartCell(double max_speed, double end_speed)
  */
 int moveRotateCW90(double max_speed, double end_speed)
 {
+    getOffsetsStruct offset;
+    memset(&offset, 0, sizeof(getOffsetsStruct));
+#ifdef DEBUG_BASIC_MOVES
+    bluetoothWaitReady();
+    bluetoothPrintf("\rMOVE ROTATE CW90");
+#endif
     while (hasMoveEnded() != TRUE);
     move(90, (HALF_CELL_LENGTH - OFFSET_DIST), max_speed, max_speed);
     while (hasMoveEnded() != TRUE);
-    moveOffsetDist(repositionGetFrontDist(), max_speed, end_speed);
 
-#ifdef DEBUG_BASIC_MOVES
-    if (repositionGetFrontDist() == 0)
-    {
-        bluetoothWaitReady();
-        bluetoothPrintf("\rMOVE ROTATE CW90\n");
-    }
-    else
-    {
-        bluetoothWaitReady();
-        bluetoothPrintf("\rMOVE ROTATE CW90, FRONT OFFSET = %d\n", (int32_t)repositionGetFrontDist());
-    }
-#endif
+    repositionGetFrontDist(&offset.frontCal);
+    moveOffsetDist(&offset, max_speed, end_speed);
 
     return POSITION_CONTROL_E_SUCCESS;
 }
@@ -319,23 +358,18 @@ int moveRotateCW90(double max_speed, double end_speed)
  */
 int moveRotateCCW90(double max_speed, double end_speed)
 {
+    getOffsetsStruct offset;
+    memset(&offset, 0, sizeof(getOffsetsStruct));
+#ifdef DEBUG_BASIC_MOVES
+    bluetoothWaitReady();
+    bluetoothPrintf("\rMOVE ROTATE CCW90");
+#endif
     while (hasMoveEnded() != TRUE);
     move(-90, (HALF_CELL_LENGTH - OFFSET_DIST), max_speed, max_speed);
     while (hasMoveEnded() != TRUE);
-    moveOffsetDist(repositionGetFrontDist(), max_speed, end_speed);
 
-#ifdef DEBUG_BASIC_MOVES
-    if (repositionGetFrontDist() == 0)
-    {
-        bluetoothWaitReady();
-        bluetoothPrintf("\rMOVE ROTATE CCW90\n");
-    }
-    else
-    {
-        bluetoothWaitReady();
-        bluetoothPrintf("\rMOVE ROTATE CCW90, FRONT OFFSET = %d\n", (int32_t)repositionGetFrontDist());
-    }
-#endif
+    repositionGetFrontDist(&offset.frontCal);
+    moveOffsetDist(&offset, max_speed, end_speed);
 
     return POSITION_CONTROL_E_SUCCESS;
 }
@@ -347,17 +381,17 @@ int moveRotateCCW90(double max_speed, double end_speed)
  *      :   '-<
  *      o_________o
  */
-int rotate180WithCal(wallSelectorEnum wall_presence, double speed_rotation)
+int moveRotateInPlace180WithCal(wallSelectorEnum wall_presence, double speed_rotation)
 {
     // chose the correct turn for re-calibrate the robot if possible
     if (wall_presence == RIGHT_WALL)
     {
-        rotateInPlaceWithCalCW90(wall_presence, speed_rotation);
+        moveRotateInPlaceWithCalCW90(wall_presence, speed_rotation);
         moveRotateInPlaceCW90(speed_rotation);
     }
     else if (wall_presence == LEFT_WALL)
     {
-        rotateInPlaceWithCalCCW90(wall_presence, speed_rotation);
+        moveRotateInPlaceWithCalCCW90(wall_presence, speed_rotation);
         moveRotateInPlaceCCW90(speed_rotation);
     }
     else
@@ -375,13 +409,13 @@ int rotate180WithCal(wallSelectorEnum wall_presence, double speed_rotation)
  *      :    !
  *      o_________o
  */
-int rotateInPlaceWithCalCW90(wallSelectorEnum wall_presence, double speed_rotation)
+int moveRotateInPlaceWithCalCW90(wallSelectorEnum wall_presence, double speed_rotation)
 {
     moveRotateInPlaceCW90(speed_rotation);
     // chose re-calibrate the robot if possible
     if (wall_presence == RIGHT_WALL)
     {
-        frontCal(speed_rotation);
+        frontAlignment(speed_rotation);
     }
 
     return POSITION_CONTROL_E_SUCCESS;
@@ -394,13 +428,13 @@ int rotateInPlaceWithCalCW90(wallSelectorEnum wall_presence, double speed_rotati
  *      :    !
  *      o_________o
  */
-int rotateInPlaceWithCalCCW90(wallSelectorEnum wall_presence, double speed_rotation)
+int moveRotateInPlaceWithCalCCW90(wallSelectorEnum wall_presence, double speed_rotation)
 {
     moveRotateInPlaceCCW90(speed_rotation);
     // chose re-calibrate the robot if possible
     if (wall_presence == LEFT_WALL)
     {
-        frontCal(speed_rotation);
+        frontAlignment(speed_rotation);
     }
 
     return POSITION_CONTROL_E_SUCCESS;
@@ -415,6 +449,8 @@ int rotateInPlaceWithCalCCW90(wallSelectorEnum wall_presence, double speed_rotat
  */
 int moveUTurn(double speed_rotation, double max_speed, double end_speed)
 {
+    getOffsetsStruct offset;
+    memset(&offset, 0, sizeof(getOffsetsStruct));
     wallSelectorEnum wall_presence = FALSE;
     // memorize wall presence before move HALF CELL IN
     if (getWallPresence(RIGHT_WALL) == TRUE)
@@ -426,35 +462,29 @@ int moveUTurn(double speed_rotation, double max_speed, double end_speed)
         wall_presence = LEFT_WALL;
     }
     // move HALF CELL IN
-    moveHalfCell_IN(max_speed, max_speed);
+    moveHalfCell_IN(max_speed, 0);
     // chose the correct turn for re-calibrate the robot if possible
-    rotate180WithCal(wall_presence, speed_rotation);
+    moveRotateInPlace180WithCal(wall_presence, speed_rotation);
     while (hasMoveEnded() != TRUE);
     // go back and go out for maximize correct alignment
     mainControlSetFollowType(NO_FOLLOW); //todo this is the shit
     positionControlSetPositionType(ENCODERS);
     repositionSetInitialPosition(HALF_CELL_LENGTH);
-    move(0, -1.00 * (HALF_CELL_LENGTH - (Z3_CENTER_BACK_DIST + HALF_WALL_THICKNESS - UTURN_OFFSET)), max_speed, max_speed);
+    move(0, -1.00 * (HALF_CELL_LENGTH - Z3_CENTER_BACK_DIST - UTURN_OFFSET + 15), max_speed, 0);
     mainControlSetFollowType(WALL_FOLLOW); //todo this is the shit
     positionControlSetPositionType(GYRO);
-    repositionSetInitialPosition(Z3_CENTER_BACK_DIST + HALF_WALL_THICKNESS + UTURN_OFFSET);
+    repositionSetInitialPosition(Z3_CENTER_BACK_DIST + UTURN_OFFSET);
     while (hasMoveEnded() != TRUE);
-    move(0, (HALF_CELL_LENGTH - (Z3_CENTER_BACK_DIST + HALF_WALL_THICKNESS + UTURN_OFFSET)), max_speed, max_speed);
+    move(0, (HALF_CELL_LENGTH - Z3_CENTER_BACK_DIST - UTURN_OFFSET), max_speed, max_speed);
 
     moveHalfCell_OUT(max_speed, max_speed);
-    moveOffsetDist(repositionGetFrontDist(), max_speed, end_speed);
+
+    repositionGetFrontDist(&offset.frontCal);
+    moveOffsetDist(&offset, max_speed, end_speed);
 
 #ifdef DEBUG_BASIC_MOVES
-    if (repositionGetFrontDist() == 0)
-    {
-        bluetoothWaitReady();
-        bluetoothPrintf("\rMOVE U TURN\n");
-    }
-    else
-    {
-        bluetoothWaitReady();
-        bluetoothPrintf("\rMOVE U TURN, FRONT OFFSET = %d\n", (int32_t)repositionGetFrontDist());
-    }
+    bluetoothWaitReady();
+    bluetoothPrintf("\rMOVE U TURN");
 #endif
     return POSITION_CONTROL_E_SUCCESS;
 }
@@ -491,14 +521,35 @@ void movesTest()
     HAL_Delay(2000);
 
     int Vmin, Vmax, Vrotate;
-    Vmin = 300;
-    Vmax = 400;
-    Vrotate = 300;
+    Vmin = 600;
+    Vmax = 600;
+    Vrotate = 600;
 
     //test Uturn
     //moveStartCell(Vmax, Vmax);
-    moveUTurn(Vrotate, Vmax, Vmax);
-    return;
+    //moveUTurn(Vrotate, Vmax, Vmax);
+    //return;
+
+    double abs_encoders = encoderGetAbsDist(ENCODER_L) + encoderGetAbsDist(ENCODER_R);
+    //test absolute vs relative distance
+    moveStartCell(Vmax, Vmax);
+    moveCell(1, Vmax, Vmin);
+    moveRotateCW90(Vrotate, Vrotate);
+    moveCell(2, Vmax, Vmin);
+    moveRotateCW90(Vrotate, Vrotate);
+    moveRotateCCW90(Vrotate, Vrotate);
+    moveRotateCCW90(Vrotate, Vrotate);
+    while (hasMoveEnded() != TRUE);
+    abs_encoders = (encoderGetAbsDist(ENCODER_L) + encoderGetAbsDist(ENCODER_R)) - abs_encoders;
+
+    ssd1306ClearScreen(MAIN_AREA);
+    ssd1306PrintIntAtLine(0, 1, "abs  dist =  ", (int)abs_encoders / 2, &Font_5x8);
+    ssd1306PrintIntAtLine(0, 2, "reel dist =  ", 239 + 179 + 129 + 179 + 179 + 129 + 129 + 129, &Font_5x8);
+    ssd1306Refresh();
+
+    telemetersStop();
+    motorsDriverSleep(ON);
+    while(1);
 
     //maze
     moveStartCell(Vmax, Vmax);
@@ -577,9 +628,12 @@ void rotateTest()
     telemetersStart();
 
     positionControlSetPositionType(GYRO);
-    mainControlSetFollowType(NO_FOLLOW);
+    mainControlSetFollowType(WALL_FOLLOW);
 
     HAL_Delay(2000);
+
+    move(0,0,0,0);
+    while(1);
 
     moveUTurn(100, 100, 100);
     return;

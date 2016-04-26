@@ -67,8 +67,7 @@ static char getData(void)
     // I2C
     static uint8_t aRxBuffer;
 
-    while (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY)
-        ;
+    while (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY);
     while (HAL_I2C_Master_Receive(&hi2c1, (uint16_t) 65, (uint8_t *) &aRxBuffer, 1, 1000) != HAL_OK)
     {
         /* Error_Handler() function is called when Timout error occurs.
@@ -76,7 +75,7 @@ static char getData(void)
          Master restarts communication */
         if (HAL_I2C_GetError(&hi2c1) != HAL_I2C_ERROR_AF)
         {
-            bluetoothPrintf("I2C getExpander error \r\n");
+//            bluetoothPrintf("I2C getExpander error \r\n");
         }
     }
 
@@ -123,7 +122,7 @@ void expanderLedState(char led, char val)
 
 void expanderSetLeds(char leds)
 {
-    sendData((0b00001111 | (~leds << 4)));
+    sendData((0xF0| (~leds << 4)));
 }
 
 char expanderJoyState(void)
@@ -248,33 +247,13 @@ void joystickTest(void)
 
 void expenderLedTest()
 {
-    while (expanderJoyState() != JOY_LEFT)
-    {
-        //		expanderLedState(1,1);
-        //		HAL_Delay(250);
-        //		expanderLedState(2,1);
-        //		HAL_Delay(250);
-        //		expanderLedState(3,1);
-        //		HAL_Delay(250);
-        //		expanderLedState(1,0);
-        //		HAL_Delay(250);
-        //		expanderLedState(2,0);
-        //		HAL_Delay(250);
-        //		expanderLedState(3,0);
-        //		HAL_Delay(250);
-
         expanderSetLeds(0b100);
         HAL_Delay(250);
         expanderSetLeds(0b110);
         HAL_Delay(250);
         expanderSetLeds(0b111);
         HAL_Delay(250);
-        expanderSetLeds(0b110);
-        HAL_Delay(250);
-        expanderSetLeds(0b100);
-        HAL_Delay(250);
-        expanderSetLeds(0b000);
-        HAL_Delay(250);
-    }
+
     antiBounceJoystick();
+    return;
 }
