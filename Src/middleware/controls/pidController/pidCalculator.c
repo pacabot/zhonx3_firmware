@@ -195,7 +195,12 @@ void pidGyro_GetCriticalPoint(void)
     while (expanderJoyFiltered() != JOY_RIGHT)
     {
         ssd1306ClearScreen(MAIN_AREA);
-        ssd1306DrawStringAtLine(35, 0, "POSITION PID CAL", &Font_3x6);
+        ssd1306DrawStringAtLine(0, 0, "         POSITION PID CAL",              &Font_3x6);
+        ssd1306DrawStringAtLine(0, 1, "  RIGHT TO START, LEFT TO EXIT",    &Font_3x6);
+
+        ssd1306PrintfAtLine(0, 2, &Font_5x8, "Kp = %d", (uint32_t)coefs.Kp);
+        ssd1306PrintfAtLine(0, 3, &Font_5x8, "Ki = %d.10^-3", (uint32_t)(coefs.Ki * 1000));
+        ssd1306PrintfAtLine(0, 4, &Font_5x8, "Kd = %d", (uint32_t)(coefs.Kd * 1000));
         ssd1306Refresh();
 
         if (expanderJoyFiltered() == JOY_LEFT)
@@ -293,11 +298,10 @@ void pidGyro_GetCriticalPoint(void)
         HAL_Delay(2000);
     }
 
-
     ssd1306ClearScreen(MAIN_AREA);
     ssd1306PrintfAtLine(0, 0, &Font_5x8, "Kcr= %d Tcr= %d ms",  (uint32_t)Kp_avrg, (uint32_t)period_time_ms);
     ssd1306PrintfAtLine(0, 1, &Font_5x8, "Kp = %d", (uint32_t)coefs.Kp);
-    ssd1306PrintfAtLine(0, 2, &Font_5x8, "Ki = %d.10^-3", (uint32_t)(coefs.Ki));
+    ssd1306PrintfAtLine(0, 2, &Font_5x8, "Ki = %d.10^-3", (uint32_t)(coefs.Ki * 1000));
     ssd1306PrintfAtLine(0, 3, &Font_5x8, "Kd = %d", (uint32_t)(coefs.Kd * 1000));
     ssd1306Refresh();
     HAL_Delay(2000);
