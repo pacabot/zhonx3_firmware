@@ -32,10 +32,10 @@
 
 /* Extern variables ---------------------------------------------------------*/
 extern TIM_HandleTypeDef htim1;
-extern TIM_HandleTypeDef htim2;
+//extern TIM_HandleTypeDef htim2;
 extern TIM_HandleTypeDef htim3;
 extern TIM_HandleTypeDef htim4;
-extern TIM_HandleTypeDef htim6;
+//extern TIM_HandleTypeDef htim6;
 extern TIM_HandleTypeDef htim7;
 
 extern ADC_HandleTypeDef hadc1;

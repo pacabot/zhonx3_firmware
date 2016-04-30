@@ -37,10 +37,10 @@
 /* Declarations for this module */
 #include "peripherals/times_base/times_base.h"
 
-extern TIM_HandleTypeDef htim2;
+//extern TIM_HandleTypeDef htim2;
 extern TIM_HandleTypeDef htim4;
 extern TIM_HandleTypeDef htim5;
-extern TIM_HandleTypeDef htim6;
+//extern TIM_HandleTypeDef htim6;
 extern TIM_HandleTypeDef htim7;
 
 GPIO_InitTypeDef GPIO_InitStruct;
