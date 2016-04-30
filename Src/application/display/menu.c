@@ -142,9 +142,9 @@ const menuItem spyPostCal=
 {
         "SPYPOST",      //9 characters max
         {
-                { "Start calibration",       'f', (void*)spyPostCalibration },
-                { "Read Calibration.",  'f', (void*)spyPostReadCalibration },
-                { "SpyPost test.",      'f', (void*)spyPostTest },
+                { "Start calibration",  'f', (void*)spyPostCalibration},
+                { "Read Calibration.",  'f', (void*)spyPostReadCalibration},
+                { "SpyPost test.",      'f', (void*)spyPostTest},
         }
 };
 
@@ -152,8 +152,8 @@ const menuItem pidCal=
 {
         "PID",          //9 characters max
         {
-                { "Gyro Kp critic", 'f', (void*)pidGyro_GetCriticalPoint },
-                { "Telemeter Kp critic", 'f', (void*)pidTelemeters_GetCriticalPoint },
+                { "Gyro Kp critic", 'f', (void*)pidGyro_GetCriticalPoint},
+                { "Telemeter Kp critic", 'f', (void*)pidTelemeters_GetCriticalPoint},
         }
 };
 
@@ -362,7 +362,7 @@ int menu(const menuItem Menu)
                                            (float*) Menu.line[line_menu - 1].param);
                         break;
                     case 'p':
-                        modifyPresetParam(Menu.line[line_menu].name, Menu.line[line_menu].param);
+                        modifyPresetParam(Menu.line[line_menu].name, (presetParam *)Menu.line[line_menu].param);
                         break;
                     default:
                         break;

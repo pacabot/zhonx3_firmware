@@ -243,8 +243,8 @@ static int setZhonxName(void)
 
     // Write Name in flash
     rv = flash_write(zhonxSettings.h_flash,
-    CONFIG_ZHONX_INFO_ADDR,
-                     zhonxName, strlen(zhonxName) + 1);
+                     (unsigned char *)CONFIG_ZHONX_INFO_ADDR,
+                     (unsigned char *)zhonxName, strlen(zhonxName) + 1);
     if (rv != FLASH_E_SUCCESS)
     {
         // TODO: handle this error

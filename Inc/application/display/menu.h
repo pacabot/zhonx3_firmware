@@ -22,7 +22,7 @@ typedef struct
     char *name;
     char type;
     int (*param)(void);
-    int (*function)(void);
+//    int (*function)(void);
 } lineItem;
 
 typedef struct
