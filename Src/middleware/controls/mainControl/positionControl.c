@@ -75,7 +75,7 @@ typedef struct
 /* global variables */
 static position_control_struct position_control;
 static position_params_struct position_params;
-//static arm_pid_instance_f32 encoder_or_gyro_pid_instance;
+static arm_pid_instance_f32 encoder_or_gyro_pid_instance;
 
 int positionControlInit(void)
 {
@@ -83,11 +83,11 @@ int positionControlInit(void)
     memset(&position_params, 0, sizeof(position_params_struct));
     positionProfileCompute(0, 0, 0);
 
-//    encoder_or_gyro_pid_instance.Kp = 90;
-//    encoder_or_gyro_pid_instance.Ki = 0.030 / CONTROL_TIME_FREQ;
-//    encoder_or_gyro_pid_instance.Kd = 0.7 * CONTROL_TIME_FREQ;
+    encoder_or_gyro_pid_instance.Kp = 9;
+    encoder_or_gyro_pid_instance.Ki = 0.030 / CONTROL_TIME_FREQ;
+    encoder_or_gyro_pid_instance.Kd = 0.70 * CONTROL_TIME_FREQ;
 
-    position_control.position_pid.instance = &(zhonxCalib_data->pid_gyro);
+//    position_control.position_pid.instance = &(zhonxCalib_data->pid_gyro);
 
     position_control.positionType = ENCODERS;
     position_params.sign = 1;
@@ -150,16 +150,12 @@ int positionControlLoop(void)
             position_control.current_angle = 180.00 * (encoderGetDist(ENCODER_R) - encoderGetDist(ENCODER_L))
             / (PI * ROTATION_DIAMETER);
     }
-    else if (position_control.positionType == GYRO)
+    else
     {
         if (position_params.sign > 0)
             position_control.current_angle = gyroGetAngle();
         else
             position_control.current_angle = -1.00 * gyroGetAngle();
-    }
-    else
-    {
-        position_control.positionType = ENCODERS;
     }
 
     if (position_control.nb_loop < position_params.nb_loop)

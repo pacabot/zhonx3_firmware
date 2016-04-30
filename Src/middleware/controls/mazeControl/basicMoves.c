@@ -512,13 +512,12 @@ void mainControlDisplayTest(void)
 
 void movesTest()
 {
-    mainControlInit();
-    telemetersStart();
-
-    positionControlSetPositionType(GYRO);
-    mainControlSetFollowType(WALL_FOLLOW);
+    positionControlSetPositionType(ENCODERS);
+    mainControlSetFollowType(NO_FOLLOW);
 
     HAL_Delay(2000);
+
+//    telemetersStart();
 
     int Vmin, Vmax, Vrotate;
     Vmin = 600;
@@ -532,6 +531,7 @@ void movesTest()
 
     double abs_encoders = encoderGetAbsDist(ENCODER_L) + encoderGetAbsDist(ENCODER_R);
     //test absolute vs relative distance
+    moveRotateCW90(Vrotate, Vrotate);
     moveStartCell(Vmax, Vmax);
     moveCell(1, Vmax, Vmin);
     moveRotateCW90(Vrotate, Vrotate);
