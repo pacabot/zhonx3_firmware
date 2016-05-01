@@ -211,8 +211,8 @@ const menuItem tests_menu=
 const menuItem control_menu =
 {       "CONTROL",      //9 characters max
         {
-                { "Follow the wall",    'f', (void*)movesTest1 },
-                { "Rotate",             'f', (void*)movesTest2 },
+                { "Move Test 1",    'f', (void*)movesTest1 },
+                { "Move Test 2",    'f', (void*)movesTest2 },
         }
 };
 

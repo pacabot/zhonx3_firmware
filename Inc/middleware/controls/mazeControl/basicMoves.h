@@ -23,15 +23,15 @@
 
 //#define DEBUG_BASIC_MOVES
 
-int moveCell(unsigned int nb_cell, double max_speed, double end_speed);
-int moveEndCell(double max_speed, double end_speed);
-int moveStartCell(double max_speed, double end_speed);
-int moveRotateCW90(double max_speed, double end_speed);
-int moveRotateCCW90(double max_speed, double end_speed);
+int moveCell(unsigned int nb_cell, double max_speed, double out_speed);
+int moveEndCell(double max_speed, double out_speed);
+int moveStartCell(double max_speed, double out_speed);
+int moveRotateCW90(double max_speed, double out_speed);
+int moveRotateCCW90(double max_speed, double out_speed);
 int moveRotateInPlace180WithCal(wallSelectorEnum wall_presence, double speed_rotation);
 int moveRotateInPlaceWithCalCW90(wallSelectorEnum wall_presence, double speed_rotation);
 int moveRotateInPlaceWithCalCCW90(wallSelectorEnum wall_presence, double speed_rotation);
-int moveUTurn(double speed_rotation, double max_speed, double end_speed);
+int moveUTurn(double speed_rotation, double max_speed, double out_speed);
 void movesTest1(void);
 void movesTest2(void);
 void mainControlDisplayTest(void);
