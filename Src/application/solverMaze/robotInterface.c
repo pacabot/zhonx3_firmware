@@ -421,7 +421,7 @@ int test_move_zhonx ()
     telemetersStart();
     mainControlSetFollowType(WALL_FOLLOW);
     positionControlSetPositionType(GYRO);
-    moveRealZhonxArc(&maze, &zhonx_position, way);
+    moveRealZhonxArc((labyrinthe *)&maze, &zhonx_position, way);
     HAL_Delay(500);
     motorsDriverSleep(ON);
     telemetersStop();

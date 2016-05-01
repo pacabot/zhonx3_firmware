@@ -52,8 +52,8 @@ extern void lineFollower();
 extern int lineSensorsCalibration(void);
 extern void maze();
 extern void testWallsSensors();
-extern void movesTest(void);
-extern void rotateTest(void);
+extern void movesTest1(void);
+extern void movesTest2(void);
 extern void expenderLedTest();
 extern int wallSensorsCalibrationFront(void);
 extern int wallSensorsCalibrationDiag(void);
@@ -142,9 +142,9 @@ const menuItem spyPostCal=
 {
         "SPYPOST",      //9 characters max
         {
-                { "Start calibration",       'f', (void*)spyPostCalibration },
-                { "Read Calibration.",  'f', (void*)spyPostReadCalibration },
-                { "SpyPost test.",      'f', (void*)spyPostTest },
+                { "Start calibration",  'f', (void*)spyPostCalibration},
+                { "Read Calibration.",  'f', (void*)spyPostReadCalibration},
+                { "SpyPost test.",      'f', (void*)spyPostTest},
         }
 };
 
@@ -152,8 +152,8 @@ const menuItem pidCal=
 {
         "PID",          //9 characters max
         {
-                { "Gyro Kp critic", 'f', (void*)pidGyro_GetCriticalPoint },
-                { "Telemeter Kp critic", 'f', (void*)pidTelemeters_GetCriticalPoint },
+                { "Gyro Kp critic", 'f', (void*)pidGyro_GetCriticalPoint},
+                { "Telemeter Kp critic", 'f', (void*)pidTelemeters_GetCriticalPoint},
         }
 };
 
@@ -211,8 +211,8 @@ const menuItem tests_menu=
 const menuItem control_menu =
 {       "CONTROL",      //9 characters max
         {
-                { "Follow the wall",    'f', (void*)movesTest },
-                { "Rotate",             'f', (void*)rotateTest },
+                { "Follow the wall",    'f', (void*)movesTest1 },
+                { "Rotate",             'f', (void*)movesTest2 },
         }
 };
 
@@ -362,7 +362,7 @@ int menu(const menuItem Menu)
                                            (float*) Menu.line[line_menu - 1].param);
                         break;
                     case 'p':
-                        modifyPresetParam(Menu.line[line_menu].name, Menu.line[line_menu].param);
+                        modifyPresetParam(Menu.line[line_menu].name, (presetParam *)Menu.line[line_menu].param);
                         break;
                     default:
                         break;

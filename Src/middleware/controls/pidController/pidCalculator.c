@@ -174,7 +174,7 @@ void pidGyro_GetCriticalPoint(void)
     mobileAvrgStruct mAvrgStruct;
     memset((mobileAvrgStruct*) &mAvrgStruct, 0, sizeof(mobileAvrgStruct));
     const double pwm_ratio = (PWM_RATIO_COEFF_A * 8000.00 + PWM_RATIO_COEFF_B);
-    const double error_max = 0.12; //angular error
+    const double error_max = 0.1; //angular error
     const int pwm_move_offset = 200;
     const int max_dist = 1000;
     position_pid.Kp = 100;
@@ -195,12 +195,12 @@ void pidGyro_GetCriticalPoint(void)
     while (expanderJoyFiltered() != JOY_RIGHT)
     {
         ssd1306ClearScreen(MAIN_AREA);
-        ssd1306DrawStringAtLine(0, 0, "         POSITION PID CAL",              &Font_3x6);
-        ssd1306DrawStringAtLine(0, 1, "  RIGHT TO START, LEFT TO EXIT",    &Font_3x6);
+        ssd1306DrawStringAtLine(0, 0, "         POSITION PID CAL", &Font_3x6);
+        ssd1306DrawStringAtLine(0, 1, "  RIGHT TO START, LEFT TO EXIT", &Font_3x6);
 
-        ssd1306PrintfAtLine(0, 2, &Font_5x8, "Kp = %d", (uint32_t)coefs.Kp); //todo add print old values in flash
-        ssd1306PrintfAtLine(0, 3, &Font_5x8, "Ki = %d.10^-3", (uint32_t)(coefs.Ki * 1000));
-        ssd1306PrintfAtLine(0, 4, &Font_5x8, "Kd = %d", (uint32_t)(coefs.Kd * 1000));
+        ssd1306PrintfAtLine(0, 2, &Font_5x8, "Kp = %d", (uint32_t)zhonxCalib_data->pid_gyro.Kp);
+        ssd1306PrintfAtLine(0, 3, &Font_5x8, "Ki = %d", (uint32_t)(zhonxCalib_data->pid_gyro.Ki));
+        ssd1306PrintfAtLine(0, 4, &Font_5x8, "Kd = %d.10^-3", (uint32_t)(zhonxCalib_data->pid_gyro.Kd * 1000));
         ssd1306Refresh();
 
         if (expanderJoyFiltered() == JOY_LEFT)
@@ -232,7 +232,7 @@ void pidGyro_GetCriticalPoint(void)
         motorSet_DF(MOTOR_R, (int)(position_command * pwm_ratio) + pwm_move_offset);
         motorSet_DF(MOTOR_L, (int)(-position_command * pwm_ratio) + pwm_move_offset);
 
-        if (cnt > 5)
+        if (cnt > 2)
         {
             if ((gyroGetAngle() < error_max) && (gyroGetAngle() > -error_max))
             {
@@ -282,7 +282,7 @@ void pidGyro_GetCriticalPoint(void)
     period_time_ms /= osc_cnt;
     Kp_avrg /= Kp_avrg_cnt;
 
-    coefs.Kp = ((double)Kp_avrg * 0.60);
+    coefs.Kp = ((double)Kp_avrg * 0.33);
     coefs.Ki = 2.00 * coefs.Kp / (period_time_ms / 1000.00);
     coefs.Kd = coefs.Kp * (period_time_ms / 1000.00) / 8.00;
 
@@ -301,8 +301,8 @@ void pidGyro_GetCriticalPoint(void)
     ssd1306ClearScreen(MAIN_AREA);
     ssd1306PrintfAtLine(0, 0, &Font_5x8, "Kcr= %d Tcr= %d ms",  (uint32_t)Kp_avrg, (uint32_t)period_time_ms);
     ssd1306PrintfAtLine(0, 1, &Font_5x8, "Kp = %d", (uint32_t)coefs.Kp);
-    ssd1306PrintfAtLine(0, 2, &Font_5x8, "Ki = %d.10^-3", (uint32_t)(coefs.Ki * 1000));
-    ssd1306PrintfAtLine(0, 3, &Font_5x8, "Kd = %d", (uint32_t)(coefs.Kd * 1000));
+    ssd1306PrintfAtLine(0, 2, &Font_5x8, "Ki = %d", (uint32_t)(coefs.Ki));
+    ssd1306PrintfAtLine(0, 3, &Font_5x8, "Kd = %d.10^-3", (uint32_t)(coefs.Kd * 1000));
     ssd1306Refresh();
     HAL_Delay(2000);
     motorsDriverSleep(ON);

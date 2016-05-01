@@ -247,7 +247,7 @@ void ledBlink_IT(void)
         cnt_led = 0;
 }
 
-void sleep_mode_IT()			//todo move this function
+void sleep_mode_IT(void)			//todo move this function
 {
 #ifdef KILL_WEN_UNUSED
     if ((zhonxSettings.sleep_delay_s != 0)

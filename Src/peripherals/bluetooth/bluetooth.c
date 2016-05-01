@@ -141,12 +141,12 @@ char *bluetoothCmd(const char *cmd)
     strcpy(command, cmd);
     strcat(command, "\r\n");
 
-    HAL_UART_Transmit(&huart3, command, strlen(command), 5000);
+    HAL_UART_Transmit(&huart3, (uint8_t *)command, strlen(command), 5000);
 
     // Wait until end of reception
     do
     {
-        rv = HAL_UART_Receive(&huart3, p_response++, 1, 200);
+        rv = HAL_UART_Receive(&huart3, (uint8_t *)p_response++, 1, 200);
     }
     while (rv != HAL_TIMEOUT);
 
