@@ -68,7 +68,6 @@ void lineSensorSendBluetooth(void)
 	int i=0;
 	int GO=0;
 
-	mainControlInit();
 	lineSensorsInit();
 
 	positionControlSetPositionType(GYRO);
@@ -140,7 +139,6 @@ void lineSensorSendBluetooth(void)
 // Initialize data sensor to memorize the max and min value for each 5 sensors
 void lineSensorsCalibration(void)
 {
-	mainControlInit();
 	lineSensorsInit();
 
 	positionControlSetPositionType(GYRO);
@@ -327,10 +325,8 @@ void lineFollower(void)
 	double cdg=0;
 	double cdg2=0;
 
-	mainControlInit();
 	lineSensorsInit();
 	encodersInit();
-
 
 //	positionControlSetPositionType(GYRO);
 	mainControlSetFollowType(LINE_FOLLOW);

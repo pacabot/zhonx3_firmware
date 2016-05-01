@@ -218,8 +218,9 @@ double getTelemeterDist(enum telemeterName telemeter_name)
             return telemeters.FL.dist_mm;
         case TELEMETER_FR:
             return telemeters.FR.dist_mm;
+        default :
+            return 0.00;
     }
-    return 0.00; //todo return correct error ID
 }
 
 int getTelemeterAvrg(enum telemeterName telemeter_name)
@@ -234,24 +235,26 @@ int getTelemeterAvrg(enum telemeterName telemeter_name)
             return telemeters.FL.avrg;
         case TELEMETER_FR:
             return telemeters.FR.avrg;
+        default :
+            return 0;
     }
-    return 0; //todo return correct error ID
 }
 
 double getTelemeterSpeed(enum telemeterName telemeter_name)
 {
     switch (telemeter_name)
     {
-        case TELEMETER_DL: //todo add speed compute
-            return 0;
+        case TELEMETER_DL:
+            return telemeters.DL.speed_mms;
         case TELEMETER_DR:
-            return 0;
+            return telemeters.DR.speed_mms;
         case TELEMETER_FL:
-            return 0;
+            return telemeters.FL.speed_mms;
         case TELEMETER_FR:
-            return 0;
+            return telemeters.FR.speed_mms;
+        default :
+            return 0.00;
     }
-    return 0.00; //todo return correct error ID
 }
 
 void telemetersAdc2Start(void)
@@ -470,11 +473,11 @@ void getTelemetersDistance(telemeterStruct *tel)
             - (tel->mm_conv.cell_idx * NUMBER_OF_MILLIMETER_BY_LOOP * tel->mm_conv.profile[tel->mm_conv.cell_idx + 1])
             - (tel->avrg * (tel->mm_conv.cell_idx + 1) * NUMBER_OF_MILLIMETER_BY_LOOP)
             + (tel->avrg * tel->mm_conv.cell_idx * NUMBER_OF_MILLIMETER_BY_LOOP)))
-            / ((double) (-tel->mm_conv.profile[tel->mm_conv.cell_idx + 1]
-                    + (double) tel->mm_conv.profile[tel->mm_conv.cell_idx]));
+                            / ((double) (-tel->mm_conv.profile[tel->mm_conv.cell_idx + 1]
+                                                               + (double) tel->mm_conv.profile[tel->mm_conv.cell_idx]));
 
     tel->delta_avrg = mobileAvrgInt(&tel->sAvrgStruct, (int) ((tel->mm_conv.old_dist_mm - tel->dist_mm) * 1000))
-            / 1000.00;
+                            / 1000.00;
     tel->speed_mms = tel->delta_avrg * (double) (TELEMETERS_TIME_FREQ / 10.00);
 
     tel->mm_conv.old_avrg = tel->avrg;
@@ -493,7 +496,7 @@ void telemetersTest(void)
     telemetersInit();
     telemetersStart();
 
-    while (joy != JOY_LEFT)	//todo make a generic test menu (unit test)
+    while (joy != JOY_LEFT)
     {
         joy = expanderJoyFiltered();
 

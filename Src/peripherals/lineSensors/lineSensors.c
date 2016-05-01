@@ -196,8 +196,9 @@ double getLineSensorAdc(enum linesensorName linesensor_name)
             return lineSensors.right.adc_value;
         case LINESENSOR_EXT_R:
             return lineSensors.right_ext.adc_value;
+        default :
+            return 0.00;
     }
-    return 0.00; //todo return correct error ID
 }
 
 void lineSensors_IT(void)

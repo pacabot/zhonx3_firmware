@@ -32,8 +32,8 @@ int moveRotateInPlace180WithCal(wallSelectorEnum wall_presence, double speed_rot
 int moveRotateInPlaceWithCalCW90(wallSelectorEnum wall_presence, double speed_rotation);
 int moveRotateInPlaceWithCalCCW90(wallSelectorEnum wall_presence, double speed_rotation);
 int moveUTurn(double speed_rotation, double max_speed, double end_speed);
-void movesTest(void);
-void rotateTest(void);
+void movesTest1(void);
+void movesTest2(void);
 void mainControlDisplayTest(void);
 
 #endif // __BASICMOVES_H

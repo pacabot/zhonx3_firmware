@@ -108,7 +108,6 @@ int maze(void)
     labyrinthe maze;
     mazeInit(&maze);
 #ifdef ZHONX3
-    mainControlInit();
     mainControlSetFollowType(WALL_FOLLOW);
     positionControlSetPositionType(GYRO);
     motorsDriverSleep(ON);

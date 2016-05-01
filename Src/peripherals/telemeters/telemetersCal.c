@@ -46,8 +46,6 @@
 #error  MEASURED_DISTANCE of cell must be a multiple of NUMBER_OF_CELL
 #endif
 
-//int telemetersWithOutNoise//TODO this function
-
 int wallSensorsCalibrationFront(void)
 {
     FRONT_TELEMETERS_PROFILE front_telemeters;
@@ -67,7 +65,6 @@ int wallSensorsCalibrationFront(void)
     ssd1306Refresh();
 
     HAL_Delay(1000);
-    mainControlInit();
     mainControlSetFollowType(NO_FOLLOW);
 
     telemetersStart();
@@ -164,7 +161,6 @@ int wallSensorsCalibrationDiag(void)
     ssd1306Refresh();
 
     HAL_Delay(1000);
-    mainControlInit();
     mainControlSetFollowType(NO_FOLLOW);
 
     double number_of_millimeter_per_loop = sqrt(2 * pow(NUMBER_OF_MILLIMETER_BY_LOOP, 2));
@@ -258,17 +254,6 @@ void testWallsSensors()
         {
             ssd1306DrawRect(0, 59, 54, 5);
         }
-        //		switch (cell_state.next_front) //todo add this functionality
-        //		{
-        //		case WALL_PRESENCE:
-        //			ssd1306FillRect(0,0,54,5);
-        //			break;
-        //		case NO_KNOWN :
-        //			ssd1306DrawRect(0,0,54,5);
-        //			break;
-        //		default:
-        //			break;
-        //		}
         switch (getWallPresence(LEFT_WALL))
         {
             case WALL_PRESENCE:

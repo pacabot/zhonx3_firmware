@@ -510,9 +510,12 @@ void mainControlDisplayTest(void)
     motorsDriverSleep(ON);
 }
 
-void movesTest()
+void movesTest1()
 {
-    mainControlInit();
+    int Vmin, Vmax, Vrotate;
+    Vmin = 600;
+    Vmax = 600;
+    Vrotate = 600;
     telemetersStart();
 
     positionControlSetPositionType(GYRO);
@@ -520,37 +523,14 @@ void movesTest()
 
     HAL_Delay(2000);
 
-    int Vmin, Vmax, Vrotate;
-    Vmin = 600;
-    Vmax = 600;
-    Vrotate = 600;
-
-    //test Uturn
-    //moveStartCell(Vmax, Vmax);
-    //moveUTurn(Vrotate, Vmax, Vmax);
-    //return;
-
-    double abs_encoders = encoderGetAbsDist(ENCODER_L) + encoderGetAbsDist(ENCODER_R);
-    //test absolute vs relative distance
+#if 0
+    test Uturn
     moveStartCell(Vmax, Vmax);
-    moveCell(1, Vmax, Vmin);
-    moveRotateCW90(Vrotate, Vrotate);
-    moveCell(2, Vmax, Vmin);
-    moveRotateCW90(Vrotate, Vrotate);
-    moveRotateCCW90(Vrotate, Vrotate);
-    moveRotateCCW90(Vrotate, Vrotate);
-    while (hasMoveEnded() != TRUE);
-    abs_encoders = (encoderGetAbsDist(ENCODER_L) + encoderGetAbsDist(ENCODER_R)) - abs_encoders;
+    moveUTurn(Vrotate, Vmax, Vmax);
+    return;
+#endif
 
-    ssd1306ClearScreen(MAIN_AREA);
-    ssd1306PrintIntAtLine(0, 1, "abs  dist =  ", (int)abs_encoders / 2, &Font_5x8);
-    ssd1306PrintIntAtLine(0, 2, "reel dist =  ", 239 + 179 + 129 + 179 + 179 + 129 + 129 + 129, &Font_5x8);
-    ssd1306Refresh();
-
-    telemetersStop();
-    motorsDriverSleep(ON);
-    while(1);
-
+#if 1
     //maze
     moveStartCell(Vmax, Vmax);
     moveCell(1, Vmax, Vmin);
@@ -598,8 +578,8 @@ void movesTest()
     moveRotateCCW90(Vrotate, Vrotate);
     moveRotateCW90(Vrotate, Vrotate);
     moveCell(1, Vmax, Vmin);
-
     return;
+#endif
 
     // zigzag
     moveStartCell(Vmax, Vmax);
@@ -619,12 +599,14 @@ void movesTest()
     moveCell(1, Vmax, Vmin);
 
     telemetersStop();
-    mainControlDisplayTest();
 }
 
-void rotateTest()
+void movesTest2()
 {
-    mainControlInit();
+    int Vmin, Vmax, Vrotate;
+    Vmin = 600;
+    Vmax = 600;
+    Vrotate = 600;
     telemetersStart();
 
     positionControlSetPositionType(GYRO);
@@ -632,27 +614,24 @@ void rotateTest()
 
     HAL_Delay(2000);
 
-    move(0,0,0,0);
-    while(1);
+    double abs_encoders = encoderGetAbsDist(ENCODER_L) + encoderGetAbsDist(ENCODER_R);
+    //test absolute vs relative distance
+    moveStartCell(Vmax, Vmax);
+    moveCell(1, Vmax, Vmin);
+    moveRotateCW90(Vrotate, Vrotate);
+    moveCell(2, Vmax, Vmin);
+    moveRotateCW90(Vrotate, Vrotate);
+    moveRotateCCW90(Vrotate, Vrotate);
+    moveRotateCCW90(Vrotate, Vrotate);
+    while (hasMoveEnded() != TRUE);
+    abs_encoders = (encoderGetAbsDist(ENCODER_L) + encoderGetAbsDist(ENCODER_R)) - abs_encoders;
 
-    moveUTurn(100, 100, 100);
-    return;
-    move(-90, 0, 8, 8); //rotation example
+    ssd1306ClearScreen(MAIN_AREA);
+    ssd1306PrintIntAtLine(0, 1, "abs  dist =  ", (int)abs_encoders / 2, &Font_5x8);
+    ssd1306PrintIntAtLine(0, 2, "reel dist =  ", 239 + 179 + 129 + 179 + 179 + 129 + 129 + 129, &Font_5x8);
+    ssd1306Refresh();
 
-    while (hasMoveEnded() != TRUE)
-    {
-        while (expanderJoyFiltered() != JOY_LEFT)
-        {
-            ssd1306ClearScreen(MAIN_AREA);
-
-            ssd1306PrintIntAtLine(0, 0, "L_DIST_REL =  ", (signed int) encoderGetDist(ENCODER_L), &Font_5x8);
-            ssd1306PrintIntAtLine(0, 1, "R_DIST_REL =  ", (signed int) encoderGetDist(ENCODER_R), &Font_5x8);
-
-            ssd1306Refresh();
-            HAL_Delay(100);
-        }
-    }
-
-    mainControlDisplayTest();
+    telemetersStop();
+    motorsDriverSleep(ON);
 }
 
