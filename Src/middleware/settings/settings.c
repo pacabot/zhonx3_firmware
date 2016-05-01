@@ -14,7 +14,7 @@
 
 settings zhonxSettings;
 
-calibration_data *zhonxCalib_data = (calibration_data *)ADDR_FLASH_SECTOR_9;
+CALIBRATION_DATA *zhonxCalib_data = (CALIBRATION_DATA *)CALIBRATION_DATA_ADDR;
 
 int settingsInit(void)
 {

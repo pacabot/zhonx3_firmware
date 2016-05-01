@@ -148,6 +148,7 @@
 /***************                  Flash Constants                  ********************/
 /**************************************************************************************/
 /* Base address of the Flash sectors */
+// Sectors reserved for Zhonx Program
 #define ADDR_FLASH_SECTOR_0     (0x08000000) /* Base @ of Sector 0, 16 Kbytes */
 #define ADDR_FLASH_SECTOR_1     (0x08004000) /* Base @ of Sector 1, 16 Kbytes */
 #define ADDR_FLASH_SECTOR_2     (0x08008000) /* Base @ of Sector 2, 16 Kbytes */
@@ -156,14 +157,19 @@
 #define ADDR_FLASH_SECTOR_5     (0x08020000) /* Base @ of Sector 5, 128 Kbytes */
 #define ADDR_FLASH_SECTOR_6     (0x08040000) /* Base @ of Sector 6, 128 Kbytes */
 #define ADDR_FLASH_SECTOR_7     (0x08060000) /* Base @ of Sector 7, 128 Kbytes */
+// Sectors reserved for Zhonx Data (512KB)
 #define ADDR_FLASH_SECTOR_8     (0x08080000) /* Base @ of Sector 8, 128 Kbytes */
 #define ADDR_FLASH_SECTOR_9     (0x080A0000) /* Base @ of Sector 9, 128 Kbytes */
 #define ADDR_FLASH_SECTOR_10    (0x080C0000) /* Base @ of Sector 10, 128 Kbytes */
 #define ADDR_FLASH_SECTOR_11    (0x080E0000) /* Base @ of Sector 11, 128 Kbytes */
 
-#define CONFIG_FLASH_SECTOR_BUFFER_SIZE		(16 * 1024)
-#define CONFIG_FLASH_NB_FLASH_DEVICES		(1)
+#define CONFIG_FLASH_SECTOR_BUFFER_SIZE	(16 * 1024)
+#define CONFIG_FLASH_NB_FLASH_DEVICES	(1)
 
+// Stored mazes
+#define STORED_MAZES_ADDR                (ADDR_FLASH_SECTOR_8)
+// Calibration data
+#define CALIBRATION_DATA_ADDR            (ADDR_FLASH_SECTOR_9)
 // Telemeters profiles
 #define TELEMETERS_PROFILES_ADDR         (ADDR_FLASH_SECTOR_10)
 // Address in flash for ZHONX informations
