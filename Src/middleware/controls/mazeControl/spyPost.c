@@ -387,7 +387,6 @@ uint32_t spyPostCalibration(void)
     ssd1306DrawStringAtLine(50, 1, "Wait", &Font_3x6);
     ssd1306Refresh();
 
-    mainControlInit();
     mainControlSetFollowType(NO_FOLLOW);
     positionControlSetPositionType(ENCODERS);
     HAL_Delay(4000);
@@ -684,7 +683,6 @@ void spyPostTest()
     ssd1306DrawStringAtLine(50, 1, "Wait", &Font_3x6);
     ssd1306Refresh();
 
-    mainControlInit();
     HAL_Delay(2000);
     ssd1306ClearScreen(MAIN_AREA);
     telemetersStart();

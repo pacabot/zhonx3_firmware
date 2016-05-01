@@ -101,7 +101,7 @@ void expanderSetbit(char pin, char val)
 
 char expanderGetbit(char pin)
 {
-    return getData(); //todo return bit
+    return getData();
 }
 
 void expanderLedState(char led, char val)
