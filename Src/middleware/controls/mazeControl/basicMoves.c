@@ -510,7 +510,7 @@ void mainControlDisplayTest(void)
     motorsDriverSleep(ON);
 }
 
-void movesTest()
+void movesTest1()
 {
     mainControlInit();
     telemetersStart();
@@ -622,7 +622,7 @@ void movesTest()
     mainControlDisplayTest();
 }
 
-void rotateTest()
+void movesTest2()
 {
     mainControlInit();
     telemetersStart();

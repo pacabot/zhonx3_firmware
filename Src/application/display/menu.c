@@ -52,8 +52,8 @@ extern void lineFollower();
 extern int lineSensorsCalibration(void);
 extern void maze();
 extern void testWallsSensors();
-extern void movesTest(void);
-extern void rotateTest(void);
+extern void movesTest1(void);
+extern void movesTest2(void);
 extern void expenderLedTest();
 extern int wallSensorsCalibrationFront(void);
 extern int wallSensorsCalibrationDiag(void);
@@ -211,8 +211,8 @@ const menuItem tests_menu=
 const menuItem control_menu =
 {       "CONTROL",      //9 characters max
         {
-                { "Follow the wall",    'f', (void*)movesTest },
-                { "Rotate",             'f', (void*)rotateTest },
+                { "Follow the wall",    'f', (void*)movesTest1 },
+                { "Rotate",             'f', (void*)movesTest2 },
         }
 };
 
