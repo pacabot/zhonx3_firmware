@@ -115,7 +115,7 @@ void timesBaseInit(void)
     sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
     HAL_TIMEx_MasterConfigSynchronization(&htim5, &sMasterConfig);
 
-//    HAL_TIM_Base_Start_IT(&htim5);
+    //    HAL_TIM_Base_Start_IT(&htim5);
     HAL_TIM_Base_Start(&htim5);
 
 #ifdef DEDICATED_TIMER
@@ -214,37 +214,58 @@ char timeOut(unsigned char second, int loop_nb)
     }
 }
 
-void ledPowerBlink(unsigned int off_time, unsigned int on_time, unsigned int repeat)
+void ledPowerBlink(unsigned int off_time, unsigned int on_time)
 {
     Blink[0] = (off_time / 10);
     Blink[1] = (on_time / 10);
-    Blink[2] = (repeat / 10);
+    Blink[2] = 1;
+}
+
+void ledPowerErrorBlink(unsigned int off_time, unsigned int on_off_time, unsigned char repeat)
+{
+    Blink[0] = (off_time / 10);
+    Blink[1] = (on_off_time / 10);
+    Blink[2] = repeat;
 }
 
 void ledBlink_IT(void)
 {
     static int cnt_led = 0;
+    static int cnt_repeat = 0;
 
     if (Blink[0] == 0 && Blink[1] == 0)
     {
         return;
     }
 
-    GPIO_InitStruct.Pin = GPIO_PIN_15;
-    GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+    //    GPIO_InitStruct.Pin = GPIO_PIN_15;
+    //    GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+    //    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
     cnt_led++;
     if (cnt_led <= (Blink[0]))
     {
         HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, RESET);
     }
-    else
+    else if (cnt_led <= (Blink[0] + (Blink[1]) * (1 + cnt_repeat)))
     {
         HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, SET);
     }
-    if (cnt_led >= ((Blink[0] + Blink[1])))
+    //repeat blinking
+    else if (cnt_led <= (Blink[0] + Blink[1] + (Blink[1]) * (1 + cnt_repeat)))
+    {
+        HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, RESET);
+    }
+    else
+    {
+        cnt_repeat += 2;
+    }
+
+    if (cnt_led >= (Blink[0] + Blink[1]) + ((Blink[2] - 1) * 2 * Blink[1]))
+    {
         cnt_led = 0;
+        cnt_repeat = 0;
+    }
 }
 
 void sleep_mode_IT(void)			//todo move this function

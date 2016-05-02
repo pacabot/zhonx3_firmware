@@ -280,6 +280,8 @@ int moveCell(unsigned int nb_cell, double max_speed, double out_speed)
 
     if (out_speed < 1)
         return POSITION_CONTROL_E_ERROR;
+    if (nb_cell < 1)
+        return POSITION_CONTROL_E_ERROR;
 
 #ifdef DEBUG_BASIC_MOVES
     bluetoothWaitReady();
@@ -532,8 +534,12 @@ void mainControlDisplayTest(void)
 
 void movesTest1()
 {
-    int Vmin, Vmax, Vrotate;
-    Vmin = 600;
+    int Vout, Vmax, Vrotate;
+
+    HAL_Delay(2000);
+
+#if 0
+    Vout = 600;
     Vmax = 600;
     Vrotate = 600;
     telemetersStart();
@@ -541,69 +547,79 @@ void movesTest1()
     positionControlSetPositionType(GYRO);
     mainControlSetFollowType(WALL_FOLLOW);
 
-    HAL_Delay(2000);
-
-#if 0
     test Uturn
     moveStartCell(Vmax, Vmax);
     moveUTurn(Vrotate, Vmax, Vmax);
-    return;
 #endif
 
 #if 1
+    Vout = 600;
+    Vmax = 600;
+    Vrotate = 600;
+    telemetersStart();
+
+    positionControlSetPositionType(GYRO);
+    mainControlSetFollowType(WALL_FOLLOW);
     //maze
     moveStartCell(Vmax, Vmax);
-    moveCell(1, Vmax, Vmin);
+    moveCell(1, Vmax, Vout);
     moveRotateCW90(Vrotate, Vrotate);
-    moveCell(2, Vmax, Vmin);
-    moveRotateCW90(Vrotate, Vrotate);
-    moveRotateCCW90(Vrotate, Vrotate);
-    moveRotateCCW90(Vrotate, Vrotate);
-    moveCell(2, Vmax, Vmin);
-    moveRotateCW90(Vrotate, Vrotate);
-    moveCell(3, Vmax, Vmin);
-    moveRotateCW90(Vrotate, Vrotate);
+    moveCell(2, Vmax, Vout);
     moveRotateCW90(Vrotate, Vrotate);
     moveRotateCCW90(Vrotate, Vrotate);
     moveRotateCCW90(Vrotate, Vrotate);
+    moveCell(2, Vmax, Vout);
     moveRotateCW90(Vrotate, Vrotate);
-    moveCell(1, Vmax, Vmin);
-    moveUTurn(Vrotate, Vmax, Vmin);
-    moveCell(1, Vmax, Vmin);
-    moveRotateCCW90(Vrotate, Vrotate);
-    moveCell(1, Vmax, Vmin);
-    moveRotateCCW90(Vrotate, Vrotate);
-    moveRotateCCW90(Vrotate, Vrotate);
+    moveCell(3, Vmax, Vout);
     moveRotateCW90(Vrotate, Vrotate);
     moveRotateCW90(Vrotate, Vrotate);
-    moveCell(1, Vmax, Vmin);
-    moveRotateCW90(Vrotate, Vrotate);
-    moveRotateCCW90(Vrotate, Vrotate);
-    moveRotateCW90(Vrotate, Vrotate);
-    moveCell(2, Vmax, Vmin);
-    moveRotateCW90(Vrotate, Vrotate);
-    moveCell(1, Vmax, Vmin);
-    moveRotateCCW90(Vrotate, Vrotate);
-    moveRotateCCW90(Vrotate, Vrotate);
-    moveCell(1, Vmax, Vmin);
-    moveRotateCW90(Vrotate, Vrotate);
-    moveCell(2, Vmax, Vmin);
-    moveRotateCW90(Vrotate, Vrotate);
-    moveUTurn(Vrotate, Vmax, Vmin);
-    moveRotateCCW90(Vrotate, Vrotate);
-    moveCell(1, Vmax, Vmin);
     moveRotateCCW90(Vrotate, Vrotate);
     moveRotateCCW90(Vrotate, Vrotate);
     moveRotateCW90(Vrotate, Vrotate);
+    moveCell(1, Vmax, Vout);
+    moveUTurn(Vrotate, Vmax, Vout);
+    moveCell(1, Vmax, Vout);
+    moveRotateCCW90(Vrotate, Vrotate);
+    moveCell(1, Vmax, Vout);
+    moveRotateCCW90(Vrotate, Vrotate);
     moveRotateCCW90(Vrotate, Vrotate);
     moveRotateCW90(Vrotate, Vrotate);
-    moveCell(1, Vmax, Vmin);
-    return;
+    moveRotateCW90(Vrotate, Vrotate);
+    moveCell(1, Vmax, Vout);
+    moveRotateCW90(Vrotate, Vrotate);
+    moveRotateCCW90(Vrotate, Vrotate);
+    moveRotateCW90(Vrotate, Vrotate);
+    moveCell(2, Vmax, Vout);
+    moveRotateCW90(Vrotate, Vrotate);
+    moveCell(1, Vmax, Vout);
+    moveRotateCCW90(Vrotate, Vrotate);
+    moveRotateCCW90(Vrotate, Vrotate);
+    moveCell(1, Vmax, Vout);
+    moveRotateCW90(Vrotate, Vrotate);
+    moveCell(2, Vmax, Vout);
+    moveRotateCW90(Vrotate, Vrotate);
+    moveUTurn(Vrotate, Vmax, Vout);
+    moveRotateCCW90(Vrotate, Vrotate);
+    moveCell(1, Vmax, Vout);
+    moveRotateCCW90(Vrotate, Vrotate);
+    moveRotateCCW90(Vrotate, Vrotate);
+    moveRotateCW90(Vrotate, Vrotate);
+    moveRotateCCW90(Vrotate, Vrotate);
+    moveRotateCW90(Vrotate, Vrotate);
+    moveCell(1, Vmax, Vout);
 #endif
 
+#if 0
+    Vout = 600;
+    Vmax = 600;
+    Vrotate = 600;
+    telemetersStart();
+
+    positionControlSetPositionType(GYRO);
+    mainControlSetFollowType(WALL_FOLLOW);
     // zigzag
     moveStartCell(Vmax, Vmax);
-    moveCell(1, Vmax, Vmin);
+    moveCell(1, Vmax, Vout);
     moveRotateCW90(Vrotate, Vrotate);
     moveRotateCCW90(Vrotate, Vrotate);
     moveRotateCW90(Vrotate, Vrotate);
@@ -616,30 +632,70 @@ void movesTest1()
     moveRotateCCW90(Vrotate, Vrotate);
     moveRotateCW90(Vrotate, Vrotate);
     moveRotateCCW90(Vrotate, Vrotate);
-    moveCell(1, Vmax, Vmin);
+    moveCell(1, Vmax, Vout);
+#endif
 
     telemetersStop();
 }
 
 void movesTest2()
 {
-    int Vmin, Vmax, Vrotate;
-    Vmin = 600;
-    Vmax = 600;
-    Vrotate = 600;
+    int Vin, Vout, Vmax, Vrotate;
+
+    HAL_Delay(2000);
+
+#if 1
+    //rotation test (used for verify move computes)
+    positionControlSetPositionType(GYRO);
+    mainControlSetFollowType(NO_FOLLOW);
+    double abs_encoders = encoderGetAbsDist(ENCODER_L) + encoderGetAbsDist(ENCODER_R);
+    Vin  = 100;
+    Vout = 0;
+    Vmax = 300;
+    move(180, 0, Vin, Vin);
+    while (hasMoveEnded() != TRUE);
+    motorsBrake();
+    abs_encoders = (encoderGetAbsDist(ENCODER_L) + encoderGetAbsDist(ENCODER_R)) - abs_encoders;
+    ssd1306ClearScreen(MAIN_AREA);
+    ssd1306PrintIntAtLine(0, 1, "abs  dist =  ", (int)abs_encoders / 2, &Font_5x8);
+    ssd1306PrintIntAtLine(0, 2, "reel dist =  ", CELL_LENGTH, &Font_5x8);
+    ssd1306Refresh();
+    HAL_Delay(2000);
+#endif
+
+#if 0
+    //distance test (used for verify move computes)
+    positionControlSetPositionType(ENCODERS);
+    mainControlSetFollowType(NO_FOLLOW);
+    double abs_encoders = encoderGetAbsDist(ENCODER_L) + encoderGetAbsDist(ENCODER_R);
+    Vin  = 100;
+    Vout = 0;
+    Vmax = 300;
+    move(0, CELL_LENGTH, Vin, Vin);
+    while (hasMoveEnded() != TRUE);
+    move(0, CELL_LENGTH, Vmax, Vout);
+    while (hasMoveEnded() != TRUE);
+    motorsBrake();
+    abs_encoders = (encoderGetAbsDist(ENCODER_L) + encoderGetAbsDist(ENCODER_R)) - abs_encoders;
+    ssd1306ClearScreen(MAIN_AREA);
+    ssd1306PrintIntAtLine(0, 1, "abs  dist =  ", (int)abs_encoders / 2, &Font_5x8);
+    ssd1306PrintIntAtLine(0, 2, "reel dist =  ", CELL_LENGTH, &Font_5x8);
+    ssd1306Refresh();
+    HAL_Delay(2000);
+#endif
+
+#if 0
     telemetersStart();
 
     positionControlSetPositionType(GYRO);
     mainControlSetFollowType(WALL_FOLLOW);
 
-    HAL_Delay(2000);
-
     double abs_encoders = encoderGetAbsDist(ENCODER_L) + encoderGetAbsDist(ENCODER_R);
     //test absolute vs relative distance
     moveStartCell(Vmax, Vmax);
-    moveCell(1, Vmax, Vmin);
+    moveCell(1, Vmax, Vout);
     moveRotateCW90(Vrotate, Vrotate);
-    moveCell(2, Vmax, Vmin);
+    moveCell(2, Vmax, Vout);
     moveRotateCW90(Vrotate, Vrotate);
     moveRotateCCW90(Vrotate, Vrotate);
     moveRotateCCW90(Vrotate, Vrotate);
@@ -650,6 +706,7 @@ void movesTest2()
     ssd1306PrintIntAtLine(0, 1, "abs  dist =  ", (int)abs_encoders / 2, &Font_5x8);
     ssd1306PrintIntAtLine(0, 2, "reel dist =  ", 239 + 179 + 129 + 179 + 179 + 129 + 129 + 129, &Font_5x8);
     ssd1306Refresh();
+#endif
 
     telemetersStop();
     motorsDriverSleep(ON);

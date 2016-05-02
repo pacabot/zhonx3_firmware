@@ -47,6 +47,7 @@ extern move_params_struct move_params;
 extern double ROTATION_DIAMETER;
 
 int mainControlInit(void);
+int mainControlStopPidLoop(void);
 int mainControl_IT(void);
 int setWallFollowControl(char isActive);
 char hasMoveEnded(void);

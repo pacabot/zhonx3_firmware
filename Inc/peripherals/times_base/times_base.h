@@ -19,7 +19,8 @@
 //#define DEDICATED_TIMER
 
 void timesBaseInit(void);
-void ledPowerBlink(unsigned int off_time, unsigned int on_time, unsigned int repeat);
+void ledPowerBlink(unsigned int off_time, unsigned int on_time);
+void ledPowerErrorBlink(unsigned int off_time, unsigned int on_off_time, unsigned char repeat);
 char timeOut(unsigned char second, int loop_nb);
 void ledBlink_IT(void);
 

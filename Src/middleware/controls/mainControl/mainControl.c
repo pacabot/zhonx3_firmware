@@ -88,8 +88,15 @@ int mainControlInit(void)
     return MAIN_CONTROL_E_SUCCESS;
 }
 
+int mainControlStopPidLoop(void)
+{
+    pid_loop.start_state = FALSE;
+    return MAIN_CONTROL_E_SUCCESS;
+}
+
 int mainControl_IT(void)
 {
+    int rv;
     if (pid_loop.start_state == FALSE)
     {
         return MAIN_CONTROL_E_SUCCESS;
@@ -97,19 +104,32 @@ int mainControl_IT(void)
 
     if (control_params.line_follow_state == TRUE)
     {
-        lineFollowControlLoop();
-        speedControlLoop();
-        transfertFunctionLoop();
-        return 0;
+        rv = lineFollowControlLoop();
+        if (rv != LINE_FOLLOW_CONTROL_E_SUCCESS)
+                        return rv;
+        rv = speedControlLoop();
+        if (rv != SPEED_CONTROL_E_SUCCESS)
+                return rv;
+        rv = transfertFunctionLoop();
+        if (rv != TRANSFERT_FUNCTION_E_SUCCESS)
+                return rv;
+        return MAIN_CONTROL_E_SUCCESS;
     }
     else if (control_params.wall_follow_state == TRUE)
     {
-        wallFollowControlLoop();
+        rv = wallFollowControlLoop();
+        if (rv != WALL_FOLLOW_CONTROL_E_SUCCESS)
+                return rv;
     }
-
-    positionControlLoop();
-    speedControlLoop();
-    transfertFunctionLoop();
+    rv = positionControlLoop();
+    if (rv != POSITION_CONTROL_E_SUCCESS)
+        return rv;
+    rv = speedControlLoop();
+    if (rv != SPEED_CONTROL_E_SUCCESS)
+            return rv;
+    rv = transfertFunctionLoop();
+    if (rv != TRANSFERT_FUNCTION_E_SUCCESS)
+            return rv;
 
     return MAIN_CONTROL_E_SUCCESS;
 }
@@ -212,9 +232,9 @@ int moveStraight(double distance, double max_speed, double end_speed, double acc
 
 char hasMoveEnded(void)
 {
-    if (positionControlHasMoveEnded() == TRUE && speedControlHasMoveEnded() == TRUE)
+    if ((positionControlHasMoveEnded() == TRUE && speedControlHasMoveEnded() == TRUE) ||
+            pid_loop.start_state == FALSE)
     {
-        pid_loop.start_state = FALSE;
         return TRUE;
     }
     return FALSE;

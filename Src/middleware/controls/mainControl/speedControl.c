@@ -34,12 +34,12 @@
 #include "peripherals/motors/motors.h"
 #include "peripherals/tone/tone.h"
 #include "peripherals/bluetooth/bluetooth.h"
+#include "peripherals/times_base/times_base.h"
 
 /* Middleware declarations */
 #include "middleware/controls/pidController/pidController.h"
 
-#define MAX_SPEED_STOP_ERROR     120.00 //Millimeter //todo gros bug de merde 113
-#define MAX_SPEED_MAX_ERROR      20.00 //Millimeter //todo gros bug de merde 113
+#define MAX_SPEED_ERROR     120.00 //Millimeter //todo gros bug de merde 113
 
 typedef struct
 {
@@ -161,17 +161,11 @@ int speedControlLoop(void)
     }
 
     speed_control.speed_error = speed_control.current_distance_consign - speed_control.current_distance;//for distance control
-    if (fabs(speed_control.speed_error) > MAX_SPEED_STOP_ERROR)
+    if (fabs(speed_control.speed_error) > MAX_SPEED_ERROR)
     {
-        bluetoothPrintf("SPEED ERROR = %d, DISTANCE CONSIGN = %d, CURRENT DISTANCE = %d\n", (int32_t) speed_control.speed_error,
-                        (int32_t) speed_control.current_distance_consign,
-                        (int32_t) speed_control.current_distance);
-        pid_loop.start_state = FALSE;
+        ledPowerErrorBlink(1000, 150, 3);
         motorsDriverSleep(ON);
-        ssd1306ClearScreen(MAIN_AREA);
-        ssd1306DrawStringAtLine(10, 1, "SPEED ERROR!!!", &Font_5x8);
-//        ssd1306WaitReady();
-        ssd1306Refresh();
+        return SPEED_CONTROL_E_ERROR;
     }
 
     speed_control.speed_command = pidController(speed_control.speed_pid.instance, speed_control.speed_error)

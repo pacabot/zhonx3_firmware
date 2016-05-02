@@ -22,7 +22,7 @@
 #define GYRO_TIME_FREQ			    4000.00             //for adc injected freq
 #define LINESENSORS_TIME_FREQ	    4000.00             //line sensor measure frequency
 #define MULTIMMETER_TIME_FREQ       0.10                //multimeter inner loop
-#define MOTORS_FREQ				    20000.00	        //motor pwm freq
+#define MOTORS_FREQ				    21000.00	        //motor pwm freq
 
 /**************************************************************************************/
 /***************                 Gyro definitions                  ********************/
@@ -89,11 +89,11 @@
 /**************************************************************************************/
 /***************                 Mechanical Constants              ********************/
 /**************************************************************************************/
-#define WHEEL_DIAMETER			24.10	//Wheel diameter in millimeters
+#define WHEEL_DIAMETER			24.40	//Wheel diameter in millimeters
 #define WHEELS_DISTANCE			63.20	//Distance between right and left wheels
 #define WHEELS_SPACING			25.96	//Distance between front and rear wheels
 #define	GEAR_RATIO				(50.00 / 15.00)	//wheel gear teeth per motor gear teeth
-#define ENCODER_RESOLUTION  	2048.00	//Number steps per revolution (IE512)
+#define ENCODER_RESOLUTION  	2047.00	//Number steps per revolution (IE512)
 
 #define STEPS_PER_WHEEL_REV		(ENCODER_RESOLUTION * GEAR_RATIO)	//Number steps per wheel revolution
 #define MM_PER_WHEEL_REV		((M_PI) * (WHEEL_DIAMETER))		//Number of millimeters per wheel revolution
@@ -128,8 +128,8 @@
 /**************************************************************************************/
 /***************                 Physical Constants                ********************/
 /**************************************************************************************/
-#define MAX_SPEED				4000.00	//mm/s
-#define MAX_ACCEL				4000.00	//mm/s�
+#define MAX_SPEED				2000.00	//mm/s
+#define MAX_ACCEL				2000.00 //mm/s�
 //#define MAX_DECEL				8000.0	//mm/s�
 
 #define MAX_TURN_SPEED			500.00	//mm/s

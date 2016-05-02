@@ -124,9 +124,14 @@ void motorsInit(void)
 void motorsDriverSleep(int isOn)
 {
     if (isOn == 1)
+    {
+        mainControlStopPidLoop();
         HAL_GPIO_WritePin(GPIOA, MOTORS_STANDBY, RESET);
+    }
     else
+    {
         HAL_GPIO_WritePin(GPIOA, MOTORS_STANDBY, SET);
+    }
 
 }
 

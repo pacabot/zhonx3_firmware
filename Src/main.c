@@ -129,7 +129,7 @@ int main(void)
     mainControlInit();
     ssd1306Init(0);
     timesBaseInit();
-    ledPowerBlink(990, 10, 0);
+    ledPowerBlink(990, 10);
     settingsInit();
     mulimeterInit();
     bluetoothInit();

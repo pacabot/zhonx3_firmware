@@ -32,6 +32,7 @@
 #include "peripherals/encoders/ie512.h"
 #include "peripherals/gyroscope/adxrs620.h"
 #include "peripherals/motors/motors.h"
+#include "peripherals/times_base/times_base.h"
 
 /* Middleware declarations */
 #include "middleware/controls/pidController/pidController.h"
@@ -84,8 +85,8 @@ int positionControlInit(void)
     positionProfileCompute(0, 0, 0);
 
     gyro_pid_instance.Kp = zhonxCalib_data->pid_gyro.Kp;
-    gyro_pid_instance.Ki = zhonxCalib_data->pid_gyro.Ki / CONTROL_TIME_FREQ;
-    gyro_pid_instance.Kd = zhonxCalib_data->pid_gyro.Kd * CONTROL_TIME_FREQ;
+    gyro_pid_instance.Ki = 0.00;//zhonxCalib_data->pid_gyro.Ki / CONTROL_TIME_FREQ;
+    gyro_pid_instance.Kd = 2000;//zhonxCalib_data->pid_gyro.Kd * CONTROL_TIME_FREQ;
 
     position_control.position_pid.instance = &gyro_pid_instance;
 
@@ -131,15 +132,15 @@ double positionControlSetSign(double sign)
 
 int positionControlLoop(void)
 {
-//    if (mainControlGetWallFollowType() != CURVE)
-//    {
-//        if (position_control.enablePositionCtrl == NO_POSITION_CTRL)
-//        {
-//            position_control.position_command = 0;
-//            pidControllerReset(position_control.position_pid.instance);
-//            return SPEED_CONTROL_E_SUCCESS;
-//        }
-//    }
+    //    if (mainControlGetWallFollowType() != CURVE)
+    //    {
+    //        if (position_control.enablePositionCtrl == NO_POSITION_CTRL)
+    //        {
+    //            position_control.position_command = 0;
+    //            pidControllerReset(position_control.position_pid.instance);
+    //            return SPEED_CONTROL_E_SUCCESS;
+    //        }
+    //    }
 
     if (position_control.positionType == GYRO)
     {
@@ -148,7 +149,7 @@ int positionControlLoop(void)
         else
             position_control.current_angle = -1.00 * gyroGetAngle();
     }
-	else //use encoders
+    else //use encoders
     {
         if (position_params.sign > 0)
             position_control.current_angle = 180.00 * (encoderGetDist(ENCODER_L) - encoderGetDist(ENCODER_R))
@@ -169,23 +170,19 @@ int positionControlLoop(void)
     }
 
     position_control.position_error = position_control.current_angle_consign - position_control.current_angle;//for distance control
-//    if (fabs(position_control.position_error) > MAX_POSITION_ERROR)
-//    {
-//    bluetoothPrintf("POSITION ERROR = %d\n", (int32_t) position_control.position_error);
-//        pid_loop.start_state = FALSE;
-//        motorsDriverSleep(ON);
-//        ssd1306ClearScreen(MAIN_AREA);
-//        ssd1306DrawStringAtLine(10, 1, "POSITION ERROR!!!", &Font_5x8);
-////        ssd1306WaitReady();
-//        ssd1306Refresh();
-//    }
+    if (fabs(position_control.position_error) > MAX_POSITION_ERROR)
+    {
+        ledPowerErrorBlink(1000, 150, 5);
+        motorsDriverSleep(ON);
+        return POSITION_CONTROL_E_ERROR;
+    }
 
     position_control.position_command = (pidController(position_control.position_pid.instance,
                                                        position_control.position_error)) * (float) position_params.sign;
 
     position_control.old_angle = position_control.current_angle;
 
-    return SPEED_CONTROL_E_SUCCESS;
+    return POSITION_CONTROL_E_SUCCESS;
 }
 
 /**************************************************************************/

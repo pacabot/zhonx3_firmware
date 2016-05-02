@@ -70,7 +70,7 @@ int lineFollowControlInit(void)
 
     pidControllerInit(line_follow_control.line_follow_pid.instance);
 
-    return POSITION_CONTROL_E_SUCCESS;
+    return LINE_FOLLOW_CONTROL_E_SUCCESS;
 }
 
 int lineFollowControlLoop(void)
@@ -80,6 +80,6 @@ int lineFollowControlLoop(void)
     line_follow_control.line_follow_command = (pidController(line_follow_control.line_follow_pid.instance,
                                                              line_follow_control.line_follow_error));
 
-    return SPEED_CONTROL_E_SUCCESS;
+    return LINE_FOLLOW_CONTROL_E_SUCCESS;
 }
 
