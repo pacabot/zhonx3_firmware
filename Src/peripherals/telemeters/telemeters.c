@@ -57,7 +57,7 @@
 #define RX_FR				ADC_CHANNEL_11
 
 // Declare telemeters profiles in Flash memory
-TELEMETERS_PROFILE *telemeters_profile = (TELEMETERS_PROFILE *) ADDR_FLASH_SECTOR_10;
+TELEMETERS_PROFILE *telemeters_profile = (TELEMETERS_PROFILE *) TELEMETERS_PROFILES_ADDR;
 
 /* Types definitions */
 

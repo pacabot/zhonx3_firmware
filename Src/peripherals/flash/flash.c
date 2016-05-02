@@ -794,10 +794,12 @@ static int update_flash_with_buffer(FLASH_INTERNAL_HANDLE *ihandle, unsigned int
     return rv;
 }
 
+#if 0
 unsigned char *TEST_FLASH_VALUE = (unsigned char *) ADDR_FLASH_SECTOR_8;
 
 void testFlash(void)
 {
+    // TODO: Implement this function correctly
     unsigned char test[1024];
     FLASH_DRIVER_DESC driver_desc;
     FLASH_HANDLE handle;
@@ -827,3 +829,4 @@ void testFlash(void)
     flash_close(handle);
     flash_terminate();
 }
+#endif

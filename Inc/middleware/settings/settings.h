@@ -56,10 +56,12 @@ typedef struct
     arm_pid_instance_f32    pid_gyro;
     arm_pid_instance_f32    pid_telemeters;
     arm_pid_instance_f32    pid_lineFollow;
-} calibration_data;
+} CALIBRATION_DATA;
 
-extern calibration_data *zhonxCalib_data;
 extern settings zhonxSettings;
+
+// Flash stored data
+extern CALIBRATION_DATA *zhonxCalib_data;
 
 /* Exported Bluetooth parameters */
 extern presetParam BTpresetBaudRate;

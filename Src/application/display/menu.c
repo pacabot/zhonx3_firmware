@@ -57,7 +57,6 @@ extern void movesTest2(void);
 extern void expenderLedTest();
 extern int wallSensorsCalibrationFront(void);
 extern int wallSensorsCalibrationDiag(void);
-extern void testFlash(void);
 extern int setMeddle(void);
 extern int setDark(void);
 extern void telemetersGetCalibrationValues(void);
@@ -237,7 +236,6 @@ const menuItem mainMenu =
 				{"Calibration menu",'m',    (void*)&calibration_menu},
                 {"Control menu",    'm',    (void*)&control_menu},
 				{"Test graph",      'm',	(void*)&testGraphicMenu},
-				{"Test flash",      'f',    (void*)&testFlash},
 				{"Zhonx Name",      'm',    (void*)&zhonxNameMenu},
 				{0,0,0}
 		}
