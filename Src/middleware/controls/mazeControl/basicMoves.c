@@ -148,14 +148,14 @@ int moveOffsetDist(getOffsetsStruct *offset, double max_speed)
         bluetoothPrintf(" R_OFFSET = %d, TYPE = %d\n", (int32_t)offset->spyPost.right_x, offset->spyPost.right_spyPostType);
 #endif
     }
-    else if (offset->frontCal.front_dist != 0)
-    {
-        offset_error = (double)offset->frontCal.front_dist;
-#ifdef DEBUG_BASIC_MOVES
-        bluetoothWaitReady();
-        bluetoothPrintf(" F_OFFSET = %d\n", (int32_t)offset->frontCal.front_dist);
-#endif
-    }
+//    else if (offset->frontCal.front_dist != 0)
+//    {
+//        offset_error = (double)offset->frontCal.front_dist;
+//#ifdef DEBUG_BASIC_MOVES
+//        bluetoothWaitReady();
+//        bluetoothPrintf(" F_OFFSET = %d\n", (int32_t)offset->frontCal.front_dist);
+//#endif
+//    }
     else
     {
         offset_error = 0.00;
@@ -668,7 +668,7 @@ void movesTest2()
     double abs_encoders = encoderGetAbsDist(ENCODER_L) + encoderGetAbsDist(ENCODER_R);
     Vin  = 500;
     Vout = 500;
-    Vmax = 500;
+    Vmax = 1000;
 //    move(0, 720, Vin, Vin);
     moveCell(4, Vmax, Vout);
     while (hasMoveEnded() != TRUE);
