@@ -669,6 +669,7 @@ void movesTest2()
     Vin  = 500;
     Vout = 500;
     Vmax = 500;
+//    move(0, 720, Vin, Vin);
     moveCell(4, Vmax, Vout);
     while (hasMoveEnded() != TRUE);
     motorsBrake();
