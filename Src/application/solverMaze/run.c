@@ -25,7 +25,8 @@
 #include "application/solverMaze/solverMaze.h"
 #include "application/solverMaze/robotInterface.h"
 #include "application/solverMaze/run.h"
-#endif // codebloc
+#endif
+
 void run1(labyrinthe *maze, positionRobot *positionZhonx, coordinate start_oordinate, coordinate end_coordinate)
 {
     char choice;
@@ -61,6 +62,7 @@ void run1(labyrinthe *maze, positionRobot *positionZhonx, coordinate start_oordi
     }
     while (choice == 1);
 }
+
 void run2(labyrinthe *maze, positionRobot *positionZhonx, coordinate start_oordinate, coordinate end_coordinate)
 {
     coordinate way[MAZE_SIZE * MAZE_SIZE];

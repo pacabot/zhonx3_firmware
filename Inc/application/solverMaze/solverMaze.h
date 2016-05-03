@@ -50,7 +50,8 @@
 
 #define END_OF_LIST 255
 
-#define DISPLAY_OFFSET	12	//offset for maze print on ssd1306
+#define DISPLAY_OFFSET	    12	//offset for maze print on ssd1306
+#define MAX_STORABLE_MAZES  5
 
 #include <stdlib.h>
 #include "middleware/wall_sensors/wall_sensors.h"
@@ -76,9 +77,22 @@ typedef struct
     char midOfCell;
 } positionRobot;
 
+typedef struct
+{
+    char            maze_name[50];
+    labyrinthe      maze;
+    positionRobot   start_position;
+    coordinate      end_coordinate;
+} MAZE_CONTAINER;
+
+typedef struct
+{
+    int             count_stored_mazes;
+    MAZE_CONTAINER  mazes[MAX_STORABLE_MAZES];
+} STORED_MAZES;
 
 // fonctions
-extern int maze(void);
+int maze_solver(void);
 int exploration(labyrinthe *maze, positionRobot* positionZhonx,const positionRobot *start_coordinates,
         coordinate *end_coordinate);
 int goToPosition(labyrinthe *maze, positionRobot* positionZhonx,  coordinate end_coordinate);
@@ -96,4 +110,5 @@ void waitStart(void);
 char diffway(coordinate way1[], coordinate way2[]);
 coordinate findEndCoordinate (coordinate coordinate_tab[]);
 int findArrival (labyrinthe maze, coordinate *end_coordinate);
+int loadMaze(MAZE_CONTAINER *maze_container);
 #endif /* RESOLUTION_MAZE_H_ */

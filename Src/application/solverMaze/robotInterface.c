@@ -409,6 +409,7 @@ void waitStart()
 
 int test_move_zhonx ()
 {
+    labyrinthe  maze;
     positionRobot zhonx_position;
     zhonx_position.coordinate_robot.x = 8;
     zhonx_position.coordinate_robot.y = 8;
@@ -421,15 +422,9 @@ int test_move_zhonx ()
     telemetersStart();
     mainControlSetFollowType(WALL_FOLLOW);
     positionControlSetPositionType(GYRO);
-    moveRealZhonxArc((labyrinthe *)&maze, &zhonx_position, way);
+    moveRealZhonxArc(&maze, &zhonx_position, way);
     HAL_Delay(500);
     motorsDriverSleep(ON);
     telemetersStop();
-    return MAZE_SOLVER_E_SUCCESS;
-}
-
-int save_maze (labyrinthe *maze)
-{
-
     return MAZE_SOLVER_E_SUCCESS;
 }

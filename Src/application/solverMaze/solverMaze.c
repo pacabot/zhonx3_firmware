@@ -96,16 +96,8 @@
 #include "pcf8574.h"
 #endif // simulator
 
-#define MAX_STORABLE_MAZES 5
 
-typedef struct
-{
-    int        count_stored_mazes;
-    char       maze_name[50];
-    labyrinthe mazes[MAX_STORABLE_MAZES];
-} STORED_MAZES;
-
-static int saveMaze(labyrinthe *maze);
+static int saveMaze(MAZE_CONTAINER *maze_container);
 
 STORED_MAZES *stored_mazes = (STORED_MAZES *)STORED_MAZES_ADDR;
 
@@ -114,12 +106,14 @@ STORED_MAZES *stored_mazes = (STORED_MAZES *)STORED_MAZES_ADDR;
  *  this function is the main function of the maze solver
  *  return value is the succes of the maze exploration and maze run
  */
-int maze(void)
+int maze_solver(void)
 {
-    coordinate end_coordinate; // it's the coordinates which Zhonx have at the start
-    positionRobot zhonx_position, start_position;
-    labyrinthe maze;
-    mazeInit(&maze);
+    //coordinate end_coordinate; // it's the coordinates which Zhonx have at the start
+    positionRobot zhonx_position;//, start_position;
+    //labyrinthe maze;
+    MAZE_CONTAINER maze_container;
+
+    mazeInit(&maze_container.maze);
 #ifdef ZHONX3
     mainControlSetFollowType(WALL_FOLLOW);
     positionControlSetPositionType(GYRO);
@@ -136,20 +130,20 @@ int maze(void)
     zhonx_position.orientation = zhonxSettings.start_orientation % 4;
     /*end of initialization for nime micromouse competition*/
     zhonx_position.midOfCell = false;
-    memcpy(&start_position, &zhonx_position, sizeof(positionRobot));
-    start_position.orientation += 2;
-    start_position.orientation = start_position.orientation % 4;
+    memcpy(&maze_container.start_position, &zhonx_position, sizeof(positionRobot));
+    maze_container.start_position.orientation += 2;
+    maze_container.start_position.orientation = maze_container.start_position.orientation % 4;
     #if defined ZHONX3 || defined SIMULATOR
-        start_position.midOfCell = false;
+        maze_container.start_position.midOfCell = false;
     #elif defined ZHONX2
-        start_position.midOfCell = true;
+        maze_container.start_position.midOfCell = true;
     #endif
-    //newCell(ask_cell_state(), &maze, start_position);
-    newCell((walls){WALL_PRESENCE,WALL_PRESENCE,WALL_PRESENCE,WALL_PRESENCE}, &maze, start_position);
-    memcpy(&start_position, &zhonx_position, sizeof(positionRobot));
+    //newCell(ask_cell_state(), &maze, maze_container.start_position);
+    newCell((walls){WALL_PRESENCE,WALL_PRESENCE,WALL_PRESENCE,WALL_PRESENCE}, &maze_container.maze, maze_container.start_position);
+    memcpy(&maze_container.start_position, &zhonx_position, sizeof(positionRobot));
 
-    printLength(maze,8,8);
-    printMaze(maze, zhonx_position.coordinate_robot);
+    printLength(maze_container.maze,8,8);
+    printMaze(maze_container.maze, zhonx_position.coordinate_robot);
     #if defined ZHONX3
         telemetersStart();
     #endif
@@ -167,7 +161,7 @@ int maze(void)
     HAL_Delay(5000);
 #endif
 
-    exploration(&maze, &zhonx_position, &start_position, &end_coordinate); //make exploration for go from the robot position and the end of the maze
+    exploration(&maze_container.maze, &zhonx_position, &maze_container.start_position, &maze_container.end_coordinate); //make exploration for go from the robot position and the end of the maze
     HAL_Delay(100);
 #ifdef ZHONX3
     telemetersStop();
@@ -189,7 +183,7 @@ int maze(void)
 #ifdef ZHONX2
     hal_step_motor_enable();
 #endif
-    goToPosition(&maze, &zhonx_position, start_position.coordinate_robot);	//goto start position
+    goToPosition(&maze_container.maze, &zhonx_position, maze_container.start_position.coordinate_robot);	//goto start position
 #ifdef ZHONX3
     telemetersStart();
     motorsDriverSleep(OFF);
@@ -212,7 +206,7 @@ int maze(void)
 #ifdef ZHONX2
     hal_step_motor_enable();
 #endif
-    goToPosition(&maze, &zhonx_position, end_coordinate);
+    goToPosition(&maze_container.maze, &zhonx_position, maze_container.end_coordinate);
 #ifdef ZHONX3
     telemetersStop();
     motorsDriverSleep(ON);
@@ -233,8 +227,8 @@ int maze(void)
 #ifdef ZHONX2
     hal_step_motor_enable();
 #endif
-    goToPosition(&maze, &zhonx_position, start_position.coordinate_robot);	//goto start position
-    doUTurn(&zhonx_position);					// make 180° for be ready to go
+    goToPosition(&maze_container.maze, &zhonx_position, maze_container.start_position.coordinate_robot);	//goto start position
+    doUTurn(&zhonx_position);					// make 180 degrees for be ready to go
 #ifdef ZHONX3
     telemetersStop();
     motorsDriverSleep(ON);
@@ -258,10 +252,15 @@ int maze(void)
 #endif
 
     // Save maze into flash memory
-    saveMaze(&maze);
+    saveMaze(&maze_container);
 
-    run1(&maze, &zhonx_position, start_position.coordinate_robot, end_coordinate);
-    run2(&maze, &zhonx_position, start_position.coordinate_robot, end_coordinate);
+    run1(&maze_container.maze, &zhonx_position,
+         maze_container.start_position.coordinate_robot,
+         maze_container.end_coordinate);
+
+    run2(&maze_container.maze, &zhonx_position,
+         maze_container.start_position.coordinate_robot,
+         maze_container.end_coordinate);
 
 #ifdef ZHONX3
     motorsDriverSleep(OFF);
@@ -928,7 +927,7 @@ int findArrival(labyrinthe maze, coordinate *end_coordinate)
 
 
 // Save a maze into the flash memory
-static int saveMaze(labyrinthe *maze)
+static int saveMaze(MAZE_CONTAINER *maze_container)
 {
     int rv = 0;
     int selected_maze = 0;
@@ -953,7 +952,7 @@ static int saveMaze(labyrinthe *maze)
         ssd1306Refresh();
 
         cnt_mazes = 1;
-        rv = flash_write(zhonxSettings.h_flash, (unsigned char *)&stored_mazes->count_stored_mazes,
+        rv = flash_write(zhonxSettings.h_flash, (unsigned char *)&(stored_mazes->count_stored_mazes),
                                                 (unsigned char *)&cnt_mazes, sizeof(int));
         if (rv != FLASH_DRIVER_E_SUCCESS)
         {
@@ -969,8 +968,8 @@ static int saveMaze(labyrinthe *maze)
         ssd1306PrintfAtLine(0, 3, &Font_5x8, "Saving maze...");
         ssd1306Refresh();
 
-        rv = flash_write(zhonxSettings.h_flash, (unsigned char *)&(stored_mazes->mazes[selected_maze]),
-                                                (unsigned char *)maze, sizeof(labyrinthe));
+        rv = flash_write(zhonxSettings.h_flash, (unsigned char *)&(stored_mazes->mazes[selected_maze].maze),
+                                                (unsigned char *)maze_container, sizeof(MAZE_CONTAINER));
         if (rv != FLASH_DRIVER_E_SUCCESS)
         {
             ssd1306PrintfAtLine(0, 4, &Font_5x8, "Failed to save maze!");
@@ -982,4 +981,25 @@ static int saveMaze(labyrinthe *maze)
     }
 
     return 0;
+}
+
+int loadMaze(MAZE_CONTAINER *maze_container)
+{
+    ssd1306ClearScreen(MAIN_AREA);
+
+    // Check if there is at least one stored maze in flash memory
+    if ((stored_mazes->count_stored_mazes < 0) || (stored_mazes->count_stored_mazes > MAX_STORABLE_MAZES))
+    {
+        ssd1306PrintfAtLine(0, 1, &Font_5x8, "Invalid stored mazes counter");
+        ssd1306Refresh();
+        return MAZE_SOLVER_E_ERROR;
+    }
+
+    // Get the first maze slot
+    memcpy(maze_container, &stored_mazes->mazes[0], sizeof(MAZE_CONTAINER));
+
+    ssd1306PrintfAtLine(0, 1, &Font_5x8, "Maze restored successfully");
+    ssd1306Refresh();
+
+    return MAZE_SOLVER_E_SUCCESS;
 }
