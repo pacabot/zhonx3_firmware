@@ -135,7 +135,7 @@ int maze(void)
     zhonx_position.coordinate_robot.y = 8; // the robot start in the center of the maze
     zhonx_position.orientation = zhonxSettings.start_orientation % 4;
     /*end of initialization for nime micromouse competition*/
-    zhonx_position.midOfCell = false;
+    zhonx_position.midOfCell = true;
     memcpy(&start_position, &zhonx_position, sizeof(positionRobot));
     start_position.orientation += 2;
     start_position.orientation = start_position.orientation % 4;
@@ -276,7 +276,6 @@ int maze(void)
  *  ********************** int maze (void) **********************
  *  this function is the main function of the maze solver
  */
-
 int exploration(labyrinthe *maze, positionRobot* positionZhonx,
         const positionRobot *start_coordinates, coordinate *end_coordinate)
 {
@@ -877,7 +876,7 @@ int findArrival(labyrinthe maze, coordinate *end_coordinate)
                     && maze.cell[x][y].length != CANT_GO && maze.cell[x+1][y].length != CANT_GO
                     && maze.cell[x][y+1].length != CANT_GO && maze.cell[x+1][y+1].length != CANT_GO)
             {
-                bluetoothPrintf("possible end find at : %i; %i\n", x, y);
+                //bluetoothPrintf("possible end find at : %i; %i\n", x, y);
                 if ((maze.cell[x][y].wall_east != NO_WALL
                             || maze.cell[x][y].wall_south != NO_WALL)
                         && maze.cell[x][y].length != 0
@@ -918,7 +917,7 @@ int findArrival(labyrinthe maze, coordinate *end_coordinate)
                     possible_end_find_cost =
                             maze.cell[end_coordinate->x][end_coordinate->y].length;
                 }
-                bluetoothPrintf("possible end find at : %i; %i go to position : %d; %d\n", x, y, end_coordinate->x, end_coordinate->y);
+                //bluetoothPrintf("possible end find at : %i; %i go to position : %d; %d\n", x, y, end_coordinate->x, end_coordinate->y);
             }
 
         }

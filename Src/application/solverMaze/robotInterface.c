@@ -124,9 +124,8 @@ void move_zhonx(int direction_to_go, positionRobot *positionZhonx, int numberOfC
             }
             else
             {
-                moveRotateCW90(MAX_SPEED_TRANSLATION, END_SPEED_TRANSLATION);
+                moveRotateCW90(MAX_SPEED_ROTATION, END_SPEED_TRANSLATION);
                 numberOfCell--;
-
             }
             break;
         case UTURN:
@@ -158,7 +157,7 @@ void move_zhonx(int direction_to_go, positionRobot *positionZhonx, int numberOfC
             }
             else
             {
-                moveRotateCCW90(MAX_SPEED_TRANSLATION, END_SPEED_TRANSLATION);
+                moveRotateCCW90(MAX_SPEED_ROTATION, END_SPEED_TRANSLATION);
                 numberOfCell--;
             }
 
@@ -414,8 +413,7 @@ int test_move_zhonx ()
     zhonx_position.coordinate_robot.y = 8;
     zhonx_position.midOfCell = TRUE;
     zhonx_position.orientation = NORTH;
-    coordinate way[] = {{8,7},{8,8},{8,7},{8,6},{7,6},{7,7},{7,8},{7,7},{7,6},{8,6},{8,7},{8,8},{END_OF_LIST, END_OF_LIST}}; //,{9,6},{9,7},{9,8},{9,7},{10,7},{10,6},{10,7},{END_OF_LIST,END_OF_LIST}};
-
+    coordinate way[]={{8,7},{8,6},{8,5},{8,4},{8,3},{8,2},{8,1},{8,0},{9,0},{10,0},{11,0},{10,0},{9,0},{8,0},{8,1},{8,2},{8,3},{8,4},{8,5},{8,6},{8,7},{8,8},{END_OF_LIST,END_OF_LIST}};
     motorsInit();
     HAL_Delay(2000);
     telemetersStart();

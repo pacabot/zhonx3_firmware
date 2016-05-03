@@ -115,7 +115,7 @@ int moveMainDist(getOffsetsStruct *offset, double max_speed, double end_speed)
 {
     while (hasMoveEnded() != TRUE);
     repositionSetInitialPosition(OFFSET_DIST); //absolute position into a cell
-    move(0, MAIN_DIST, max_speed, max_speed); //distance with last move offset
+    move(0, MAIN_DIST, max_speed, end_speed); //distance with last move offset
     spyPostGetOffset(&offset->spyPost);
 
     return POSITION_CONTROL_E_SUCCESS;
@@ -486,15 +486,13 @@ int moveUTurn(double speed_rotation, double max_speed, double out_speed)
     // move HALF CELL IN
     moveHalfCell_IN(max_speed, 0);
     // chose the correct turn for re-calibrate the robot if possible
-    moveRotateInPlace180WithCal(wall_presence, speed_rotation);
+    moveRotateInPlace180WithCal(wall_presence, 200);//speed_rotation);
     while (hasMoveEnded() != TRUE);
     // go back and go out for maximize correct alignment
     mainControlSetFollowType(NO_FOLLOW); //todo this is the shit
-    positionControlSetPositionType(ENCODERS);
     repositionSetInitialPosition(HALF_CELL_LENGTH);
     move(0, -1.00 * (HALF_CELL_LENGTH - Z3_CENTER_BACK_DIST - UTURN_OFFSET + 15), max_speed, 0);
     mainControlSetFollowType(WALL_FOLLOW); //todo this is the shit
-    positionControlSetPositionType(GYRO);
     repositionSetInitialPosition(Z3_CENTER_BACK_DIST + UTURN_OFFSET);
     while (hasMoveEnded() != TRUE);
     move(0, (HALF_CELL_LENGTH - Z3_CENTER_BACK_DIST - UTURN_OFFSET), max_speed, max_speed);
@@ -545,7 +543,7 @@ void movesTest1()
     telemetersStart();
 
     positionControlSetPositionType(GYRO);
-    mainControlSetFollowType(WALL_FOLLOW);
+    mainControlSetFollowType(NO_FOLLOW);
 
     test Uturn
     moveStartCell(Vmax, Vmax);
@@ -553,9 +551,9 @@ void movesTest1()
 #endif
 
 #if 1
-    Vout = 600;
+    Vout = 300;
     Vmax = 600;
-    Vrotate = 600;
+    Vrotate = 300;
     telemetersStart();
 
     positionControlSetPositionType(GYRO);
@@ -563,50 +561,50 @@ void movesTest1()
     //maze
     moveStartCell(Vmax, Vmax);
     moveCell(1, Vmax, Vout);
-    moveRotateCW90(Vrotate, Vrotate);
+    moveRotateCW90(Vrotate, Vout);
     moveCell(2, Vmax, Vout);
-    moveRotateCW90(Vrotate, Vrotate);
-    moveRotateCCW90(Vrotate, Vrotate);
-    moveRotateCCW90(Vrotate, Vrotate);
+    moveRotateCW90(Vrotate, Vout);
+    moveRotateCCW90(Vrotate, Vout);
+    moveRotateCCW90(Vrotate, Vout);
     moveCell(2, Vmax, Vout);
-    moveRotateCW90(Vrotate, Vrotate);
+    moveRotateCW90(Vrotate, Vout);
     moveCell(3, Vmax, Vout);
-    moveRotateCW90(Vrotate, Vrotate);
-    moveRotateCW90(Vrotate, Vrotate);
-    moveRotateCCW90(Vrotate, Vrotate);
-    moveRotateCCW90(Vrotate, Vrotate);
-    moveRotateCW90(Vrotate, Vrotate);
-    moveCell(1, Vmax, Vout);
-    moveUTurn(Vrotate, Vmax, Vout);
-    moveCell(1, Vmax, Vout);
-    moveRotateCCW90(Vrotate, Vrotate);
-    moveCell(1, Vmax, Vout);
-    moveRotateCCW90(Vrotate, Vrotate);
-    moveRotateCCW90(Vrotate, Vrotate);
-    moveRotateCW90(Vrotate, Vrotate);
-    moveRotateCW90(Vrotate, Vrotate);
-    moveCell(1, Vmax, Vout);
-    moveRotateCW90(Vrotate, Vrotate);
-    moveRotateCCW90(Vrotate, Vrotate);
-    moveRotateCW90(Vrotate, Vrotate);
-    moveCell(2, Vmax, Vout);
-    moveRotateCW90(Vrotate, Vrotate);
-    moveCell(1, Vmax, Vout);
-    moveRotateCCW90(Vrotate, Vrotate);
-    moveRotateCCW90(Vrotate, Vrotate);
-    moveCell(1, Vmax, Vout);
-    moveRotateCW90(Vrotate, Vrotate);
-    moveCell(2, Vmax, Vout);
-    moveRotateCW90(Vrotate, Vrotate);
-    moveUTurn(Vrotate, Vmax, Vout);
-    moveRotateCCW90(Vrotate, Vrotate);
-    moveCell(1, Vmax, Vout);
-    moveRotateCCW90(Vrotate, Vrotate);
-    moveRotateCCW90(Vrotate, Vrotate);
-    moveRotateCW90(Vrotate, Vrotate);
-    moveRotateCCW90(Vrotate, Vrotate);
-    moveRotateCW90(Vrotate, Vrotate);
-    moveCell(1, Vmax, Vout);
+    moveRotateCW90(Vrotate, Vout);
+//    moveRotateCW90(Vrotate, Vout);
+//    moveRotateCCW90(Vrotate, Vout);
+//    moveRotateCCW90(Vrotate, Vout);
+//    moveRotateCW90(Vrotate, Vout);
+//    moveCell(1, Vmax, Vout);
+//    moveUTurn(Vrotate, Vmax, Vout);
+//    moveCell(1, Vmax, Vout);
+//    moveRotateCCW90(Vrotate, Vout);
+//    moveCell(1, Vmax, Vout);
+//    moveRotateCCW90(Vrotate, Vout);
+//    moveRotateCCW90(Vrotate, Vout);
+//    moveRotateCW90(Vrotate, Vout);
+//    moveRotateCW90(Vrotate, Vout);
+//    moveCell(1, Vmax, Vout);
+//    moveRotateCW90(Vrotate, Vout);
+//    moveRotateCCW90(Vrotate, Vout);
+//    moveRotateCW90(Vrotate, Vout);
+//    moveCell(2, Vmax, Vout);
+//    moveRotateCW90(Vrotate, Vout);
+//    moveCell(1, Vmax, Vout);
+//    moveRotateCCW90(Vrotate, Vout);
+//    moveRotateCCW90(Vrotate, Vout);
+//    moveCell(1, Vmax, Vout);
+//    moveRotateCW90(Vrotate, Vout);
+//    moveCell(2, Vmax, Vout);
+//    moveRotateCW90(Vrotate, Vout);
+//    moveUTurn(Vrotate, Vmax, Vout);
+//    moveRotateCCW90(Vrotate, Vout);
+//    moveCell(1, Vmax, Vout);
+//    moveRotateCCW90(Vrotate, Vout);
+//    moveRotateCCW90(Vrotate, Vout);
+//    moveRotateCW90(Vrotate, Vout);
+//    moveRotateCCW90(Vrotate, Vout);
+//    moveRotateCW90(Vrotate, Vout);
+//    moveCell(1, Vmax, Vout);
 #endif
 
 #if 0
@@ -644,7 +642,7 @@ void movesTest2()
 
     HAL_Delay(2000);
 
-#if 1
+#if 0
     //rotation test (used for verify move computes)
     positionControlSetPositionType(GYRO);
     mainControlSetFollowType(NO_FOLLOW);
@@ -663,17 +661,15 @@ void movesTest2()
     HAL_Delay(2000);
 #endif
 
-#if 0
+#if 1
     //distance test (used for verify move computes)
-    positionControlSetPositionType(ENCODERS);
+    positionControlSetPositionType(GYRO);
     mainControlSetFollowType(NO_FOLLOW);
     double abs_encoders = encoderGetAbsDist(ENCODER_L) + encoderGetAbsDist(ENCODER_R);
-    Vin  = 100;
-    Vout = 0;
-    Vmax = 300;
-    move(0, CELL_LENGTH, Vin, Vin);
-    while (hasMoveEnded() != TRUE);
-    move(0, CELL_LENGTH, Vmax, Vout);
+    Vin  = 500;
+    Vout = 500;
+    Vmax = 500;
+    moveCell(4, Vmax, Vout);
     while (hasMoveEnded() != TRUE);
     motorsBrake();
     abs_encoders = (encoderGetAbsDist(ENCODER_L) + encoderGetAbsDist(ENCODER_R)) - abs_encoders;

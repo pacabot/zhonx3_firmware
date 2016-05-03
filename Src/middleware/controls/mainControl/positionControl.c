@@ -93,9 +93,9 @@ int positionControlInit(void)
     memset(&position_params, 0, sizeof(position_params_struct));
     positionProfileCompute(0, 0, 0);
 
-    gyro_pid_instance.Kp = 33;
+    gyro_pid_instance.Kp = 58;
     gyro_pid_instance.Ki = 0;
-    gyro_pid_instance.Kd = 2000;
+    gyro_pid_instance.Kd = 1500;
 
 //    gyro_pid_instance.Kp = zhonxCalib_data->pid_gyro.Kp;
 //    gyro_pid_instance.Ki = zhonxCalib_data->pid_gyro.Ki / CONTROL_TIME_FREQ;
@@ -145,41 +145,42 @@ double positionControlSetSign(double sign)
 
 int positionControlLoop(void)
 {
-    if (mainControlGetWallFollowType() == ROTATE_IN_PLACE)
+    //    if (mainControlGetWallFollowType() != CURVE)
+    //    {
+    //        if (position_control.enablePositionCtrl == NO_POSITION_CTRL)
+    //        {
+    //            position_control.position_command = 0;
+    //            pidControllerReset(position_control.position_pid.instance);
+    //            return POSITION_CONTROL_E_SUCCESS;
+    //        }
+    //    }
+
+//    if (mainControlGetWallFollowType() == ROTATE_IN_PLACE)
+//    {
+//        if (position_control.nb_loop_accel < position_params.nb_loop_accel)
+//        {
+//            position_control.nb_loop_accel++;
+//            position_control.position_consign += position_params.accel_angle_per_loop;
+//            position_control.current_angle_consign += position_control.position_consign;
+//        }
+//        else if (position_control.nb_loop_maint < position_params.nb_loop_maint)
+//        {
+//            position_control.nb_loop_maint++;
+//            position_control.current_angle_consign += position_params.angle_per_loop;
+//        }
+//        else if (position_control.nb_loop_decel < position_params.nb_loop_decel)
+//        {
+//            position_control.nb_loop_decel++;
+//            position_control.position_consign -= position_params.accel_angle_per_loop;
+//            position_control.current_angle_consign += position_params.angle_per_loop;
+//        }
+//        else
+//        {
+//            position_control.end_control = TRUE;
+//        }
+//    }
+//    else
     {
-        if (position_control.nb_loop_accel < position_params.nb_loop_accel)
-        {
-            position_control.nb_loop_accel++;
-            position_control.position_consign += position_params.accel_angle_per_loop;
-            position_control.current_angle_consign += position_control.position_consign;
-        }
-        else if (position_control.nb_loop_maint < position_params.nb_loop_maint)
-        {
-            position_control.nb_loop_maint++;
-            position_control.current_angle_consign += position_params.angle_per_loop;
-        }
-        else if (position_control.nb_loop_decel < position_params.nb_loop_decel)
-        {
-            position_control.nb_loop_decel++;
-            position_control.position_consign -= position_params.accel_angle_per_loop;
-            position_control.current_angle_consign += position_params.angle_per_loop;
-        }
-        else
-        {
-            position_control.end_control = TRUE;
-        }
-    }
-    else
-    {
-        //    if (mainControlGetWallFollowType() != CURVE)
-        //    {
-        //        if (position_control.enablePositionCtrl == NO_POSITION_CTRL)
-        //        {
-        //            position_control.position_command = 0;
-        //            pidControllerReset(position_control.position_pid.instance);
-        //            return POSITION_CONTROL_E_SUCCESS;
-        //        }
-        //    }
 
         if (position_control.positionType == GYRO)
         {
@@ -190,6 +191,7 @@ int positionControlLoop(void)
         }
         else //use encoders
         {
+            ledPowerErrorBlink(500, 300, 2);
             if (position_params.sign > 0)
                 position_control.current_angle = 180.00 * (encoderGetDist(ENCODER_L) - encoderGetDist(ENCODER_R))
                 / (PI * ROTATION_DIAMETER);
@@ -280,6 +282,10 @@ int positionControlLoop(void)
 /**************************************************************************/
 double positionProfileCompute(double angle, double loop_time, double max_turn_speed)
 {
+    position_control.nb_loop_accel = 0;  //rotate in place
+    position_control.nb_loop_maint = 0;
+    position_control.nb_loop_decel = 0;
+
     position_control.nb_loop = 0;
     position_control.position_command = 0;
     position_control.position_error = 0;
@@ -298,8 +304,6 @@ double positionProfileCompute(double angle, double loop_time, double max_turn_sp
     if (lround(loop_time) == 0)
     {
         loop_time = (angle / max_turn_speed) * CONTROL_TIME_FREQ;
-
-
     }
 
     position_params.nb_loop = (int) loop_time;
