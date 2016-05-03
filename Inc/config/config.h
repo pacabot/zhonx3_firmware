@@ -173,7 +173,7 @@
 // Telemeters profiles
 #define TELEMETERS_PROFILES_ADDR         (ADDR_FLASH_SECTOR_10)
 // Address in flash for ZHONX informations
-#define CONFIG_ZHONX_INFO_ADDR           ((char *)ADDR_FLASH_SECTOR_11)
+#define CONFIG_ZHONX_INFO_ADDR           (ADDR_FLASH_SECTOR_11)
 
 /**************************************************************************************/
 /***************                 EEPROM Constants                  ********************/

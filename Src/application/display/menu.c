@@ -50,7 +50,7 @@ extern void motorsTest();
 extern void lineSensorsTest();
 extern void lineFollower();
 extern int lineSensorsCalibration(void);
-extern void maze();
+extern void maze_solver();
 extern void testWallsSensors();
 extern void movesTest1(void);
 extern void movesTest2(void);
@@ -104,7 +104,7 @@ const menuItem maze_menu=
 {
 		"MAZE",         //9 characters max
 		{
-				{"New maze",    'f',	(void*)maze},
+				{"New maze",    'f',	(void*)maze_solver},
 				{"Test_maze",   'f',    (void*)test_move_zhonx},
 				{"Calibration", 'b',    (void*)&zhonxSettings.calibration_enabled},
 				{"Color finish",'b',	(void*)&zhonxSettings.nime_competition},
@@ -227,7 +227,7 @@ const menuItem zhonxNameMenu =
 
 const menuItem mainMenu =
 {
-		CONFIG_ZHONX_INFO_ADDR,
+		(char *)CONFIG_ZHONX_INFO_ADDR,
 		{
 				//	{"telemeters calibration",'f',		(void*)telemeterFrontCalibration},
 				{"Maze menu",       'm',	(void*)&maze_menu},
