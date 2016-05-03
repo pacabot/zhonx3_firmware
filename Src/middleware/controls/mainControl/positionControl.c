@@ -93,9 +93,13 @@ int positionControlInit(void)
     memset(&position_params, 0, sizeof(position_params_struct));
     positionProfileCompute(0, 0, 0);
 
-    gyro_pid_instance.Kp = zhonxCalib_data->pid_gyro.Kp;
-    gyro_pid_instance.Ki = 0.00;//zhonxCalib_data->pid_gyro.Ki / CONTROL_TIME_FREQ;
-    gyro_pid_instance.Kd = 2000;//zhonxCalib_data->pid_gyro.Kd * CONTROL_TIME_FREQ;
+    gyro_pid_instance.Kp = 33;
+    gyro_pid_instance.Ki = 0;
+    gyro_pid_instance.Kd = 2000;
+
+//    gyro_pid_instance.Kp = zhonxCalib_data->pid_gyro.Kp;
+//    gyro_pid_instance.Ki = zhonxCalib_data->pid_gyro.Ki / CONTROL_TIME_FREQ;
+//    gyro_pid_instance.Kd = zhonxCalib_data->pid_gyro.Kd * CONTROL_TIME_FREQ;
 
     position_control.position_pid.instance = &gyro_pid_instance;
 
