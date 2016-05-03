@@ -106,30 +106,30 @@ int mainControl_IT(void)
     {
         rv = lineFollowControlLoop();
         if (rv != LINE_FOLLOW_CONTROL_E_SUCCESS)
-                        return rv;
+            return rv;
         rv = speedControlLoop();
         if (rv != SPEED_CONTROL_E_SUCCESS)
-                return rv;
+            return rv;
         rv = transfertFunctionLoop();
         if (rv != TRANSFERT_FUNCTION_E_SUCCESS)
-                return rv;
+            return rv;
         return MAIN_CONTROL_E_SUCCESS;
     }
     else if (control_params.wall_follow_state == TRUE)
     {
         rv = wallFollowControlLoop();
         if (rv != WALL_FOLLOW_CONTROL_E_SUCCESS)
-                return rv;
+            return rv;
     }
     rv = positionControlLoop();
     if (rv != POSITION_CONTROL_E_SUCCESS)
         return rv;
     rv = speedControlLoop();
     if (rv != SPEED_CONTROL_E_SUCCESS)
-            return rv;
+        return rv;
     rv = transfertFunctionLoop();
     if (rv != TRANSFERT_FUNCTION_E_SUCCESS)
-            return rv;
+        return rv;
 
     return MAIN_CONTROL_E_SUCCESS;
 }
@@ -196,10 +196,19 @@ int move(double angle, double radius_or_distance, double max_speed, double end_s
     }
     else
     {
-        move_params.moveType = CURVE;
         distance = fabsf((PI * (2.00 * radius_or_distance) * (angle / 360.00)));
 
-        positionProfileCompute(angle, speedProfileCompute(distance, max_speed, end_speed, MAX_ACCEL), max_speed);
+        if (lround(radius_or_distance) == 0)
+        {
+            move_params.moveType = ROTATE_IN_PLACE;
+            speedProfileCompute(0, max_speed, end_speed, MAX_ACCEL);
+            positionProfileCompute(angle, 0, max_speed);
+        }
+        else
+        {
+            move_params.moveType = CURVE;
+            positionProfileCompute(angle, speedProfileCompute(distance, max_speed, end_speed, MAX_ACCEL), max_speed);
+        }
 #ifdef DEBUG_MAIN_CONTROL
         bluetoothPrintf("CURVE = %d\n", (int32_t)angle);
 #endif

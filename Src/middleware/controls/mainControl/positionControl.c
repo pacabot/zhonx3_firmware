@@ -43,7 +43,12 @@
 
 typedef struct
 {
-    double angle_consign;			//total angle
+    int nb_loop_accel;  //rotate in place
+    int nb_loop_maint;
+    int nb_loop_decel;
+    double accel_angle_per_loop;    //rotate in place
+
+    double angle_consign;	    //total angle
     double angle_per_loop;
     double max_speed;
     int nb_loop;
@@ -52,13 +57,17 @@ typedef struct
 
 typedef struct
 {
+    int nb_loop_accel;  //rotate in place
+    int nb_loop_maint;
+    int nb_loop_decel;
+
     int nb_loop;
     double position_command;
     double position_error;
     double position_consign;
     double current_angle;
-    double current_angle_consign;			//differential distance (mm) since the control start
-    double old_angle;				 //effective distance at the previous call
+    double current_angle_consign;   //differential distance (mm) since the control start
+    double old_angle;				//effective distance at the previous call
     char end_control;
     enum enablePositionCtrl enablePositionCtrl;
     enum positionType positionType;
@@ -132,41 +141,68 @@ double positionControlSetSign(double sign)
 
 int positionControlLoop(void)
 {
-    //    if (mainControlGetWallFollowType() != CURVE)
-    //    {
-    //        if (position_control.enablePositionCtrl == NO_POSITION_CTRL)
-    //        {
-    //            position_control.position_command = 0;
-    //            pidControllerReset(position_control.position_pid.instance);
-    //            return SPEED_CONTROL_E_SUCCESS;
-    //        }
-    //    }
-
-    if (position_control.positionType == GYRO)
+    if (mainControlGetWallFollowType() == ROTATE_IN_PLACE)
     {
-        if (position_params.sign > 0)
-            position_control.current_angle = gyroGetAngle();
+        if (position_control.nb_loop_accel < position_params.nb_loop_accel)
+        {
+            position_control.nb_loop_accel++;
+            position_control.position_consign += position_params.accel_angle_per_loop;
+            position_control.current_angle_consign += position_control.position_consign;
+        }
+        else if (position_control.nb_loop_maint < position_params.nb_loop_maint)
+        {
+            position_control.nb_loop_maint++;
+            position_control.current_angle_consign += position_params.angle_per_loop;
+        }
+        else if (position_control.nb_loop_decel < position_params.nb_loop_decel)
+        {
+            position_control.nb_loop_decel++;
+            position_control.position_consign -= position_params.accel_angle_per_loop;
+            position_control.current_angle_consign += position_params.angle_per_loop;
+        }
         else
-            position_control.current_angle = -1.00 * gyroGetAngle();
-    }
-    else //use encoders
-    {
-        if (position_params.sign > 0)
-            position_control.current_angle = 180.00 * (encoderGetDist(ENCODER_L) - encoderGetDist(ENCODER_R))
-            / (PI * ROTATION_DIAMETER);
-        else
-            position_control.current_angle = 180.00 * (encoderGetDist(ENCODER_R) - encoderGetDist(ENCODER_L))
-            / (PI * ROTATION_DIAMETER);
-    }
-
-    if (position_control.nb_loop < position_params.nb_loop)
-    {
-        position_control.nb_loop++;
-        position_control.current_angle_consign += position_params.angle_per_loop;
+        {
+            position_control.end_control = TRUE;
+        }
     }
     else
     {
-        position_control.end_control = TRUE;
+        //    if (mainControlGetWallFollowType() != CURVE)
+        //    {
+        //        if (position_control.enablePositionCtrl == NO_POSITION_CTRL)
+        //        {
+        //            position_control.position_command = 0;
+        //            pidControllerReset(position_control.position_pid.instance);
+        //            return POSITION_CONTROL_E_SUCCESS;
+        //        }
+        //    }
+
+        if (position_control.positionType == GYRO)
+        {
+            if (position_params.sign > 0)
+                position_control.current_angle = gyroGetAngle();
+            else
+                position_control.current_angle = -1.00 * gyroGetAngle();
+        }
+        else //use encoders
+        {
+            if (position_params.sign > 0)
+                position_control.current_angle = 180.00 * (encoderGetDist(ENCODER_L) - encoderGetDist(ENCODER_R))
+                / (PI * ROTATION_DIAMETER);
+            else
+                position_control.current_angle = 180.00 * (encoderGetDist(ENCODER_R) - encoderGetDist(ENCODER_L))
+                / (PI * ROTATION_DIAMETER);
+        }
+
+        if (position_control.nb_loop < position_params.nb_loop)
+        {
+            position_control.nb_loop++;
+            position_control.current_angle_consign += position_params.angle_per_loop;
+        }
+        else
+        {
+            position_control.end_control = TRUE;
+        }
     }
 
     position_control.position_error = position_control.current_angle_consign - position_control.current_angle;//for distance control
@@ -189,27 +225,27 @@ int positionControlLoop(void)
 /*!
  ***BASICS FORMULAS***
 
- ___   _________
- / 2 x / Acc x d
+       ___   _________
+      / 2 x / Acc x d
  t = v_____v__________	//without initial speed
- Acc
+            Acc
 
- __________________
- - Vi + / Vi²+ 2 x Acc x d
+             __________________
+     - Vi + / Vi²+ 2 x Acc x d
  t = ______v___________________	//with initial speed
- Acc
+                 Acc
 
- V²
- d = -----
- 2.Acc
+         V²
+ d =   -----
+       2.Acc
 
- 1
+      1
  d = --- Acc x t²
- 2
+      2
 
- 1
+               1
  d = Vi x t + --- Acc x t²
- 2
+               2
 
  Vf = Vi + Acc x t 	//instantaneous speed
 
@@ -258,6 +294,8 @@ double positionProfileCompute(double angle, double loop_time, double max_turn_sp
     if (lround(loop_time) == 0)
     {
         loop_time = (angle / max_turn_speed) * CONTROL_TIME_FREQ;
+
+
     }
 
     position_params.nb_loop = (int) loop_time;

@@ -126,7 +126,7 @@ int wallFollowControlLoop(void)
 //    if (getWallPresence(FRONT_WALL) == TRUE)
 //    {
 //        positionControlEnablePositionCtrl(POSITION_CTRL);
-////        wall_follow_control.follow_error = 0;
+//        wall_follow_control.follow_error = 0;
 //        pidControllerReset(wall_follow_control.follow_pid.instance);
 //    }
 

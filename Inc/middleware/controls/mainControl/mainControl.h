@@ -29,7 +29,7 @@ enum rotationTypeEnum
 };
 enum mainControlWallFollowType
 {
-    STRAIGHT, CURVE
+    STRAIGHT, CURVE, ROTATE_IN_PLACE
 };
 enum mainControlFollowType
 {

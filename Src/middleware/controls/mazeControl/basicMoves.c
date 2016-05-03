@@ -649,7 +649,7 @@ void movesTest2()
     positionControlSetPositionType(GYRO);
     mainControlSetFollowType(NO_FOLLOW);
     double abs_encoders = encoderGetAbsDist(ENCODER_L) + encoderGetAbsDist(ENCODER_R);
-    Vin  = 100;
+    Vin  = 10;
     Vout = 0;
     Vmax = 300;
     move(180, 0, Vin, Vin);

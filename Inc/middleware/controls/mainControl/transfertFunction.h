@@ -21,7 +21,7 @@ typedef struct
 {
     int left_motor_pwm;
     int right_motor_pwm;
-    float pwm_ratio;
+    double pwm_ratio;
 
 } transfert_function_struct;
 
