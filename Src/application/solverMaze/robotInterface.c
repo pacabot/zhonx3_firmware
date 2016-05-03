@@ -177,7 +177,6 @@ void doUTurn(positionRobot *positionZhonx)
     positionZhonx->orientation = (positionZhonx->orientation + 2) % 4;
 
 	moveUTurn(MAX_SPEED_ROTATION, MAX_SPEED_TRANSLATION, END_SPEED_TRANSLATION);
-	motorsDriverSleep(ON);
 }
 
 int waitValidation(unsigned long timeout)
