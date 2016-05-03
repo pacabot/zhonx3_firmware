@@ -34,7 +34,7 @@ void goOrientation(char *orientationZhonx, char directionToGo)
 		case FORWARD :
 #ifdef DEBUG_ROBOT_INTERFACE
 		    bluetoothWaitReady();
-			bluetoothPrintf("FORWARD");
+			bluetoothPrintf("FORWARD\n");
 #endif
 			break;
 		case RIGHT :
@@ -42,7 +42,7 @@ void goOrientation(char *orientationZhonx, char directionToGo)
 			move (-90, 0, MAX_SPEED_ROTATION, 0);
 #ifdef DEBUG_ROBOT_INTERFACE
 			bluetoothWaitReady();
-			bluetoothPrintf("RIGHT");
+			bluetoothPrintf("RIGHT\n");
 #endif
 			while(hasMoveEnded() != TRUE);
 			break;
@@ -51,7 +51,7 @@ void goOrientation(char *orientationZhonx, char directionToGo)
 			move (180, 0, MAX_SPEED_ROTATION, 0);
 #ifdef DEBUG_ROBOT_INTERFACE
             bluetoothWaitReady();
-			bluetoothPrintf("UTURN");
+			bluetoothPrintf("UTURN\n");
 #endif
 			while(hasMoveEnded() != TRUE);
 			break;
@@ -60,7 +60,7 @@ void goOrientation(char *orientationZhonx, char directionToGo)
 			move (90, 0, MAX_SPEED_ROTATION, 0);
 #ifdef DEBUG_ROBOT_INTERFACE
 			bluetoothWaitReady();
-			bluetoothPrintf("LEFT");
+			bluetoothPrintf("LEFT\n");
 #endif
 			while(hasMoveEnded() != TRUE);
 			break;
@@ -109,13 +109,13 @@ void move_zhonx(int direction_to_go, positionRobot *positionZhonx, int numberOfC
         case FORWARD:
             #ifdef DEBUG_ROBOT_INTERFACE
                 bluetoothWaitReady();
-                bluetoothPrintf("FORWARD ");
+                bluetoothPrintf("FORWARD\n");
             #endif
             break;
         case RIGHT:
             #ifdef DEBUG_ROBOT_INTERFACE
                 bluetoothWaitReady();
-                bluetoothPrintf("RIGHT ");
+                bluetoothPrintf("RIGHT\n");
             #endif
             if (positionZhonx->midOfCell == true)
             {
@@ -132,7 +132,7 @@ void move_zhonx(int direction_to_go, positionRobot *positionZhonx, int numberOfC
         case UTURN:
             #ifdef DEBUG_ROBOT_INTERFACE
                 bluetoothWaitReady();
-			bluetoothPrintf("UTURN ");
+			bluetoothPrintf("UTURN\n");
             #endif
             if (positionZhonx->midOfCell == false)
             {
@@ -149,7 +149,7 @@ void move_zhonx(int direction_to_go, positionRobot *positionZhonx, int numberOfC
         case LEFT:
             #ifdef DEBUG_ROBOT_INTERFACE
                 bluetoothWaitReady();
-			bluetoothPrintf("LEFT ");
+			bluetoothPrintf("LEFT\n");
             #endif
             if (positionZhonx->midOfCell == true)
             {
@@ -175,7 +175,7 @@ void move_zhonx(int direction_to_go, positionRobot *positionZhonx, int numberOfC
 void doUTurn(positionRobot *positionZhonx)
 {
     motorsDriverSleep(OFF);
-    goOrientation(&positionZhonx->orientation, (positionZhonx->orientation + 2) % 4);
+    positionZhonx->orientation = (positionZhonx->orientation + 2) % 4;
 
 	moveUTurn(MAX_SPEED_ROTATION, MAX_SPEED_TRANSLATION, END_SPEED_TRANSLATION);
 	motorsDriverSleep(ON);

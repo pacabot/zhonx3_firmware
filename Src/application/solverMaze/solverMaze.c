@@ -185,6 +185,7 @@ int maze_solver(void)
 #endif
     goToPosition(&maze_container.maze, &zhonx_position, maze_container.start_position.coordinate_robot);	//goto start position
 #ifdef ZHONX3
+    bluetoothPrintf("arrived to the start position\n");
     telemetersStart();
     motorsDriverSleep(OFF);
 #endif
@@ -200,45 +201,7 @@ int maze_solver(void)
     doUTurn(&zhonx_position);
     waitStart();
 #ifdef ZHONX3
-    telemetersStart();
-    motorsDriverSleep(OFF);
-#endif
-#ifdef ZHONX2
-    hal_step_motor_enable();
-#endif
-    goToPosition(&maze_container.maze, &zhonx_position, maze_container.end_coordinate);
-#ifdef ZHONX3
-    telemetersStop();
-    motorsDriverSleep(ON);
-#endif
-#ifdef ZHONX2
-    if (zhonx_settings.calibration_enabled==true)
-    {
-        HAL_Delay(1000);
-        calibrateSimple();
-    }
-    hal_step_motor_disable();
-#endif
-    HAL_Delay(2000);
-#ifdef ZHONX3
-    telemetersStart();
-    motorsDriverSleep(OFF);
-#endif
-#ifdef ZHONX2
-    hal_step_motor_enable();
-#endif
-    goToPosition(&maze_container.maze, &zhonx_position, maze_container.start_position.coordinate_robot);	//goto start position
-    doUTurn(&zhonx_position);					// make 180 degrees for be ready to go
-#ifdef ZHONX3
-    telemetersStop();
-    motorsDriverSleep(ON);
-#endif
-#ifdef ZHONX2
-    hal_step_motor_disable();
-#endif
-    HAL_Delay(2000);
-
-#ifdef ZHONX3
+    bluetoothPrintf("uturn do\ngo back");
     move (0, -CELL_LENGTH/2, 50, 0);
     motorsDriverSleep(OFF);
 #endif
@@ -876,7 +839,7 @@ int findArrival(labyrinthe maze, coordinate *end_coordinate)
                     && maze.cell[x][y].length != CANT_GO && maze.cell[x+1][y].length != CANT_GO
                     && maze.cell[x][y+1].length != CANT_GO && maze.cell[x+1][y+1].length != CANT_GO)
             {
-                bluetoothPrintf("possible end find at : %i; %i\n", x, y);
+                //bluetoothPrintf("possible end find at : %i; %i\n", x, y);
                 if ((maze.cell[x][y].wall_east != NO_WALL
                             || maze.cell[x][y].wall_south != NO_WALL)
                         && maze.cell[x][y].length != 0
@@ -917,7 +880,7 @@ int findArrival(labyrinthe maze, coordinate *end_coordinate)
                     possible_end_find_cost =
                             maze.cell[end_coordinate->x][end_coordinate->y].length;
                 }
-                bluetoothPrintf("possible end find at : %i; %i go to position : %d; %d\n", x, y, end_coordinate->x, end_coordinate->y);
+                //bluetoothPrintf("possible end find at : %i; %i go to position : %d; %d\n", x, y, end_coordinate->x, end_coordinate->y);
             }
 
         }
