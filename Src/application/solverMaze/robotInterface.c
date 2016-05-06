@@ -200,7 +200,7 @@ int waitValidation(unsigned long timeout)
 
 void newCell(walls new_walls, labyrinthe *maze, positionRobot positionZhonx)
 {
-#ifdef DEBUG
+#ifdef PRINT_CELL_STATE
 	print_cell_state(new_walls);
 #endif
     switch (positionZhonx.orientation)
@@ -372,7 +372,6 @@ walls ask_cell_state ()
 				break;
 		}
 		print_cell_state(cell_state);
-		ssd1306Refresh();
 	}
 	return cell_state;
 }
@@ -395,14 +394,15 @@ void print_cell_state (walls cell_state)
 	{
 		ssd1306FillRect(113,DISPLAY_OFFSET,5,54);
 	}
+    ssd1306Refresh();
 }
 
 void waitStart()
 {
    while(getWallPresence(FRONT_WALL) == false);
-   HAL_Delay(20);
+   HAL_Delay(200);
    while(getWallPresence(FRONT_WALL) == true);
-   HAL_Delay(500);
+   HAL_Delay(50);
 }
 
 int test_move_zhonx ()

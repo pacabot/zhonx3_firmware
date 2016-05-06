@@ -136,9 +136,9 @@ int main(void)
     toneInit();
     spyPostInit();
 
-    toneSetVolulme(10);
-    tone(F3, 50);
-    toneItMode(A3, 50);
+    toneSetVolulme(50);
+    tone(F4, 50);
+    toneItMode(A4, 50);
 
     // Register Output callback
     cmd_context.out = blockingPrintf;

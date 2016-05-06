@@ -255,29 +255,29 @@ int positionControlLoop(void)
 
  Vf = Vi + Acc x t 	//instantaneous speed
 
- Vi + Vf
+     Vi + Vf
  V = -------			//average speed
- 2
+        2
 
- 2.d
+        2.d
  Acc = -----
- t²
+         t²
 
  d = V x t
 
  V = Vi + (Acc x t)
- ________________________
- / 1 \             / 1 \	 /
+                                   ________________________
+      / 1 \             / 1 \	  /
  v =  |---| x t x Acc + |---| x  V t² x Acc² - 4 x Acc x d	//v = f(t,d,Acc)
- \ 2 /			   \ 2 /
+      \ 2 /			    \ 2 /
 
- -2(t.Vi-d)
+        -2(t.Vi-d)
  Acc = ------------
- t²
+            t²
 
- 2(t.Vi-d)
+         2(t.Vi-d)
  Dcc = ------------
- t²
+             t²
  */
 /**************************************************************************/
 double positionProfileCompute(double angle, double loop_time, double max_turn_speed)

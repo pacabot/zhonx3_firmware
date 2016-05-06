@@ -99,7 +99,6 @@ int moveHalfCell_OUT(double max_speed, double end_speed)
     while (hasMoveEnded() != TRUE);
     repositionSetInitialPosition(HALF_CELL_LENGTH);
     move(0, HALF_CELL_LENGTH - OFFSET_DIST, max_speed, end_speed);
-    while (hasMoveEnded() != TRUE);
 
     return POSITION_CONTROL_E_SUCCESS;
 }
@@ -148,28 +147,23 @@ int moveOffsetDist(getOffsetsStruct *offset, double max_speed)
         bluetoothPrintf(" R_OFFSET = %d, TYPE = %d\n", (int32_t)offset->spyPost.right_x, offset->spyPost.right_spyPostType);
 #endif
     }
-//    else if (offset->frontCal.front_dist != 0)
-//    {
-//        offset_error = (double)offset->frontCal.front_dist;
-//#ifdef DEBUG_BASIC_MOVES
-//        bluetoothWaitReady();
-//        bluetoothPrintf(" F_OFFSET = %d\n", (int32_t)offset->frontCal.front_dist);
-//#endif
-//    }
+    else if (offset->frontCal.front_dist != 0)
+    {
+        offset_error = (double)offset->frontCal.front_dist;
+#ifdef DEBUG_BASIC_MOVES
+        bluetoothWaitReady();
+        bluetoothPrintf(" F_OFFSET = %d\n", (int32_t)offset->frontCal.front_dist);
+#endif
+    }
     else
     {
         offset_error = 0.00;
     }
-    if (fabs(offset_error) > MAX_FRONT_DIST_ERROR - 1) // -1 for non null move
+    if (offset_error <= (OFFSET_DIST * -2.00))
     {
-        if(offset_error < 0.00)
-        {
-            offset_error = -MAX_FRONT_DIST_ERROR;
-        }
-        else
-        {
-            offset_error = MAX_FRONT_DIST_ERROR;
-        }
+        while (hasMoveEnded() != TRUE);
+        repositionSetInitialPosition(CELL_LENGTH - OFFSET_DIST);    //absolute position into a cell
+        return POSITION_CONTROL_E_SUCCESS;
     }
     while (hasMoveEnded() != TRUE);
     repositionSetInitialPosition(CELL_LENGTH - OFFSET_DIST);    //absolute position into a cell

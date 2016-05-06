@@ -9,6 +9,7 @@
 #define ROBOTINTERFACE_H_
 
 //#define DEBUG_ROBOT_INTERFACE
+//#define PRINT_CELL_STATE
 
 #include "middleware/wall_sensors/wall_sensors.h"
 

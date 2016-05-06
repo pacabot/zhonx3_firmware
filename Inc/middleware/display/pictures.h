@@ -7,6 +7,7 @@
 #ifndef __PICTURES_H__
 #define __PICTURES_H__
 
+const unsigned char warning_Img[300];
 const unsigned char spyPostLeft_Img[640];
 const unsigned char spyPostRight_Img[640];
 const unsigned char spyPostTest_Img[296];
