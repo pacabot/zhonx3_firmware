@@ -55,6 +55,7 @@
 #include "middleware/ring_buffer/ring_buffer.h"
 #include "middleware/controls/mazeControl/spyPost.h"
 #include "middleware/controls/mainControl/mainControl.h"
+#include "middleware/display/pictures.h"
 
 /* USER CODE END Includes */
 

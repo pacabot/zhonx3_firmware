@@ -176,7 +176,7 @@ int maze_solver(void)
     rv = exploration(&maze_container.maze, &zhonx_position, &maze_container.start_position, &maze_container.end_coordinate);
     if (rv != MAZE_SOLVER_E_SUCCESS)//make exploration for go from the robot position and the end of the maze
     {
-        while (expanderJoyFiltered() != LEFT);
+        while (expanderJoyFiltered() != JOY_LEFT);
         return MAZE_SOLVER_E_ERROR;
     }
     HAL_Delay(100);
@@ -276,7 +276,7 @@ int exploration(labyrinthe *maze, positionRobot* positionZhonx,
 #ifdef PRINT_MAZE
             printMaze(*maze, positionZhonx->coordinate_robot);
 #endif
-            ssd1306DrawBmp(warning_Img, 1, 15, 50, 50);
+            ssd1306DrawBmp(warning_Img, 1, 15, 48, 43);
             ssd1306PrintfAtLine(55, 1, &Font_5x8, "NO SOLUTION");
             ssd1306Refresh();
             printLength(*maze, -1, -1);
@@ -297,7 +297,8 @@ int exploration(labyrinthe *maze, positionRobot* positionZhonx,
             bluetoothPrintf("Error way : position zhonx x= %d y=%d \t way x= %d y=%d \n",
                             positionZhonx->coordinate_robot.x,positionZhonx->coordinate_robot.y, way[i].x, way[i].y);
 #endif
-            ssd1306DrawStringAtLine(20, 1, "ERROR WAY :(", &Font_5x8);
+            ssd1306DrawBmp(warning_Img, 1, 15, 48, 43);
+            ssd1306PrintfAtLine(55, 1, &Font_5x8, "ERROR WAY");
             ssd1306Refresh();
             return MAZE_SOLVER_E_ERROR;
         }
