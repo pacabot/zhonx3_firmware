@@ -18,7 +18,7 @@
 #include "peripherals/bluetooth/bluetooth.h"
 #include "peripherals/tone/tone.h"
 
-/* meddleware include */
+/* middleware include */
 #include "application/solverMaze/solverMaze.h"
 #include "middleware/controls/mazeControl/basicMoves.h"
 #include "middleware/controls/mainControl/mainControl.h"
@@ -30,63 +30,66 @@ STORED_MAZES *stored_mazes = (STORED_MAZES *)STORED_MAZES_ADDR;
 
 void goOrientation(char *orientationZhonx, char directionToGo)
 {
-    int turn = (4 + directionToGo - *orientationZhonx) % 4;
-    *orientationZhonx = directionToGo;
-    switch (turn)
-    {
-        case FORWARD :
+	int turn = (4 + directionToGo - *orientationZhonx) % 4;
+	*orientationZhonx = directionToGo;
+	switch (turn)
+	{
+		case FORWARD :
+#ifdef DEBUG_ROBOT_INTERFACE
+		    bluetoothWaitReady();
+			bluetoothPrintf("FORWARD\n");
+#endif
+			break;
+		case RIGHT :
+			while(hasMoveEnded() != TRUE);
+			move (-90, 0, MAX_SPEED_ROTATION, 0);
+#ifdef DEBUG_ROBOT_INTERFACE
+			bluetoothWaitReady();
+			bluetoothPrintf("RIGHT\n");
+#endif
+			while(hasMoveEnded() != TRUE);
+			break;
+		case UTURN :
+			while(hasMoveEnded() != TRUE);
+			move (180, 0, MAX_SPEED_ROTATION, 0);
 #ifdef DEBUG_ROBOT_INTERFACE
             bluetoothWaitReady();
-            bluetoothPrintf("FORWARD\n");
+			bluetoothPrintf("UTURN\n");
 #endif
-            break;
-        case RIGHT :
-            while(hasMoveEnded() != TRUE);
-            move (-90, 0, MAX_SPEED_ROTATION, 0);
+			while(hasMoveEnded() != TRUE);
+			break;
+		case LEFT :
+			while(hasMoveEnded() != TRUE);
+			move (90, 0, MAX_SPEED_ROTATION, 0);
 #ifdef DEBUG_ROBOT_INTERFACE
-            bluetoothWaitReady();
-            bluetoothPrintf("RIGHT\n");
+			bluetoothWaitReady();
+			bluetoothPrintf("LEFT\n");
 #endif
-            while(hasMoveEnded() != TRUE);
-            break;
-        case UTURN :
-            while(hasMoveEnded() != TRUE);
-            move (180, 0, MAX_SPEED_ROTATION, 0);
-#ifdef DEBUG_ROBOT_INTERFACE
-            bluetoothWaitReady();
-            bluetoothPrintf("UTURN\n");
-#endif
-            while(hasMoveEnded() != TRUE);
-            break;
-        case LEFT :
-            while(hasMoveEnded() != TRUE);
-            move (90, 0, MAX_SPEED_ROTATION, 0);
-#ifdef DEBUG_ROBOT_INTERFACE
-            bluetoothWaitReady();
-            bluetoothPrintf("LEFT\n");
-#endif
-            while(hasMoveEnded() != TRUE);
-            break;
-    }
+			while(hasMoveEnded() != TRUE);
+			break;
+	}
 }
 
 void move_zhonx(int direction_to_go, positionRobot *positionZhonx, int numberOfCell, char end_mid_of_case,
-                char chain)
+                    char chain)
 {
     int turn = (4 + direction_to_go - positionZhonx->orientation) % 4;
     positionZhonx->orientation = direction_to_go;
-#ifdef DEBUG_ROBOT_INTERFACE
-    if (positionZhonx->midOfCell == true)
-    {
-        bluetoothWaitReady();
-        bluetoothPrintf("mid of cell ");
-    }
-    else
-    {
-        bluetoothWaitReady();
-        bluetoothPrintf("half of cell ");
-    }
-#endif
+    #ifdef DEBUG_ROBOT_INTERFACE
+        if (positionZhonx->midOfCell == true)
+        {
+            bluetoothWaitReady();
+			bluetoothPrintf("mid of cell ");
+        }
+        else
+        {
+            bluetoothWaitReady();
+			bluetoothPrintf("half of cell ");
+        }
+    #endif
+
+    bluetoothWaitReady();
+    bluetoothPrintf("pat");
     if (positionZhonx->midOfCell == end_mid_of_case)
     {
         /*
@@ -96,10 +99,10 @@ void move_zhonx(int direction_to_go, positionRobot *positionZhonx, int numberOfC
     }
     else if (positionZhonx->midOfCell == true)
     {
-#ifdef DEBUG_ROBOT_INTERFACE
-        bluetoothWaitReady();
-        bluetoothPrintf("start cell ");
-#endif
+        #ifdef DEBUG_ROBOT_INTERFACE
+            bluetoothWaitReady();
+			bluetoothPrintf("start cell ");
+        #endif
         moveStartCell(MAX_SPEED_TRANSLATION, END_SPEED_TRANSLATION);
         numberOfCell--;
     }
@@ -110,16 +113,16 @@ void move_zhonx(int direction_to_go, positionRobot *positionZhonx, int numberOfC
     switch (turn)
     {
         case FORWARD:
-#ifdef DEBUG_ROBOT_INTERFACE
-            bluetoothWaitReady();
-            bluetoothPrintf("FORWARD\n");
-#endif
+            #ifdef DEBUG_ROBOT_INTERFACE
+                bluetoothWaitReady();
+                bluetoothPrintf("FORWARD\n");
+            #endif
             break;
         case RIGHT:
-#ifdef DEBUG_ROBOT_INTERFACE
-            bluetoothWaitReady();
-            bluetoothPrintf("RIGHT\n");
-#endif
+            #ifdef DEBUG_ROBOT_INTERFACE
+                bluetoothWaitReady();
+                bluetoothPrintf("RIGHT\n");
+            #endif
             if (positionZhonx->midOfCell == true)
             {
                 while (hasMoveEnded() != TRUE);				//todo rotate in place
@@ -132,10 +135,10 @@ void move_zhonx(int direction_to_go, positionRobot *positionZhonx, int numberOfC
             }
             break;
         case UTURN:
-#ifdef DEBUG_ROBOT_INTERFACE
-            bluetoothWaitReady();
-            bluetoothPrintf("UTURN\n");
-#endif
+            #ifdef DEBUG_ROBOT_INTERFACE
+                bluetoothWaitReady();
+			bluetoothPrintf("UTURN\n");
+            #endif
             if (positionZhonx->midOfCell == false)
             {
                 numberOfCell--;
@@ -145,14 +148,14 @@ void move_zhonx(int direction_to_go, positionRobot *positionZhonx, int numberOfC
             else
             {
                 moveUTurn(MAX_SPEED_ROTATION, MAX_SPEED_TRANSLATION,
-                          END_SPEED_TRANSLATION); //TODO : rotate 180° in place
+                                          END_SPEED_TRANSLATION); //TODO : rotate 180° in place
             }
             break;
         case LEFT:
-#ifdef DEBUG_ROBOT_INTERFACE
-            bluetoothWaitReady();
-            bluetoothPrintf("LEFT\n");
-#endif
+            #ifdef DEBUG_ROBOT_INTERFACE
+                bluetoothWaitReady();
+			bluetoothPrintf("LEFT\n");
+            #endif
             if (positionZhonx->midOfCell == true)
             {
                 while (hasMoveEnded() != TRUE);
@@ -170,6 +173,8 @@ void move_zhonx(int direction_to_go, positionRobot *positionZhonx, int numberOfC
     {
         moveCell(numberOfCell, MAX_SPEED_TRANSLATION, END_SPEED_TRANSLATION);
     }
+    bluetoothWaitReady();
+    bluetoothPrintf("colin");
     positionZhonx->midOfCell = end_mid_of_case;
 
 }
@@ -179,7 +184,7 @@ void doUTurn(positionRobot *positionZhonx)
     motorsDriverSleep(OFF);
     positionZhonx->orientation = (positionZhonx->orientation + 2) % 4;
 
-    moveUTurn(MAX_SPEED_ROTATION, MAX_SPEED_TRANSLATION, END_SPEED_TRANSLATION);
+	moveUTurn(MAX_SPEED_ROTATION, MAX_SPEED_TRANSLATION, END_SPEED_TRANSLATION);
 }
 
 int waitValidation(unsigned long timeout)
@@ -203,8 +208,8 @@ int waitValidation(unsigned long timeout)
 
 void newCell(walls new_walls, labyrinthe *maze, positionRobot positionZhonx)
 {
-#ifdef PRINT_CELL_STATE
-    print_cell_state(new_walls);
+#ifdef DEBUG
+	print_cell_state(new_walls);
 #endif
     switch (positionZhonx.orientation)
     {
@@ -334,70 +339,70 @@ walls getCellState()
 
 walls ask_cell_state ()
 {
-    walls cell_state;
-    memset(&cell_state, NO_KNOWN, sizeof(walls));
-    int joystick = expanderJoyFiltered();
-    while (joystick != JOY_UP)
-    {
-        joystick = expanderJoyFiltered();
-        switch (joystick) {
-            case JOY_DOWN:
-                if (cell_state.front == WALL_PRESENCE)
-                {
-                    cell_state.front = NO_WALL;
-                }
-                else
-                {
-                    cell_state.front = WALL_PRESENCE;
-                }
-                break;
-            case JOY_RIGHT:
-                if (cell_state.left == WALL_PRESENCE)
-                {
-                    cell_state.left = NO_WALL;
-                }
-                else
-                {
-                    cell_state.left = WALL_PRESENCE;
-                }
-                break;
-            case JOY_LEFT:
-                if (cell_state.right == WALL_PRESENCE)
-                {
-                    cell_state.right = NO_WALL;
-                }
-                else
-                {
-                    cell_state.right = WALL_PRESENCE;
-                }
-                break;
-            default:
-                break;
-        }
-        print_cell_state(cell_state);
-    }
-    return cell_state;
+	walls cell_state;
+	memset(&cell_state, NO_KNOWN, sizeof(walls));
+	int joystick = expanderJoyFiltered();
+	while (joystick != JOY_UP)
+	{
+		joystick = expanderJoyFiltered();
+		switch (joystick) {
+			case JOY_DOWN:
+				if (cell_state.front == WALL_PRESENCE)
+				{
+					cell_state.front = NO_WALL;
+				}
+				else
+				{
+					cell_state.front = WALL_PRESENCE;
+				}
+				break;
+			case JOY_RIGHT:
+				if (cell_state.left == WALL_PRESENCE)
+				{
+					cell_state.left = NO_WALL;
+				}
+				else
+				{
+					cell_state.left = WALL_PRESENCE;
+				}
+				break;
+			case JOY_LEFT:
+				if (cell_state.right == WALL_PRESENCE)
+				{
+					cell_state.right = NO_WALL;
+				}
+				else
+				{
+					cell_state.right = WALL_PRESENCE;
+				}
+				break;
+			default:
+				break;
+		}
+		print_cell_state(cell_state);
+		ssd1306Refresh();
+	}
+	return cell_state;
 }
 
 void print_cell_state (walls cell_state)
 {
-    ssd1306ClearRect(64,DISPLAY_OFFSET,54,5);
-    ssd1306ClearRect(64,DISPLAY_OFFSET,5,54);
-    ssd1306ClearRect(113,DISPLAY_OFFSET,5,54);
+	ssd1306ClearRect(64,DISPLAY_OFFSET,54,5);
+	ssd1306ClearRect(64,DISPLAY_OFFSET,5,54);
+	ssd1306ClearRect(113,DISPLAY_OFFSET,5,54);
 
-    if (cell_state.front == WALL_PRESENCE)
-    {
-        ssd1306FillRect(64,DISPLAY_OFFSET,54,5);
-    }
-    if (cell_state.left == WALL_PRESENCE)
-    {
-        ssd1306FillRect(64,DISPLAY_OFFSET,5,54);
-    }
-    if (cell_state.right == WALL_PRESENCE)
-    {
-        ssd1306FillRect(113,DISPLAY_OFFSET,5,54);
-    }
-    ssd1306Refresh();
+	if (cell_state.front == WALL_PRESENCE)
+	{
+		ssd1306FillRect(64,DISPLAY_OFFSET,54,5);
+	}
+	if (cell_state.left == WALL_PRESENCE)
+	{
+		ssd1306FillRect(64,DISPLAY_OFFSET,5,54);
+	}
+	if (cell_state.right == WALL_PRESENCE)
+	{
+		ssd1306FillRect(113,DISPLAY_OFFSET,5,54);
+	}
 }
 
 void waitStart()
@@ -415,10 +420,11 @@ void waitStart()
 // Save a maze into the flash memory
 int saveMaze(labyrinthe *maze, positionRobot *start_position, coordinate  *end_coordinate)
 {
-    MAZE_CONTAINER *maze_container;
-    memcpy(&(maze_container->maze), maze, sizeof(labyrinthe));
-    memcpy(&(maze_container->start_position), start_position, sizeof(positionRobot));
-    memcpy(&(maze_container->end_coordinate), end_coordinate, sizeof(coordinate));
+    MAZE_CONTAINER maze_container;
+
+    memcpy(&(maze_container.maze), maze, sizeof(labyrinthe));
+    memcpy(&(maze_container.start_position), start_position, sizeof(positionRobot));
+    memcpy(&(maze_container.end_coordinate), end_coordinate, sizeof(coordinate));
     int rv = 0;
     int selected_maze = 0;
     int cnt_mazes = stored_mazes->count_stored_mazes;
@@ -459,7 +465,7 @@ int saveMaze(labyrinthe *maze, positionRobot *start_position, coordinate  *end_c
         ssd1306Refresh();
 
         rv = flash_write(zhonxSettings.h_flash, (unsigned char *)&(stored_mazes->mazes[selected_maze].maze),
-                                                (unsigned char *)maze_container, sizeof(MAZE_CONTAINER));
+                                                (unsigned char *)&maze_container, sizeof(MAZE_CONTAINER));
         if (rv != FLASH_DRIVER_E_SUCCESS)
         {
             ssd1306PrintfAtLine(0, 4, &Font_5x8, "Failed to save maze!");
@@ -475,7 +481,7 @@ int saveMaze(labyrinthe *maze, positionRobot *start_position, coordinate  *end_c
 
 int loadMaze(labyrinthe *maze, positionRobot *start_position, coordinate  *end_coordinate)
 {
-    MAZE_CONTAINER *maze_container;
+    MAZE_CONTAINER maze_container;
     ssd1306ClearScreen(MAIN_AREA);
 
     // Check if there is at least one stored maze in flash memory
@@ -487,14 +493,14 @@ int loadMaze(labyrinthe *maze, positionRobot *start_position, coordinate  *end_c
     }
 
     // Get the first maze slot
-    memcpy(maze_container, &stored_mazes->mazes[0], sizeof(MAZE_CONTAINER));
+    memcpy(&maze_container, &(stored_mazes->mazes[0]), sizeof(MAZE_CONTAINER));
 
     ssd1306PrintfAtLine(0, 1, &Font_5x8, "Maze restored successfully");
     ssd1306Refresh();
 
-    memcpy(maze,&(maze_container->maze),  sizeof(labyrinthe));
-    memcpy(start_position,&(maze_container->start_position),  sizeof(positionRobot));
-    memcpy(end_coordinate, &(maze_container->end_coordinate), sizeof(coordinate));
+    memcpy(maze, &(maze_container.maze), sizeof(labyrinthe));
+    memcpy(start_position, &(maze_container.start_position), sizeof(positionRobot));
+    memcpy(end_coordinate, &(maze_container.end_coordinate), sizeof(coordinate));
 
     return MAZE_SOLVER_E_SUCCESS;
 }
@@ -508,6 +514,7 @@ int test_move_zhonx ()
     zhonx_position.midOfCell = TRUE;
     zhonx_position.orientation = NORTH;
     coordinate way[]={{8,7},{8,6},{8,5},{8,4},{8,3},{8,2},{8,1},{8,0},{9,0},{10,0},{11,0},{10,0},{9,0},{8,0},{8,1},{8,2},{8,3},{8,4},{8,5},{8,6},{8,7},{8,8},{END_OF_LIST,END_OF_LIST}};
+    motorsInit();
     HAL_Delay(2000);
     telemetersStart();
     mainControlSetFollowType(WALL_FOLLOW);

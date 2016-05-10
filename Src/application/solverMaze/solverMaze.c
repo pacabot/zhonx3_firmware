@@ -97,6 +97,7 @@
 #include "pcf8574.h"
 #endif // simulator
 
+
 /*
  *  ********************** int maze (void) **********************
  *  this function is the main function of the maze solver

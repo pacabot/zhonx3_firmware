@@ -42,6 +42,6 @@ typedef struct
 
 extern walls cell_state;
 
-char getWallPresence(wallSelectorEnum wallSelector);
+int getWallPresence(wallSelectorEnum wallSelector);
 
 #endif /* WALL_SENSORS_H_ */

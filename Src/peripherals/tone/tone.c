@@ -130,7 +130,7 @@ void tone_IT(void)
 
 void toneStart(int note)
 {
-    int uwPrescalerValue = 1800;
+    int uwPrescalerValue;
     tone_duration = 0;
 
     uwPrescalerValue = (uint32_t) ((SystemCoreClock / 2) / (note * 1000)) - 1;
