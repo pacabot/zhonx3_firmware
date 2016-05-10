@@ -25,6 +25,8 @@
 
 #include "application/solverMaze/robotInterface.h"
 
+STORED_MAZES *stored_mazes = (STORED_MAZES *)STORED_MAZES_ADDR;
+
 void goOrientation(char *orientationZhonx, char directionToGo)
 {
 	int turn = (4 + directionToGo - *orientationZhonx) % 4;
@@ -403,6 +405,94 @@ void waitStart()
    HAL_Delay(20);
    while(getWallPresence(FRONT_WALL) == true);
    HAL_Delay(500);
+}
+
+
+// Save a maze into the flash memory
+int saveMaze(labyrinthe *maze, positionRobot *start_position, coordinate  *end_coordinate)
+{
+    MAZE_CONTAINER *maze_container;
+    memcpy(&(maze_container->maze), maze, sizeof(labyrinthe));
+    memcpy(&(maze_container->start_position), start_position, sizeof(positionRobot));
+    memcpy(&(maze_container->end_coordinate), end_coordinate, sizeof(coordinate));
+    int rv = 0;
+    int selected_maze = 0;
+    int cnt_mazes = stored_mazes->count_stored_mazes;
+
+    // Check whether flash data have been initialized
+    if ((cnt_mazes > 0) &&
+        (cnt_mazes < MAX_STORABLE_MAZES))
+    {
+        // TODO: Display a menu to select a maze slot in flash memory
+
+    }
+    else
+    {
+        ssd1306ClearScreen(MAIN_AREA);
+
+        // Store maze in the first slot
+
+        // Initialize maze counter
+#if 0
+        ssd1306PrintfAtLine(0, 1, &Font_5x8, "Saving maze counter...");
+        ssd1306Refresh();
+
+        cnt_mazes = 1;
+        rv = flash_write(zhonxSettings.h_flash, (unsigned char *)&(stored_mazes->count_stored_mazes),
+                                                (unsigned char *)&cnt_mazes, sizeof(int));
+        if (rv != FLASH_DRIVER_E_SUCCESS)
+        {
+            ssd1306PrintfAtLine(0, 2, &Font_5x8, "Failed to save maze counter!");
+            ssd1306Refresh();
+            return rv;
+        }
+        ssd1306PrintfAtLine(0, 2, &Font_5x8, "Maze counter save successfully");
+        ssd1306Refresh();
+#endif
+
+        // Store maze
+        ssd1306PrintfAtLine(0, 3, &Font_5x8, "Saving maze...");
+        ssd1306Refresh();
+
+        rv = flash_write(zhonxSettings.h_flash, (unsigned char *)&(stored_mazes->mazes[selected_maze].maze),
+                                                (unsigned char *)maze_container, sizeof(MAZE_CONTAINER));
+        if (rv != FLASH_DRIVER_E_SUCCESS)
+        {
+            ssd1306PrintfAtLine(0, 4, &Font_5x8, "Failed to save maze!");
+            ssd1306Refresh();
+            return rv;
+        }
+        ssd1306PrintfAtLine(0, 4, &Font_5x8, "Maze saved successfully");
+        ssd1306Refresh();
+    }
+
+    return 0;
+}
+
+int loadMaze(labyrinthe *maze, positionRobot *start_position, coordinate  *end_coordinate)
+{
+    MAZE_CONTAINER *maze_container;
+    ssd1306ClearScreen(MAIN_AREA);
+
+    // Check if there is at least one stored maze in flash memory
+    if ((stored_mazes->count_stored_mazes < 0) || (stored_mazes->count_stored_mazes > MAX_STORABLE_MAZES))
+    {
+        ssd1306PrintfAtLine(0, 1, &Font_5x8, "Invalid stored mazes counter");
+        ssd1306Refresh();
+        return MAZE_SOLVER_E_ERROR;
+    }
+
+    // Get the first maze slot
+    memcpy(maze_container, &stored_mazes->mazes[0], sizeof(MAZE_CONTAINER));
+
+    ssd1306PrintfAtLine(0, 1, &Font_5x8, "Maze restored successfully");
+    ssd1306Refresh();
+
+    memcpy(maze,&(maze_container->maze),  sizeof(labyrinthe));
+    memcpy(start_position,&(maze_container->start_position),  sizeof(positionRobot));
+    memcpy(end_coordinate, &(maze_container->end_coordinate), sizeof(coordinate));
+
+    return MAZE_SOLVER_E_SUCCESS;
 }
 
 int test_move_zhonx ()

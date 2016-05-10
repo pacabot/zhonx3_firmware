@@ -50,7 +50,7 @@ extern void motorsTest();
 extern void lineSensorsTest();
 extern void lineFollower();
 extern int lineSensorsCalibration(void);
-extern void maze_solver();
+extern void maze_solver_new_maze();
 extern void testWallsSensors();
 extern void movesTest1(void);
 extern void movesTest2(void);
@@ -69,6 +69,7 @@ extern void adxrs620Cal(void);
 extern void pidGyro_GetCriticalPoint(void);
 extern void pidTelemeters_GetCriticalPoint(void);
 extern int test_move_zhonx ();
+extern int maze_solver_run();
 extern int _Factor;
 extern int _KP;
 /*
@@ -104,8 +105,9 @@ const menuItem maze_menu=
 {
 		"MAZE",         //9 characters max
 		{
-				{"New maze",    'f',	(void*)maze_solver},
-				{"Test_maze",   'f',    (void*)test_move_zhonx},
+                {"New maze",    'f',    (void*)maze_solver_new_maze},
+                {"New maze",    'f',    (void*)maze_solver_run},
+                {"Test_maze",   'f',    (void*)test_move_zhonx},
 				{"Calibration", 'b',    (void*)&zhonxSettings.calibration_enabled},
 				{"Color finish",'b',	(void*)&zhonxSettings.nime_competition},
 				{"X finish",    'i',	(void*)&zhonxSettings.maze_end_coordinate.x},

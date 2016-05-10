@@ -92,7 +92,7 @@ typedef struct
 } STORED_MAZES;
 
 // fonctions
-int maze_solver(void);
+int maze_solver_new_maze(void);
 int exploration(labyrinthe *maze, positionRobot* positionZhonx,const positionRobot *start_coordinates,
         coordinate *end_coordinate);
 int goToPosition(labyrinthe *maze, positionRobot* positionZhonx,  coordinate end_coordinate);
@@ -110,5 +110,4 @@ void waitStart(void);
 char diffway(coordinate way1[], coordinate way2[]);
 coordinate findEndCoordinate (coordinate coordinate_tab[]);
 int findArrival (labyrinthe maze, coordinate *end_coordinate);
-int loadMaze(MAZE_CONTAINER *maze_container);
 #endif /* RESOLUTION_MAZE_H_ */
