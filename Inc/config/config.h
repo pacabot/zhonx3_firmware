@@ -129,11 +129,11 @@
 /***************                 Physical Constants                ********************/
 /**************************************************************************************/
 #define MAX_SPEED				(2000.00)	//mm/s
-#define MAX_ACCEL				(2000.00)   //mm/s�
-//#define MAX_DECEL				(8000.0)	//mm/s�
+#define MAX_ACCEL				(2000.00)   //mm/s/s
+//#define MAX_DECEL				(8000.0)	//mm/s/s
 
 #define MAX_TURN_SPEED			(500.00)	//mm/s
-#define MAX_TURN_ACCEL			(8000.00)	//mm/s�
+#define MAX_TURN_ACCEL			(4000.00)	    //°/s/s
 
 /**************************************************************************************/
 /***************                 Motors Constants                  ********************/

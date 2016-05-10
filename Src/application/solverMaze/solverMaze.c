@@ -97,10 +97,6 @@
 #include "pcf8574.h"
 #endif // simulator
 
-static int saveMaze(MAZE_CONTAINER *maze_container);
-
-STORED_MAZES *stored_mazes = (STORED_MAZES *)STORED_MAZES_ADDR;
-
 /*
  *  ********************** int maze (void) **********************
  *  this function is the main function of the maze solver
@@ -502,6 +498,7 @@ int moveRealZhonxArc(labyrinthe *maze, positionRobot *positionZhonx,
             bluetoothWaitReady();
             bluetoothPrintf("Error way : position zhonx x= %d y=%d \t way x= %d y=%d \n",
                             positionZhonx->coordinate_robot.x,positionZhonx->coordinate_robot.y, way[i].x, way[i].y);
+#endif
             return MAZE_SOLVER_E_ERROR;
         }
 

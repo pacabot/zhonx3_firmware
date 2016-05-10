@@ -39,15 +39,10 @@
 
 #include <middleware/controls/mainControl/positionControl.h>
 
-#define MAX_POSITION_ERROR     20.00 //Degrees
+#define MAX_POSITION_ERROR     30.00 //Degrees
 
 typedef struct
 {
-    int nb_loop_accel;  //rotate in place
-    int nb_loop_maint;
-    int nb_loop_decel;
-    double accel_angle_per_loop;    //rotate in place
-
     double angle_consign;	    //total angle
     double angle_per_loop;
     double max_speed;
@@ -57,10 +52,8 @@ typedef struct
 
 typedef struct
 {
-    int nb_loop_accel;  //rotate in place
-    int nb_loop_maint;
-    int nb_loop_decel;
 
+    double current_angular_speed;
     int nb_loop;
     double position_command;
     double position_error;
@@ -93,13 +86,13 @@ int positionControlInit(void)
     memset(&position_params, 0, sizeof(position_params_struct));
     positionProfileCompute(0, 0, 0);
 
-    gyro_pid_instance.Kp = 90;
+    gyro_pid_instance.Kp = 100;
     gyro_pid_instance.Ki = 0;
-    gyro_pid_instance.Kd = 1500;
+    gyro_pid_instance.Kd = 1000;
 
-//    gyro_pid_instance.Kp = zhonxCalib_data->pid_gyro.Kp;
-//    gyro_pid_instance.Ki = zhonxCalib_data->pid_gyro.Ki / CONTROL_TIME_FREQ;
-//    gyro_pid_instance.Kd = zhonxCalib_data->pid_gyro.Kd * CONTROL_TIME_FREQ;
+    //    gyro_pid_instance.Kp = zhonxCalib_data->pid_gyro.Kp;
+    //    gyro_pid_instance.Ki = zhonxCalib_data->pid_gyro.Ki / CONTROL_TIME_FREQ;
+    //    gyro_pid_instance.Kd = zhonxCalib_data->pid_gyro.Kd * CONTROL_TIME_FREQ;
 
     position_control.position_pid.instance = &gyro_pid_instance;
 
@@ -155,51 +148,44 @@ int positionControlLoop(void)
     //        }
     //    }
 
-//    if (mainControlGetWallFollowType() == ROTATE_IN_PLACE)
-//    {
-//        if (position_control.nb_loop_accel < position_params.nb_loop_accel)
-//        {
-//            position_control.nb_loop_accel++;
-//            position_control.position_consign += position_params.accel_angle_per_loop;
-//            position_control.current_angle_consign += position_control.position_consign;
-//        }
-//        else if (position_control.nb_loop_maint < position_params.nb_loop_maint)
-//        {
-//            position_control.nb_loop_maint++;
-//            position_control.current_angle_consign += position_params.angle_per_loop;
-//        }
-//        else if (position_control.nb_loop_decel < position_params.nb_loop_decel)
-//        {
-//            position_control.nb_loop_decel++;
-//            position_control.position_consign -= position_params.accel_angle_per_loop;
-//            position_control.current_angle_consign += position_params.angle_per_loop;
-//        }
-//        else
-//        {
-//            position_control.end_control = TRUE;
-//        }
-//    }
-//    else
+    if (position_control.positionType == GYRO)
     {
+        if (position_params.sign > 0)
+            position_control.current_angle = gyroGetAngle();
+        else
+            position_control.current_angle = -1.00 * gyroGetAngle();
+    }
+    else //use encoders
+    {
+        ledPowerErrorBlink(300, 300, 2);
+        if (position_params.sign > 0)
+            position_control.current_angle = 180.00 * (encoderGetDist(ENCODER_L) - encoderGetDist(ENCODER_R))
+            / (PI * ROTATION_DIAMETER);
+        else
+            position_control.current_angle = 180.00 * (encoderGetDist(ENCODER_R) - encoderGetDist(ENCODER_L))
+            / (PI * ROTATION_DIAMETER);
+    }
 
-        if (position_control.positionType == GYRO)
+    if (mainControlGetWallFollowType() == ROTATE_IN_PLACE)
+    {
+        position_control.nb_loop++;
+        if (position_control.nb_loop < (position_params.nb_loop / 2))
         {
-            if (position_params.sign > 0)
-                position_control.current_angle = gyroGetAngle();
-            else
-                position_control.current_angle = -1.00 * gyroGetAngle();
+            position_control.current_angular_speed += MAX_TURN_ACCEL / CONTROL_TIME_FREQ;
+            position_control.current_angle_consign += position_control.current_angular_speed / CONTROL_TIME_FREQ;
         }
-        else //use encoders
+        else if (position_control.nb_loop < position_params.nb_loop)
         {
-            ledPowerErrorBlink(300, 300, 2);
-            if (position_params.sign > 0)
-                position_control.current_angle = 180.00 * (encoderGetDist(ENCODER_L) - encoderGetDist(ENCODER_R))
-                / (PI * ROTATION_DIAMETER);
-            else
-                position_control.current_angle = 180.00 * (encoderGetDist(ENCODER_R) - encoderGetDist(ENCODER_L))
-                / (PI * ROTATION_DIAMETER);
+            position_control.current_angular_speed -= MAX_TURN_ACCEL / CONTROL_TIME_FREQ;
+            position_control.current_angle_consign += position_control.current_angular_speed / CONTROL_TIME_FREQ;
         }
-
+        else
+        {
+            position_control.end_control = TRUE;
+        }
+    }
+    else
+    {
         if (position_control.nb_loop < position_params.nb_loop)
         {
             position_control.nb_loop++;
@@ -281,10 +267,7 @@ int positionControlLoop(void)
 /**************************************************************************/
 double positionProfileCompute(double angle, double loop_time, double max_turn_speed)
 {
-    position_control.nb_loop_accel = 0;  //rotate in place
-    position_control.nb_loop_maint = 0;
-    position_control.nb_loop_decel = 0;
-
+    position_control.current_angular_speed = 0;
     position_control.nb_loop = 0;
     position_control.position_command = 0;
     position_control.position_error = 0;
@@ -302,7 +285,8 @@ double positionProfileCompute(double angle, double loop_time, double max_turn_sp
     }
     if (lround(loop_time) == 0)
     {
-        loop_time = (angle / max_turn_speed) * CONTROL_TIME_FREQ;
+        loop_time = (2.00 * sqrt(angle / MAX_TURN_ACCEL)) * CONTROL_TIME_FREQ;
+        //       loop_time = (angle / max_turn_speed) * CONTROL_TIME_FREQ;
     }
 
     position_params.nb_loop = (int)loop_time;
