@@ -139,7 +139,7 @@ int moveOffsetDist(getOffsetsStruct *offset, double max_speed)
         bluetoothWaitReady();
         bluetoothPrintf(" L_OFFSET = %d, TYPE = %d\n", (int32_t)offset->spyPost.left_x, offset->spyPost.left_spyPostType);
 #endif
-        toneItMode(C4, 400);
+        toneItMode(C4, 300);
     }
     else if (offset->spyPost.right_x != 0)
     {
@@ -148,7 +148,7 @@ int moveOffsetDist(getOffsetsStruct *offset, double max_speed)
         bluetoothWaitReady();
         bluetoothPrintf(" R_OFFSET = %d, TYPE = %d\n", (int32_t)offset->spyPost.right_x, offset->spyPost.right_spyPostType);
 #endif
-        toneItMode(C4, 400);
+        toneItMode(C4, 300);
     }
     else if (offset->frontCal.front_dist != 0)
     {
@@ -483,22 +483,21 @@ int moveUTurn(double speed_rotation, double max_speed, double out_speed)
     }
     // move HALF CELL IN
     moveHalfCell_IN(max_speed, 0);
+    mainControlSetFollowType(NO_FOLLOW); //todo this is the shit
     // chose the correct turn for re-calibrate the robot if possible
     moveRotateInPlace180WithCal(wall_presence, speed_rotation);//speed_rotation);
 
     // go back and go out for maximize correct alignment
     while (hasMoveEnded() != TRUE);
-    mainControlSetFollowType(NO_FOLLOW); //todo this is the shit
     repositionSetInitialPosition(HALF_CELL_LENGTH);
     move(0, -1.00 * (HALF_CELL_LENGTH - Z3_CENTER_BACK_DIST - UTURN_OFFSET + 15), max_speed, 0);
 
-    mainControlSetFollowType(WALL_FOLLOW); //todo this is the shit
     repositionSetInitialPosition(Z3_CENTER_BACK_DIST + UTURN_OFFSET);
     while (hasMoveEnded() != TRUE);
     move(0, (HALF_CELL_LENGTH - Z3_CENTER_BACK_DIST - UTURN_OFFSET), max_speed, max_speed);
 
     moveHalfCell_OUT(max_speed, out_speed);
-
+    mainControlSetFollowType(WALL_FOLLOW);
     repositionGetFrontDist(&offset.frontCal);
     moveOffsetDist(&offset, out_speed);
 

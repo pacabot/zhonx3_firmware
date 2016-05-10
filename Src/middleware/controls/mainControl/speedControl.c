@@ -164,8 +164,6 @@ int speedControlLoop(void)
     if (fabs(speed_control.speed_error) > MAX_SPEED_ERROR)
     {
         ledPowerErrorBlink(1000, 150, 3);
-        telemetersStop();
-        motorsDriverSleep(ON);
         return SPEED_CONTROL_E_ERROR;
     }
 

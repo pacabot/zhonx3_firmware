@@ -98,10 +98,8 @@ int transfertFunctionLoop(void)
     transfertFunctionLimiter();
     motorSet_DF(MOTOR_R, transfert_function.right_motor_pwm);
     motorSet_DF(MOTOR_L, transfert_function.left_motor_pwm);
-    if (motorGetFault() != MOTORS_DRIVER_E_SUCCESS)
-        ledPowerErrorBlink(20, 20, 20);
-    else
-        ledPowerErrorBlink(0, 0, 0);
+
+
     //	bluetoothPrintf("pwmR: %d \r\n", (transfert_function.right_motor_pwm));
     return TRANSFERT_FUNCTION_E_SUCCESS;
 }

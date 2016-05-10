@@ -21,6 +21,6 @@ int cmd_maze(const char *args)
 {
     UNUSED(args);
 
-    maze_solver();
+    maze_solver_new_maze();
     return CMDLINE_PARSER_E_SUCCESS;
 }

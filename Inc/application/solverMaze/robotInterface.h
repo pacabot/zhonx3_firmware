@@ -25,5 +25,7 @@ walls getCellState();
 walls ask_cell_state ();
 void print_cell_state (walls cell_state);
 void waitStart();
+int saveMaze(labyrinthe *maze, positionRobot *start_position, coordinate  *end_coordinate);
+int loadMaze(labyrinthe *maze, positionRobot *start_position, coordinate  *end_coordinate);
 
 #endif /* ROBOTINTERFACE_H_ */

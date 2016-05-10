@@ -22,6 +22,7 @@
 #include "peripherals/encoders/ie512.h"
 #include "peripherals/times_base/times_base.h"
 #include "peripherals/tone/tone.h"
+#include "peripherals/motors/motors.h"
 
 /* Middleware declarations */
 #include "middleware/powerManagement/powerManagement.h"
@@ -65,6 +66,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     }
 #else
     static uint32_t cnt = 0;
+    static uint32_t rv = MAIN_CONTROL_E_SUCCESS;
     if (htim == &htim7) //hight time freq
     {
         cnt++;
@@ -74,7 +76,15 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
         }
         if (cnt % (int)(HI_TIME_FREQ / CONTROL_TIME_FREQ) == 0)
         {
-            mainControl_IT();
+            if (rv == MAIN_CONTROL_E_SUCCESS)
+                rv = mainControl_IT();
+            else
+            {
+                telemetersStop();
+                motorsDriverSleep(ON);
+                toneItMode(A3, 1000);
+                HAL_TIM_Base_Stop_IT(&htim7);
+            }
         }
         if (cnt % (int)(HI_TIME_FREQ / LINESENSORS_TIME_FREQ) == 0)
         {
