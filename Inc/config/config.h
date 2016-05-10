@@ -16,13 +16,13 @@
 /**************************************************************************************/
 #define HI_TIME_FREQ			    (20000.00) 	        //use for master inner loop
 #define LOW_TIME_FREQ               (100.00)              //low inner loop
-#define CONTROL_TIME_FREQ           (1000.00)             //use for control inner loop
+#define CONTROL_TIME_FREQ           (1800.00)             //use for control inner loop
 #define LINE_FOLLOWER_TIME_FREQ     (1000.00)             //use for line follower inner loop
 #define TELEMETERS_TIME_FREQ        ((2000.00) * (10.00))   //each telemeter use 1/10 of TELEMETERS_TIME_FREQ
-#define GYRO_TIME_FREQ			    (4000.00)            //for adc injected freq
+#define GYRO_TIME_FREQ			    (4300.00)            //for adc injected freq
 #define LINESENSORS_TIME_FREQ	    (4000.00)             //line sensor measure frequency
 #define MULTIMMETER_TIME_FREQ       (0.10)                //multimeter inner loop
-#define MOTORS_FREQ				    (21000.00)	        //motor pwm freq
+#define MOTORS_FREQ				    (23000.00)	        //motor pwm freq
 
 /**************************************************************************************/
 /***************                 Gyro definitions                  ********************/
@@ -142,7 +142,12 @@
 #define PWM_RATIO_COEFF_A		((-0.50) / (6000.00))	//compute pwm ratio for limit motor voltage
 #define PWM_RATIO_COEFF_B		(1.50)			    //PWM_RATIO_COEFF_A * battery voltage + PWM_RATIO_COEFF_B = TRUE MOTOR PWM
 
-#define MOTORS_PERIOD			(1000)
+#define MOTORS_PERIOD			(1000)  //PWM scale 1000 = 100%
+
+/*Calculations For Motor*/
+#define MOTORS_INDUCTANCE       (0.000065)    //H
+#define MOTORS_RESISTANCE       (4.30)
+#define MOTORS_PWM_FREQUENCY    (((((MOTORS_RESISTANCE) / (MOTORS_INDUCTANCE)) / ((2.00) * (PI))) * 2)
 
 /**************************************************************************************/
 /***************                  Flash Constants                  ********************/

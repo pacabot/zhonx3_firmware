@@ -24,12 +24,12 @@
 #include "middleware/controls/lineFollowerControl/lineFollowControl.h"
 #include "middleware/controls/mainControl/mainControl.h"
 #include "middleware/controls/mainControl/positionControl.h"
-#include "middleware/controls/mainControl/positionControl.h"
 #include "middleware/controls/mainControl/speedControl.h"
 #include "middleware/controls/mainControl/transfertFunction.h"
 #include "middleware/settings/settings.h"
 #include "middleware/wall_sensors/wall_sensors.h"
 #include "middleware/controls/pidController/pidController.h"
+#include "middleware/display/pictures.h"
 
 /* peripherale inlcudes*/
 #include "peripherals/times_base/times_base.h"
@@ -39,6 +39,7 @@
 #include "peripherals/lineSensors/lineSensors.h"
 #include "peripherals/telemeters/telemeters.h"
 #include "peripherals/bluetooth/bluetooth.h"
+#include "peripherals/tone/tone.h"
 
 /* application include */
 #include "application/solverMaze/solverMaze.h"
@@ -96,6 +97,10 @@
 #include "pcf8574.h"
 #endif // simulator
 
+static int saveMaze(MAZE_CONTAINER *maze_container);
+
+STORED_MAZES *stored_mazes = (STORED_MAZES *)STORED_MAZES_ADDR;
+
 /*
  *  ********************** int maze (void) **********************
  *  this function is the main function of the maze solver
@@ -142,6 +147,9 @@ int maze_solver_new_maze(void)
     #endif
     waitStart();
 #ifdef ZHONX3
+    ssd1306ClearScreen(MAIN_AREA);
+    ssd1306PrintfAtLine(40, 2, &Font_5x8, "SCAN...");
+    ssd1306Refresh();
     motorsDriverSleep(OFF);
 #endif
 #ifdef ZHONX2
@@ -255,22 +263,59 @@ int exploration(labyrinthe *maze, positionRobot* positionZhonx,
         rv = moveVirtualZhonx(*maze, *positionZhonx, way, *end_coordinate);
         if (rv != MAZE_SOLVER_E_SUCCESS)
         {
-            #ifdef ZHONX3
-                motorsDriverSleep(ON);
-                telemetersStop();
-                bluetoothWaitReady();
-            #endif
-            ssd1306Printf(60, 20, &Font_5x8, "no solution");
+#ifdef ZHONX3
+            telemetersStop();
+            moveStop();
+            motorsDriverSleep(ON);
+            bluetoothWaitReady();
+#endif
             bluetoothPrintf("no solution");
+#ifdef PRINT_MAZE
             printMaze(*maze, positionZhonx->coordinate_robot);
+#endif
+#ifdef ZHONX3
+            tone(D4, 200);
+            HAL_Delay(50);
+            tone(C4H, 100);
+            HAL_Delay(40);
+            toneItMode(C4, 150);
+            ssd1306WaitReady();
+            ssd1306ClearScreen(MAIN_AREA);
+            ssd1306DrawBmp(warning_Img, 1, 15, 48, 43);
+#endif
+            ssd1306PrintfAtLine(55, 1, &Font_5x8, "NO SOLUTION");
             ssd1306Refresh();
             printLength(*maze, -1, -1);
-            while (1)
-            {
-                HAL_Delay(5000);
-            }
+            return MAZE_SOLVER_E_ERROR;
         }
-        moveRealZhonxArc(maze, positionZhonx, way);
+        rv = moveRealZhonxArc(maze, positionZhonx, way);
+        if (rv != MAZE_SOLVER_E_SUCCESS)
+        {
+#ifdef ZHONX3
+            telemetersStop();
+            moveStop();
+            motorsDriverSleep(ON);
+            bluetoothWaitReady();
+#elif defined ZHONX2
+            hal_step_motor_disable();
+#elif defined SIMULATOR
+            bluetoothPrintf("Error way : position zhonx x= %d y=%d \t way x= %d y=%d \n",
+                            positionZhonx->coordinate_robot.x,positionZhonx->coordinate_robot.y, way[i].x, way[i].y);
+#endif
+#ifdef ZHONX3
+            tone(D4, 200);
+            HAL_Delay(50);
+            tone(C4H, 100);
+            HAL_Delay(40);
+            toneItMode(C4, 150);
+            ssd1306WaitReady();
+            ssd1306ClearScreen(MAIN_AREA);
+            ssd1306DrawBmp(warning_Img, 1, 15, 48, 43);
+#endif
+            ssd1306PrintfAtLine(55, 1, &Font_5x8, "ERROR WAY");
+            ssd1306Refresh();
+            return MAZE_SOLVER_E_ERROR;
+        }
         clearMazelength(maze);
         poids(maze, positionZhonx->coordinate_robot, true, false);
         printLength(*maze, positionZhonx->coordinate_robot.x,
@@ -284,6 +329,18 @@ int exploration(labyrinthe *maze, positionRobot* positionZhonx,
     }
 #endif
     last_coordinate = findEndCoordinate(way);
+
+#ifdef ZHONX3
+    tone(E4, 70);
+    toneItMode(G5, 70);
+    tone(C3, 70);
+    toneItMode(G5, 70);
+    tone(E4, 70);
+    toneItMode(G5, 70);
+    tone(C3, 70);
+    toneItMode(G5, 70);
+#endif
+
     do
     {
         clearMazelength(maze);
@@ -326,7 +383,12 @@ int goToPosition(labyrinthe *maze, positionRobot* positionZhonx,
             // no solution for go to the asked position
             return rv;
         }
-        moveRealZhonxArc(maze, positionZhonx, way);	// use way for go the end position or closer position if there are no-know wall
+        rv = moveRealZhonxArc(maze, positionZhonx, way);	// use way for go the end position or closer position if there are no-know wall
+        if (rv != MAZE_SOLVER_E_SUCCESS)
+        {
+            // no solution for go to the asked position
+            return rv;
+        }
     }
     return MAZE_SOLVER_E_SUCCESS;
 }
@@ -380,7 +442,9 @@ int moveVirtualZhonx(labyrinthe maze, positionRobot positionZhonxVirtuel,
                 return MAZE_SOLVER_E_ERROR;
             }
         }
+#ifdef PRINT_MAZE
         printMaze(maze, positionZhonxVirtuel.coordinate_robot);
+#endif
         way[i].x = positionZhonxVirtuel.coordinate_robot.x, way[i].y =
                 positionZhonxVirtuel.coordinate_robot.y;
         i++;
@@ -389,8 +453,8 @@ int moveVirtualZhonx(labyrinthe maze, positionRobot positionZhonxVirtuel,
     return MAZE_SOLVER_E_SUCCESS;
 }
 
-void moveRealZhonxArc(labyrinthe *maze, positionRobot *positionZhonx,
-        coordinate way[])
+int moveRealZhonxArc(labyrinthe *maze, positionRobot *positionZhonx,
+                     coordinate way[])
 {
     walls cell_state;
     char chain;
@@ -437,23 +501,8 @@ void moveRealZhonxArc(labyrinthe *maze, positionRobot *positionZhonx,
 #ifdef ZHONX3
             bluetoothWaitReady();
             bluetoothPrintf("Error way : position zhonx x= %d y=%d \t way x= %d y=%d \n",
-                    positionZhonx->coordinate_robot.x,positionZhonx->coordinate_robot.y, way[i].x, way[i].y);
-            HAL_Delay(200);
-            telemetersStop();
-            motorsDriverSleep(ON);
-#elif defined ZHONX2
-            hal_step_motor_disable();
-#elif defined SIMULATOR
-            bluetoothPrintf("Error way : position zhonx x= %d y=%d \t way x= %d y=%d \n",
-                                positionZhonx->coordinate_robot.x,positionZhonx->coordinate_robot.y, way[i].x, way[i].y);
-#endif
-            ssd1306ClearScreen(MAIN_AREA);
-            ssd1306DrawStringAtLine(60, 1, "Error way", &Font_5x8);
-            ssd1306Refresh();
-            while (1)
-            {
-                HAL_Delay(500);
-            }
+                            positionZhonx->coordinate_robot.x,positionZhonx->coordinate_robot.y, way[i].x, way[i].y);
+            return MAZE_SOLVER_E_ERROR;
         }
 
         while ((way[i].x != END_OF_LIST)
@@ -478,6 +527,7 @@ void moveRealZhonxArc(labyrinthe *maze, positionRobot *positionZhonx,
         newCell(cell_state, maze, *positionZhonx);
 
     }
+    return MAZE_SOLVER_E_SUCCESS;
 }
 
 void poids(labyrinthe *maze, coordinate end_coordinate, char wallNoKnow,
@@ -752,14 +802,16 @@ void clearMazelength(labyrinthe* maze)
 }
 
 char miniwayFind(labyrinthe *maze, coordinate start_coordinate,
-        coordinate end_coordinate)
+                 coordinate end_coordinate)
 {
     // TODO not find the shorter in distance way but the faster
     coordinate way1[MAZE_SIZE * MAZE_SIZE];
     coordinate way2[MAZE_SIZE * MAZE_SIZE];
     clearMazelength(maze);
     poids(maze, end_coordinate, true, false);
+#ifdef PRINT_MAZE
     printMaze(*maze, (coordinate ) { -1, -1 });
+#endif
     positionRobot position;
     position.midOfCell = true;
     position.coordinate_robot = start_coordinate;
@@ -767,7 +819,9 @@ char miniwayFind(labyrinthe *maze, coordinate start_coordinate,
     moveVirtualZhonx(*maze, position, way1, end_coordinate);
     clearMazelength(maze);
     poids(maze, end_coordinate, false, false);
+#ifdef PRINT_MAZE
     printMaze(*maze, (coordinate ) { -1, -1 });
+#endif
     moveVirtualZhonx(*maze, position, way2, end_coordinate);
     ssd1306ClearScreen(MAIN_AREA);
     char waySame = diffway(way1, way2);

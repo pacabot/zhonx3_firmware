@@ -119,31 +119,37 @@ enum telemeters_used repositionGetTelemeterUsed(void)
 int repositionGetFrontDist(repositionGetOffsetsStruct *offset)
 {
     while (hasMoveEnded() != TRUE);
-    if (getWallPresence(FRONT_WALL) == WALL_PRESENCE)
+    if (mainControlGetFollowType() != WALL_FOLLOW)
     {
-//        if (getWallPresence(LEFT_WALL) == WALL_PRESENCE && getWallPresence(RIGHT_WALL) == WALL_PRESENCE)
-//        {
+        offset->front_dist = 0.0;
+        return REPOSITION_E_SUCCESS;
+    }
+
+    if (getWallPresence(FRONT_WALL) == TRUE)
+    {
+        //        if (getWallPresence(LEFT_WALL) == WALL_PRESENCE && getWallPresence(RIGHT_WALL) == WALL_PRESENCE)
+        //        {
         offset->front_dist = (int)(getTelemeterDist(TELEMETER_FL) + getTelemeterDist(TELEMETER_FR)) - (zhonxCalib_data->reposition.calib_value * 2);
-//        }
-//        if (getWallPresence(LEFT_WALL) == WALL_PRESENCE)
-//        {
-//            error_distance = (int)(getTelemeterDist(TELEMETER_FR)) - zhonxCalib_data->reposition.calib_value;
-//        }
-//        else if (getWallPresence(RIGHT_WALL) == WALL_PRESENCE)
-//        {
-//            error_distance = (int)(getTelemeterDist(TELEMETER_FL)) - zhonxCalib_data->reposition.calib_value;
-//        }
+        //        }
+        //        if (getWallPresence(LEFT_WALL) == WALL_PRESENCE)
+        //        {
+        //            error_distance = (int)(getTelemeterDist(TELEMETER_FR)) - zhonxCalib_data->reposition.calib_value;
+        //        }
+        //        else if (getWallPresence(RIGHT_WALL) == WALL_PRESENCE)
+        //        {
+        //            error_distance = (int)(getTelemeterDist(TELEMETER_FL)) - zhonxCalib_data->reposition.calib_value;
+        //        }
     }
     else
-        offset->front_dist = 0;
+        offset->front_dist = 0.0;
     return REPOSITION_E_SUCCESS;
 }
 
 void repositionFrontDistCal(void)
 {
 
-	int rv;
-	double medium_dist = 0.0;
+    int rv;
+    double medium_dist = 0.0;
     double right_dist = 0;
     double left_dist = 0;
     int max_speed = 50;
@@ -177,12 +183,8 @@ void repositionFrontDistCal(void)
     left_dist = getTelemeterDist(TELEMETER_FL);
     right_dist = getTelemeterDist(TELEMETER_FR);
 
-    repositionSetInitialPosition(CELL_LENGTH - OFFSET_DIST);    //absolute position into a cell
-    move(0, OFFSET_DIST, max_speed, end_speed);
-    while (hasMoveEnded() != TRUE);
-
     telemetersStop();
-    HAL_Delay(1000);
+    moveStop();
     motorsDriverSleep(ON);
 
     medium_dist = (right_dist + left_dist) / 2.00;

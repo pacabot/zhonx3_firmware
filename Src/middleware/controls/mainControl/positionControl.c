@@ -39,7 +39,7 @@
 
 #include <middleware/controls/mainControl/positionControl.h>
 
-#define MAX_POSITION_ERROR     40.00 //Degrees
+#define MAX_POSITION_ERROR     20.00 //Degrees
 
 typedef struct
 {
@@ -93,7 +93,7 @@ int positionControlInit(void)
     memset(&position_params, 0, sizeof(position_params_struct));
     positionProfileCompute(0, 0, 0);
 
-    gyro_pid_instance.Kp = 58;
+    gyro_pid_instance.Kp = 90;
     gyro_pid_instance.Ki = 0;
     gyro_pid_instance.Kd = 1500;
 
@@ -191,7 +191,7 @@ int positionControlLoop(void)
         }
         else //use encoders
         {
-            ledPowerErrorBlink(500, 300, 2);
+            ledPowerErrorBlink(300, 300, 2);
             if (position_params.sign > 0)
                 position_control.current_angle = 180.00 * (encoderGetDist(ENCODER_L) - encoderGetDist(ENCODER_R))
                 / (PI * ROTATION_DIAMETER);
@@ -215,7 +215,6 @@ int positionControlLoop(void)
     if (fabs(position_control.position_error) > MAX_POSITION_ERROR)
     {
         ledPowerErrorBlink(1000, 150, 5);
-        motorsDriverSleep(ON);
         return POSITION_CONTROL_E_ERROR;
     }
 
@@ -255,29 +254,29 @@ int positionControlLoop(void)
 
  Vf = Vi + Acc x t 	//instantaneous speed
 
- Vi + Vf
+     Vi + Vf
  V = -------			//average speed
- 2
+        2
 
- 2.d
+        2.d
  Acc = -----
- t²
+         t²
 
  d = V x t
 
  V = Vi + (Acc x t)
- ________________________
- / 1 \             / 1 \	 /
+                                   ________________________
+      / 1 \             / 1 \	  /
  v =  |---| x t x Acc + |---| x  V t² x Acc² - 4 x Acc x d	//v = f(t,d,Acc)
- \ 2 /			   \ 2 /
+      \ 2 /			    \ 2 /
 
- -2(t.Vi-d)
+        -2(t.Vi-d)
  Acc = ------------
- t²
+            t²
 
- 2(t.Vi-d)
+         2(t.Vi-d)
  Dcc = ------------
- t²
+             t²
  */
 /**************************************************************************/
 double positionProfileCompute(double angle, double loop_time, double max_turn_speed)
@@ -306,8 +305,8 @@ double positionProfileCompute(double angle, double loop_time, double max_turn_sp
         loop_time = (angle / max_turn_speed) * CONTROL_TIME_FREQ;
     }
 
-    position_params.nb_loop = (int) loop_time;
-    position_params.angle_per_loop = angle / (double) position_params.nb_loop;
+    position_params.nb_loop = (int)loop_time;
+    position_params.angle_per_loop = angle / (double)position_params.nb_loop;
 
     return (position_params.nb_loop);
 }

@@ -242,7 +242,7 @@ void testWallsSensors()
 {
     telemetersInit();
     telemetersStart();
-
+    moveStraight(0, 0, 0, 500);
     while (expanderJoyFiltered() != JOY_LEFT)
     {
         ssd1306ClearScreen(MAIN_AREA);

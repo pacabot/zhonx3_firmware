@@ -27,8 +27,8 @@ typedef enum
 //#define NUMBER_OF_MEASURE_BY_STEP 5000
 
 #define DISTANCE_WALL_DIAG		    (140.00)
-#define DISTANCE_WALL_FRONT		    (220.00)
-#define DISTANCE_SEGOND_WALL_FRONT	(200.00)
+#define DISTANCE_WALL_FRONT		    (170.00)
+//#define DISTANCE_SEGOND_WALL_FRONT	(220.00)
 
 /* Types definitions */
 

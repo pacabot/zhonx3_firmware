@@ -48,17 +48,6 @@ static void sendData(uint8_t aTxBuffer)
     if (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY)
         return;
     HAL_I2C_Master_Transmit_DMA(&hi2c1, (uint16_t) 64, (uint8_t*) &aTxBuffer, 1);
-
-    //	while (HAL_I2C_Master_Transmit(&hi2c1, (uint16_t)64, (uint8_t *)&aTxBuffer, 1, 1000) != HAL_OK)
-    //	{
-    //		/* Error_Handler() function is called when Timout error occurs.
-    //	       When Acknowledge failure ocucurs (Slave don't acknowledge it's address)
-    //	       Master restarts communication */
-    //		if (HAL_I2C_GetError(&hi2c1) != HAL_I2C_ERROR_AF)
-    //		{
-    //			bluetoothPrintf("I2C setExpander error \r\n");
-    //		}
-    //	}
 }
 
 //get DATA
@@ -68,16 +57,7 @@ static char getData(void)
     static uint8_t aRxBuffer;
 
     while (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY);
-    while (HAL_I2C_Master_Receive(&hi2c1, (uint16_t) 65, (uint8_t *) &aRxBuffer, 1, 1000) != HAL_OK)
-    {
-        /* Error_Handler() function is called when Timout error occurs.
-         When Acknowledge failure ocucurs (Slave don't acknowledge it's address)
-         Master restarts communication */
-        if (HAL_I2C_GetError(&hi2c1) != HAL_I2C_ERROR_AF)
-        {
-//            bluetoothPrintf("I2C getExpander error \r\n");
-        }
-    }
+    HAL_I2C_Master_Receive(&hi2c1, (uint16_t) 65, (uint8_t *) &aRxBuffer, 1, 1000);
 
     return aRxBuffer;
 }
@@ -122,7 +102,7 @@ void expanderLedState(char led, char val)
 
 void expanderSetLeds(char leds)
 {
-    sendData((0xF0| (~leds << 4)));
+    sendData((char)(0xFF & (~(leds << 4))));
 }
 
 char expanderJoyState(void)

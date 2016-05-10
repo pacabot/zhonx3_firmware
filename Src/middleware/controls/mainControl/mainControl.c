@@ -91,6 +91,7 @@ int mainControlInit(void)
 int mainControlStopPidLoop(void)
 {
     pid_loop.start_state = FALSE;
+    expanderSetLeds(0b000);
     return MAIN_CONTROL_E_SUCCESS;
 }
 
@@ -170,10 +171,27 @@ enum mainControlWallFollowType mainControlGetWallFollowType()
     return move_params.moveType;
 }
 
+int moveStop(void)
+{
+    while (hasMoveEnded() != TRUE);
+    moveStraight(0, 0, 0, 500);
+    HAL_Delay(500);
+    motorsBrake();
+    return POSITION_CONTROL_E_SUCCESS;
+}
+
+int moveEmergencyStop(void)
+{
+    moveStraight(0, 0, 0, 1000);
+    HAL_Delay(500);
+    motorsBrake();
+    return POSITION_CONTROL_E_SUCCESS;
+}
+
 int move(double angle, double radius_or_distance, double max_speed, double end_speed)
 {
     double distance;
-    pid_loop.start_state = FALSE; //stop contol loop
+//    pid_loop.start_state = FALSE; //stop contol loop
 
     encodersReset();
     gyroResetAngle();

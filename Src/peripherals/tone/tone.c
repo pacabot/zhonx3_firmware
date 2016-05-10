@@ -180,44 +180,44 @@ void toneTest(void)
 
 void happyBirthday()
 {
-    tone(D2 * 2, 250 * 2);
-    tone(D2 * 2, 250 * 2);
-    tone(E2 * 2, 500 * 2);
-    tone(D2 * 2, 500 * 2);
-    tone(G2 * 2, 500 * 2);
-    tone(F2H * 2, 1000 * 2);
+    tone(D3, 250 * 2);
+    tone(D3, 250 * 2);
+    tone(E3, 500 * 2);
+    tone(D3, 500 * 2);
+    tone(G3, 500 * 2);
+    tone(F3H, 1000 * 2);
 
-    tone(D2 * 2, 250 * 2);
-    tone(D2 * 2, 250 * 2);
-    tone(E2 * 2, 500 * 2);
-    tone(D2 * 2, 500 * 2);
-    tone(A2 * 2, 500 * 2);
-    tone(G2 * 2, 1000 * 2);
+    tone(D3, 250 * 2);
+    tone(D3, 250 * 2);
+    tone(E3, 500 * 2);
+    tone(D3, 500 * 2);
+    tone(A3, 500 * 2);
+    tone(G3, 1000 * 2);
 
-    tone(D2 * 2, 250 * 2);
-    tone(D2 * 2, 250 * 2);
-    tone(D3 * 2, 500 * 2);
-    tone(B2 * 2, 500 * 2);
-    tone(G2 * 2, 500 * 2);
-    tone(F2H * 2, 500 * 2);
-    tone(E2 * 2, 500 * 2);
+    tone(D3, 250 * 2);
+    tone(D3, 250 * 2);
+    tone(D3, 500 * 2);
+    tone(B3, 500 * 2);
+    tone(G3, 500 * 2);
+    tone(F3H, 500 * 2);
+    tone(E3, 500 * 2);
 
-    tone(C2 * 2, 250 * 2);
-    tone(C2 * 2, 250 * 2);
-    tone(B2 * 2, 500 * 2);
-    tone(G2 * 2, 500 * 2);
-    tone(A2 * 2, 500 * 2);
-    tone(G2 * 2, 1000 * 2);
+    tone(C3, 250 * 2);
+    tone(C3, 250 * 2);
+    tone(B3, 500 * 2);
+    tone(G3, 500 * 2);
+    tone(A3, 500 * 2);
+    tone(G3, 1000 * 2);
 
     HAL_Delay(1000);
 
-    tone(C2 * 2, 200 * 2);
-    tone(B2 * 2, 200 * 2);
-    tone(A2 * 2, 1000 * 2);
+    tone(C3, 200 * 2);
+    tone(B3, 200 * 2);
+    tone(A3, 1000 * 2);
     while (1)
     {
-        tone(A2 * 2, 1 * 2);
         tone(A3 * 2, 1 * 2);
+        tone(A4 * 2, 1 * 2);
     }
 }
 

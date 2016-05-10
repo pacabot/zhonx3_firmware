@@ -245,16 +245,16 @@ void ledBlink_IT(void)
     cnt_led++;
     if (cnt_led <= (Blink[0]))
     {
-        HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, RESET);
+        HAL_GPIO_WritePin(PW_LED_GPIO_Port, PW_LED_Pin, RESET);
     }
     else if (cnt_led <= (Blink[0] + (Blink[1]) * (1 + cnt_repeat)))
     {
-        HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, SET);
+        HAL_GPIO_WritePin(PW_LED_GPIO_Port, PW_LED_Pin, SET);
     }
     //repeat blinking
     else if (cnt_led <= (Blink[0] + Blink[1] + (Blink[1]) * (1 + cnt_repeat)))
     {
-        HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, RESET);
+        HAL_GPIO_WritePin(PW_LED_GPIO_Port, PW_LED_Pin, RESET);
     }
     else
     {
