@@ -229,7 +229,7 @@ int frontAlignment(float max_speed)
 {
     double relative_dist = 0.00;
     while (hasMoveEnded() != TRUE);
-    if (getWallPresence(FRONT_WALL) == WALL_PRESENCE)
+    if (getWallPresence(FRONT_WALL) == TRUE)
     {
         if (getTelemeterDist(TELEMETER_FR) > getTelemeterDist(TELEMETER_FL))
         {

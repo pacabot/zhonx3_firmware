@@ -92,7 +92,7 @@ int main(void)
 
     /* USER CODE BEGIN 1 */
     CMDLINE_CONTEXT cmd_context;
-    const char *zhonx_info = CONFIG_ZHONX_INFO_ADDR;
+    const char *zhonx_info = (char *)CONFIG_ZHONX_INFO_ADDR;
     /* USER CODE END 1 */
 
     /* MCU Configuration----------------------------------------------------------*/

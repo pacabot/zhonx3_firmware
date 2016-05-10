@@ -411,10 +411,11 @@ void waitStart()
 // Save a maze into the flash memory
 int saveMaze(labyrinthe *maze, positionRobot *start_position, coordinate  *end_coordinate)
 {
-    MAZE_CONTAINER *maze_container;
-    memcpy(&(maze_container->maze), maze, sizeof(labyrinthe));
-    memcpy(&(maze_container->start_position), start_position, sizeof(positionRobot));
-    memcpy(&(maze_container->end_coordinate), end_coordinate, sizeof(coordinate));
+    MAZE_CONTAINER maze_container;
+
+    memcpy(&(maze_container.maze), maze, sizeof(labyrinthe));
+    memcpy(&(maze_container.start_position), start_position, sizeof(positionRobot));
+    memcpy(&(maze_container.end_coordinate), end_coordinate, sizeof(coordinate));
     int rv = 0;
     int selected_maze = 0;
     int cnt_mazes = stored_mazes->count_stored_mazes;
@@ -455,7 +456,7 @@ int saveMaze(labyrinthe *maze, positionRobot *start_position, coordinate  *end_c
         ssd1306Refresh();
 
         rv = flash_write(zhonxSettings.h_flash, (unsigned char *)&(stored_mazes->mazes[selected_maze].maze),
-                                                (unsigned char *)maze_container, sizeof(MAZE_CONTAINER));
+                                                (unsigned char *)&maze_container, sizeof(MAZE_CONTAINER));
         if (rv != FLASH_DRIVER_E_SUCCESS)
         {
             ssd1306PrintfAtLine(0, 4, &Font_5x8, "Failed to save maze!");
@@ -471,7 +472,7 @@ int saveMaze(labyrinthe *maze, positionRobot *start_position, coordinate  *end_c
 
 int loadMaze(labyrinthe *maze, positionRobot *start_position, coordinate  *end_coordinate)
 {
-    MAZE_CONTAINER *maze_container;
+    MAZE_CONTAINER maze_container;
     ssd1306ClearScreen(MAIN_AREA);
 
     // Check if there is at least one stored maze in flash memory
@@ -483,14 +484,14 @@ int loadMaze(labyrinthe *maze, positionRobot *start_position, coordinate  *end_c
     }
 
     // Get the first maze slot
-    memcpy(maze_container, &stored_mazes->mazes[0], sizeof(MAZE_CONTAINER));
+    memcpy(&maze_container, &(stored_mazes->mazes[0]), sizeof(MAZE_CONTAINER));
 
     ssd1306PrintfAtLine(0, 1, &Font_5x8, "Maze restored successfully");
     ssd1306Refresh();
 
-    memcpy(maze,&(maze_container->maze),  sizeof(labyrinthe));
-    memcpy(start_position,&(maze_container->start_position),  sizeof(positionRobot));
-    memcpy(end_coordinate, &(maze_container->end_coordinate), sizeof(coordinate));
+    memcpy(maze, &(maze_container.maze), sizeof(labyrinthe));
+    memcpy(start_position, &(maze_container.start_position), sizeof(positionRobot));
+    memcpy(end_coordinate, &(maze_container.end_coordinate), sizeof(coordinate));
 
     return MAZE_SOLVER_E_SUCCESS;
 }

@@ -87,7 +87,7 @@ void tonesplayer(int *note, int *duration, int size, int tempo)
 // Arduino tone() compatible
 void tone(int note, int duration)
 {
-    int uwPrescalerValue = 1800;
+    int uwPrescalerValue;
     tone_duration = 0;
 
     uwPrescalerValue = (uint32_t) ((SystemCoreClock / 2) / (note * 1000)) - 1;
@@ -106,7 +106,7 @@ void tone(int note, int duration)
 
 void toneItMode(int note, int duration_ms)
 {
-    int uwPrescalerValue = 1800;
+    int uwPrescalerValue;
     tone_duration = (duration_ms / (1000 / LOW_TIME_FREQ)) + 1;
 
     uwPrescalerValue = (uint32_t) ((SystemCoreClock / 2) / (note * 1000)) - 1;
@@ -130,7 +130,7 @@ void tone_IT(void)
 
 void toneStart(int note)
 {
-    int uwPrescalerValue = 1800;
+    int uwPrescalerValue;
     tone_duration = 0;
 
     uwPrescalerValue = (uint32_t) ((SystemCoreClock / 2) / (note * 1000)) - 1;
