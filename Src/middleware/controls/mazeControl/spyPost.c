@@ -68,8 +68,8 @@
 
 #define SPYPOST_MOVE_SPEED 					   50
 
-#define MIN_STAT                               75   //minimum percentage for validate
-#define DIST_FOR_TIME_CALCULATION              20   //stop record before end to have time to calculate
+#define MIN_STAT                               70   //minimum percentage for validate
+#define DIST_FOR_TIME_CALCULATION              10   //stop record before end to have time to calculate
 
 #if (SPYPOST_MAX_DIAG_SENSOR_DISTANCE - SPYPOST_MIN_DIAG_SENSOR_DISTANCE) % (SPYPOST_NBITS_SAMPLING_RESOLUTION) != 0
 #error  MAX DIAG - MIN_DIAG must be a multiple of SAMPLING_RESOLUTION

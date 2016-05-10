@@ -39,7 +39,7 @@
 
 #include <middleware/controls/mainControl/positionControl.h>
 
-#define MAX_POSITION_ERROR     40.00 //Degrees
+#define MAX_POSITION_ERROR     20.00 //Degrees
 
 typedef struct
 {
@@ -93,7 +93,7 @@ int positionControlInit(void)
     memset(&position_params, 0, sizeof(position_params_struct));
     positionProfileCompute(0, 0, 0);
 
-    gyro_pid_instance.Kp = 58;
+    gyro_pid_instance.Kp = 90;
     gyro_pid_instance.Ki = 0;
     gyro_pid_instance.Kd = 1500;
 
@@ -189,16 +189,16 @@ int positionControlLoop(void)
             else
                 position_control.current_angle = -1.00 * gyroGetAngle();
         }
-        else //use encoders
-        {
-            ledPowerErrorBlink(500, 300, 2);
-            if (position_params.sign > 0)
-                position_control.current_angle = 180.00 * (encoderGetDist(ENCODER_L) - encoderGetDist(ENCODER_R))
-                / (PI * ROTATION_DIAMETER);
-            else
-                position_control.current_angle = 180.00 * (encoderGetDist(ENCODER_R) - encoderGetDist(ENCODER_L))
-                / (PI * ROTATION_DIAMETER);
-        }
+//        else //use encoders
+//        {
+//            ledPowerErrorBlink(300, 300, 2);
+//            if (position_params.sign > 0)
+//                position_control.current_angle = 180.00 * (encoderGetDist(ENCODER_L) - encoderGetDist(ENCODER_R))
+//                / (PI * ROTATION_DIAMETER);
+//            else
+//                position_control.current_angle = 180.00 * (encoderGetDist(ENCODER_R) - encoderGetDist(ENCODER_L))
+//                / (PI * ROTATION_DIAMETER);
+//        }
 
         if (position_control.nb_loop < position_params.nb_loop)
         {
@@ -215,6 +215,7 @@ int positionControlLoop(void)
     if (fabs(position_control.position_error) > MAX_POSITION_ERROR)
     {
         ledPowerErrorBlink(1000, 150, 5);
+        telemetersStop();
         motorsDriverSleep(ON);
         return POSITION_CONTROL_E_ERROR;
     }
@@ -306,8 +307,8 @@ double positionProfileCompute(double angle, double loop_time, double max_turn_sp
         loop_time = (angle / max_turn_speed) * CONTROL_TIME_FREQ;
     }
 
-    position_params.nb_loop = (int) loop_time;
-    position_params.angle_per_loop = angle / (double) position_params.nb_loop;
+    position_params.nb_loop = (int)loop_time;
+    position_params.angle_per_loop = angle / (double)position_params.nb_loop;
 
     return (position_params.nb_loop);
 }

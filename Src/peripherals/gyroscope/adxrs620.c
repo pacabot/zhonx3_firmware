@@ -146,6 +146,7 @@ void adxrs620Test(void)
 {
     adxrs620Init();
     gyroResetAngle();
+
     while (expanderJoyFiltered() != JOY_LEFT)
     {
         ssd1306ClearScreen(MAIN_AREA);

@@ -183,12 +183,8 @@ void repositionFrontDistCal(void)
     left_dist = getTelemeterDist(TELEMETER_FL);
     right_dist = getTelemeterDist(TELEMETER_FR);
 
-    repositionSetInitialPosition(CELL_LENGTH - OFFSET_DIST);    //absolute position into a cell
-    move(0, OFFSET_DIST, max_speed, end_speed);
-    while (hasMoveEnded() != TRUE);
-
     telemetersStop();
-    HAL_Delay(1000);
+    moveStop();
     motorsDriverSleep(ON);
 
     medium_dist = (right_dist + left_dist) / 2.00;

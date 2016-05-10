@@ -22,6 +22,7 @@ enum motorName
 };
 
 void motorsInit(void);
+int motorGetFault(void);
 void motorsDriverSleep(int isOn);
 int motorSet_DF(enum motorName motor_name, int pwm);
 int motorSet_DS(enum motorName motor_name, int pwm);

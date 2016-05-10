@@ -57,12 +57,12 @@ typedef struct
 } motor;
 
 volatile motor left_motor = {
-LEFT_MOTOR_IN1,
-LEFT_MOTOR_IN2 };
+        LEFT_MOTOR_IN1,
+        LEFT_MOTOR_IN2 };
 
 volatile motor right_motor = {
-RIGHT_MOTOR_IN1,
-RIGHT_MOTOR_IN2 };
+        RIGHT_MOTOR_IN1,
+        RIGHT_MOTOR_IN2 };
 
 extern TIM_HandleTypeDef MOTORS_TIMER;
 
@@ -119,6 +119,14 @@ void motorsInit(void)
     HAL_TIMEx_MasterConfigSynchronization(&htim8, &sMasterConfig);
 
     motorsDriverSleep(ON);
+}
+
+int motorGetFault(void)
+{
+    if (HAL_GPIO_ReadPin(MOTORS_FL_GPIO_Port, MOTORS_FL_Pin) == TRUE)
+        return MOTORS_DRIVER_E_SUCCESS;
+    else
+        return MOTORS_DRIVER_E_ERROR;
 }
 
 void motorsDriverSleep(int isOn)

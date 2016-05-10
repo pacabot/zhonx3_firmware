@@ -159,9 +159,6 @@ int maze_solver(void)
     ssd1306ClearScreen(MAIN_AREA);
     ssd1306PrintfAtLine(40, 2, &Font_5x8, "SCAN...");
     ssd1306Refresh();
-    tone(C3, 70);
-    tone(E4, 70);
-    toneItMode(G5, 70);
     motorsDriverSleep(OFF);
 #endif
 #ifdef ZHONX2
@@ -269,14 +266,21 @@ int exploration(labyrinthe *maze, positionRobot* positionZhonx,
             moveStop();
             motorsDriverSleep(ON);
             bluetoothWaitReady();
-            ssd1306WaitReady();
-            ssd1306ClearScreen(MAIN_AREA);
 #endif
             bluetoothPrintf("no solution");
 #ifdef PRINT_MAZE
             printMaze(*maze, positionZhonx->coordinate_robot);
 #endif
+#ifdef ZHONX3
+            tone(D4, 200);
+            HAL_Delay(50);
+            tone(C4H, 100);
+            HAL_Delay(40);
+            toneItMode(C4, 150);
+            ssd1306WaitReady();
+            ssd1306ClearScreen(MAIN_AREA);
             ssd1306DrawBmp(warning_Img, 1, 15, 48, 43);
+#endif
             ssd1306PrintfAtLine(55, 1, &Font_5x8, "NO SOLUTION");
             ssd1306Refresh();
             printLength(*maze, -1, -1);
@@ -289,15 +293,23 @@ int exploration(labyrinthe *maze, positionRobot* positionZhonx,
             telemetersStop();
             moveStop();
             motorsDriverSleep(ON);
-            ssd1306WaitReady();
-            ssd1306ClearScreen(MAIN_AREA);
+            bluetoothWaitReady();
 #elif defined ZHONX2
             hal_step_motor_disable();
 #elif defined SIMULATOR
             bluetoothPrintf("Error way : position zhonx x= %d y=%d \t way x= %d y=%d \n",
                             positionZhonx->coordinate_robot.x,positionZhonx->coordinate_robot.y, way[i].x, way[i].y);
 #endif
+#ifdef ZHONX3
+            tone(D4, 200);
+            HAL_Delay(50);
+            tone(C4H, 100);
+            HAL_Delay(40);
+            toneItMode(C4, 150);
+            ssd1306WaitReady();
+            ssd1306ClearScreen(MAIN_AREA);
             ssd1306DrawBmp(warning_Img, 1, 15, 48, 43);
+#endif
             ssd1306PrintfAtLine(55, 1, &Font_5x8, "ERROR WAY");
             ssd1306Refresh();
             return MAZE_SOLVER_E_ERROR;
@@ -369,7 +381,12 @@ int goToPosition(labyrinthe *maze, positionRobot* positionZhonx,
             // no solution for go to the asked position
             return rv;
         }
-        moveRealZhonxArc(maze, positionZhonx, way);	// use way for go the end position or closer position if there are no-know wall
+        rv = moveRealZhonxArc(maze, positionZhonx, way);	// use way for go the end position or closer position if there are no-know wall
+        if (rv != MAZE_SOLVER_E_SUCCESS)
+        {
+            // no solution for go to the asked position
+            return rv;
+        }
     }
     return MAZE_SOLVER_E_SUCCESS;
 }
