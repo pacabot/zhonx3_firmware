@@ -660,6 +660,7 @@ void movesTest2()
 //    moveRotateInPlaceCW90(200);
 
     moveRotateInPlaceCW180(200);
+    HAL_Delay(2000);
     moveRotateInPlaceCW180(200);
 
  //   move(180, 0, Vin, Vin);

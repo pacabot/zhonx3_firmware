@@ -127,19 +127,19 @@ int repositionGetFrontDist(repositionGetOffsetsStruct *offset)
 
     if (getWallPresence(FRONT_WALL) == TRUE)
     {
-//        bluetoothPrintf(", FRONT DETECTED");
-        //        if (getWallPresence(LEFT_WALL) == WALL_PRESENCE && getWallPresence(RIGHT_WALL) == WALL_PRESENCE)
-        //        {
-        offset->front_dist = ((getTelemeterDist(TELEMETER_FL) + getTelemeterDist(TELEMETER_FR)) / 2.00) - (zhonxCalib_data->reposition.calib_value);
-        //        }
-        //        if (getWallPresence(LEFT_WALL) == WALL_PRESENCE)
-        //        {
-        //            error_distance = (int)(getTelemeterDist(TELEMETER_FR)) - zhonxCalib_data->reposition.calib_value;
-        //        }
-        //        else if (getWallPresence(RIGHT_WALL) == WALL_PRESENCE)
-        //        {
-        //            error_distance = (int)(getTelemeterDist(TELEMETER_FL)) - zhonxCalib_data->reposition.calib_value;
-        //        }
+        //        bluetoothPrintf(", FRONT DETECTED");
+        if (getWallPresence(LEFT_WALL) == WALL_PRESENCE && getWallPresence(RIGHT_WALL) == WALL_PRESENCE)
+        {
+            offset->front_dist = ((getTelemeterDist(TELEMETER_FL) + getTelemeterDist(TELEMETER_FR)) / 2.00) - (zhonxCalib_data->reposition.calib_value);
+        }
+        else if (getWallPresence(LEFT_WALL) == WALL_PRESENCE)
+        {
+            offset->front_dist = getTelemeterDist(TELEMETER_FL) - zhonxCalib_data->reposition.calib_value;
+        }
+        else if (getWallPresence(RIGHT_WALL) == WALL_PRESENCE)
+        {
+            offset->front_dist = getTelemeterDist(TELEMETER_FR) - zhonxCalib_data->reposition.calib_value;
+        }
     }
     else
         offset->front_dist = 0;
