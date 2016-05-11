@@ -55,7 +55,10 @@
 #include "middleware/ring_buffer/ring_buffer.h"
 #include "middleware/controls/mazeControl/spyPost.h"
 #include "middleware/controls/mainControl/mainControl.h"
+#include "middleware/controls/mainControl/positionControl.h"
+#include "middleware/controls/mainControl/speedControl.h"
 #include "middleware/display/pictures.h"
+#include "middleware/controls/mazeControl/basicMoves.h"
 
 /* USER CODE END Includes */
 
@@ -135,6 +138,9 @@ int main(void)
     bluetoothInit();
     toneInit();
     spyPostInit();
+
+    positionControlSetPositionType(GYRO);
+    mainControlSetFollowType(NO_FOLLOW);
 
     toneSetVolulme(100);
     tone(F4, 50);

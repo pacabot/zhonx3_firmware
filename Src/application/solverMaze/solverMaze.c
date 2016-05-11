@@ -167,6 +167,8 @@ int maze_solver_new_maze(void)
     {
     }
 #endif
+    ssd1306Printf(10,10,&Font_7x8,"go to start position");
+    ssd1306Refresh();
 #ifdef ZHONX2
     if (zhonxSettings.calibration_enabled==true)
     {
@@ -319,13 +321,13 @@ int exploration(labyrinthe *maze, positionRobot* positionZhonx,
     last_coordinate = findEndCoordinate(way);
 
 #ifdef ZHONX3
-    tone(E4, 70);
+
     toneItMode(G5, 70);
-    tone(C3, 70);
+    HAL_Delay(20);
     toneItMode(G5, 70);
-    tone(E4, 70);
+    HAL_Delay(20);
     toneItMode(G5, 70);
-    tone(C3, 70);
+    HAL_Delay(20);
     toneItMode(G5, 70);
 #endif
 
@@ -368,12 +370,18 @@ int goToPosition(labyrinthe *maze, positionRobot* positionZhonx,
         rv = moveVirtualZhonx(*maze, *positionZhonx, way, end_coordinate);// create way for go to the end coordinate if it possible
         if (rv != MAZE_SOLVER_E_SUCCESS)
         {
+            bluetoothWaitReady();
+            bluetoothPrintf("no solution");
+            while (1);// todo debug
             // no solution for go to the asked position
             return rv;
         }
         rv = moveRealZhonxArc(maze, positionZhonx, way);	// use way for go the end position or closer position if there are no-know wall
         if (rv != MAZE_SOLVER_E_SUCCESS)
         {
+            bluetoothWaitReady();
+            bluetoothPrintf("error way");
+            while (1); //todo debug
             // no solution for go to the asked position
             return rv;
         }
@@ -444,6 +452,8 @@ int moveVirtualZhonx(labyrinthe maze, positionRobot positionZhonxVirtuel,
 int moveRealZhonxArc(labyrinthe *maze, positionRobot *positionZhonx,
                      coordinate way[])
 {
+    bluetoothWaitReady();
+    bluetoothPrintf("pat");
     walls cell_state;
     char chain;
     int nb_move;
@@ -490,8 +500,8 @@ int moveRealZhonxArc(labyrinthe *maze, positionRobot *positionZhonx,
             bluetoothWaitReady();
             bluetoothPrintf("Error way : position zhonx x= %d y=%d \t way x= %d y=%d \n",
                             positionZhonx->coordinate_robot.x,positionZhonx->coordinate_robot.y, way[i].x, way[i].y);
-            return MAZE_SOLVER_E_ERROR;
 #endif
+            return MAZE_SOLVER_E_ERROR;
         }
 
         while ((way[i].x != END_OF_LIST)
@@ -516,6 +526,8 @@ int moveRealZhonxArc(labyrinthe *maze, positionRobot *positionZhonx,
         newCell(cell_state, maze, *positionZhonx);
 
     }
+    bluetoothWaitReady();
+    bluetoothPrintf("colin");
     return MAZE_SOLVER_E_SUCCESS;
 }
 

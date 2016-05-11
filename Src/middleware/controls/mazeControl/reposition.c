@@ -121,27 +121,28 @@ int repositionGetFrontDist(repositionGetOffsetsStruct *offset)
     while (hasMoveEnded() != TRUE);
     if (mainControlGetFollowType() != WALL_FOLLOW)
     {
-        offset->front_dist = 0.0;
+        offset->front_dist = 0;
         return REPOSITION_E_SUCCESS;
     }
 
     if (getWallPresence(FRONT_WALL) == TRUE)
     {
-        //        if (getWallPresence(LEFT_WALL) == WALL_PRESENCE && getWallPresence(RIGHT_WALL) == WALL_PRESENCE)
-        //        {
-        offset->front_dist = (int)(getTelemeterDist(TELEMETER_FL) + getTelemeterDist(TELEMETER_FR)) - (zhonxCalib_data->reposition.calib_value * 2);
-        //        }
-        //        if (getWallPresence(LEFT_WALL) == WALL_PRESENCE)
-        //        {
-        //            error_distance = (int)(getTelemeterDist(TELEMETER_FR)) - zhonxCalib_data->reposition.calib_value;
-        //        }
-        //        else if (getWallPresence(RIGHT_WALL) == WALL_PRESENCE)
-        //        {
-        //            error_distance = (int)(getTelemeterDist(TELEMETER_FL)) - zhonxCalib_data->reposition.calib_value;
-        //        }
+        //        bluetoothPrintf(", FRONT DETECTED");
+        if (getWallPresence(LEFT_WALL) == WALL_PRESENCE && getWallPresence(RIGHT_WALL) == WALL_PRESENCE)
+        {
+            offset->front_dist = ((getTelemeterDist(TELEMETER_FL) + getTelemeterDist(TELEMETER_FR)) / 2.00) - (zhonxCalib_data->reposition.calib_value);
+        }
+        else if (getWallPresence(LEFT_WALL) == WALL_PRESENCE)
+        {
+            offset->front_dist = getTelemeterDist(TELEMETER_FL) - zhonxCalib_data->reposition.calib_value;
+        }
+        else if (getWallPresence(RIGHT_WALL) == WALL_PRESENCE)
+        {
+            offset->front_dist = getTelemeterDist(TELEMETER_FR) - zhonxCalib_data->reposition.calib_value;
+        }
     }
     else
-        offset->front_dist = 0.0;
+        offset->front_dist = 0;
     return REPOSITION_E_SUCCESS;
 }
 
@@ -217,7 +218,7 @@ void repositionFrontTest(void)
     uint32_t Vmin, Vmax, Vrotate;
 
     positionControlSetPositionType(GYRO);
-    mainControlSetFollowType(NO_FOLLOW);
+    mainControlSetFollowType(WALL_FOLLOW);
 
     while (expanderJoyFiltered() != JOY_RIGHT)
     {
@@ -249,5 +250,4 @@ void repositionFrontTest(void)
     telemetersStop();
     HAL_Delay(1000);
     motorsDriverSleep(ON);
-    while (expanderJoyFiltered() != JOY_LEFT);
 }
