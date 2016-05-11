@@ -97,7 +97,6 @@
 #include "pcf8574.h"
 #endif // simulator
 
-
 /*
  *  ********************** int maze (void) **********************
  *  this function is the main function of the maze solver
@@ -289,7 +288,7 @@ int exploration(labyrinthe *maze, positionRobot* positionZhonx,
             hal_step_motor_disable();
 #elif defined SIMULATOR
             bluetoothPrintf("Error way : position zhonx x= %d y=%d \t way x= %d y=%d \n",
-                            positionZhonx->coordinate_robot.x,positionZhonx->coordinate_robot.y, way[i].x, way[i].y);
+                            positionZhonx->coordinate_robot.x,positionZhonx->coordinate_robot.y, way[0].x, way[0].y);
 #endif
 #ifdef ZHONX3
             tone(D4, 200);
@@ -487,7 +486,7 @@ int moveRealZhonxArc(labyrinthe *maze, positionRobot *positionZhonx,
         }
         else
         {
-#ifdef ZHONX3
+#if defined ZHONX3 || defined SIMULATOR
             bluetoothWaitReady();
             bluetoothPrintf("Error way : position zhonx x= %d y=%d \t way x= %d y=%d \n",
                             positionZhonx->coordinate_robot.x,positionZhonx->coordinate_robot.y, way[i].x, way[i].y);
@@ -915,7 +914,7 @@ int findArrival(labyrinthe maze, coordinate *end_coordinate)
                 }
                 if ((maze.cell[x + 1][y + 1].wall_west != NO_WALL
                             || maze.cell[x + 1][y + 1].wall_south != NO_WALL)
-                        && maze.cell[x][y+1].length != 0
+                        && maze.cell[x+1][y+1].length != 0
                         && maze.cell[x+1][y+1].length < possible_end_find_cost)
                 {
                     end_coordinate->x = x + 1;
