@@ -425,6 +425,7 @@ int saveMaze(labyrinthe *maze, positionRobot *start_position, coordinate  *end_c
     int selected_maze = 0;
     int cnt_mazes = stored_mazes->count_stored_mazes;
 
+#if 0
     // Check whether flash data have been initialized
     if ((cnt_mazes > 0) &&
         (cnt_mazes < MAX_STORABLE_MAZES))
@@ -434,12 +435,13 @@ int saveMaze(labyrinthe *maze, positionRobot *start_position, coordinate  *end_c
     }
     else
     {
+#endif
         ssd1306ClearScreen(MAIN_AREA);
 
         // Store maze in the first slot
 
         // Initialize maze counter
-#if 0
+
         ssd1306PrintfAtLine(0, 1, &Font_5x8, "Saving maze counter...");
         ssd1306Refresh();
 
@@ -454,7 +456,6 @@ int saveMaze(labyrinthe *maze, positionRobot *start_position, coordinate  *end_c
         }
         ssd1306PrintfAtLine(0, 2, &Font_5x8, "Maze counter save successfully");
         ssd1306Refresh();
-#endif
 
         // Store maze
         ssd1306PrintfAtLine(0, 3, &Font_5x8, "Saving maze...");
@@ -470,7 +471,9 @@ int saveMaze(labyrinthe *maze, positionRobot *start_position, coordinate  *end_c
         }
         ssd1306PrintfAtLine(0, 4, &Font_5x8, "Maze saved successfully");
         ssd1306Refresh();
+#if 0
     }
+#endif
 
     return 0;
 }
