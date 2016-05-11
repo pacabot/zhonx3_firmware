@@ -88,8 +88,6 @@ void move_zhonx(int direction_to_go, positionRobot *positionZhonx, int numberOfC
         }
     #endif
 
-    bluetoothWaitReady();
-    bluetoothPrintf("pat");
     if (positionZhonx->midOfCell == end_mid_of_case)
     {
         /*
@@ -173,8 +171,6 @@ void move_zhonx(int direction_to_go, positionRobot *positionZhonx, int numberOfC
     {
         moveCell(numberOfCell, MAX_SPEED_TRANSLATION, END_SPEED_TRANSLATION);
     }
-    bluetoothWaitReady();
-    bluetoothPrintf("colin");
     positionZhonx->midOfCell = end_mid_of_case;
 
 }

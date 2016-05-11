@@ -88,7 +88,7 @@ int positionControlInit(void)
 
     gyro_pid_instance.Kp = 100;
     gyro_pid_instance.Ki = 0;
-    gyro_pid_instance.Kd = 1000;
+    gyro_pid_instance.Kd = 2000;
 
     //    gyro_pid_instance.Kp = zhonxCalib_data->pid_gyro.Kp;
     //    gyro_pid_instance.Ki = zhonxCalib_data->pid_gyro.Ki / CONTROL_TIME_FREQ;

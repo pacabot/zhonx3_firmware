@@ -46,7 +46,7 @@
 #define MAX_SPEED_TRANSLATION   (500)
 #define END_SPEED_TRANSLATION	(500)
 
-#define DEBUG 0
+// #define DEBUG 0
 //#define PRINT_MAZE
 
 #define END_OF_LIST 255

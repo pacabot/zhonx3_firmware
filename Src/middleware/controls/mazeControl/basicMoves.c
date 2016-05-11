@@ -137,7 +137,7 @@ int moveOffsetDist(getOffsetsStruct *offset, double max_speed)
         offset_error = (double)offset->spyPost.left_x;
 #ifdef DEBUG_BASIC_MOVES
         bluetoothWaitReady();
-        bluetoothPrintf(" L_OFFSET = %d, TYPE = %d\n", (int32_t)offset->spyPost.left_x, offset->spyPost.left_spyPostType);
+        bluetoothPrintf(", L_OFFSET = %d, TYPE = %d", (int32_t)offset->spyPost.left_x, offset->spyPost.left_spyPostType);
 #endif
         toneItMode(C4, 300);
     }
@@ -146,7 +146,7 @@ int moveOffsetDist(getOffsetsStruct *offset, double max_speed)
         offset_error = (double)offset->spyPost.right_x;
 #ifdef DEBUG_BASIC_MOVES
         bluetoothWaitReady();
-        bluetoothPrintf(" R_OFFSET = %d, TYPE = %d\n", (int32_t)offset->spyPost.right_x, offset->spyPost.right_spyPostType);
+        bluetoothPrintf(", R_OFFSET = %d, TYPE = %d", (int32_t)offset->spyPost.right_x, offset->spyPost.right_spyPostType);
 #endif
         toneItMode(C4, 300);
     }
@@ -155,7 +155,7 @@ int moveOffsetDist(getOffsetsStruct *offset, double max_speed)
         offset_error = (double)offset->frontCal.front_dist;
 #ifdef DEBUG_BASIC_MOVES
         bluetoothWaitReady();
-        bluetoothPrintf(" F_OFFSET = %d\n", (int32_t)offset->frontCal.front_dist);
+        bluetoothPrintf(", F_OFFSET = %d", (int32_t)offset->frontCal.front_dist);
 #endif
         toneItMode(A5, 200);
     }
@@ -253,6 +253,7 @@ int frontAlignment(float max_speed)
                 }
             }
         }
+        move(0, 0, 0, 0);
         relative_dist = ((getTelemeterDist(TELEMETER_FL) + getTelemeterDist(TELEMETER_FR)) / 2.00) - 21.00;
         move(0, relative_dist, 100, 100);
     }
@@ -276,14 +277,12 @@ int moveCell(unsigned int nb_cell, double max_speed, double out_speed)
     getOffsetsStruct offset;
     memset(&offset, 0, sizeof(getOffsetsStruct));
 
-    if (out_speed < 1)
-        return POSITION_CONTROL_E_ERROR;
     if (nb_cell < 1)
         return POSITION_CONTROL_E_ERROR;
 
 #ifdef DEBUG_BASIC_MOVES
     bluetoothWaitReady();
-    bluetoothPrintf("\rMOVE %d CELL,", nb_cell);
+    bluetoothPrintf("\rMOVE %d CELL", nb_cell);
 #endif
 
     if (nb_cell == 0)
@@ -314,9 +313,6 @@ int moveStartCell(double max_speed, double out_speed)
     getOffsetsStruct offset;
     memset(&offset, 0, sizeof(getOffsetsStruct));
 
-    if (out_speed < 1)
-        return POSITION_CONTROL_E_ERROR;
-
 #ifdef DEBUG_BASIC_MOVES
     bluetoothWaitReady();
     bluetoothPrintf("\rMOVE START CELL");
@@ -344,9 +340,6 @@ int moveRotateCW90(double max_turn_speed, double out_speed)
     getOffsetsStruct offset;
     memset(&offset, 0, sizeof(getOffsetsStruct));
 
-    if (out_speed < 1)
-        return POSITION_CONTROL_E_ERROR;
-
 #ifdef DEBUG_BASIC_MOVES
     bluetoothWaitReady();
     bluetoothPrintf("\rMOVE ROTATE CW90");
@@ -372,9 +365,6 @@ int moveRotateCCW90(double max_turn_speed, double out_speed)
 {
     getOffsetsStruct offset;
     memset(&offset, 0, sizeof(getOffsetsStruct));
-
-    if (out_speed < 1)
-        return POSITION_CONTROL_E_ERROR;
 
 #ifdef DEBUG_BASIC_MOVES
     bluetoothWaitReady();
@@ -469,8 +459,10 @@ int moveUTurn(double speed_rotation, double max_speed, double out_speed)
     memset(&offset, 0, sizeof(getOffsetsStruct));
     wallSelectorEnum wall_presence = FALSE;
 
-    if (out_speed < 1)
-        return POSITION_CONTROL_E_ERROR;
+#ifdef DEBUG_BASIC_MOVES
+    bluetoothWaitReady();
+    bluetoothPrintf("\rMOVE U TURN");
+#endif
 
     // memorize wall presence before move HALF CELL IN
     if (getWallPresence(RIGHT_WALL) == TRUE)
@@ -501,10 +493,6 @@ int moveUTurn(double speed_rotation, double max_speed, double out_speed)
     repositionGetFrontDist(&offset.frontCal);
     moveOffsetDist(&offset, out_speed);
 
-#ifdef DEBUG_BASIC_MOVES
-    bluetoothWaitReady();
-    bluetoothPrintf("\rMOVE U TURN");
-#endif
     return POSITION_CONTROL_E_SUCCESS;
 }
 
@@ -561,20 +549,30 @@ void movesTest1()
     moveStartCell(Vmax, Vmax);
     moveCell(1, Vmax, Vout);
     moveRotateCCW90(Vrotate, Vout);
+    moveRotateCCW90(Vrotate, Vout);
+    moveUTurn(Vrotate, Vmax, Vout);
+    moveRotateCW90(Vrotate, Vout);
+    moveRotateCW90(Vrotate, Vout);
+    moveCell(1, Vmax, Vout);
     moveUTurn(Vrotate, Vmax, Vout);
     moveCell(1, Vmax, Vout);
-    moveRotateCCW90(Vrotate, Vout);
-    moveRotateCCW90(Vrotate, Vout);
-    moveCell(1, Vmax, Vout);
-    moveUTurn(Vrotate, Vmax, Vout);
-    moveCell(1, Vmax, Vout);
-    moveRotateCW90(Vrotate, Vout);
-    moveRotateCW90(Vrotate, Vout);
-    moveRotateCCW90(Vrotate, Vout);
-    moveCell(1, Vmax, Vout);
-    moveRotateCW90(Vrotate, Vout);
-    moveRotateCW90(Vrotate, Vout);
-    moveUTurn(Vrotate, Vmax, Vout);
+//    moveStartCell(Vmax, Vmax);
+//    moveCell(1, Vmax, Vout);
+//    moveRotateCCW90(Vrotate, Vout);
+//    moveUTurn(Vrotate, Vmax, Vout);
+//    moveCell(1, Vmax, Vout);
+//    moveRotateCCW90(Vrotate, Vout);
+//    moveRotateCCW90(Vrotate, Vout);
+//    moveCell(1, Vmax, Vout);
+//    moveUTurn(Vrotate, Vmax, Vout);
+//    moveCell(1, Vmax, Vout);
+//    moveRotateCW90(Vrotate, Vout);
+//    moveRotateCW90(Vrotate, Vout);
+//    moveRotateCCW90(Vrotate, Vout);
+//    moveCell(1, Vmax, Vout);
+//    moveRotateCW90(Vrotate, Vout);
+//    moveRotateCW90(Vrotate, Vout);
+//    moveUTurn(Vrotate, Vmax, Vout);
     //    moveRotateCW90(Vrotate, Vout);
     //    moveRotateCCW90(Vrotate, Vout);
     //    moveRotateCCW90(Vrotate, Vout);

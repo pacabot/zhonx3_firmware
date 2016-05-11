@@ -16,9 +16,9 @@
 /**************************************************************************************/
 #define HI_TIME_FREQ			    (20000.00) 	        //use for master inner loop
 #define LOW_TIME_FREQ               (100.00)              //low inner loop
-#define CONTROL_TIME_FREQ           (1800.00)             //use for control inner loop
+#define CONTROL_TIME_FREQ           (1000.00)             //use for control inner loop
 #define LINE_FOLLOWER_TIME_FREQ     (1000.00)             //use for line follower inner loop
-#define TELEMETERS_TIME_FREQ        ((2000.00) * (10.00))   //each telemeter use 1/10 of TELEMETERS_TIME_FREQ
+#define TELEMETERS_TIME_FREQ        ((1600.00) * (10.00))   //each telemeter use 1/10 of TELEMETERS_TIME_FREQ
 #define GYRO_TIME_FREQ			    (4300.00)            //for adc injected freq
 #define LINESENSORS_TIME_FREQ	    (4000.00)             //line sensor measure frequency
 #define MULTIMMETER_TIME_FREQ       (0.10)                //multimeter inner loop
@@ -122,7 +122,7 @@
 /**************************************************************************************/
 /***************                  Moves Constants                  ********************/
 /**************************************************************************************/
-#define OFFSET_DIST             (10.00)
+#define OFFSET_DIST             (15.00)
 #define MAIN_DIST               ((CELL_LENGTH) - ((OFFSET_DIST) * (2.00)))
 
 /**************************************************************************************/
@@ -133,7 +133,7 @@
 //#define MAX_DECEL				(8000.0)	//mm/s/s
 
 #define MAX_TURN_SPEED			(500.00)	//mm/s
-#define MAX_TURN_ACCEL			(4000.00)	    //°/s/s
+#define MAX_TURN_ACCEL			(2000.00)	    //°/s/s
 
 /**************************************************************************************/
 /***************                 Motors Constants                  ********************/
