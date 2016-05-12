@@ -207,20 +207,22 @@ int maze_solver_run ()
 
     mainControlSetFollowType(WALL_FOLLOW);
     positionControlSetPositionType(GYRO);
+    memcpy(&zhonx_position, &start_position,sizeof(positionRobot));
 
 #if defined ZHONX3
-    telemetersStart();
-    ssd1306ClearScreen(MAIN_AREA);
-    ssd1306PrintfAtLine(30, 0, &Font_5x8, "WAIT START...");
-    ssd1306Refresh();
+        telemetersStart();
+        ssd1306ClearScreen(MAIN_AREA);
+        ssd1306PrintfAtLine(30, 0, &Font_5x8, "WAIT START...");
+        ssd1306Refresh();
 #endif
-    waitStart();
+        waitStart();
+#if defined ZHONX3
+        loadMaze(&maze, &start_position, &end_coordinate);
+        ssd1306ClearScreen(MAIN_AREA);
+        ssd1306PrintfAtLine(30, 0, &Font_5x8, "RUN...");
+        ssd1306Refresh();
+#endif
 
-    loadMaze(&maze, &start_position, &end_coordinate);
-    ssd1306ClearScreen(MAIN_AREA);
-    ssd1306PrintfAtLine(30, 0, &Font_5x8, "RUN...");
-    ssd1306Refresh();
-    memcpy(&zhonx_position, &start_position,sizeof(positionRobot));
     run1(&maze, &zhonx_position,
          start_position.coordinate_robot,
          end_coordinate);

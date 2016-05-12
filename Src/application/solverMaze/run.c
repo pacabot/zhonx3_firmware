@@ -33,14 +33,13 @@ void run1(labyrinthe *maze, positionRobot *positionZhonx, coordinate start_oordi
     do
     {
         choice = -1;
-        waitStart();
         goToPosition(maze, positionZhonx, end_coordinate);
-//		if(zhonxSettings.calibration_enabled == true)
-//			calibrateSimple();
+        //		if(zhonxSettings.calibration_enabled == true)
+        //			calibrateSimple();
         HAL_Delay(2000);
         goToPosition(maze, positionZhonx, start_oordinate);
-//		if(zhonxSettings.calibration_enabled == true)
-//			calibrateSimple();
+        //		if(zhonxSettings.calibration_enabled == true)
+        //			calibrateSimple();
         doUTurn(positionZhonx);
 
         ssd1306ClearScreen(MAIN_AREA);
@@ -76,12 +75,12 @@ void run2(labyrinthe *maze, positionRobot *positionZhonx, coordinate start_oordi
         waitStart();
         moveVirtualZhonx(*maze, *positionZhonx, way, end_coordinate);
         moveRealZhonxArc(maze, positionZhonx, way);
-//		if(zhonxSettings.calibration_enabled == true)
-//			calibrateSimple();
+        //		if(zhonxSettings.calibration_enabled == true)
+        //			calibrateSimple();
         HAL_Delay(2000);
         goToPosition(maze, positionZhonx, start_oordinate);
-//		if(zhonxSettings.calibration_enabled == true)
-//			calibrateSimple();
+        //		if(zhonxSettings.calibration_enabled == true)
+        //			calibrateSimple();
         doUTurn(positionZhonx);
         ssd1306ClearScreen(MAIN_AREA);
         ssd1306DrawStringAtLine(10, 0, "press \"RIGHT\" to ", &Font_5x8);
