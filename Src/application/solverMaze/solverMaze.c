@@ -183,7 +183,7 @@ int maze_solver_new_maze(void)
 #ifdef ZHONX3
     bluetoothPrintf("uturn do\ngo back");
     mainControlSetFollowType(NO_FOLLOW);
-    move (0, -CELL_LENGTH/2, 50, 0);
+    move (0, -CELL_LENGTH/2, 20, 0);
     motorsDriverSleep(ON);
 #endif
 #ifdef ZHONX2
@@ -215,6 +215,7 @@ int maze_solver_run ()
     mainControlSetFollowType(WALL_FOLLOW);
     positionControlSetPositionType(GYRO);
     motorsDriverSleep(ON);
+    telemetersStart();
 
     loadMaze(&maze, &start_position, &end_coordinate);
     memcpy(&zhonx_position, &start_position,sizeof(positionRobot));
@@ -228,7 +229,7 @@ int maze_solver_run ()
 
     #ifdef ZHONX3
         HAL_Delay(100);
-        motorsDriverSleep(OFF);
+        motorsDriverSleep(ON);
     #endif
     #ifdef ZHONX2
         hal_step_motor_disable();
@@ -254,7 +255,6 @@ int exploration(labyrinthe *maze, positionRobot* positionZhonx,
         if (rv != MAZE_SOLVER_E_SUCCESS)
         {
 #ifdef ZHONX3
-            telemetersStop();
             moveStop();
             motorsDriverSleep(ON);
             bluetoothWaitReady();
@@ -282,7 +282,6 @@ int exploration(labyrinthe *maze, positionRobot* positionZhonx,
         if (rv != MAZE_SOLVER_E_SUCCESS)
         {
 #ifdef ZHONX3
-            telemetersStop();
             moveStop();
             motorsDriverSleep(ON);
             bluetoothWaitReady();
