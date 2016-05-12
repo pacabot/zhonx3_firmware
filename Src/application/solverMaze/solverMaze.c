@@ -85,9 +85,9 @@
 #include "solverMaze.h"
 #include <stdlib.h>
 #ifdef __cplusplus
-    #include <cstdlib>
+#include <cstdlib>
 #else
-    #include <stdlib.h>
+#include <stdlib.h>
 #endif
 #include <SDL/SDL.h>
 #include "run.h"
@@ -128,21 +128,23 @@ int maze_solver_new_maze(void)
     memcpy(&start_position, &zhonx_position, sizeof(positionRobot));
     start_position.orientation += 2;
     start_position.orientation = start_position.orientation % 4;
-    #if defined ZHONX3 || defined SIMULATOR
-        start_position.midOfCell = false;
-    #elif defined ZHONX2
-        start_position.midOfCell = true;
-    #endif
+#if defined ZHONX3 || defined SIMULATOR
+    start_position.midOfCell = false;
+#elif defined ZHONX2
+    start_position.midOfCell = true;
+#endif
     //newCell(ask_cell_state(), &maze, start_position);
     newCell((walls){WALL_PRESENCE,WALL_PRESENCE,WALL_PRESENCE,WALL_PRESENCE}, &maze, start_position);
     memcpy(&start_position, &zhonx_position, sizeof(positionRobot));
 
- //   printLength(maze,8,8);
- //   printMaze(maze, zhonx_position.coordinate_robot);
-    #if defined ZHONX3
-        telemetersStart();
-        ssd1306PrintfAtLine(30, 0, &Font_5x8, "WAIT START...");
-    #endif
+    //   printLength(maze,8,8);
+    //   printMaze(maze, zhonx_position.coordinate_robot);
+#if defined ZHONX3
+    telemetersStart();
+    ssd1306ClearScreen(MAIN_AREA);
+    ssd1306PrintfAtLine(30, 0, &Font_5x8, "WAIT START...");
+    ssd1306Refresh();
+#endif
     waitStart();
 #ifdef ZHONX3
     ssd1306ClearScreen(MAIN_AREA);
@@ -162,7 +164,7 @@ int maze_solver_new_maze(void)
 
     exploration(&maze, &zhonx_position, &start_position, &end_coordinate); //make exploration for go from the robot position and the end of the maze
 #ifdef ZHONX3
-//    HAL_Delay(200);
+    //    HAL_Delay(200);
     rv=saveMaze(&maze, &start_position, &end_coordinate);
     if (rv != FLASH_DRIVER_E_SUCCESS)
     {
@@ -205,35 +207,44 @@ int maze_solver_run ()
 
     mainControlSetFollowType(WALL_FOLLOW);
     positionControlSetPositionType(GYRO);
-    motorsDriverSleep(ON);
+
+#if defined ZHONX3
     telemetersStart();
+    ssd1306ClearScreen(MAIN_AREA);
+    ssd1306PrintfAtLine(30, 0, &Font_5x8, "WAIT START...");
+    ssd1306Refresh();
+#endif
+    waitStart();
 
     loadMaze(&maze, &start_position, &end_coordinate);
+    ssd1306ClearScreen(MAIN_AREA);
+    ssd1306PrintfAtLine(30, 0, &Font_5x8, "RUN...");
+    ssd1306Refresh();
     memcpy(&zhonx_position, &start_position,sizeof(positionRobot));
     run1(&maze, &zhonx_position,
-                 start_position.coordinate_robot,
-                 end_coordinate);
+         start_position.coordinate_robot,
+         end_coordinate);
 
     run2(&maze, &zhonx_position,
-                 start_position.coordinate_robot,
-                 end_coordinate);
+         start_position.coordinate_robot,
+         end_coordinate);
 
-    #ifdef ZHONX3
-        HAL_Delay(100);
-        motorsDriverSleep(ON);
-    #endif
-    #ifdef ZHONX2
-        hal_step_motor_disable();
-    #endif
-        return MAZE_SOLVER_E_SUCCESS;
+#ifdef ZHONX3
+    HAL_Delay(100);
+    motorsDriverSleep(ON);
+#endif
+#ifdef ZHONX2
+    hal_step_motor_disable();
+#endif
+    return MAZE_SOLVER_E_SUCCESS;
 }
 
 int exploration(labyrinthe *maze, positionRobot* positionZhonx,
-        const positionRobot *start_coordinates, coordinate *end_coordinate)
+                const positionRobot *start_coordinates, coordinate *end_coordinate)
 {
     int rv = MAZE_SOLVER_E_SUCCESS;
     coordinate way[MAZE_SIZE * MAZE_SIZE] = { { -1, -1 }, { END_OF_LIST,
-    END_OF_LIST } };
+            END_OF_LIST } };
     coordinate last_coordinate;
     poids(maze, positionZhonx->coordinate_robot, true, false);
 
@@ -299,7 +310,7 @@ int exploration(labyrinthe *maze, positionRobot* positionZhonx,
         clearMazelength(maze);
         poids(maze, positionZhonx->coordinate_robot, true, false);
         printLength(*maze, positionZhonx->coordinate_robot.x,
-                positionZhonx->coordinate_robot.y);
+                    positionZhonx->coordinate_robot.y);
     }
 #ifdef ZHONX2
     if (zhonx_settings.calibration_enabled==true)
@@ -349,7 +360,7 @@ int exploration(labyrinthe *maze, positionRobot* positionZhonx,
 }
 
 int goToPosition(labyrinthe *maze, positionRobot* positionZhonx,
-        coordinate end_coordinate)
+                 coordinate end_coordinate)
 {
     coordinate way[MAZE_SIZE * MAZE_SIZE];
     int rv;
@@ -382,7 +393,7 @@ int goToPosition(labyrinthe *maze, positionRobot* positionZhonx,
 }
 
 int moveVirtualZhonx(labyrinthe maze, positionRobot positionZhonxVirtuel,
-        coordinate way[], coordinate end_coordinate)
+                     coordinate way[], coordinate end_coordinate)
 {
     int i = 0;
     while (positionZhonxVirtuel.coordinate_robot.x != end_coordinate.x
@@ -509,11 +520,11 @@ int moveRealZhonxArc(labyrinthe *maze, positionRobot *positionZhonx,
             chain = false;
         else
             chain = true;
-        #if defined ZHONX3 | defined SIMULATOR
-            move_zhonx(orientaionToGo, positionZhonx, nb_move, false, true);
-        #elif defined ZHONX2
-            move_zhonx_arc(orientaionToGo, positionZhonx, nb_move, !chain, chain); // TODO : modify that
-        #endif
+#if defined ZHONX3 | defined SIMULATOR
+        move_zhonx(orientaionToGo, positionZhonx, nb_move, false, true);
+#elif defined ZHONX2
+        move_zhonx_arc(orientaionToGo, positionZhonx, nb_move, !chain, chain); // TODO : modify that
+#endif
         cell_state = getCellState();
         newCell(cell_state, maze, *positionZhonx);
 
@@ -524,7 +535,7 @@ int moveRealZhonxArc(labyrinthe *maze, positionRobot *positionZhonx,
 }
 
 void poids(labyrinthe *maze, coordinate end_coordinate, char wallNoKnow,
-        char contournKnownCell)
+           char contournKnownCell)
 {
     int i1 = 0, i2 = 0;
     int length = 0;
@@ -655,69 +666,69 @@ void printMaze(labyrinthe maze, coordinate robot_coordinate)
             if (maze.cell[x][y].wall_north == WALL_PRESENCE)
             {
                 ssd1306DrawLine(x * size_cell_on_oled,
-                        y * size_cell_on_oled + HEAD_MARGIN,
-                        x * size_cell_on_oled + size_cell_on_oled + 1,
-                        y * size_cell_on_oled + HEAD_MARGIN);
+                                y * size_cell_on_oled + HEAD_MARGIN,
+                                x * size_cell_on_oled + size_cell_on_oled + 1,
+                                y * size_cell_on_oled + HEAD_MARGIN);
             }
             else if (maze.cell[x][y].wall_north == NO_KNOWN)
             {
                 ssd1306DrawDashedLine(x * size_cell_on_oled,
-                        y * size_cell_on_oled + HEAD_MARGIN,
-                        x * size_cell_on_oled + size_cell_on_oled + 1,
-                        y * size_cell_on_oled + HEAD_MARGIN);
+                                      y * size_cell_on_oled + HEAD_MARGIN,
+                                      x * size_cell_on_oled + size_cell_on_oled + 1,
+                                      y * size_cell_on_oled + HEAD_MARGIN);
             }
             if (maze.cell[x][y].wall_west == WALL_PRESENCE)
             {
                 ssd1306DrawLine(x * size_cell_on_oled,
-                        y * size_cell_on_oled + HEAD_MARGIN,
-                        x * size_cell_on_oled,
-                        (y + 1) * size_cell_on_oled
-                        + HEAD_MARGIN + 1);
+                                y * size_cell_on_oled + HEAD_MARGIN,
+                                x * size_cell_on_oled,
+                                (y + 1) * size_cell_on_oled
+                                + HEAD_MARGIN + 1);
             }
             else if (maze.cell[x][y].wall_west == NO_KNOWN)
             {
                 ssd1306DrawDashedLine(x * size_cell_on_oled,
-                        y * size_cell_on_oled+ HEAD_MARGIN,
-                        x * size_cell_on_oled,
-                        (y + 1) * size_cell_on_oled
-                        + HEAD_MARGIN + 1);
+                                      y * size_cell_on_oled+ HEAD_MARGIN,
+                                      x * size_cell_on_oled,
+                                      (y + 1) * size_cell_on_oled
+                                      + HEAD_MARGIN + 1);
             }
             if (maze.cell[x][y].wall_south == WALL_PRESENCE)
             {
                 ssd1306DrawLine(x * size_cell_on_oled,
-                        (y+ 1) * size_cell_on_oled+ HEAD_MARGIN,
-                        size_cell_on_oled + x * size_cell_on_oled,
-                        (y+ 1) * size_cell_on_oled + HEAD_MARGIN);
+                                (y+ 1) * size_cell_on_oled+ HEAD_MARGIN,
+                                size_cell_on_oled + x * size_cell_on_oled,
+                                (y+ 1) * size_cell_on_oled + HEAD_MARGIN);
             }
             else if (maze.cell[x][y].wall_south == NO_KNOWN)
             {
                 ssd1306DrawDashedLine(x * size_cell_on_oled,
-                        (y + 1) * size_cell_on_oled + HEAD_MARGIN,
-                        size_cell_on_oled + x * size_cell_on_oled,
-                        (y + 1) * size_cell_on_oled + HEAD_MARGIN);
+                                      (y + 1) * size_cell_on_oled + HEAD_MARGIN,
+                                      size_cell_on_oled + x * size_cell_on_oled,
+                                      (y + 1) * size_cell_on_oled + HEAD_MARGIN);
             }
             if (maze.cell[x][y].wall_east == WALL_PRESENCE)
             {
                 ssd1306DrawLine((x + 1) * size_cell_on_oled,
-                        y * size_cell_on_oled + HEAD_MARGIN,
-                        (x + 1) * size_cell_on_oled,
-                        (y + 1) * size_cell_on_oled
-                        + HEAD_MARGIN + 1);
+                                y * size_cell_on_oled + HEAD_MARGIN,
+                                (x + 1) * size_cell_on_oled,
+                                (y + 1) * size_cell_on_oled
+                                + HEAD_MARGIN + 1);
             }
             else if (maze.cell[x][y].wall_east == NO_KNOWN)
             {
                 ssd1306DrawDashedLine((x + 1) * size_cell_on_oled,
-                        y * size_cell_on_oled + HEAD_MARGIN,
-                        (x + 1) * size_cell_on_oled,
-                        (y + 1) * size_cell_on_oled
-                        + HEAD_MARGIN + 1);
+                                      y * size_cell_on_oled + HEAD_MARGIN,
+                                      (x + 1) * size_cell_on_oled,
+                                      (y + 1) * size_cell_on_oled
+                                      + HEAD_MARGIN + 1);
             }
         }
     }
     printLength(maze, robot_coordinate.x, robot_coordinate.y);
     ssd1306DrawRect((robot_coordinate.x * size_cell_on_oled) + 1,
-            (robot_coordinate.y * size_cell_on_oled + HEAD_MARGIN) + 1, 2,
-            2);
+                    (robot_coordinate.y * size_cell_on_oled + HEAD_MARGIN) + 1, 2,
+                    2);
     ssd1306Refresh();
 }
 
@@ -864,7 +875,7 @@ int findArrival(labyrinthe maze, coordinate *end_coordinate)
     int possible_end_find_cost = CANT_GO;
     for (int x = 0; x < (MAZE_SIZE - 1); x++)
     {
-     for (int y = 0; y < (MAZE_SIZE - 1); ++y)
+        for (int y = 0; y < (MAZE_SIZE - 1); ++y)
         {
             if (maze.cell[x][y].wall_east == NO_WALL
                     && maze.cell[x][y].wall_south == NO_WALL
@@ -874,7 +885,7 @@ int findArrival(labyrinthe maze, coordinate *end_coordinate)
             {
                 end_coordinate->x = x;
                 end_coordinate->y = y;
-//                bluetoothPrintf("end find at : %i; %i\n", x, y);
+                //                bluetoothPrintf("end find at : %i; %i\n", x, y);
                 return MAZE_SOLVER_E_SUCCESS;
             }
             if (possible_end_find_cost
@@ -887,7 +898,7 @@ int findArrival(labyrinthe maze, coordinate *end_coordinate)
             {
                 //bluetoothPrintf("possible end find at : %i; %i\n", x, y);
                 if ((maze.cell[x][y].wall_east != NO_WALL
-                            || maze.cell[x][y].wall_south != NO_WALL)
+                        || maze.cell[x][y].wall_south != NO_WALL)
                         && maze.cell[x][y].length != 0
                         && maze.cell[x][y].length < possible_end_find_cost)
                 {
@@ -897,7 +908,7 @@ int findArrival(labyrinthe maze, coordinate *end_coordinate)
                             maze.cell[end_coordinate->x][end_coordinate->y].length;
                 }
                 if ((maze.cell[x + 1][y].wall_west != NO_WALL
-                            || maze.cell[x + 1][y].wall_south != NO_WALL)
+                        || maze.cell[x + 1][y].wall_south != NO_WALL)
                         && maze.cell[x+1][y].length != 0
                         && maze.cell[x+1][y].length < possible_end_find_cost)
                 {
@@ -907,7 +918,7 @@ int findArrival(labyrinthe maze, coordinate *end_coordinate)
                             maze.cell[end_coordinate->x][end_coordinate->y].length;
                 }
                 if ((maze.cell[x][y + 1].wall_east != NO_WALL
-                            || maze.cell[x][y + 1].wall_south != NO_WALL)
+                        || maze.cell[x][y + 1].wall_south != NO_WALL)
                         && maze.cell[x][y+1].length != 0
                         && maze.cell[x][y+1].length < possible_end_find_cost)
                 {
@@ -917,7 +928,7 @@ int findArrival(labyrinthe maze, coordinate *end_coordinate)
                             maze.cell[end_coordinate->x][end_coordinate->y].length;
                 }
                 if ((maze.cell[x + 1][y + 1].wall_west != NO_WALL
-                            || maze.cell[x + 1][y + 1].wall_south != NO_WALL)
+                        || maze.cell[x + 1][y + 1].wall_south != NO_WALL)
                         && maze.cell[x+1][y+1].length != 0
                         && maze.cell[x+1][y+1].length < possible_end_find_cost)
                 {
