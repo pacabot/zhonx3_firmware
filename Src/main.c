@@ -142,7 +142,7 @@ int main(void)
     positionControlSetPositionType(GYRO);
     mainControlSetFollowType(NO_FOLLOW);
 
-    toneSetVolulme(100);
+    toneSetVolulme(5);
     tone(F4, 50);
     toneItMode(A4, 50);
 

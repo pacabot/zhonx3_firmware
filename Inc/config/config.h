@@ -22,7 +22,7 @@
 #define GYRO_TIME_FREQ			    (3500.00)            //for adc injected freq
 #define LINESENSORS_TIME_FREQ	    (4000.00)             //line sensor measure frequency
 #define MULTIMMETER_TIME_FREQ       (0.10)                //multimeter inner loop
-#define MOTORS_FREQ				    (33000.00)	        //motor pwm freq
+#define MOTORS_FREQ				    (23000.00)	        //motor pwm freq
 
 /**************************************************************************************/
 /***************                 Gyro definitions                  ********************/

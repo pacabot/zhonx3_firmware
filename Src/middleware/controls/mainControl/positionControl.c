@@ -44,6 +44,7 @@
 typedef struct
 {
     double angle_consign;	    //total angle
+    double anglar_acc_per_loop;
     double angle_per_loop;
     double max_speed;
     int nb_loop;
@@ -86,9 +87,9 @@ int positionControlInit(void)
     memset(&position_params, 0, sizeof(position_params_struct));
     positionProfileCompute(0, 0, 0);
 
-    gyro_pid_instance.Kp = 100;
-    gyro_pid_instance.Ki = 0;
-    gyro_pid_instance.Kd = 2000;
+    gyro_pid_instance.Kp = 120;
+    gyro_pid_instance.Ki = 0.01;
+    gyro_pid_instance.Kd = 3000;
 
     //    gyro_pid_instance.Kp = zhonxCalib_data->pid_gyro.Kp;
     //    gyro_pid_instance.Ki = zhonxCalib_data->pid_gyro.Ki / CONTROL_TIME_FREQ;
@@ -169,15 +170,23 @@ int positionControlLoop(void)
     if (mainControlGetWallFollowType() == ROTATE_IN_PLACE)
     {
         position_control.nb_loop++;
-        if (position_control.nb_loop < (position_params.nb_loop / 2))
+        //        if (position_control.nb_loop < (position_params.nb_loop / 2))
+        if (position_control.current_angle_consign < (position_params.angle_consign / 2.00))
         {
-            position_control.current_angular_speed += MAX_TURN_ACCEL / CONTROL_TIME_FREQ;
+            position_control.current_angular_speed += position_params.anglar_acc_per_loop;
             position_control.current_angle_consign += position_control.current_angular_speed / CONTROL_TIME_FREQ;
         }
-        else if (position_control.nb_loop < position_params.nb_loop)
+        else if (position_control.current_angle_consign < position_params.angle_consign)
         {
-            position_control.current_angular_speed -= MAX_TURN_ACCEL / CONTROL_TIME_FREQ;
-            position_control.current_angle_consign += position_control.current_angular_speed / CONTROL_TIME_FREQ;
+            position_control.current_angular_speed -= position_params.anglar_acc_per_loop;
+            if (position_control.current_angular_speed > 0)
+            {
+                position_control.current_angle_consign += position_control.current_angular_speed / CONTROL_TIME_FREQ;
+            }
+            else
+            {
+                position_control.current_angle_consign = position_params.angle_consign;
+            }
         }
         else
         {
@@ -286,10 +295,13 @@ double positionProfileCompute(double angle, double loop_time, double max_turn_sp
     if (lround(loop_time) == 0)
     {
         loop_time = (2.00 * sqrt(angle / MAX_TURN_ACCEL)) * CONTROL_TIME_FREQ;
+        //loop_time = 2.00 * (sqrt(2.00) * (sqrt((angle / 2.00) * MAX_TURN_ACCEL))) / (MAX_TURN_ACCEL) * CONTROL_TIME_FREQ;
         //       loop_time = (angle / max_turn_speed) * CONTROL_TIME_FREQ;
     }
 
+    position_params.angle_consign = angle;
     position_params.nb_loop = (int)loop_time;
+    position_params.anglar_acc_per_loop = ((2.00 * (angle / 2.00)) / (pow(position_params.nb_loop / 2.00, 2))) * CONTROL_TIME_FREQ;
     position_params.angle_per_loop = angle / (double)position_params.nb_loop;
 
     return (position_params.nb_loop);

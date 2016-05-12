@@ -191,7 +191,7 @@ int moveEmergencyStop(void)
 int move(double angle, double radius_or_distance, double max_speed, double end_speed)
 {
     double distance;
-//    pid_loop.start_state = FALSE; //stop contol loop
+    pid_loop.start_state = FALSE; //stop contol loop
 
     encodersReset();
     gyroResetAngle();
@@ -262,8 +262,8 @@ char hasMoveEnded(void)
     if ((positionControlHasMoveEnded() == TRUE && speedControlHasMoveEnded() == TRUE) ||
             pid_loop.start_state == FALSE)
     {
-//        pid_loop.start_state = FALSE;
-//        motorsDriverSleep(ON);
+        pid_loop.start_state = FALSE;
+        motorsDriverSleep(ON);
         return TRUE;
     }
     return FALSE;

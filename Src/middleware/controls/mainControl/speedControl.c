@@ -189,57 +189,54 @@ int speedCompute(void)
 /*!
  ***BASICS FORMULAS***
 
- _____________
- / 2 x  Acc x d
- t = v______________	//without initial speed
- Acc
+       ___   _________
+      / 2 x / Acc x d
+ t = v_____v__________  //without initial speed
+            Acc
 
- __________________
- - Vi + / Vi²+ 2 x Acc x d
- t = ______v___________________	//with initial speed
- Acc
+             __________________
+     - Vi + / Vi²+ 2 x Acc x d
+ t = ______v___________________ //with initial speed
+                 Acc
 
- 1	  -Vi²+Vf²
- d = ---	x --------
- 2      Acc
+         V²
+ d =   -----
+       2.Acc
 
- V²
- d = -----
- 2.Acc
-
- 1
+      1
  d = --- Acc x t²
- 2
+      2
 
- 1
+               1
  d = Vi x t + --- Acc x t²
- 2
+               2
 
- Vf = Vi + Acc x t 	//instantaneous speed
+ Vf = Vi + Acc x t  //instantaneous speed
 
- Vi + Vf
- V = -------			//average speed
- 2
+     Vi + Vf
+ V = -------            //average speed
+        2
 
- 2.d
+        2.d
  Acc = -----
- t²
+         t²
 
  d = V x t
 
  V = Vi + (Acc x t)
- ________________________
- / 1 \             / 1 \	 /
- v =  |---| x t x Acc + |---| x  V t² x Acc² - 4 x Acc x d	//v = f(t,d,Acc)
- \ 2 /			   \ 2 /
+                                   ________________________
+      / 1 \             / 1 \     /
+ v =  |---| x t x Acc + |---| x  V t² x Acc² - 4 x Acc x d  //v = f(t,d,Acc)
+      \ 2 /             \ 2 /
 
- -2(t.Vi-d)
+        -2(t.Vi-d)
  Acc = ------------
- t²
+            t²
 
- 2(t.Vi-d)
+         2(t.Vi-d)
  Dcc = ------------
- t²
+             t²
+
  */
 /**************************************************************************/
 double speedProfileCompute(double distance, double max_speed, double end_speed, double accel)
