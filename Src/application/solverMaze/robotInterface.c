@@ -442,7 +442,7 @@ int saveMaze(labyrinthe *maze, positionRobot *start_position, coordinate  *end_c
 
         // Initialize maze counter
 
-        ssd1306PrintfAtLine(0, 1, &Font_5x8, "Saving maze counter...");
+        ssd1306PrintfAtLine(0, 1, &Font_3x6, "Saving maze counter...");
         ssd1306Refresh();
 
         cnt_mazes = 1;
@@ -450,27 +450,27 @@ int saveMaze(labyrinthe *maze, positionRobot *start_position, coordinate  *end_c
                                                 (unsigned char *)&cnt_mazes, sizeof(int));
         if (rv != FLASH_DRIVER_E_SUCCESS)
         {
-            ssd1306PrintfAtLine(0, 2, &Font_5x8, "Failed to save maze counter!");
+            ssd1306PrintfAtLine(0, 2, &Font_3x6, "Failed to save maze counter!");
             ssd1306Refresh();
             return rv;
         }
-        ssd1306PrintfAtLine(0, 2, &Font_5x8, "Maze counter save successfully");
+        ssd1306PrintfAtLine(0, 2, &Font_3x6, "Maze counter save successfully");
         ssd1306Refresh();
 
         // Store maze
-        ssd1306PrintfAtLine(0, 3, &Font_5x8, "Saving maze...");
+        ssd1306PrintfAtLine(0, 3, &Font_3x6, "Saving maze...");
         ssd1306Refresh();
 
         rv = flash_write(zhonxSettings.h_flash, (unsigned char *)&(stored_mazes->mazes[selected_maze].maze),
                                                 (unsigned char *)&maze_container, sizeof(MAZE_CONTAINER));
         if (rv != FLASH_DRIVER_E_SUCCESS)
         {
-            ssd1306PrintfAtLine(0, 4, &Font_5x8, "Failed to save maze!");
+            ssd1306PrintfAtLine(0, 4, &Font_3x6, "Failed to save maze!");
             ssd1306Refresh();
             bluetoothPrintf("Failed to save maze!");
             return rv;
         }
-        ssd1306PrintfAtLine(0, 4, &Font_5x8, "Maze saved successfully");
+        ssd1306PrintfAtLine(0, 4, &Font_3x6, "Maze saved successfully");
         ssd1306Refresh();
 #if 0
     }
@@ -487,7 +487,7 @@ int loadMaze(labyrinthe *maze, positionRobot *start_position, coordinate  *end_c
     // Check if there is at least one stored maze in flash memory
     if ((stored_mazes->count_stored_mazes < 0) || (stored_mazes->count_stored_mazes > MAX_STORABLE_MAZES))
     {
-        ssd1306PrintfAtLine(0, 1, &Font_5x8, "Invalid stored mazes counter");
+        ssd1306PrintfAtLine(0, 1, &Font_3x6, "Invalid stored mazes counter");
         ssd1306Refresh();
         return MAZE_SOLVER_E_ERROR;
     }
@@ -495,7 +495,7 @@ int loadMaze(labyrinthe *maze, positionRobot *start_position, coordinate  *end_c
     // Get the first maze slot
     memcpy(&maze_container, &(stored_mazes->mazes[0]), sizeof(MAZE_CONTAINER));
 
-    ssd1306PrintfAtLine(0, 1, &Font_5x8, "Maze restored successfully");
+    ssd1306PrintfAtLine(0, 1, &Font_3x6, "Maze restored successfully");
     ssd1306Refresh();
 
     memcpy(maze, &(maze_container.maze), sizeof(labyrinthe));

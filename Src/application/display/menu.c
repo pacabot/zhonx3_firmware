@@ -106,7 +106,7 @@ const menuItem maze_menu=
 		"MAZE",         //9 characters max
 		{
                 {"New maze",    'f',    (void*)maze_solver_new_maze},
-                {"New maze",    'f',    (void*)maze_solver_run},
+                {"Run",         'f',    (void*)maze_solver_run},
                 {"Test_maze",   'f',    (void*)test_move_zhonx},
 				{"Calibration", 'b',    (void*)&zhonxSettings.calibration_enabled},
 				{"Color finish",'b',	(void*)&zhonxSettings.nime_competition},
