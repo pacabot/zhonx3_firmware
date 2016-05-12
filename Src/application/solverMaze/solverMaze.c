@@ -97,7 +97,6 @@
 #include "pcf8574.h"
 #endif // simulator
 
-
 /*
  *  ********************** int maze (void) **********************
  *  this function is the main function of the maze solver
@@ -108,6 +107,7 @@ int maze_solver_new_maze(void)
     coordinate end_coordinate; // it's the coordinates which Zhonx have at the start
     positionRobot zhonx_position, start_position;
     labyrinthe maze;
+    int rv;
     mazeInit(&maze);
 #ifdef ZHONX3
     mainControlSetFollowType(WALL_FOLLOW);
@@ -161,9 +161,11 @@ int maze_solver_new_maze(void)
 
     exploration(&maze, &zhonx_position, &start_position, &end_coordinate); //make exploration for go from the robot position and the end of the maze
 #ifdef ZHONX3
-    HAL_Delay(100);
-    telemetersStop();
-    motorsDriverSleep(ON);
+    HAL_Delay(200);
+    rv=saveMaze(&maze, &start_position, &end_coordinate);
+    if (rv != FLASH_DRIVER_E_SUCCESS)
+    {
+    }
 #endif
     ssd1306Printf(10,10,&Font_7x8,"go to start position");
     ssd1306Refresh();
@@ -173,25 +175,15 @@ int maze_solver_new_maze(void)
         HAL_Delay(1000);
         calibrateSimple();
     }
-    hal_step_motor_disable();
-#endif
-    HAL_Delay(5000);
-#ifdef ZHONX3
-    telemetersStart();
-    motorsDriverSleep(OFF);
-#endif
-#ifdef ZHONX2
-    hal_step_motor_enable();
 #endif
     goToPosition(&maze, &zhonx_position, start_position.coordinate_robot);	//goto start position
+    // Save maze into flash memory
+
     doUTurn(&zhonx_position);
 #ifdef ZHONX3
     bluetoothPrintf("uturn do\ngo back");
     mainControlSetFollowType(NO_FOLLOW);
-    move (0, -CELL_LENGTH, 50, 0);
-    while(hasMoveEnded());
-    HAL_Delay(1000);
-    mainControlSetFollowType(WALL_FOLLOW);
+    move (0, -CELL_LENGTH/2, 50, 0);
     motorsDriverSleep(ON);
 #endif
 #ifdef ZHONX2
@@ -203,11 +195,10 @@ int maze_solver_new_maze(void)
     hal_step_motor_disable();
 #endif
 
-    // Save maze into flash memory
-    saveMaze(&maze, &start_position, &end_coordinate);
+
 #ifdef ZHONX3
-    HAL_Delay(100);
-    motorsDriverSleep(OFF);
+    HAL_Delay(1000);
+    motorsDriverSleep(ON);
 #endif
 #ifdef ZHONX2
     hal_step_motor_disable();
@@ -299,7 +290,7 @@ int exploration(labyrinthe *maze, positionRobot* positionZhonx,
             hal_step_motor_disable();
 #elif defined SIMULATOR
             bluetoothPrintf("Error way : position zhonx x= %d y=%d \t way x= %d y=%d \n",
-                            positionZhonx->coordinate_robot.x,positionZhonx->coordinate_robot.y, way[i].x, way[i].y);
+                            positionZhonx->coordinate_robot.x,positionZhonx->coordinate_robot.y, way[0].x, way[0].y);
 #endif
 #ifdef ZHONX3
             tone(D4, 200);
@@ -505,7 +496,7 @@ int moveRealZhonxArc(labyrinthe *maze, positionRobot *positionZhonx,
         }
         else
         {
-#ifdef ZHONX3
+#if defined ZHONX3 || defined SIMULATOR
             bluetoothWaitReady();
             bluetoothPrintf("Error way : position zhonx x= %d y=%d \t way x= %d y=%d \n",
                             positionZhonx->coordinate_robot.x,positionZhonx->coordinate_robot.y, way[i].x, way[i].y);
@@ -935,7 +926,7 @@ int findArrival(labyrinthe maze, coordinate *end_coordinate)
                 }
                 if ((maze.cell[x + 1][y + 1].wall_west != NO_WALL
                             || maze.cell[x + 1][y + 1].wall_south != NO_WALL)
-                        && maze.cell[x][y+1].length != 0
+                        && maze.cell[x+1][y+1].length != 0
                         && maze.cell[x+1][y+1].length < possible_end_find_cost)
                 {
                     end_coordinate->x = x + 1;

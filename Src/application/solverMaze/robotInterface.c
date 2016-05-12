@@ -467,6 +467,7 @@ int saveMaze(labyrinthe *maze, positionRobot *start_position, coordinate  *end_c
         {
             ssd1306PrintfAtLine(0, 4, &Font_5x8, "Failed to save maze!");
             ssd1306Refresh();
+            bluetoothPrintf("Failed to save maze!");
             return rv;
         }
         ssd1306PrintfAtLine(0, 4, &Font_5x8, "Maze saved successfully");
