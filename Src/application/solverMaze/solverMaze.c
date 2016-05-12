@@ -137,10 +137,11 @@ int maze_solver_new_maze(void)
     newCell((walls){WALL_PRESENCE,WALL_PRESENCE,WALL_PRESENCE,WALL_PRESENCE}, &maze, start_position);
     memcpy(&start_position, &zhonx_position, sizeof(positionRobot));
 
-    printLength(maze,8,8);
-    printMaze(maze, zhonx_position.coordinate_robot);
+ //   printLength(maze,8,8);
+ //   printMaze(maze, zhonx_position.coordinate_robot);
     #if defined ZHONX3
         telemetersStart();
+        ssd1306PrintfAtLine(30, 0, &Font_5x8, "WAIT START...");
     #endif
     waitStart();
 #ifdef ZHONX3
@@ -182,9 +183,8 @@ int maze_solver_new_maze(void)
     doUTurn(&zhonx_position);
 #ifdef ZHONX3
     bluetoothPrintf("uturn do\ngo back");
-    mainControlSetFollowType(NO_FOLLOW);
-    move(0, -HALF_CELL_LENGTH, 20, 20);
     motorsDriverSleep(ON);
+    HAL_Delay(2000);
 #endif
 #ifdef ZHONX2
     if (zhonx_settings.calibration_enabled==true)
@@ -192,15 +192,6 @@ int maze_solver_new_maze(void)
         HAL_Delay(1000);
         calibrateSimple();
     }
-    hal_step_motor_disable();
-#endif
-
-
-#ifdef ZHONX3
-    HAL_Delay(1000);
-    motorsDriverSleep(ON);
-#endif
-#ifdef ZHONX2
     hal_step_motor_disable();
 #endif
     return MAZE_SOLVER_E_SUCCESS;

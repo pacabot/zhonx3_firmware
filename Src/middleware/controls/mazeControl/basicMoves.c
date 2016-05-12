@@ -496,6 +496,48 @@ int moveUTurn(double speed_rotation, double max_speed, double out_speed)
     return POSITION_CONTROL_E_SUCCESS;
 }
 
+/*       _________
+ *      o    _    o
+ *      :   /|)   :
+ *      :   \'    :
+ *      o    |    o
+ *           ^
+ */
+int moveResetStart(double speed_rotation, double max_speed, double out_speed)
+{
+    getOffsetsStruct offset;
+    memset(&offset, 0, sizeof(getOffsetsStruct));
+    wallSelectorEnum wall_presence = FALSE;
+
+#ifdef DEBUG_BASIC_MOVES
+    bluetoothWaitReady();
+    bluetoothPrintf("\rMOVE U TURN");
+#endif
+
+    // memorize wall presence before move HALF CELL IN
+    if (getWallPresence(RIGHT_WALL) == TRUE)
+    {
+        wall_presence = RIGHT_WALL;
+    }
+    else if (getWallPresence(LEFT_WALL) == TRUE)
+    {
+        wall_presence = LEFT_WALL;
+    }
+    // move HALF CELL IN
+    moveHalfCell_IN(max_speed, 0);
+    mainControlSetFollowType(NO_FOLLOW); //todo this is the shit
+    // chose the correct turn for re-calibrate the robot if possible
+    moveRotateInPlace180WithCal(wall_presence, speed_rotation);//speed_rotation);
+
+    // go back and go out for maximize correct alignment
+    while (hasMoveEnded() != TRUE);
+    repositionSetInitialPosition(HALF_CELL_LENGTH);
+    move(0, -1.00 * (HALF_CELL_LENGTH - Z3_CENTER_BACK_DIST - UTURN_OFFSET + 15), max_speed, 0);
+    while (hasMoveEnded() != TRUE);
+
+    return POSITION_CONTROL_E_SUCCESS;
+}
+
 /**************************************************************************************/
 /***************                    Tests Moves                    ********************/
 /**************************************************************************************/
