@@ -120,13 +120,15 @@ int maze_solver_new_maze(void)
         HAL_Delay(100);
         tone(B5, 50);
         HAL_Delay(50);
-        tone(B5, 400);
+        toneItMode(B5, 400);
     }
-
-//    rv=saveMaze(&maze, &start_position, &end_coordinate);
+    motorsDriverSleep(ON); //because flash write cause interrupts damages
+    telemetersStop();//because flash write cause interrupts damages
+    rv=saveMaze(&maze, &start_position, &end_coordinate);
     if (rv != FLASH_DRIVER_E_SUCCESS)
     {
     }
+    telemetersStart();//because flash write cause interrupts damages
     ssd1306PrintfAtLine(0,0,&Font_5x8,"go to start position");
     ssd1306Refresh();
     goToPosition(&maze, &zhonx_position, start_position.coordinate_robot);	//goto start position
