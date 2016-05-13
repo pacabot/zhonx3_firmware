@@ -205,7 +205,7 @@ int waitValidation(unsigned long timeout)
 
 void newCell(walls new_walls, labyrinthe *maze, positionRobot positionZhonx)
 {
-#ifdef DEBUG
+#ifdef PRINT_WALLS_DETECTED
 	print_cell_state(new_walls);
 #endif
     switch (positionZhonx.orientation)
