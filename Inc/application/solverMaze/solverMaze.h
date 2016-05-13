@@ -46,8 +46,9 @@
 #define MAX_SPEED_TRANSLATION   (500)
 #define END_SPEED_TRANSLATION	(500)
 
-// #define DEBUG 0
+//#define DEBUG 0
 //#define PRINT_MAZE
+//#define BLUETOOTH_DEGUG
 
 #define END_OF_LIST 255
 
@@ -96,6 +97,8 @@ typedef struct
 int maze_solver_new_maze(void);
 int exploration(labyrinthe *maze, positionRobot* positionZhonx,const positionRobot *start_coordinates,
         coordinate *end_coordinate);
+int findTheShortestPath(labyrinthe *maze, positionRobot* positionZhonx,
+                        const positionRobot *start_coordinates, coordinate *end_coordinate);
 int goToPosition(labyrinthe *maze, positionRobot* positionZhonx,  coordinate end_coordinate);
 int moveVirtualZhonx(labyrinthe maze, positionRobot positionZhonxVirtuel,
 		coordinate way[], coordinate end_coordinate);
