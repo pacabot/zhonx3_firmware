@@ -76,7 +76,7 @@ void move_zhonx(int direction_to_go, positionRobot *positionZhonx, int numberOfC
     int turn = (4 + direction_to_go - positionZhonx->orientation) % 4;
     positionZhonx->orientation = direction_to_go;
     #ifdef DEBUG_ROBOT_INTERFACE
-        if (positionZhonx->midOfCell == true)
+        if (positionZhonx->midOfCell == TRUE)
         {
             bluetoothWaitReady();
 			bluetoothPrintf("mid of cell ");
@@ -95,7 +95,7 @@ void move_zhonx(int direction_to_go, positionRobot *positionZhonx, int numberOfC
          * numberOfCell+=CELL_LENGTH/2;
          */
     }
-    else if (positionZhonx->midOfCell == true)
+    else if (positionZhonx->midOfCell == TRUE)
     {
         #ifdef DEBUG_ROBOT_INTERFACE
             bluetoothWaitReady();
@@ -104,7 +104,7 @@ void move_zhonx(int direction_to_go, positionRobot *positionZhonx, int numberOfC
         moveStartCell(MAX_SPEED_TRANSLATION, END_SPEED_TRANSLATION);
         numberOfCell--;
     }
-    else // so endMidOfCase=true and positionZhonx->midOfCase=false
+    else // so endMidOfCase=TRUE and positionZhonx->midOfCase=FALSE
     {
         //moveHalfCell_IN(MAX_SPEED_TRANSLATION, END_SPEED_TRANSLATION); //TODO : change that to end cell
     }
@@ -121,7 +121,7 @@ void move_zhonx(int direction_to_go, positionRobot *positionZhonx, int numberOfC
                 bluetoothWaitReady();
                 bluetoothPrintf("RIGHT\n");
             #endif
-            if (positionZhonx->midOfCell == true)
+            if (positionZhonx->midOfCell == TRUE)
             {
                 while (hasMoveEnded() != TRUE);				//todo rotate in place
                 move(90, 0, MAX_SPEED_ROTATION, 0);
@@ -137,7 +137,7 @@ void move_zhonx(int direction_to_go, positionRobot *positionZhonx, int numberOfC
                 bluetoothWaitReady();
 			bluetoothPrintf("UTURN\n");
             #endif
-            if (positionZhonx->midOfCell == false)
+            if (positionZhonx->midOfCell == FALSE)
             {
                 numberOfCell--;
                 moveUTurn(MAX_SPEED_ROTATION, MAX_SPEED_TRANSLATION,
@@ -154,7 +154,7 @@ void move_zhonx(int direction_to_go, positionRobot *positionZhonx, int numberOfC
                 bluetoothWaitReady();
 			bluetoothPrintf("LEFT\n");
             #endif
-            if (positionZhonx->midOfCell == true)
+            if (positionZhonx->midOfCell == TRUE)
             {
                 while (hasMoveEnded() != TRUE);
                 move(-90, 0, MAX_SPEED_ROTATION, 0); // TODO : rotate in place
@@ -211,7 +211,7 @@ void newCell(walls new_walls, labyrinthe *maze, positionRobot positionZhonx)
     switch (positionZhonx.orientation)
     {
         case NORTH:
-            if (positionZhonx.midOfCell == false)
+            if (positionZhonx.midOfCell == FALSE)
             {
                 maze->cell[(int) (positionZhonx.coordinate_robot.x)][(int) (positionZhonx.coordinate_robot.y)].wall_east =
                         new_walls.right;
@@ -235,7 +235,7 @@ void newCell(walls new_walls, labyrinthe *maze, positionRobot positionZhonx)
 
         case EAST:
 
-            if (positionZhonx.midOfCell == false)
+            if (positionZhonx.midOfCell == FALSE)
             {
                 maze->cell[(int) (positionZhonx.coordinate_robot.x)][(int) (positionZhonx.coordinate_robot.y)].wall_south =
                         new_walls.right;
@@ -259,7 +259,7 @@ void newCell(walls new_walls, labyrinthe *maze, positionRobot positionZhonx)
 
         case SOUTH:
 
-            if (positionZhonx.midOfCell == false)
+            if (positionZhonx.midOfCell == FALSE)
             {
                 maze->cell[(int) (positionZhonx.coordinate_robot.x)][(int) (positionZhonx.coordinate_robot.y)].wall_west =
                         new_walls.right;
@@ -281,7 +281,7 @@ void newCell(walls new_walls, labyrinthe *maze, positionRobot positionZhonx)
             break;
 
         case WEST:
-            if (positionZhonx.midOfCell == false)
+            if (positionZhonx.midOfCell == FALSE)
             {
                 maze->cell[(int) (positionZhonx.coordinate_robot.x)][(int) (positionZhonx.coordinate_robot.y)].wall_north =
                         new_walls.right;
@@ -307,7 +307,7 @@ void newCell(walls new_walls, labyrinthe *maze, positionRobot positionZhonx)
 walls getCellState()
 {
     walls cell_condition;
-    if (getWallPresence(FRONT_WALL) == false)
+    if (getWallPresence(FRONT_WALL) == FALSE)
     {
         cell_condition.front = NO_WALL;
     }
@@ -315,7 +315,7 @@ walls getCellState()
     {
         cell_condition.front = WALL_PRESENCE;
     }
-    if (getWallPresence(LEFT_WALL) == false)
+    if (getWallPresence(LEFT_WALL) == FALSE)
     {
         cell_condition.left = NO_WALL;
     }
@@ -323,7 +323,7 @@ walls getCellState()
     {
         cell_condition.left = WALL_PRESENCE;
     }
-    if (getWallPresence(RIGHT_WALL) == false)
+    if (getWallPresence(RIGHT_WALL) == FALSE)
     {
         cell_condition.right = NO_WALL;
     }
@@ -405,11 +405,11 @@ void print_cell_state (walls cell_state)
 void waitStart()
 {
     tone(E5, 50);
-    while(getWallPresence(FRONT_WALL) == false);
+    while(getWallPresence(FRONT_WALL) == FALSE);
     tone(E5, 50);
     HAL_Delay(20);
     tone(E5, 50);
-    while(getWallPresence(FRONT_WALL) == true);
+    while(getWallPresence(FRONT_WALL) == TRUE);
     toneItMode(D6, 200);
 }
 

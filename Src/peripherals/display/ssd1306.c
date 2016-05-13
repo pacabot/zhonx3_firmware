@@ -89,10 +89,10 @@ static void ssd1306DrawChar(unsigned int x, unsigned int y, unsigned char c, con
 /* Macros                                                                 */
 /**************************************************************************/
 #define swap(a, b){ \
-    unsigned char c; \
-    c = a; \
-    a = b; \
-    b = c; \
+        unsigned char c; \
+        c = a; \
+        a = b; \
+        b = c; \
 }
 
 //Send CMD
@@ -337,8 +337,11 @@ void ssd1306ClearScreen(enum refreshTypeEnum clearType)
             memset(display_buffer + SSD1306_CMDSIZE, 0, SSD1306_BANNERSIZE);
             break;
         case MAIN_AREA:
-            memset(display_buffer + (SSD1306_BANNERSIZE + SSD1306_CMDSIZE), 0,
-            SSD1306_MAINSIZE);
+            memset(display_buffer + (SSD1306_BANNERSIZE + SSD1306_CMDSIZE), 0, SSD1306_MAINSIZE);
+            break;
+        case ALL_AREA:
+            memset(display_buffer + SSD1306_CMDSIZE, 0, SSD1306_BANNERSIZE);
+            memset(display_buffer + (SSD1306_BANNERSIZE + SSD1306_CMDSIZE), 0, SSD1306_MAINSIZE);
             break;
     }
 }
@@ -369,7 +372,7 @@ void ssd1306Refresh(void)
         return;
     display_buffer[0] = 0x40;
     DATA(display_buffer,
-    SSD1306_MAINSIZE + SSD1306_BANNERSIZE + SSD1306_CMDSIZE);
+         SSD1306_MAINSIZE + SSD1306_BANNERSIZE + SSD1306_CMDSIZE);
 }
 
 /**************************************************************************/
@@ -501,7 +504,7 @@ void ssd1306PrintfAtLine(int x, int line, const FONT_DEF *font, const char *form
  // Refresh the screen to see the results
  ssd1306Refresh();    
  // Wait a bit before writing the next line
- systickDelay(1000);
+ HAL_Delay(1000);
  }
 
  @endcode
@@ -859,6 +862,58 @@ void ssd1306DrawLine(unsigned char x0, unsigned char y0, unsigned char x1, unsig
         else
         {
             ssd1306DrawPixel(x0, y0);
+        }
+        err -= dy;
+        if (err < 0)
+        {
+            y0 += ystep;
+            err += dx;
+        }
+    }
+}
+
+/**************************************************************************/
+// bresenham's algorithm - thx wikpedia
+void ssd1306ClearLine(unsigned char x0, unsigned char y0, unsigned char x1, unsigned char y1)
+{
+    uint8_t steep = abs(y1 - y0) > abs(x1 - x0);
+    if (steep)
+    {
+        swap(x0, y0);
+        swap(x1, y1);
+    }
+
+    if (x0 > x1)
+    {
+        swap(x0, x1);
+        swap(y0, y1);
+    }
+
+    uint8_t dx, dy;
+    dx = x1 - x0;
+    dy = abs(y1 - y0);
+
+    int8_t err = dx / 2;
+    int8_t ystep;
+
+    if (y0 < y1)
+    {
+        ystep = 1;
+    }
+    else
+    {
+        ystep = -1;
+    }
+
+    for (; x0 < x1; x0++)
+    {
+        if (steep)
+        {
+            ssd1306ClearPixel(y0, x0);
+        }
+        else
+        {
+            ssd1306ClearPixel(x0, y0);
         }
         err -= dy;
         if (err < 0)

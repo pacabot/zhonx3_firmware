@@ -439,7 +439,7 @@ int moveRealZhonxArc(labyrinthe *maze, positionRobot *positionZhonx,
 }
 
 void computeCellWeight(labyrinthe *maze, coordinate end_coordinate, char wallNoKnow,
-           char contournKnownCell)
+                       char contournKnownCell)
 {
     int i1 = 0, i2 = 0;
     int length = 0;
@@ -560,9 +560,11 @@ void mazeInit(labyrinthe *maze)
 
 void printMaze(labyrinthe maze, coordinate robot_coordinate)
 {
-    ssd1306ClearRect(0, 0, 64, 64);
-    int size_cell_on_oled = ((63) / MAZE_SIZE);
+    ssd1306ClearRect(0, HEAD_MARGIN, 54, 54);
+    int size_cell_on_oled = ((51) / (MAZE_SIZE));
     int x, y;
+    int display_offset_x = 0;
+
     for (y = 0; y < MAZE_SIZE; y++)
     {
         for (x = 0; x < MAZE_SIZE; x++)
@@ -574,13 +576,6 @@ void printMaze(labyrinthe maze, coordinate robot_coordinate)
                                 x * size_cell_on_oled + size_cell_on_oled + 1,
                                 y * size_cell_on_oled + HEAD_MARGIN);
             }
-            else if (maze.cell[x][y].wall_north == NO_KNOWN)
-            {
-                ssd1306DrawDashedLine(x * size_cell_on_oled,
-                                      y * size_cell_on_oled + HEAD_MARGIN,
-                                      x * size_cell_on_oled + size_cell_on_oled + 1,
-                                      y * size_cell_on_oled + HEAD_MARGIN);
-            }
             if (maze.cell[x][y].wall_west == WALL_PRESENCE)
             {
                 ssd1306DrawLine(x * size_cell_on_oled,
@@ -589,27 +584,12 @@ void printMaze(labyrinthe maze, coordinate robot_coordinate)
                                 (y + 1) * size_cell_on_oled
                                 + HEAD_MARGIN + 1);
             }
-            else if (maze.cell[x][y].wall_west == NO_KNOWN)
-            {
-                ssd1306DrawDashedLine(x * size_cell_on_oled,
-                                      y * size_cell_on_oled+ HEAD_MARGIN,
-                                      x * size_cell_on_oled,
-                                      (y + 1) * size_cell_on_oled
-                                      + HEAD_MARGIN + 1);
-            }
             if (maze.cell[x][y].wall_south == WALL_PRESENCE)
             {
                 ssd1306DrawLine(x * size_cell_on_oled,
                                 (y+ 1) * size_cell_on_oled+ HEAD_MARGIN,
                                 size_cell_on_oled + x * size_cell_on_oled,
                                 (y+ 1) * size_cell_on_oled + HEAD_MARGIN);
-            }
-            else if (maze.cell[x][y].wall_south == NO_KNOWN)
-            {
-                ssd1306DrawDashedLine(x * size_cell_on_oled,
-                                      (y + 1) * size_cell_on_oled + HEAD_MARGIN,
-                                      size_cell_on_oled + x * size_cell_on_oled,
-                                      (y + 1) * size_cell_on_oled + HEAD_MARGIN);
             }
             if (maze.cell[x][y].wall_east == WALL_PRESENCE)
             {
@@ -619,20 +599,11 @@ void printMaze(labyrinthe maze, coordinate robot_coordinate)
                                 (y + 1) * size_cell_on_oled
                                 + HEAD_MARGIN + 1);
             }
-            else if (maze.cell[x][y].wall_east == NO_KNOWN)
-            {
-                ssd1306DrawDashedLine((x + 1) * size_cell_on_oled,
-                                      y * size_cell_on_oled + HEAD_MARGIN,
-                                      (x + 1) * size_cell_on_oled,
-                                      (y + 1) * size_cell_on_oled
-                                      + HEAD_MARGIN + 1);
-            }
         }
     }
-    printLength(maze, robot_coordinate.x, robot_coordinate.y);
-    ssd1306DrawRect((robot_coordinate.x * size_cell_on_oled) + 1,
-                    (robot_coordinate.y * size_cell_on_oled + HEAD_MARGIN) + 1, 2,
-                    2);
+    //    ssd1306DrawRect((robot_coordinate.x * size_cell_on_oled) + 1,
+                          //                    (robot_coordinate.y * size_cell_on_oled + HEAD_MARGIN) + 1, 2,
+                          //                    2);
     ssd1306Refresh();
 }
 

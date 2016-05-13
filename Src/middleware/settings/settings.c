@@ -18,8 +18,8 @@ CALIBRATION_DATA *zhonxCalib_data = (CALIBRATION_DATA *)CALIBRATION_DATA_ADDR;
 
 int settingsInit(void)
 {
-	zhonxSettings.calibration_enabled=false;
-	zhonxSettings.nime_competition=false;
+	zhonxSettings.calibration_enabled=FALSE;
+	zhonxSettings.nime_competition=FALSE;
 	zhonxSettings.maze_end_coordinate.x=7;
 	zhonxSettings.maze_end_coordinate.y=7;
 	zhonxSettings.sleep_delay_s=300; // the robot will go sleep in zhonxSettings.sleep_delay_s S
