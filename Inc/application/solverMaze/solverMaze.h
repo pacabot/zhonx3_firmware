@@ -49,6 +49,7 @@
 #define PRINT_MAZE
 //#define PRINT_MAZE_DURING_RUN
 #define PRINT_BLUETOOTH_MAZE
+#define PRINT_BLUETOOTH_MAZE_DURING_RUN
 //#define PRINT_BLUETOOTH_BASIC_DEGUG
 //#define PRINT_WALLS_DETECTED
 
@@ -103,7 +104,7 @@ int findTheShortestPath(labyrinthe *maze, positionRobot* positionZhonx,
 int goToPosition(labyrinthe *maze, positionRobot* positionZhonx,  coordinate end_coordinate);
 int moveVirtualZhonx(labyrinthe maze, positionRobot positionZhonxVirtuel,
 		coordinate way[], coordinate end_coordinate);
-void poids(labyrinthe *maze, coordinate end_coordinate, char wallNoKnow, char contournKnownCell);
+void computeCellWeight(labyrinthe *maze, coordinate end_coordinate, char wallNoKnow, char contournKnownCell);
 void mazeInit (labyrinthe *maze);
 void* calloc_s (size_t nombre, size_t taille);
 void printMaze(labyrinthe maze, coordinate robot_coordinate);

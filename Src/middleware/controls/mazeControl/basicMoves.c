@@ -511,7 +511,7 @@ int moveResetStart(double speed_rotation, double max_speed, double out_speed)
 
 #ifdef DEBUG_BASIC_MOVES
     bluetoothWaitReady();
-    bluetoothPrintf("\rMOVE U TURN");
+    bluetoothPrintf("\rMOVE RESET START");
 #endif
 
     // memorize wall presence before move HALF CELL IN
