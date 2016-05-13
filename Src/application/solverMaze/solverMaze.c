@@ -12,9 +12,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
-#define ZHONX3
-
-#ifdef ZHONX3
 
 #include "stm32f4xx_hal.h"
 #include "stm32f4xx.h"
@@ -45,58 +42,6 @@
 #include "application/solverMaze/solverMaze.h"
 #include "application/solverMaze/robotInterface.h"
 #include "application/solverMaze/run.h"
-
-#endif
-#ifdef ZHONX2
-
-#include "stm32f4xx_gpio.h"
-
-#define JOYSTICK_LEFT       GPIOC, GPIO_Pin_8
-#define JOYSTICK_UP         GPIOC, GPIO_Pin_9
-#define JOYSTICK_DOWN       GPIOC, GPIO_Pin_10
-#define JOYSTICK_RIGHT      GPIOC, GPIO_Pin_11
-#define JOYSTICK_PUSH       GPIOC, GPIO_Pin_12
-#define RETURN_BUTTON       GPIOC, GPIO_Pin_13
-
-#include "stm32f4xx.h"
-#include "config/basetypes.h"
-#include "config/config.h"
-#include "oled/ssd1306.h"
-
-#include "stm32f4xx.h"
-#include "config/basetypes.h"
-#include "config/config.h"
-#include "oled/ssd1306.h"
-
-/* peripherale inlcudes*/
-
-/* meddleware include */
-#include "hal/hal_sensor.h"
-#include "hal/hal_os.h"
-#include "hal/hal_step_motor.h"
-#include "app/app_def.h"
-
-/*application include */
-#include "app/solverMaze/solverMaze.h"
-#include "app/solverMaze/robotInterface.h"
-#include "app/solverMaze/run.h"
-#elif defined SIMULATOR
-#include "settings.h"
-#include "solverMaze.h"
-#include <stdlib.h>
-#ifdef __cplusplus
-    #include <cstdlib>
-#else
-    #include <stdlib.h>
-#endif
-#include <SDL/SDL.h>
-#include "run.h"
-#include "robotInterface.h"
-#include "smallfonts.h"
-#include "ssd1306.h"
-#include "pcf8574.h"
-#endif // simulator
-
 /*
  *  ********************** int maze (void) **********************
  *  this function is the main function of the maze solver
