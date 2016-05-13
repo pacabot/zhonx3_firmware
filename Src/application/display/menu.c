@@ -70,6 +70,7 @@ extern void pidGyro_GetCriticalPoint(void);
 extern void pidTelemeters_GetCriticalPoint(void);
 extern int test_move_zhonx ();
 extern int maze_solver_run();
+extern int test_maze_flash ();
 extern int _Factor;
 extern int _KP;
 /*
@@ -205,6 +206,7 @@ const menuItem tests_menu=
 				{"Motors",			'f', (void*)motorsTest},
 				{"Line sensors",	'f', (void*)lineSensorsTest},
 				{"Expender LEDs",	'f', (void*)expenderLedTest},
+				{"flash maze",      'f', (void*)test_maze_flash},
 				{0,0,0}
 		}
 };
