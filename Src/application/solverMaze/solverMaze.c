@@ -42,7 +42,6 @@
 #include "application/solverMaze/solverMaze.h"
 #include "application/solverMaze/robotInterface.h"
 #include "application/solverMaze/run.h"
-
 /*
  *  ********************** int maze (void) **********************
  *  this function is the main function of the maze solver
@@ -175,16 +174,6 @@ int maze_solver_run(void)
     ssd1306ClearScreen(MAIN_AREA);
     printMaze(maze, zhonx_position.coordinate_robot);
 #endif
-
-    telemetersStart();
-    ssd1306ClearScreen(MAIN_AREA);
-    ssd1306PrintfAtLine(30, 0, &Font_5x8, "WAIT START...");
-    ssd1306Refresh();
-    waitStart();
-    ssd1306ClearScreen(MAIN_AREA);
-    ssd1306PrintfAtLine(30, 0, &Font_5x8, "RUN...");
-    ssd1306Refresh();
-
     run1(&maze, &zhonx_position,
          start_position.coordinate_robot,
          end_coordinate);
@@ -290,7 +279,6 @@ int goToPosition(labyrinthe *maze, positionRobot* positionZhonx,
             bluetoothWaitReady();
             bluetoothPrintf("no solution");
 #endif
-            while (1);// todo debug
             // no solution for go to the asked position
             return rv;
         }
@@ -301,7 +289,6 @@ int goToPosition(labyrinthe *maze, positionRobot* positionZhonx,
             bluetoothWaitReady();
             bluetoothPrintf("error way");
 #endif
-            while (1); //todo debug
             // no solution for go to the asked position
             return rv;
         }
@@ -558,7 +545,7 @@ void mazeInit(labyrinthe *maze)
             maze->cell[i][y].wall_west = NO_KNOWN;
             maze->cell[i][y].wall_south = NO_KNOWN;
             maze->cell[i][y].wall_east = NO_KNOWN;
-            maze->cell[i][y].length = 2000;
+            maze->cell[i][y].length = CANT_GO;
         }
     }
     for (int i = 0; i < MAZE_SIZE; i++)
@@ -652,9 +639,7 @@ void printMaze(labyrinthe maze, coordinate robot_coordinate)
 void printLength(const labyrinthe maze, const int x_robot, const int y_robot)
 {
     bluetoothWaitReady();
-    bluetoothPrintf("zhonx : %d; %d\n", x_robot, y_robot);
-    bluetoothWaitReady();
-    bluetoothPrintf("  ");
+    bluetoothPrintf("zhonx : %d; %d\n  ", x_robot, y_robot);
     for (int i = 0; i < MAZE_SIZE; i++)
     {
         bluetoothWaitReady();
@@ -685,9 +670,7 @@ void printLength(const labyrinthe maze, const int x_robot, const int y_robot)
             }
         }
         bluetoothWaitReady();
-        bluetoothPrintf("\n ");
-        bluetoothWaitReady();
-        bluetoothPrintf("%2d ", i);
+        bluetoothPrintf("\n %2d ", i);
         for (int j = 0; j < MAZE_SIZE; j++)
         {
             if (maze.cell[j][i].length != CANT_GO)
@@ -816,7 +799,7 @@ int findArrival(labyrinthe maze, coordinate *end_coordinate)
                 end_coordinate->x = x;
                 end_coordinate->y = y;
 #ifdef PRINT_BLUETOOTH_BASIC_DEGUG
-                //                bluetoothPrintf("end find at : %i; %i\n", x, y);
+                bluetoothPrintf("end find at : %i; %i\n", x, y);
 #endif
                 return MAZE_SOLVER_E_SUCCESS;
             }
@@ -829,7 +812,7 @@ int findArrival(labyrinthe maze, coordinate *end_coordinate)
                     && maze.cell[x][y+1].length != CANT_GO && maze.cell[x+1][y+1].length != CANT_GO)
             {
 #ifdef PRINT_BLUETOOTH_BASIC_DEGUG
-                //bluetoothPrintf("possible end find at : %i; %i\n", x, y);
+                bluetoothPrintf("possible end find at : %i; %i\n", x, y);
 #endif
                 if ((maze.cell[x][y].wall_east != NO_WALL
                         || maze.cell[x][y].wall_south != NO_WALL)
@@ -872,7 +855,7 @@ int findArrival(labyrinthe maze, coordinate *end_coordinate)
                             maze.cell[end_coordinate->x][end_coordinate->y].length;
                 }
 #ifdef PRINT_BLUETOOTH_BASIC_DEGUG
-                //bluetoothPrintf("possible end find at : %i; %i go to position : %d; %d\n", x, y, end_coordinate->x, end_coordinate->y);
+                bluetoothPrintf("possible end find at : %i; %i go to position : %d; %d\n", x, y, end_coordinate->x, end_coordinate->y);
 #endif
             }
 
