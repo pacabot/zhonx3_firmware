@@ -83,7 +83,8 @@ typedef struct
 
 typedef struct
 {
-    char            maze_name[50];
+    // XXX: This field has been commented-out because of alignment issues in Flash memory!
+    //char            maze_name[50];
     labyrinthe      maze;
     positionRobot   start_position;
     coordinate      end_coordinate;

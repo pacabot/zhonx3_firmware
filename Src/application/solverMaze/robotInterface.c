@@ -418,13 +418,13 @@ void waitStart()
 int saveMaze(labyrinthe *maze, positionRobot *start_position, coordinate  *end_coordinate)
 {
     MAZE_CONTAINER maze_container;
+    int rv = 0;
+    int selected_maze = 0;
+    int cnt_mazes = stored_mazes->count_stored_mazes;
 
     memcpy(&(maze_container.maze), maze, sizeof(labyrinthe));
     memcpy(&(maze_container.start_position), start_position, sizeof(positionRobot));
     memcpy(&(maze_container.end_coordinate), end_coordinate, sizeof(coordinate));
-    int rv = 0;
-    int selected_maze = 0;
-    int cnt_mazes = stored_mazes->count_stored_mazes;
 
 #if 0
     // Check whether flash data have been initialized
@@ -466,11 +466,40 @@ int saveMaze(labyrinthe *maze, positionRobot *start_position, coordinate  *end_c
                                                 (unsigned char *)&maze_container, sizeof(MAZE_CONTAINER));
         if (rv != FLASH_DRIVER_E_SUCCESS)
         {
+            ssd1306PrintfAtLine(0, 4, &Font_3x6, "Failed to save maze container!");
+            ssd1306Refresh();
+            bluetoothPrintf("Failed to save maze container!");
+            return rv;
+        }
+
+        // Verify written data in flash memory
+        rv = memcmp(maze, &(stored_mazes->mazes[selected_maze].maze), sizeof(labyrinthe));
+        if (rv != 0)
+        {
             ssd1306PrintfAtLine(0, 4, &Font_3x6, "Failed to save maze!");
             ssd1306Refresh();
             bluetoothPrintf("Failed to save maze!");
             return rv;
         }
+
+        rv = memcmp(start_position, &(stored_mazes->mazes[selected_maze].start_position), sizeof(positionRobot));
+        if (rv != 0)
+        {
+            ssd1306PrintfAtLine(0, 4, &Font_3x6, "Failed to save start position!");
+            ssd1306Refresh();
+            bluetoothPrintf("Failed to save maze start position!");
+            return rv;
+        }
+
+        rv = memcmp(end_coordinate, &(stored_mazes->mazes[selected_maze].end_coordinate), sizeof(coordinate));
+        if (rv != 0)
+        {
+            ssd1306PrintfAtLine(0, 4, &Font_3x6, "Failed to save end coordinate!");
+            ssd1306Refresh();
+            bluetoothPrintf("Failed to save maze start end coordinate!");
+            return rv;
+        }
+
         ssd1306PrintfAtLine(0, 4, &Font_3x6, "Maze saved successfully");
         ssd1306Refresh();
 #if 0
