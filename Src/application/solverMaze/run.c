@@ -30,17 +30,17 @@
 void run1(labyrinthe *maze, positionRobot *positionZhonx, coordinate start_oordinate, coordinate end_coordinate)
 {
     char choice;
+    coordinate way[MAZE_SIZE * MAZE_SIZE];
     do
     {
         choice = -1;
+        clearMazelength(maze);
+        poids(maze, end_coordinate, FALSE, FALSE);
+        moveVirtualZhonx(*maze, *positionZhonx, way, end_coordinate);
         waitStart();
-        goToPosition(maze, positionZhonx, end_coordinate);
-//		if(zhonxSettings.calibration_enabled == true)
-//			calibrateSimple();
-        HAL_Delay(2000);
+        moveRealZhonxArc(&maze, positionZhonx, way);
+        HAL_Delay(5000);
         goToPosition(maze, positionZhonx, start_oordinate);
-//		if(zhonxSettings.calibration_enabled == true)
-//			calibrateSimple();
         doUTurn(positionZhonx);
 
         ssd1306ClearScreen(MAIN_AREA);

@@ -161,7 +161,12 @@ int maze_solver_new_maze(void)
 
     exploration(&maze, &zhonx_position, &start_position, &end_coordinate); //make exploration for go from the robot position and the end of the maze
 #ifdef ZHONX3
-    HAL_Delay(200);
+    while(hasMoveEnded() == true);
+    HAL_Delay(100);
+    motorsDriverSleep(ON);
+    // Save maze into flash memory
+    bluetoothWaitReady();
+    bluetoothPrintf("save maze");
     rv=saveMaze(&maze, &start_position, &end_coordinate);
     if (rv != FLASH_DRIVER_E_SUCCESS)
     {
@@ -177,7 +182,6 @@ int maze_solver_new_maze(void)
     }
 #endif
     goToPosition(&maze, &zhonx_position, start_position.coordinate_robot);	//goto start position
-    // Save maze into flash memory
 
     doUTurn(&zhonx_position);
 #ifdef ZHONX3
@@ -219,13 +223,14 @@ int maze_solver_run ()
 
     loadMaze(&maze, &start_position, &end_coordinate);
     memcpy(&zhonx_position, &start_position,sizeof(positionRobot));
-    run1(&maze, &zhonx_position,
-                 start_position.coordinate_robot,
-                 end_coordinate);
-
-    run2(&maze, &zhonx_position,
-                 start_position.coordinate_robot,
-                 end_coordinate);
+    printMaze(maze, end_coordinate);
+//    run1(&maze, &zhonx_position,
+//                 start_position.coordinate_robot,
+//                 end_coordinate);
+//
+//    run2(&maze, &zhonx_position,
+//                 start_position.coordinate_robot,
+//                 end_coordinate);
 
     #ifdef ZHONX3
         HAL_Delay(100);
@@ -637,7 +642,7 @@ void mazeInit(labyrinthe *maze)
             maze->cell[i][y].wall_west = NO_KNOWN;
             maze->cell[i][y].wall_south = NO_KNOWN;
             maze->cell[i][y].wall_east = NO_KNOWN;
-            maze->cell[i][y].length = 2000;
+            maze->cell[i][y].length = CANT_GO;
         }
     }
     for (int i = 0; i < MAZE_SIZE; i++)
