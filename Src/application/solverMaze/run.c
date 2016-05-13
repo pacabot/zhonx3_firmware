@@ -30,16 +30,19 @@
 void run1(labyrinthe *maze, positionRobot *positionZhonx, coordinate start_oordinate, coordinate end_coordinate)
 {
     char choice;
+    coordinate way[MAZE_SIZE * MAZE_SIZE];
     do
     {
         choice = -1;
-        goToPosition(maze, positionZhonx, end_coordinate);
-        //		if(zhonxSettings.calibration_enabled == true)
-        //			calibrateSimple();
-        HAL_Delay(2000);
+        clearMazelength(maze);
+        computeCellWeight(maze, end_coordinate, FALSE, FALSE);
+        moveVirtualZhonx(*maze, *positionZhonx, way, end_coordinate);
+        waitStart();
+        moveRealZhonxArc(&maze, positionZhonx, way);
+        HAL_Delay(5000);
         goToPosition(maze, positionZhonx, start_oordinate);
-        //		if(zhonxSettings.calibration_enabled == true)
-        //			calibrateSimple();
+//		if(zhonxSettings.calibration_enabled == true)
+//			calibrateSimple();
         doUTurn(positionZhonx);
 
         ssd1306ClearScreen(MAIN_AREA);
@@ -70,17 +73,17 @@ void run2(labyrinthe *maze, positionRobot *positionZhonx, coordinate start_oordi
     {
         choice = -1;
         clearMazelength(maze);
-        poids(maze, zhonxSettings.maze_end_coordinate, true, false);
+        computeCellWeight(maze, zhonxSettings.maze_end_coordinate, true, false);
         printMaze(*maze, positionZhonx->coordinate_robot);
         waitStart();
         moveVirtualZhonx(*maze, *positionZhonx, way, end_coordinate);
         moveRealZhonxArc(maze, positionZhonx, way);
-        //		if(zhonxSettings.calibration_enabled == true)
-        //			calibrateSimple();
+//		if(zhonxSettings.calibration_enabled == true)
+//			calibrateSimple();
         HAL_Delay(2000);
         goToPosition(maze, positionZhonx, start_oordinate);
-        //		if(zhonxSettings.calibration_enabled == true)
-        //			calibrateSimple();
+//		if(zhonxSettings.calibration_enabled == true)
+//			calibrateSimple();
         doUTurn(positionZhonx);
         ssd1306ClearScreen(MAIN_AREA);
         ssd1306DrawStringAtLine(10, 0, "press \"RIGHT\" to ", &Font_5x8);

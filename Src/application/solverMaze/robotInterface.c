@@ -535,6 +535,13 @@ int loadMaze(labyrinthe *maze, positionRobot *start_position, coordinate  *end_c
     return MAZE_SOLVER_E_SUCCESS;
 }
 
+int test_maze_flash ()
+{
+    int rv = MAZE_SOLVER_E_SUCCESS;
+
+    return rv;
+}
+
 int test_move_zhonx ()
 {
     labyrinthe  maze;
