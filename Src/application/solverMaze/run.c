@@ -35,7 +35,7 @@ void run1(labyrinthe *maze, positionRobot *positionZhonx, coordinate start_oordi
     {
         choice = -1;
         clearMazelength(maze);
-        poids(maze, end_coordinate, FALSE, FALSE);
+        computeCellWeight(maze, end_coordinate, FALSE, FALSE);
         moveVirtualZhonx(*maze, *positionZhonx, way, end_coordinate);
         waitStart();
         moveRealZhonxArc(&maze, positionZhonx, way);
