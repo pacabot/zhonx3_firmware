@@ -227,8 +227,8 @@ int exploration(labyrinthe *maze, positionRobot* positionZhonx,
         computeCellWeight(maze, positionZhonx->coordinate_robot, true, false);
 #ifdef   PRINT_BLUETOOTH_MAZE_DURING_RUN
         printLength(*maze, positionZhonx->coordinate_robot.x,
-#endif
                     positionZhonx->coordinate_robot.y);
+#endif
     }
     last_coordinate = findEndCoordinate(way);
     moveStop();
