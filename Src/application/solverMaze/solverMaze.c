@@ -55,10 +55,8 @@ int maze_solver_new_maze(void)
     labyrinthe maze;
     int rv = MAZE_SOLVER_E_SUCCESS;
     mazeInit(&maze);
-#ifdef ZHONX3
     mainControlSetFollowType(WALL_FOLLOW);
     positionControlSetPositionType(GYRO);
-#endif
 #ifdef SIMULATOR
     pt_zhonx_position = &zhonx_position;
 #endif // simulator
