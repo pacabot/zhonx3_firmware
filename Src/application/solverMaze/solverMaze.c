@@ -120,7 +120,7 @@ int maze_solver_new_maze(void)
         HAL_Delay(100);
         tone(B5, 50);
         HAL_Delay(50);
-        toneItMode(B5, 400);
+        tone(B5, 400);
     }
     motorsDriverSleep(ON); //because flash write cause interrupts damages
     telemetersStop();//because flash write cause interrupts damages
@@ -166,9 +166,9 @@ int maze_solver_run ()
 
     loadMaze(&maze, &start_position, &end_coordinate);
 
+    printLength(maze,8,8);
 #ifdef PRINT_MAZE
     ssd1306ClearScreen(MAIN_AREA);
-    printLength(maze,8,8);
     printMaze(maze, zhonx_position.coordinate_robot);
 #endif
 
@@ -646,58 +646,73 @@ void printLength(const labyrinthe maze, const int x_robot, const int y_robot)
 #ifdef PRINT_BLUETOOTH_MAZE
     bluetoothWaitReady();
     bluetoothPrintf("zhonx : %d; %d\n", x_robot, y_robot);
+    bluetoothWaitReady();
     bluetoothPrintf("  ");
     for (int i = 0; i < MAZE_SIZE; i++)
     {
+        bluetoothWaitReady();
         bluetoothPrintf("%5d", i);
     }
+    bluetoothWaitReady();
     bluetoothPrintf("\n");
     for (int i = 0; i < MAZE_SIZE; i++)
     {
+        bluetoothWaitReady();
         bluetoothPrintf("    ");
         for (int j = 0; j < MAZE_SIZE; j++)
         {
             if (maze.cell[j][i].wall_north == NO_KNOWN)
             {
+                bluetoothWaitReady();
                 bluetoothPrintf("- - +");
             }
             else if (maze.cell[j][i].wall_north == WALL_PRESENCE)
             {
+                bluetoothWaitReady();
                 bluetoothPrintf("----+");
             }
             else
             {
+                bluetoothWaitReady();
                 bluetoothPrintf("    +");
             }
         }
+        bluetoothWaitReady();
         bluetoothPrintf("\n ");
-
+        bluetoothWaitReady();
         bluetoothPrintf("%2d ", i);
         for (int j = 0; j < MAZE_SIZE; j++)
         {
             if (maze.cell[j][i].length != CANT_GO)
             {
+                bluetoothWaitReady();
                 bluetoothPrintf("%4d", maze.cell[j][i].length);
             }
             else
             {
+                bluetoothWaitReady();
                 bluetoothPrintf("    ");
             }
             if (maze.cell[j][i].wall_east == NO_KNOWN)
             {
+                bluetoothWaitReady();
                 bluetoothPrintf("!");
             }
             else if (maze.cell[j][i].wall_east == WALL_PRESENCE)
             {
+                bluetoothWaitReady();
                 bluetoothPrintf("|");
             }
             else
             {
+                bluetoothWaitReady();
                 bluetoothPrintf(" ");
             }
         }
+        bluetoothWaitReady();
         bluetoothPrintf("\n");
     }
+    bluetoothWaitReady();
     bluetoothPrintf("\n");
 #endif
 }

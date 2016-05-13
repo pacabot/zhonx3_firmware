@@ -48,12 +48,11 @@
 
 #define PRINT_MAZE
 //#define PRINT_MAZE_DURING_RUN
-//#define PRINT_BLUETOOTH_MAZE
+#define PRINT_BLUETOOTH_MAZE
 //#define PRINT_BLUETOOTH_BASIC_DEGUG
 //#define PRINT_WALLS_DETECTED
 
 #define END_OF_LIST 255
-
 #define DISPLAY_OFFSET	    12	//offset for maze print on ssd1306
 #define MAX_STORABLE_MAZES  5
 
