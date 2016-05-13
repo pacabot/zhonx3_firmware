@@ -107,13 +107,10 @@ int maze_solver_new_maze(void)
     coordinate end_coordinate; // it's the coordinates which Zhonx have at the start
     positionRobot zhonx_position, start_position;
     labyrinthe maze;
-    int rv;
+    int rv = MAZE_SOLVER_E_SUCCESS;
     mazeInit(&maze);
-#ifdef ZHONX3
     mainControlSetFollowType(WALL_FOLLOW);
     positionControlSetPositionType(GYRO);
-    motorsDriverSleep(ON);
-#endif
 #ifdef SIMULATOR
     pt_zhonx_position = &zhonx_position;
 #endif // simulator
@@ -128,85 +125,86 @@ int maze_solver_new_maze(void)
     memcpy(&start_position, &zhonx_position, sizeof(positionRobot));
     start_position.orientation += 2;
     start_position.orientation = start_position.orientation % 4;
-    #if defined ZHONX3 || defined SIMULATOR
-        start_position.midOfCell = false;
-    #elif defined ZHONX2
-        start_position.midOfCell = true;
-    #endif
+    start_position.midOfCell = false;
     //newCell(ask_cell_state(), &maze, start_position);
     newCell((walls){WALL_PRESENCE,WALL_PRESENCE,WALL_PRESENCE,WALL_PRESENCE}, &maze, start_position);
     memcpy(&start_position, &zhonx_position, sizeof(positionRobot));
 
     printLength(maze,8,8);
+#ifdef PRINT_MAZE_DURING_RUN
     printMaze(maze, zhonx_position.coordinate_robot);
-    #if defined ZHONX3
-        telemetersStart();
-    #endif
-    waitStart();
-#ifdef ZHONX3
-    ssd1306ClearScreen(MAIN_AREA);
-    ssd1306PrintfAtLine(40, 2, &Font_5x8, "SCAN...");
-    ssd1306Refresh();
-    motorsDriverSleep(OFF);
-#endif
-#ifdef ZHONX2
-    if (zhonxSettings.calibration_enabled==true)
-    {
-        HAL_Delay(1000);
-        calibrateSimple();
-    }
-    hal_step_motor_disable();
-    HAL_Delay(5000);
 #endif
 
-    exploration(&maze, &zhonx_position, &start_position, &end_coordinate); //make exploration for go from the robot position and the end of the maze
-#ifdef ZHONX3
-    while(hasMoveEnded() == true);
-    HAL_Delay(100);
-    motorsDriverSleep(ON);
-    // Save maze into flash memory
-    bluetoothWaitReady();
-    bluetoothPrintf("save maze");
+    telemetersStart();
+    ssd1306ClearScreen(MAIN_AREA);
+    ssd1306PrintfAtLine(30, 0, &Font_5x8, "WAIT START...");
+    ssd1306Refresh();
+    waitStart();
+    ssd1306ClearScreen(MAIN_AREA);
+    ssd1306PrintfAtLine(40, 0, &Font_5x8, "SCAN...");
+    ssd1306Refresh();
+
+    rv = exploration(&maze, &zhonx_position, &start_position, &end_coordinate); //make exploration for go from the robot position and the end of the maze
+    if (rv != MAZE_SOLVER_E_SUCCESS)
+    {
+        bluetoothWaitReady();
+#ifdef PRINT_BLUETOOTH_BASIC_DEGUG
+        bluetoothPrintf("no solution");
+#endif
+        tone(D4, 200);
+        HAL_Delay(50);
+        tone(C4H, 100);
+        HAL_Delay(40);
+        toneItMode(C4, 150);
+        ssd1306WaitReady();
+        ssd1306ClearScreen(MAIN_AREA);
+        ssd1306DrawBmp(warning_Img, 1, 15, 48, 43);
+        ssd1306PrintfAtLine(55, 1, &Font_5x8, "NO SOLUTION");
+        ssd1306Refresh();
+    }
+    else
+    {
+        findTheShortestPath(&maze, &zhonx_position, &start_position, &end_coordinate); //find the shortest path
+        ssd1306ClearScreen(MAIN_AREA);
+        ssd1306PrintfAtLine(0, 0, &Font_5x8, "TARGET REACHED !!!");
+        ssd1306Refresh();
+        tone(G5, 100);
+        HAL_Delay(100);
+        tone(A5, 100);
+        HAL_Delay(100);
+        tone(B5, 50);
+        HAL_Delay(50);
+        tone(B5, 400);
+    }
+    motorsDriverSleep(ON); //because flash write cause interrupts damages
+    telemetersStop();//because flash write cause interrupts damages
     rv=saveMaze(&maze, &start_position, &end_coordinate);
     if (rv != FLASH_DRIVER_E_SUCCESS)
     {
     }
-#endif
-    ssd1306Printf(10,10,&Font_7x8,"go to start position");
+    telemetersStart();//because flash write cause interrupts damages
+
+    ssd1306PrintfAtLine(0,0,&Font_5x8,"go to start position");
     ssd1306Refresh();
-#ifdef ZHONX2
-    if (zhonxSettings.calibration_enabled==true)
-    {
-        HAL_Delay(1000);
-        calibrateSimple();
-    }
-#endif
     goToPosition(&maze, &zhonx_position, start_position.coordinate_robot);	//goto start position
+    // Save maze into flash memory
 
-    doUTurn(&zhonx_position);
-#ifdef ZHONX3
+    doUTurn(&zhonx_position); //initial position
+#ifdef PRINT_BLUETOOTH_BASIC_DEGUG
     bluetoothPrintf("uturn do\ngo back");
-    mainControlSetFollowType(NO_FOLLOW);
-    move (0, -CELL_LENGTH/2, 20, 0);
+#endif
+    ssd1306ClearScreen(MAIN_AREA);
+    ssd1306PrintfAtLine(40, 0, &Font_5x8, "END SEARCH");
+    ssd1306Refresh();
+    telemetersStop();
     motorsDriverSleep(ON);
-#endif
-#ifdef ZHONX2
-    if (zhonx_settings.calibration_enabled==true)
-    {
-        HAL_Delay(1000);
-        calibrateSimple();
-    }
-    hal_step_motor_disable();
-#endif
-
-
-#ifdef ZHONX3
     HAL_Delay(1000);
-    motorsDriverSleep(ON);
+#ifdef PRINT_MAZE
+    ssd1306ClearScreen(MAIN_AREA);
+    printLength(maze,8,8);
+    printMaze(maze, zhonx_position.coordinate_robot);
 #endif
-#ifdef ZHONX2
-    hal_step_motor_disable();
-#endif
+    while (expanderJoyFiltered() != JOY_LEFT);
     return MAZE_SOLVER_E_SUCCESS;
 }
 
@@ -218,36 +216,34 @@ int maze_solver_run ()
 
     mainControlSetFollowType(WALL_FOLLOW);
     positionControlSetPositionType(GYRO);
-    motorsDriverSleep(ON);
-    telemetersStart();
+    memcpy(&zhonx_position, &start_position,sizeof(positionRobot));
 
     loadMaze(&maze, &start_position, &end_coordinate);
-    memcpy(&zhonx_position, &start_position,sizeof(positionRobot));
-    printMaze(maze, end_coordinate);
-//    run1(&maze, &zhonx_position,
-//                 start_position.coordinate_robot,
-//                 end_coordinate);
-//
-//    run2(&maze, &zhonx_position,
-//                 start_position.coordinate_robot,
-//                 end_coordinate);
 
-    #ifdef ZHONX3
-        HAL_Delay(100);
-        motorsDriverSleep(ON);
-    #endif
-    #ifdef ZHONX2
-        hal_step_motor_disable();
-    #endif
-        return MAZE_SOLVER_E_SUCCESS;
+    printLength(maze,8,8);
+#ifdef PRINT_MAZE
+    ssd1306ClearScreen(MAIN_AREA);
+    printMaze(maze, zhonx_position.coordinate_robot);
+#endif
+    run1(&maze, &zhonx_position,
+         start_position.coordinate_robot,
+         end_coordinate);
+
+    run2(&maze, &zhonx_position,
+         start_position.coordinate_robot,
+         end_coordinate);
+
+    HAL_Delay(100);
+    motorsDriverSleep(ON);
+    return MAZE_SOLVER_E_SUCCESS;
 }
 
 int exploration(labyrinthe *maze, positionRobot* positionZhonx,
-        const positionRobot *start_coordinates, coordinate *end_coordinate)
+                const positionRobot *start_coordinates, coordinate *end_coordinate)
 {
     int rv = MAZE_SOLVER_E_SUCCESS;
     coordinate way[MAZE_SIZE * MAZE_SIZE] = { { -1, -1 }, { END_OF_LIST,
-    END_OF_LIST } };
+            END_OF_LIST } };
     coordinate last_coordinate;
     poids(maze, positionZhonx->coordinate_robot, true, false);
 
@@ -259,82 +255,41 @@ int exploration(labyrinthe *maze, positionRobot* positionZhonx,
         rv = moveVirtualZhonx(*maze, *positionZhonx, way, *end_coordinate);
         if (rv != MAZE_SOLVER_E_SUCCESS)
         {
-#ifdef ZHONX3
             moveStop();
-            motorsDriverSleep(ON);
-            bluetoothWaitReady();
-#endif
-            bluetoothPrintf("no solution");
-#ifdef PRINT_MAZE
+#ifdef PRINT_MAZE_DURING_RUN
             printMaze(*maze, positionZhonx->coordinate_robot);
 #endif
-#ifdef ZHONX3
-            tone(D4, 200);
-            HAL_Delay(50);
-            tone(C4H, 100);
-            HAL_Delay(40);
-            toneItMode(C4, 150);
-            ssd1306WaitReady();
-            ssd1306ClearScreen(MAIN_AREA);
-            ssd1306DrawBmp(warning_Img, 1, 15, 48, 43);
-#endif
-            ssd1306PrintfAtLine(55, 1, &Font_5x8, "NO SOLUTION");
-            ssd1306Refresh();
             printLength(*maze, -1, -1);
-            return MAZE_SOLVER_E_ERROR;
+            return rv;
         }
         rv = moveRealZhonxArc(maze, positionZhonx, way);
         if (rv != MAZE_SOLVER_E_SUCCESS)
         {
-#ifdef ZHONX3
             moveStop();
-            motorsDriverSleep(ON);
-            bluetoothWaitReady();
-#elif defined ZHONX2
-            hal_step_motor_disable();
-#elif defined SIMULATOR
-            bluetoothPrintf("Error way : position zhonx x= %d y=%d \t way x= %d y=%d \n",
-                            positionZhonx->coordinate_robot.x,positionZhonx->coordinate_robot.y, way[0].x, way[0].y);
-#endif
-#ifdef ZHONX3
-            tone(D4, 200);
-            HAL_Delay(50);
-            tone(C4H, 100);
-            HAL_Delay(40);
-            toneItMode(C4, 150);
-            ssd1306WaitReady();
             ssd1306ClearScreen(MAIN_AREA);
             ssd1306DrawBmp(warning_Img, 1, 15, 48, 43);
-#endif
             ssd1306PrintfAtLine(55, 1, &Font_5x8, "ERROR WAY");
             ssd1306Refresh();
-            return MAZE_SOLVER_E_ERROR;
+            return rv;
         }
         clearMazelength(maze);
         poids(maze, positionZhonx->coordinate_robot, true, false);
         printLength(*maze, positionZhonx->coordinate_robot.x,
-                positionZhonx->coordinate_robot.y);
+                    positionZhonx->coordinate_robot.y);
     }
-#ifdef ZHONX2
-    if (zhonx_settings.calibration_enabled==true)
-    {
-        HAL_Delay(1000);
-        calibrateSimple();
-    }
-#endif
     last_coordinate = findEndCoordinate(way);
+    moveStop();
 
-#ifdef ZHONX3
+    return rv;
+}
 
-    toneItMode(G5, 70);
-    HAL_Delay(20);
-    toneItMode(G5, 70);
-    HAL_Delay(20);
-    toneItMode(G5, 70);
-    HAL_Delay(20);
-    toneItMode(G5, 70);
-#endif
-
+int findTheShortestPath(labyrinthe *maze, positionRobot* positionZhonx,
+                        const positionRobot *start_coordinates, coordinate *end_coordinate)
+{
+    int rv = MAZE_SOLVER_E_SUCCESS;
+    coordinate way[MAZE_SIZE * MAZE_SIZE] = { { -1, -1 }, { END_OF_LIST,
+            END_OF_LIST } };
+    coordinate last_coordinate;
     do
     {
         clearMazelength(maze);
@@ -350,18 +305,11 @@ int exploration(labyrinthe *maze, positionRobot* positionZhonx,
         }
     } while ((last_coordinate.x != end_coordinate->x)
             || (last_coordinate.y != end_coordinate->y));
-#ifdef ZHONX2
-    if (zhonxSettings.calibration_enabled==true)
-    {
-        HAL_Delay(1000);
-        calibrateSimple();
-    }
-#endif
-    return MAZE_SOLVER_E_SUCCESS;
+    return rv;
 }
 
 int goToPosition(labyrinthe *maze, positionRobot* positionZhonx,
-        coordinate end_coordinate)
+                 coordinate end_coordinate)
 {
     coordinate way[MAZE_SIZE * MAZE_SIZE];
     int rv;
@@ -374,18 +322,20 @@ int goToPosition(labyrinthe *maze, positionRobot* positionZhonx,
         rv = moveVirtualZhonx(*maze, *positionZhonx, way, end_coordinate);// create way for go to the end coordinate if it possible
         if (rv != MAZE_SOLVER_E_SUCCESS)
         {
+#ifdef PRINT_BLUETOOTH_BASIC_DEGUG
             bluetoothWaitReady();
             bluetoothPrintf("no solution");
-            while (1);// todo debug
+#endif
             // no solution for go to the asked position
             return rv;
         }
         rv = moveRealZhonxArc(maze, positionZhonx, way);	// use way for go the end position or closer position if there are no-know wall
         if (rv != MAZE_SOLVER_E_SUCCESS)
         {
+#ifdef PRINT_BLUETOOTH_BASIC_DEGUG
             bluetoothWaitReady();
             bluetoothPrintf("error way");
-            while (1); //todo debug
+#endif
             // no solution for go to the asked position
             return rv;
         }
@@ -394,7 +344,7 @@ int goToPosition(labyrinthe *maze, positionRobot* positionZhonx,
 }
 
 int moveVirtualZhonx(labyrinthe maze, positionRobot positionZhonxVirtuel,
-        coordinate way[], coordinate end_coordinate)
+                     coordinate way[], coordinate end_coordinate)
 {
     int i = 0;
     while (positionZhonxVirtuel.coordinate_robot.x != end_coordinate.x
@@ -442,7 +392,7 @@ int moveVirtualZhonx(labyrinthe maze, positionRobot positionZhonxVirtuel,
                 return MAZE_SOLVER_E_ERROR;
             }
         }
-#ifdef PRINT_MAZE
+#ifdef PRINT_MAZE_DURING_RUN
         printMaze(maze, positionZhonxVirtuel.coordinate_robot);
 #endif
         way[i].x = positionZhonxVirtuel.coordinate_robot.x, way[i].y =
@@ -456,8 +406,10 @@ int moveVirtualZhonx(labyrinthe maze, positionRobot positionZhonxVirtuel,
 int moveRealZhonxArc(labyrinthe *maze, positionRobot *positionZhonx,
                      coordinate way[])
 {
+#ifdef PRINT_BLUETOOTH_BASIC_DEGUG
     bluetoothWaitReady();
     bluetoothPrintf("pat");
+#endif
     walls cell_state;
     char chain;
     int nb_move;
@@ -500,7 +452,7 @@ int moveRealZhonxArc(labyrinthe *maze, positionRobot *positionZhonx,
         }
         else
         {
-#if defined ZHONX3 || defined SIMULATOR
+#ifdef PRINT_BLUETOOTH_BASIC_DEGUG
             bluetoothWaitReady();
             bluetoothPrintf("Error way : position zhonx x= %d y=%d \t way x= %d y=%d \n",
                             positionZhonx->coordinate_robot.x,positionZhonx->coordinate_robot.y, way[i].x, way[i].y);
@@ -521,22 +473,20 @@ int moveRealZhonxArc(labyrinthe *maze, positionRobot *positionZhonx,
             chain = false;
         else
             chain = true;
-        #if defined ZHONX3 | defined SIMULATOR
-            move_zhonx(orientaionToGo, positionZhonx, nb_move, false, true);
-        #elif defined ZHONX2
-            move_zhonx_arc(orientaionToGo, positionZhonx, nb_move, !chain, chain); // TODO : modify that
-        #endif
+        move_zhonx(orientaionToGo, positionZhonx, nb_move, false, true);
         cell_state = getCellState();
         newCell(cell_state, maze, *positionZhonx);
 
     }
+#ifdef PRINT_BLUETOOTH_BASIC_DEGUG
     bluetoothWaitReady();
     bluetoothPrintf("colin");
+#endif
     return MAZE_SOLVER_E_SUCCESS;
 }
 
 void poids(labyrinthe *maze, coordinate end_coordinate, char wallNoKnow,
-        char contournKnownCell)
+           char contournKnownCell)
 {
     int i1 = 0, i2 = 0;
     int length = 0;
@@ -667,129 +617,140 @@ void printMaze(labyrinthe maze, coordinate robot_coordinate)
             if (maze.cell[x][y].wall_north == WALL_PRESENCE)
             {
                 ssd1306DrawLine(x * size_cell_on_oled,
-                        y * size_cell_on_oled + HEAD_MARGIN,
-                        x * size_cell_on_oled + size_cell_on_oled + 1,
-                        y * size_cell_on_oled + HEAD_MARGIN);
+                                y * size_cell_on_oled + HEAD_MARGIN,
+                                x * size_cell_on_oled + size_cell_on_oled + 1,
+                                y * size_cell_on_oled + HEAD_MARGIN);
             }
             else if (maze.cell[x][y].wall_north == NO_KNOWN)
             {
                 ssd1306DrawDashedLine(x * size_cell_on_oled,
-                        y * size_cell_on_oled + HEAD_MARGIN,
-                        x * size_cell_on_oled + size_cell_on_oled + 1,
-                        y * size_cell_on_oled + HEAD_MARGIN);
+                                      y * size_cell_on_oled + HEAD_MARGIN,
+                                      x * size_cell_on_oled + size_cell_on_oled + 1,
+                                      y * size_cell_on_oled + HEAD_MARGIN);
             }
             if (maze.cell[x][y].wall_west == WALL_PRESENCE)
             {
                 ssd1306DrawLine(x * size_cell_on_oled,
-                        y * size_cell_on_oled + HEAD_MARGIN,
-                        x * size_cell_on_oled,
-                        (y + 1) * size_cell_on_oled
-                        + HEAD_MARGIN + 1);
+                                y * size_cell_on_oled + HEAD_MARGIN,
+                                x * size_cell_on_oled,
+                                (y + 1) * size_cell_on_oled
+                                + HEAD_MARGIN + 1);
             }
             else if (maze.cell[x][y].wall_west == NO_KNOWN)
             {
                 ssd1306DrawDashedLine(x * size_cell_on_oled,
-                        y * size_cell_on_oled+ HEAD_MARGIN,
-                        x * size_cell_on_oled,
-                        (y + 1) * size_cell_on_oled
-                        + HEAD_MARGIN + 1);
+                                      y * size_cell_on_oled+ HEAD_MARGIN,
+                                      x * size_cell_on_oled,
+                                      (y + 1) * size_cell_on_oled
+                                      + HEAD_MARGIN + 1);
             }
             if (maze.cell[x][y].wall_south == WALL_PRESENCE)
             {
                 ssd1306DrawLine(x * size_cell_on_oled,
-                        (y+ 1) * size_cell_on_oled+ HEAD_MARGIN,
-                        size_cell_on_oled + x * size_cell_on_oled,
-                        (y+ 1) * size_cell_on_oled + HEAD_MARGIN);
+                                (y+ 1) * size_cell_on_oled+ HEAD_MARGIN,
+                                size_cell_on_oled + x * size_cell_on_oled,
+                                (y+ 1) * size_cell_on_oled + HEAD_MARGIN);
             }
             else if (maze.cell[x][y].wall_south == NO_KNOWN)
             {
                 ssd1306DrawDashedLine(x * size_cell_on_oled,
-                        (y + 1) * size_cell_on_oled + HEAD_MARGIN,
-                        size_cell_on_oled + x * size_cell_on_oled,
-                        (y + 1) * size_cell_on_oled + HEAD_MARGIN);
+                                      (y + 1) * size_cell_on_oled + HEAD_MARGIN,
+                                      size_cell_on_oled + x * size_cell_on_oled,
+                                      (y + 1) * size_cell_on_oled + HEAD_MARGIN);
             }
             if (maze.cell[x][y].wall_east == WALL_PRESENCE)
             {
                 ssd1306DrawLine((x + 1) * size_cell_on_oled,
-                        y * size_cell_on_oled + HEAD_MARGIN,
-                        (x + 1) * size_cell_on_oled,
-                        (y + 1) * size_cell_on_oled
-                        + HEAD_MARGIN + 1);
+                                y * size_cell_on_oled + HEAD_MARGIN,
+                                (x + 1) * size_cell_on_oled,
+                                (y + 1) * size_cell_on_oled
+                                + HEAD_MARGIN + 1);
             }
             else if (maze.cell[x][y].wall_east == NO_KNOWN)
             {
                 ssd1306DrawDashedLine((x + 1) * size_cell_on_oled,
-                        y * size_cell_on_oled + HEAD_MARGIN,
-                        (x + 1) * size_cell_on_oled,
-                        (y + 1) * size_cell_on_oled
-                        + HEAD_MARGIN + 1);
+                                      y * size_cell_on_oled + HEAD_MARGIN,
+                                      (x + 1) * size_cell_on_oled,
+                                      (y + 1) * size_cell_on_oled
+                                      + HEAD_MARGIN + 1);
             }
         }
     }
     printLength(maze, robot_coordinate.x, robot_coordinate.y);
     ssd1306DrawRect((robot_coordinate.x * size_cell_on_oled) + 1,
-            (robot_coordinate.y * size_cell_on_oled + HEAD_MARGIN) + 1, 2,
-            2);
+                    (robot_coordinate.y * size_cell_on_oled + HEAD_MARGIN) + 1, 2,
+                    2);
     ssd1306Refresh();
 }
 
 void printLength(const labyrinthe maze, const int x_robot, const int y_robot)
 {
-#if DEBUG > 2 && !defined ZHONX2
+#ifdef PRINT_BLUETOOTH_MAZE
     bluetoothWaitReady();
-    bluetoothPrintf("zhonx : %d; %d\n", x_robot, y_robot);
-    bluetoothPrintf("  ");
+    bluetoothPrintf("zhonx : %d; %d\n  ", x_robot, y_robot);
     for (int i = 0; i < MAZE_SIZE; i++)
     {
+        bluetoothWaitReady();
         bluetoothPrintf("%5d", i);
     }
+    bluetoothWaitReady();
     bluetoothPrintf("\n");
     for (int i = 0; i < MAZE_SIZE; i++)
     {
+        bluetoothWaitReady();
         bluetoothPrintf("    ");
         for (int j = 0; j < MAZE_SIZE; j++)
         {
             if (maze.cell[j][i].wall_north == NO_KNOWN)
             {
+                bluetoothWaitReady();
                 bluetoothPrintf("- - +");
             }
             else if (maze.cell[j][i].wall_north == WALL_PRESENCE)
             {
+                bluetoothWaitReady();
                 bluetoothPrintf("----+");
             }
             else
             {
+                bluetoothWaitReady();
                 bluetoothPrintf("    +");
             }
         }
-        bluetoothPrintf("\n ");
-
-        bluetoothPrintf("%2d ", i);
+        bluetoothWaitReady();
+        bluetoothPrintf("\n %2d ", i);
         for (int j = 0; j < MAZE_SIZE; j++)
         {
             if (maze.cell[j][i].length != CANT_GO)
             {
+                bluetoothWaitReady();
                 bluetoothPrintf("%4d", maze.cell[j][i].length);
             }
             else
             {
+                bluetoothWaitReady();
                 bluetoothPrintf("    ");
             }
             if (maze.cell[j][i].wall_east == NO_KNOWN)
             {
+                bluetoothWaitReady();
                 bluetoothPrintf("!");
             }
             else if (maze.cell[j][i].wall_east == WALL_PRESENCE)
             {
+                bluetoothWaitReady();
                 bluetoothPrintf("|");
             }
             else
             {
+                bluetoothWaitReady();
                 bluetoothPrintf(" ");
             }
         }
+        bluetoothWaitReady();
         bluetoothPrintf("\n");
     }
+    bluetoothWaitReady();
     bluetoothPrintf("\n");
 #endif
 }
@@ -876,7 +837,7 @@ int findArrival(labyrinthe maze, coordinate *end_coordinate)
     int possible_end_find_cost = CANT_GO;
     for (int x = 0; x < (MAZE_SIZE - 1); x++)
     {
-     for (int y = 0; y < (MAZE_SIZE - 1); ++y)
+        for (int y = 0; y < (MAZE_SIZE - 1); ++y)
         {
             if (maze.cell[x][y].wall_east == NO_WALL
                     && maze.cell[x][y].wall_south == NO_WALL
@@ -886,7 +847,9 @@ int findArrival(labyrinthe maze, coordinate *end_coordinate)
             {
                 end_coordinate->x = x;
                 end_coordinate->y = y;
-//                bluetoothPrintf("end find at : %i; %i\n", x, y);
+#ifdef PRINT_BLUETOOTH_BASIC_DEGUG
+                bluetoothPrintf("end find at : %i; %i\n", x, y);
+#endif
                 return MAZE_SOLVER_E_SUCCESS;
             }
             if (possible_end_find_cost
@@ -897,9 +860,11 @@ int findArrival(labyrinthe maze, coordinate *end_coordinate)
                     && maze.cell[x][y].length != CANT_GO && maze.cell[x+1][y].length != CANT_GO
                     && maze.cell[x][y+1].length != CANT_GO && maze.cell[x+1][y+1].length != CANT_GO)
             {
-                //bluetoothPrintf("possible end find at : %i; %i\n", x, y);
+#ifdef PRINT_BLUETOOTH_BASIC_DEGUG
+                bluetoothPrintf("possible end find at : %i; %i\n", x, y);
+#endif
                 if ((maze.cell[x][y].wall_east != NO_WALL
-                            || maze.cell[x][y].wall_south != NO_WALL)
+                        || maze.cell[x][y].wall_south != NO_WALL)
                         && maze.cell[x][y].length != 0
                         && maze.cell[x][y].length < possible_end_find_cost)
                 {
@@ -909,7 +874,7 @@ int findArrival(labyrinthe maze, coordinate *end_coordinate)
                             maze.cell[end_coordinate->x][end_coordinate->y].length;
                 }
                 if ((maze.cell[x + 1][y].wall_west != NO_WALL
-                            || maze.cell[x + 1][y].wall_south != NO_WALL)
+                        || maze.cell[x + 1][y].wall_south != NO_WALL)
                         && maze.cell[x+1][y].length != 0
                         && maze.cell[x+1][y].length < possible_end_find_cost)
                 {
@@ -919,7 +884,7 @@ int findArrival(labyrinthe maze, coordinate *end_coordinate)
                             maze.cell[end_coordinate->x][end_coordinate->y].length;
                 }
                 if ((maze.cell[x][y + 1].wall_east != NO_WALL
-                            || maze.cell[x][y + 1].wall_south != NO_WALL)
+                        || maze.cell[x][y + 1].wall_south != NO_WALL)
                         && maze.cell[x][y+1].length != 0
                         && maze.cell[x][y+1].length < possible_end_find_cost)
                 {
@@ -929,7 +894,7 @@ int findArrival(labyrinthe maze, coordinate *end_coordinate)
                             maze.cell[end_coordinate->x][end_coordinate->y].length;
                 }
                 if ((maze.cell[x + 1][y + 1].wall_west != NO_WALL
-                            || maze.cell[x + 1][y + 1].wall_south != NO_WALL)
+                        || maze.cell[x + 1][y + 1].wall_south != NO_WALL)
                         && maze.cell[x+1][y+1].length != 0
                         && maze.cell[x+1][y+1].length < possible_end_find_cost)
                 {
@@ -938,7 +903,9 @@ int findArrival(labyrinthe maze, coordinate *end_coordinate)
                     possible_end_find_cost =
                             maze.cell[end_coordinate->x][end_coordinate->y].length;
                 }
-                //bluetoothPrintf("possible end find at : %i; %i go to position : %d; %d\n", x, y, end_coordinate->x, end_coordinate->y);
+#ifdef PRINT_BLUETOOTH_BASIC_DEGUG
+                bluetoothPrintf("possible end find at : %i; %i go to position : %d; %d\n", x, y, end_coordinate->x, end_coordinate->y);
+#endif
             }
 
         }

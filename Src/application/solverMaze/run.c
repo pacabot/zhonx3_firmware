@@ -41,6 +41,8 @@ void run1(labyrinthe *maze, positionRobot *positionZhonx, coordinate start_oordi
         moveRealZhonxArc(&maze, positionZhonx, way);
         HAL_Delay(5000);
         goToPosition(maze, positionZhonx, start_oordinate);
+//		if(zhonxSettings.calibration_enabled == true)
+//			calibrateSimple();
         doUTurn(positionZhonx);
 
         ssd1306ClearScreen(MAIN_AREA);
