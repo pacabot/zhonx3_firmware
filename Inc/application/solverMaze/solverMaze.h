@@ -42,9 +42,23 @@
 #define END_FIND			1
 #define POSSIBLE_END_FIND	2
 
-#define MAX_SPEED_ROTATION		(500)
-#define MAX_SPEED_TRANSLATION   (500)
-#define END_SPEED_TRANSLATION	(500)
+#define RUN1_SPEED_ROTATION         (600)
+#define RUN1_MIN_SPEED_TRANSLATION  (600)
+#define RUN1_MAX_SPEED_TRANSLATION  (1000)
+
+#define RUN2_SPEED_ROTATION         (700)
+#define RUN2_MIN_SPEED_TRANSLATION  (700)
+#define RUN2_MAX_SPEED_TRANSLATION  (1200)
+
+#define SCAN_SPEED_ROTATION         (500)
+#define SCAN_MIN_SPEED_TRANSLATION  (500)
+#define SCAN_MAX_SPEED_TRANSLATION  (1000)
+
+#define SAFE_SPEED_ROTATION         (500)
+#define SAFE_SPEED_TRANSLATION      (500)
+
+#define RETURN_START_CELL
+
 
 #define PRINT_MAZE
 //#define PRINT_MAZE_DURING_RUN
@@ -100,6 +114,9 @@ typedef struct
 int maze_solver_new_maze(void);
 int exploration(labyrinthe *maze, positionRobot* positionZhonx,const positionRobot *start_coordinates,
         coordinate *end_coordinate);
+int startRun1(void);
+int startRun2(void);
+int maze_solver_run(const int runType);
 int findTheShortestPath(labyrinthe *maze, positionRobot* positionZhonx,
                         const positionRobot *start_coordinates, coordinate *end_coordinate);
 int goToPosition(labyrinthe *maze, positionRobot* positionZhonx,  coordinate end_coordinate);
@@ -112,7 +129,8 @@ void printMaze(labyrinthe maze, coordinate robot_coordinate);
 void printLength(const labyrinthe maze,const int x_robot, const int y_robot);
 void clearMazelength(labyrinthe* maze);
 char miniwayFind(labyrinthe *maze, coordinate start_coordinate, coordinate end_coordinate);
-int  moveRealZhonxArc(labyrinthe *maze, positionRobot *positionZhonx, coordinate way[]);
+int moveRealZhonxArc(labyrinthe *maze, positionRobot *positionZhonx,
+                     coordinate way[], int max_speed_rotation, int max_speed_translation, int min_speed_translation);
 void waitStart(void);
 char diffway(coordinate way1[], coordinate way2[]);
 coordinate findEndCoordinate (coordinate coordinate_tab[]);

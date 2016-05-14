@@ -139,13 +139,15 @@ int maze_solver_new_maze(void)
     if (rv != FLASH_DRIVER_E_SUCCESS)
     {
     }
+#ifdef RETURN_START_CELL
     telemetersStart();//because flash write cause interrupts damages
 
     ssd1306PrintfAtLine(0,0,&Font_5x8,"go to start position");
     ssd1306Refresh();
     goToPosition(&maze, &zhonx_position, start_position.coordinate_robot);	//goto start position
 
-    doUTurn(&zhonx_position); //initial position
+    doUTurn(&zhonx_position, SAFE_SPEED_ROTATION, SAFE_SPEED_TRANSLATION, SAFE_SPEED_TRANSLATION);//initial position
+#endif
 #ifdef PRINT_BLUETOOTH_BASIC_DEGUG
     bluetoothPrintf("uturn do\ngo back");
 #endif
@@ -163,7 +165,20 @@ int maze_solver_new_maze(void)
     return MAZE_SOLVER_E_SUCCESS;
 }
 
-int maze_solver_run(void)
+int startRun1(void)
+{
+    int rv = MAZE_SOLVER_E_SUCCESS;
+    rv = maze_solver_run(1);
+    return rv;
+}
+int startRun2(void)
+{
+    int rv = MAZE_SOLVER_E_SUCCESS;
+    rv = maze_solver_run(2);
+    return rv;
+}
+
+int maze_solver_run(const int runType)
 {
     int rv = MAZE_SOLVER_E_SUCCESS;
     coordinate end_coordinate; // it's the coordinates which Zhonx have at the start
@@ -202,13 +217,24 @@ int maze_solver_run(void)
     ssd1306ClearScreen(MAIN_AREA);
     printMaze(maze, zhonx_position.coordinate_robot);
 #endif
-    run1(&maze, &zhonx_position,
-         start_position.coordinate_robot,
-         end_coordinate);
-
-    //    run2(&maze, &zhonx_position,
-    //         start_position.coordinate_robot,
-    //         end_coordinate);
+    if (runType == 1)
+    {
+        run1(&maze, &zhonx_position,
+             start_position.coordinate_robot,
+             end_coordinate);
+    }
+    else if (runType == 2)
+    {
+        run2(&maze, &zhonx_position,
+             start_position.coordinate_robot,
+             end_coordinate);
+    }
+    else
+    {
+        HAL_Delay(100);
+        motorsDriverSleep(ON);
+        return MAZE_SOLVER_E_ERROR;
+    }
 
     HAL_Delay(100);
     motorsDriverSleep(ON);
@@ -218,6 +244,10 @@ int maze_solver_run(void)
 int exploration(labyrinthe *maze, positionRobot* positionZhonx,
                 const positionRobot *start_coordinates, coordinate *end_coordinate)
 {
+    int max_speed_rotation = SCAN_SPEED_ROTATION;
+    int max_speed_translation = SCAN_MAX_SPEED_TRANSLATION;
+    int min_speed_translation = SCAN_MIN_SPEED_TRANSLATION;
+
     int rv = MAZE_SOLVER_E_SUCCESS;
     coordinate way[MAZE_SIZE * MAZE_SIZE] = { { -1, -1 }, { END_OF_LIST,
             END_OF_LIST } };
@@ -232,13 +262,13 @@ int exploration(labyrinthe *maze, positionRobot* positionZhonx,
         rv = moveVirtualZhonx(*maze, *positionZhonx, way, *end_coordinate);
         if (rv != MAZE_SOLVER_E_SUCCESS)
         {
-//            moveRealZhonxArc(maze, positionZhonx, way);
-//            clearMazelength(maze);
-//            computeCellWeight(maze, positionZhonx->coordinate_robot, TRUE, FALSE);
-//            end_coordinate = &last_coordinate;// &positionZhonx->coordinate_robot;
-//            last_coordinate = findEndCoordinate(way);
-//            end_coordinate->x = last_coordinate.x;
-//            end_coordinate->y = last_coordinate.y;
+            //            moveRealZhonxArc(maze, positionZhonx, way);
+            //            clearMazelength(maze);
+            //            computeCellWeight(maze, positionZhonx->coordinate_robot, TRUE, FALSE);
+            //            end_coordinate = &last_coordinate;// &positionZhonx->coordinate_robot;
+            //            last_coordinate = findEndCoordinate(way);
+            //            end_coordinate->x = last_coordinate.x;
+            //            end_coordinate->y = last_coordinate.y;
             moveStop();
 #ifdef PRINT_MAZE_DURING_RUN
             printMaze(*maze, positionZhonx->coordinate_robot);
@@ -248,7 +278,7 @@ int exploration(labyrinthe *maze, positionRobot* positionZhonx,
 #endif
             return rv;
         }
-        rv = moveRealZhonxArc(maze, positionZhonx, way);
+        rv = moveRealZhonxArc(maze, positionZhonx, way, max_speed_rotation, max_speed_translation, min_speed_translation);
         if (rv != MAZE_SOLVER_E_SUCCESS)
         {
             moveStop();
@@ -309,6 +339,10 @@ int findTheShortestPath(labyrinthe *maze, positionRobot* positionZhonx,
 int goToPosition(labyrinthe *maze, positionRobot* positionZhonx,
                  coordinate end_coordinate)
 {
+    int max_speed_rotation = SAFE_SPEED_ROTATION;
+    int max_speed_translation = SAFE_SPEED_TRANSLATION;
+    int min_speed_translation = SAFE_SPEED_TRANSLATION;
+
     coordinate way[MAZE_SIZE * MAZE_SIZE];
     int rv;
     newCell(getCellState(), maze, *positionZhonx);
@@ -327,7 +361,7 @@ int goToPosition(labyrinthe *maze, positionRobot* positionZhonx,
             // no solution for go to the asked position
             return rv;
         }
-        rv = moveRealZhonxArc(maze, positionZhonx, way);	// use way for go the end position or closer position if there are no-know wall
+        rv = moveRealZhonxArc(maze, positionZhonx, way, max_speed_rotation, max_speed_translation, min_speed_translation);	// use way for go the end position or closer position if there are no-know wall
         if (rv != MAZE_SOLVER_E_SUCCESS)
         {
 #ifdef PRINT_BLUETOOTH_BASIC_DEGUG
@@ -402,7 +436,7 @@ int moveVirtualZhonx(labyrinthe maze, positionRobot positionZhonxVirtuel,
 }
 
 int moveRealZhonxArc(labyrinthe *maze, positionRobot *positionZhonx,
-                     coordinate way[])
+                     coordinate way[], int max_speed_rotation, int max_speed_translation, int min_speed_translation)
 {
 #ifdef PRINT_BLUETOOTH_BASIC_DEGUG
     bluetoothWaitReady();
@@ -471,7 +505,7 @@ int moveRealZhonxArc(labyrinthe *maze, positionRobot *positionZhonx,
             chain = FALSE;
         else
             chain = TRUE;
-        move_zhonx(orientaionToGo, positionZhonx, nb_move, FALSE, TRUE);
+        move_zhonx(orientaionToGo, positionZhonx, nb_move, FALSE, TRUE, max_speed_rotation, max_speed_translation, min_speed_translation);
         cell_state = getCellState();
         newCell(cell_state, maze, *positionZhonx);
 

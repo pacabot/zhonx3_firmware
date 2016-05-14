@@ -392,12 +392,12 @@ int moveRotateInPlace180WithCal(wallSelectorEnum wall_presence, double speed_rot
     // chose the correct turn for re-calibrate the robot if possible
     if (wall_presence == RIGHT_WALL)
     {
-        moveRotateInPlaceWithCalCW90(wall_presence, speed_rotation);
+        moveRotateInPlaceWithCalCW90(speed_rotation);
         moveRotateInPlaceCW90(speed_rotation);
     }
     else if (wall_presence == LEFT_WALL)
     {
-        moveRotateInPlaceWithCalCCW90(wall_presence, speed_rotation);
+        moveRotateInPlaceWithCalCCW90(speed_rotation);
         moveRotateInPlaceCCW90(speed_rotation);
     }
     else
@@ -415,14 +415,11 @@ int moveRotateInPlace180WithCal(wallSelectorEnum wall_presence, double speed_rot
  *      :    !
  *      o_________o
  */
-int moveRotateInPlaceWithCalCW90(wallSelectorEnum wall_presence, double speed_rotation)
+int moveRotateInPlaceWithCalCW90(double speed_rotation)
 {
     moveRotateInPlaceCW90(speed_rotation);
     // chose re-calibrate the robot if possible
-    if (wall_presence == RIGHT_WALL)
-    {
-        frontAlignment(speed_rotation);
-    }
+    frontAlignment(speed_rotation);
 
     return POSITION_CONTROL_E_SUCCESS;
 }
@@ -434,14 +431,11 @@ int moveRotateInPlaceWithCalCW90(wallSelectorEnum wall_presence, double speed_ro
  *      :    !
  *      o_________o
  */
-int moveRotateInPlaceWithCalCCW90(wallSelectorEnum wall_presence, double speed_rotation)
+int moveRotateInPlaceWithCalCCW90(double speed_rotation)
 {
     moveRotateInPlaceCCW90(speed_rotation);
     // chose re-calibrate the robot if possible
-    if (wall_presence == LEFT_WALL)
-    {
-        frontAlignment(speed_rotation);
-    }
+    frontAlignment(speed_rotation);
 
     return POSITION_CONTROL_E_SUCCESS;
 }
@@ -598,23 +592,23 @@ void movesTest1()
     moveCell(1, Vmax, Vout);
     moveUTurn(Vrotate, Vmax, Vout);
     moveCell(1, Vmax, Vout);
-//    moveStartCell(Vmax, Vmax);
-//    moveCell(1, Vmax, Vout);
-//    moveRotateCCW90(Vrotate, Vout);
-//    moveUTurn(Vrotate, Vmax, Vout);
-//    moveCell(1, Vmax, Vout);
-//    moveRotateCCW90(Vrotate, Vout);
-//    moveRotateCCW90(Vrotate, Vout);
-//    moveCell(1, Vmax, Vout);
-//    moveUTurn(Vrotate, Vmax, Vout);
-//    moveCell(1, Vmax, Vout);
-//    moveRotateCW90(Vrotate, Vout);
-//    moveRotateCW90(Vrotate, Vout);
-//    moveRotateCCW90(Vrotate, Vout);
-//    moveCell(1, Vmax, Vout);
-//    moveRotateCW90(Vrotate, Vout);
-//    moveRotateCW90(Vrotate, Vout);
-//    moveUTurn(Vrotate, Vmax, Vout);
+    //    moveStartCell(Vmax, Vmax);
+    //    moveCell(1, Vmax, Vout);
+    //    moveRotateCCW90(Vrotate, Vout);
+    //    moveUTurn(Vrotate, Vmax, Vout);
+    //    moveCell(1, Vmax, Vout);
+    //    moveRotateCCW90(Vrotate, Vout);
+    //    moveRotateCCW90(Vrotate, Vout);
+    //    moveCell(1, Vmax, Vout);
+    //    moveUTurn(Vrotate, Vmax, Vout);
+    //    moveCell(1, Vmax, Vout);
+    //    moveRotateCW90(Vrotate, Vout);
+    //    moveRotateCW90(Vrotate, Vout);
+    //    moveRotateCCW90(Vrotate, Vout);
+    //    moveCell(1, Vmax, Vout);
+    //    moveRotateCW90(Vrotate, Vout);
+    //    moveRotateCW90(Vrotate, Vout);
+    //    moveUTurn(Vrotate, Vmax, Vout);
     //    moveRotateCW90(Vrotate, Vout);
     //    moveRotateCCW90(Vrotate, Vout);
     //    moveRotateCCW90(Vrotate, Vout);
@@ -696,23 +690,23 @@ void movesTest2()
     Vout = 0;
     Vmax = 300;
 
-//    moveRotateInPlaceCW90(200);
-//    moveRotateInPlaceCW90(200);
-//    moveRotateInPlaceCW90(200);
-//    moveRotateInPlaceCW90(200);
+    //    moveRotateInPlaceCW90(200);
+    //    moveRotateInPlaceCW90(200);
+    //    moveRotateInPlaceCW90(200);
+    //    moveRotateInPlaceCW90(200);
 
     moveRotateInPlaceCW180(200);
     HAL_Delay(2000);
     moveRotateInPlaceCW180(200);
 
- //   move(180, 0, Vin, Vin);
+    //   move(180, 0, Vin, Vin);
     while (hasMoveEnded() != TRUE);
     motorsBrake();
     abs_encoders = (encoderGetAbsDist(ENCODER_L) + encoderGetAbsDist(ENCODER_R)) - abs_encoders;
     ssd1306ClearScreen(MAIN_AREA);
     ssd1306PrintIntAtLine(0, 2, "reel gyro =  ", (int)gyroGetAngle(), &Font_5x8);
-//    ssd1306PrintIntAtLine(0, 1, "abs  dist =  ", (int)abs_encoders / 2, &Font_5x8);
-//    ssd1306PrintIntAtLine(0, 2, "reel dist =  ", CELL_LENGTH, &Font_5x8);
+    //    ssd1306PrintIntAtLine(0, 1, "abs  dist =  ", (int)abs_encoders / 2, &Font_5x8);
+    //    ssd1306PrintIntAtLine(0, 2, "reel dist =  ", CELL_LENGTH, &Font_5x8);
     ssd1306Refresh();
     HAL_Delay(2000);
 #endif

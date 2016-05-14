@@ -68,9 +68,10 @@ extern void repositionFrontTest(void);
 extern void adxrs620Cal(void);
 extern void pidGyro_GetCriticalPoint(void);
 extern void pidTelemeters_GetCriticalPoint(void);
-extern int test_move_zhonx ();
-extern int maze_solver_run();
-extern int test_maze_flash ();
+extern int test_move_zhonx(void);
+extern int startRun1(void);
+extern int startRun2(void);
+extern int test_maze_flash(void);
 extern int _Factor;
 extern int _KP;
 /*
@@ -98,7 +99,7 @@ const menuItem testGraphicMenu =
 				{"Max speed dist:", 'a',	(void*)&titi},
 				{"Default accel :", 'a',    (void*)&tata},
 				{"Graphique",       'g',    NULL},
-				{(char*)NULL,	    0,		NULL}
+				{(char*)NULL,	     0,		NULL}
 		}
 };
 
@@ -107,7 +108,8 @@ const menuItem maze_menu=
 		"MAZE",         //9 characters max
 		{
                 {"New maze",    'f',    (void*)maze_solver_new_maze},
-                {"Run",         'f',    (void*)maze_solver_run},
+                {"Run1",        'f',    (void*)startRun1},
+                {"Run2",        'f',    (void*)startRun2},
                 {"Test_maze",   'f',    (void*)test_move_zhonx},
 				{"Calibration", 'b',    (void*)&zhonxSettings.calibration_enabled},
 				{"Color finish",'b',	(void*)&zhonxSettings.nime_competition},
