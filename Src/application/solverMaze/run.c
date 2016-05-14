@@ -87,13 +87,13 @@ int run(labyrinthe *maze, positionRobot *positionZhonx, coordinate start_oordina
     moveRealZhonxArc((labyrinthe *)&maze, positionZhonx, way, max_speed_rotation, max_speed_translation, min_speed_translation);
     runTime = HAL_GetTick() - runTime;
 
-    moveEmergencyStop();
+    moveStop();
     motorsDriverSleep(ON); //because flash write cause interrupts damages
     telemetersStop();//because flash write cause interrupts damages
 
     ssd1306ClearScreen(MAIN_AREA);
     ssd1306PrintfAtLine(0, 0, &Font_5x8, "TARGET REACHED !!!");
-    ssd1306PrintfAtLine(0, 2, &Font_7x8, "TIME %d.%ds", runTime / 1000, runTime % 1000);
+    ssd1306PrintfAtLine(0, 2, &Font_7x8, "TIME : %d.%ds", runTime / 1000, runTime % 1000);
     ssd1306Refresh();
     tone(G5, 100);
     HAL_Delay(100);
@@ -111,9 +111,9 @@ int run(labyrinthe *maze, positionRobot *positionZhonx, coordinate start_oordina
     doUTurn(positionZhonx, SAFE_SPEED_ROTATION, SAFE_SPEED_TRANSLATION, SAFE_SPEED_TRANSLATION);
 #endif
 #ifdef PRINT_BLUETOOTH_BASIC_DEGUG
-    bluetoothPrintf("uturn do\ngo back");
+    bluetoothPrintf("TIME : %d.%ds", runTime / 1000, runTime % 1000);
 #endif
-    ssd1306PrintfAtLine(40, 4, &Font_5x8, "END RUN");
+    ssd1306PrintfAtLine(30, 4, &Font_5x8, "END RUN");
     ssd1306Refresh();
     telemetersStop();
     motorsDriverSleep(ON);

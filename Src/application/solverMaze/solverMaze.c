@@ -53,6 +53,7 @@ int maze_solver_new_maze(void)
     coordinate end_coordinate; // it's the coordinates which Zhonx have at the start
     positionRobot zhonx_position, start_position;
     labyrinthe maze;
+    unsigned int explorationTime;
 
     memset(&end_coordinate, 0, sizeof(coordinate));
     memset(&zhonx_position, 0, sizeof(positionRobot));
@@ -97,7 +98,9 @@ int maze_solver_new_maze(void)
     ssd1306PrintfAtLine(40, 0, &Font_5x8, "SCAN...");
     ssd1306Refresh();
 
+    explorationTime = HAL_GetTick();
     rv = exploration(&maze, &zhonx_position, &start_position, &end_coordinate); //make exploration for go from the robot position and the end of the maze
+    explorationTime = HAL_GetTick() - explorationTime;
     if (rv != MAZE_SOLVER_E_SUCCESS)
     {
 #ifdef PRINT_BLUETOOTH_BASIC_DEGUG
@@ -119,6 +122,7 @@ int maze_solver_new_maze(void)
     {
         ssd1306ClearScreen(MAIN_AREA);
         ssd1306PrintfAtLine(0, 0, &Font_5x8, "TARGET REACHED !!!");
+        ssd1306PrintfAtLine(0, 2, &Font_7x8, "TIME : %d.%ds", explorationTime / 1000, explorationTime % 1000);
         ssd1306Refresh();
         tone(G5, 100);
         HAL_Delay(100);
@@ -141,22 +145,20 @@ int maze_solver_new_maze(void)
     }
 #ifdef RETURN_START_CELL
     telemetersStart();//because flash write cause interrupts damages
-
-    ssd1306PrintfAtLine(0,0,&Font_5x8,"go to start position");
+    ssd1306ClearScreen(MAIN_AREA);
+    ssd1306PrintfAtLine(0,0,&Font_5x8,"RETURN TO START CELL");
+    ssd1306PrintfAtLine(0, 2, &Font_7x8, "TIME : %d.%ds", explorationTime / 1000, explorationTime % 1000);
     ssd1306Refresh();
     goToPosition(&maze, &zhonx_position, start_position.coordinate_robot);	//goto start position
 
     doUTurn(&zhonx_position, SAFE_SPEED_ROTATION, SAFE_SPEED_TRANSLATION, SAFE_SPEED_TRANSLATION);//initial position
 #endif
 #ifdef PRINT_BLUETOOTH_BASIC_DEGUG
-    bluetoothPrintf("uturn do\ngo back");
+    bluetoothPrintf("TIME : %d.%ds", explorationTime / 1000, explorationTime % 1000);
 #endif
-    ssd1306ClearScreen(MAIN_AREA);
-    ssd1306PrintfAtLine(40, 0, &Font_5x8, "END SEARCH");
-    ssd1306Refresh();
     telemetersStop();
     motorsDriverSleep(ON);
-    HAL_Delay(1000);
+    HAL_Delay(2000);
 #ifdef PRINT_MAZE
     ssd1306ClearScreen(MAIN_AREA);
     printMaze(maze, zhonx_position.coordinate_robot);

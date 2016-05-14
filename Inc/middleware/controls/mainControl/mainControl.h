@@ -56,7 +56,6 @@ enum mainControlFollowType mainControlGetFollowType(void);
 enum mainControlWallFollowType mainControlGetWallFollowType(void);
 double positionControlSetSign(double sign);
 int moveStop(void);
-int moveEmergencyStop(void);
 /**
  * @brief compute and start a new movement
  *

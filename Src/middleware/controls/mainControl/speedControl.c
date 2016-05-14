@@ -40,6 +40,7 @@
 #include "middleware/controls/pidController/pidController.h"
 
 #define MAX_SPEED_ERROR     120.00 //Millimeter //todo gros bug de merde 113
+#define SPEED_ERROR_LIMITER 10.00 //Millimeter
 
 typedef struct
 {
@@ -98,9 +99,9 @@ int speedControlInit(void)
     memset(&speed_params, 0, sizeof(speed_params_struct));
     speedProfileCompute(0, 0, 0, 0);
 
-    encoder_pid_instance.Kp = 638.00;
-    encoder_pid_instance.Ki = 0.02666 / CONTROL_TIME_FREQ;
-    encoder_pid_instance.Kd = 0.00666 * CONTROL_TIME_FREQ;
+    encoder_pid_instance.Kp = 90;//638.00;
+    encoder_pid_instance.Ki = 0;//0.02666 / CONTROL_TIME_FREQ;
+    encoder_pid_instance.Kd = 0.006 * CONTROL_TIME_FREQ;
 
     speed_control.speed_pid.instance = &encoder_pid_instance;
 
@@ -165,6 +166,13 @@ int speedControlLoop(void)
     {
         ledPowerErrorBlink(1000, 150, 3);
         return SPEED_CONTROL_E_ERROR;
+    }
+    if (fabs(speed_control.speed_error) > SPEED_ERROR_LIMITER)
+    {
+        if (speed_control.speed_error > 0)
+            speed_control.speed_error = SPEED_ERROR_LIMITER;
+        else
+            speed_control.speed_error = -SPEED_ERROR_LIMITER;
     }
 
     speed_control.speed_command = pidController(speed_control.speed_pid.instance, speed_control.speed_error)
@@ -259,6 +267,8 @@ double speedProfileCompute(double distance, double max_speed, double end_speed, 
     speed_control.speed_error = 0;
     speed_control.speed_command = 0;
     speed_control.speed_consign = 0;
+
+    pidControllerReset(speed_control.speed_pid.instance);
 
     if (lround(distance) == 0)
     {

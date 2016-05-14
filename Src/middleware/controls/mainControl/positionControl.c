@@ -40,6 +40,7 @@
 #include <middleware/controls/mainControl/positionControl.h>
 
 #define MAX_POSITION_ERROR     30.00 //Degrees
+#define POSITION_ERROR_LIMITER 15.00 //Degrees
 
 typedef struct
 {
@@ -87,9 +88,9 @@ int positionControlInit(void)
     memset(&position_params, 0, sizeof(position_params_struct));
     positionProfileCompute(0, 0, 0);
 
-    gyro_pid_instance.Kp = 80;
+    gyro_pid_instance.Kp = 70;
     gyro_pid_instance.Ki = 0;//0.01;
-    gyro_pid_instance.Kd = 2000;
+    gyro_pid_instance.Kd = 1000;
 
     //    gyro_pid_instance.Kp = zhonxCalib_data->pid_gyro.Kp;
     //    gyro_pid_instance.Ki = zhonxCalib_data->pid_gyro.Ki / CONTROL_TIME_FREQ;
@@ -213,6 +214,14 @@ int positionControlLoop(void)
         return POSITION_CONTROL_E_ERROR;
     }
 
+    if (fabs(position_control.position_error) > POSITION_ERROR_LIMITER)
+    {
+        if (position_control.position_error > 0)
+            position_control.position_error = POSITION_ERROR_LIMITER;
+        else
+            position_control.position_error = -POSITION_ERROR_LIMITER;
+    }
+
     position_control.position_command = (pidController(position_control.position_pid.instance,
                                                        position_control.position_error)) * (float) position_params.sign;
 
@@ -284,6 +293,7 @@ double positionProfileCompute(double angle, double loop_time, double max_turn_sp
     position_control.current_angle_consign = 0;
     position_control.position_consign = 0;
     position_control.end_control = FALSE;
+    pidControllerReset(position_control.position_pid.instance);
 
     if (lround(angle) == 0)
     {

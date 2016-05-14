@@ -174,16 +174,8 @@ enum mainControlWallFollowType mainControlGetWallFollowType()
 int moveStop(void)
 {
     while (hasMoveEnded() != TRUE);
-    moveStraight(0, 0, 0, 500);
-    HAL_Delay(100);
-    motorsBrake();
-    return POSITION_CONTROL_E_SUCCESS;
-}
-
-int moveEmergencyStop(void)
-{
-    moveStraight(0, 0, 0, 1000);
-    HAL_Delay(500);
+    move(0, 0, 0, 0);
+    HAL_Delay(300);
     motorsBrake();
     return POSITION_CONTROL_E_SUCCESS;
 }
