@@ -49,7 +49,7 @@
 /* Types definitions */
 #define SUCCES_GAP_DIST 	 2.0
 #define DIAG_DIST_FOR_FOLLOW 82
-#define MAX_FOLLOW_ERROR	 100.00	//Millimeter
+#define MAX_FOLLOW_ERROR	 50.00	//Millimeter
 
 typedef struct
 {
@@ -70,9 +70,9 @@ static arm_pid_instance_f32 telemeters_pid_instance;
 
 int wallFollowControlInit(void)
 {
-    telemeters_pid_instance.Kp = 5;
+    telemeters_pid_instance.Kp = 11;
     telemeters_pid_instance.Ki = 0;
-    telemeters_pid_instance.Kd = 51;
+    telemeters_pid_instance.Kd = 310;
 
     wall_follow_control.follow_pid.instance = &telemeters_pid_instance;
 
@@ -94,6 +94,8 @@ int wallFollowControlLoop(void)
     if (mainControlGetWallFollowType() != STRAIGHT)
     {
         expanderSetLeds(0b000);
+        wall_follow_control.follow_command = 0;
+        pidControllerReset(wall_follow_control.follow_pid.instance);
         return WALL_FOLLOW_CONTROL_E_SUCCESS;
     }
 

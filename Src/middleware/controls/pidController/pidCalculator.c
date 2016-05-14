@@ -324,13 +324,13 @@ void pidTelemeters_GetCriticalPoint(void)
     arm_pid_instance_f32 position_pid;
     mobileAvrgStruct mAvrgStruct;
     memset((mobileAvrgStruct*) &mAvrgStruct, 0, sizeof(mobileAvrgStruct));
-    const double pwm_ratio = (PWM_RATIO_COEFF_A * 8000.00 + PWM_RATIO_COEFF_B);
+    const double pwm_ratio = (PWM_RATIO_COEFF_A * 7400.00 + PWM_RATIO_COEFF_B);
     const double error_max = 1.00; //distance error
     const int pwm_move_offset = 200;
     const int max_dist = 1000;
-    position_pid.Kp = 1;
+    position_pid.Kp = 10;
     position_pid.Ki = 0;
-    position_pid.Kd = 0;
+    position_pid.Kd = 300;
 
     encodersInit();
     motorsInit();
@@ -358,8 +358,10 @@ void pidTelemeters_GetCriticalPoint(void)
     HAL_Delay(1000);
     motorsDriverSleep(OFF);
     telemetersStart();
+
     //start 1s for stabilise
-    for (cnt = 0; cnt < 1000; cnt++)
+//    for (cnt = 0; cnt < 1000; cnt++)
+    while(1)
     {
         position_command = (pidController(&position_pid, (double) getTelemeterDist(TELEMETER_DL)
                                           - (double) getTelemeterDist(TELEMETER_DR)));
