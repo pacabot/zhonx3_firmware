@@ -42,5 +42,6 @@
 /* application 2xx*/
 #define MAZE_SOLVER_MODULE_ID			    201
 #define STATISTIQUES_MODULE_ID			    202
+#define RUN_MODULE_ID                       203
 
 #endif /* MODULE_ID_H_ */

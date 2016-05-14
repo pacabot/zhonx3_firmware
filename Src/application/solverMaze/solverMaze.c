@@ -217,24 +217,10 @@ int maze_solver_run(const int runType)
     ssd1306ClearScreen(MAIN_AREA);
     printMaze(maze, zhonx_position.coordinate_robot);
 #endif
-    if (runType == 1)
-    {
-        run1(&maze, &zhonx_position,
-             start_position.coordinate_robot,
-             end_coordinate);
-    }
-    else if (runType == 2)
-    {
-        run2(&maze, &zhonx_position,
-             start_position.coordinate_robot,
-             end_coordinate);
-    }
-    else
-    {
-        HAL_Delay(100);
-        motorsDriverSleep(ON);
-        return MAZE_SOLVER_E_ERROR;
-    }
+
+    run(&maze, &zhonx_position,
+        start_position.coordinate_robot,
+        end_coordinate, runType);
 
     HAL_Delay(100);
     motorsDriverSleep(ON);
