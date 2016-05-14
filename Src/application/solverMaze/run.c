@@ -55,8 +55,7 @@ void run1(labyrinthe *maze, positionRobot *positionZhonx, coordinate start_oordi
         moveVirtualZhonx(*maze, *positionZhonx, way, end_coordinate);
 
         telemetersStart();
-        ssd1306ClearScreen(MAIN_AREA);
-        ssd1306PrintfAtLine(30, 0, &Font_5x8, "WAIT START...");
+        ssd1306PrintfAtLine(55, 0, &Font_3x6, "WAIT START...");
         ssd1306Refresh();
         waitStart();
         ssd1306ClearScreen(MAIN_AREA);

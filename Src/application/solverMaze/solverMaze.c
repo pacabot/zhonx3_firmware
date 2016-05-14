@@ -199,10 +199,8 @@ int maze_solver_run(void)
 #endif
 
 #ifdef PRINT_MAZE
-    HAL_Delay(500);
     ssd1306ClearScreen(MAIN_AREA);
     printMaze(maze, zhonx_position.coordinate_robot);
-    while (expanderJoyFiltered() != JOY_RIGHT);
 #endif
     run1(&maze, &zhonx_position,
          start_position.coordinate_robot,
