@@ -75,7 +75,7 @@ typedef struct
     coordinate coordinate_robot;
     char orientation;
     char midOfCell;
-} positionRobot;
+}positionRobot;
 
 typedef struct
 {
@@ -84,18 +84,19 @@ typedef struct
     labyrinthe      maze;
     positionRobot   start_position;
     coordinate      end_coordinate;
-} MAZE_CONTAINER;
+}MAZE_CONTAINER;
 
 typedef struct
 {
     int             count_stored_mazes;
     MAZE_CONTAINER  mazes[MAX_STORABLE_MAZES];
-} STORED_MAZES;
+}STORED_MAZES;
 
 // fonctions
 int maze_solver_new_maze(void);
-int exploration(labyrinthe *maze, positionRobot* positionZhonx,const positionRobot *start_coordinates,
-        coordinate *end_coordinate);
+int exploration(labyrinthe *maze, positionRobot* positionZhonx,
+                const positionRobot *start_coordinates, coordinate *end_coordinate,
+                int max_speed_rotation, int max_speed_translation, int min_speed_translation);
 int startRun1(void);
 int startRun2(void);
 int maze_solver_run(const int runType);

@@ -53,12 +53,12 @@
 #include "middleware/cmdline/cmdline_parser.h"
 #include "middleware/cmdline/commands/commads.h"
 #include "middleware/ring_buffer/ring_buffer.h"
-#include "middleware/controls/mazeControl/spyPost.h"
+#include "middleware/moves/mazeMoves/spyPost.h"
 #include "middleware/controls/mainControl/mainControl.h"
 #include "middleware/controls/mainControl/positionControl.h"
 #include "middleware/controls/mainControl/speedControl.h"
 #include "middleware/display/pictures.h"
-#include "middleware/controls/mazeControl/basicMoves.h"
+#include "middleware/moves/mazeMoves/mazeMoves.h"
 
 /* USER CODE END Includes */
 

@@ -18,15 +18,8 @@
 #include "application/solverMaze/run.h"
 
 /* Middleware declarations */
-#include "middleware/controls/mazeControl/wallFollowControl.h"
-#include "middleware/controls/lineFollowerControl/lineFollowControl.h"
 #include "middleware/controls/mainControl/mainControl.h"
 #include "middleware/controls/mainControl/positionControl.h"
-#include "middleware/controls/mainControl/positionControl.h"
-#include "middleware/controls/mainControl/speedControl.h"
-#include "middleware/controls/mainControl/transfertFunction.h"
-#include "middleware/controls/mazeControl/reposition.h"
-#include "middleware/controls/mazeControl/spyPost.h"
 #include "middleware/wall_sensors/wall_sensors.h"
 #include "middleware/controls/pidController/pidController.h"
 #include "middleware/wall_sensors/wall_sensors.h"

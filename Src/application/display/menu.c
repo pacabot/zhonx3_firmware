@@ -33,7 +33,8 @@
 #include "middleware/display/pictures.h"
 #include "middleware/settings/settings.h"
 #include "middleware/cmdline/cmdline_parser.h"
-#include "middleware/controls/mazeControl/reposition.h"
+#include "middleware/controls/mazeControl/wallFollowControl.h"
+
 
 /* Declarations for this module */
 #include "application/display/menu.h"
@@ -63,8 +64,8 @@ extern void telemetersGetCalibrationValues(void);
 extern uint32_t spyPostCalibration(void);
 extern void spyPostTest(void);
 extern uint32_t spyPostReadCalibration(void);
-extern void repositionFrontDistCal(void);
-extern void repositionFrontTest(void);
+extern void spyWallFrontDistCal(void);
+extern void spyWallFrontTest(void);
 extern void adxrs620Cal(void);
 extern void pidGyro_GetCriticalPoint(void);
 extern void pidEncoders_GetCriticalPoint(void);
@@ -167,8 +168,8 @@ const menuItem frontCal=
 {
         "FRONT CAL",    //9 characters max
         {
-                { "Start calibration",  'f', (void*)repositionFrontDistCal},
-                { "Reposition test",    'f', (void*)repositionFrontTest},
+                { "Start calibration",  'f', (void*)spyWallFrontDistCal},
+                { "SpyWall test",    'f', (void*)spyWallFrontTest},
         }
 };
 
@@ -187,7 +188,7 @@ const menuItem calibration_menu=
         {
                 {"Telemeters",      'm',  (void*)&telemetersCal},
                 {"SpyPost",         'm',  (void*)&spyPostCal},
-                {"Front reposition",'m',  (void*)&frontCal},
+                {"SpyWall",         'm',  (void*)&frontCal},
                 {"Gyroscope",       'm',  (void*)&gyroCal},
                 {"PID",             'm',  (void*)&pidCal},
         }

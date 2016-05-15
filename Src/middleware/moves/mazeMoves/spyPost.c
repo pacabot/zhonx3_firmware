@@ -39,7 +39,6 @@
 #include "peripherals/flash/flash.h"
 
 /* Middleware declarations */
-#include "middleware/controls/mazeControl/basicMoves.h"
 #include "middleware/display/pictures.h"
 #include "middleware/controls/mazeControl/wallFollowControl.h"
 #include "middleware/controls/lineFollowerControl/lineFollowControl.h"
@@ -48,10 +47,10 @@
 #include "middleware/controls/mainControl/positionControl.h"
 #include "middleware/controls/mainControl/speedControl.h"
 #include "middleware/controls/mainControl/transfertFunction.h"
-#include "middleware/controls/mazeControl/reposition.h"
+#include "middleware/moves/mazeMoves/mazeMoves.h"
 
 //Declarations for this module */
-#include "middleware/controls/mazeControl/spyPost.h"
+#include "middleware/moves/mazeMoves/spyPost.h"
 
 // Index of left profile in the array
 #define SPYPOST_LEFT_PROFILE_IDX    0
@@ -467,7 +466,7 @@ void spyPostStartMeasure(spyPostProfileStruct *currentProfile, enum telemeterNam
     uint32_t i = 0;
     uint32_t sample = 0;
 
-    repositionSetInitialPosition(0.00); //absolute position into a cell
+    wallFollowSetInitialPosition(0.00); //absolute position into a cell
     //take the measures
     move (0, SPYPOST_CAL_DISTANCE, SPYPOST_MOVE_SPEED, SPYPOST_MOVE_SPEED);
     for (i = 0; i < SPYPOST_ARRAY_PROFILE_LENGTH; i++)
@@ -692,7 +691,7 @@ void spyPostTest()
 
     move(0, OFFSET_DIST, Vmax, Vmax);
     while (hasMoveEnded() != TRUE);
-    moveCell(1, Vmax, Vmin);
+    mazeMoveCell(1, Vmax, Vmin);
     telemetersStop();
     HAL_Delay(1000);
     motorsDriverSleep(ON);

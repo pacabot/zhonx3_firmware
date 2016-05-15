@@ -12,8 +12,8 @@
 #include "config/module_id.h"
 #include "peripherals/flash/flash.h"
 #include "config/basetypes.h"
-#include "middleware/controls/mazeControl/spyPost.h"
-#include "middleware/controls/mazeControl/reposition.h"
+#include "middleware/moves/mazeMoves/spyPost.h"
+#include "middleware/moves/mazeMoves/spyWall.h"
 #include "middleware/controls/pidController/pidCalculator.h"
 #include "peripherals/gyroscope/adxrs620.h"
 
@@ -50,8 +50,8 @@ typedef struct
 typedef struct
 {
     spyPostRefProfileStruct spyPost[2];
+    spyWallCalibStruct      spyWall;
     gyro_calib_struct       gyro;
-    reposition_calib_struct reposition;
     arm_pid_instance_f32    pid_encoders;
     arm_pid_instance_f32    pid_gyro;
     arm_pid_instance_f32    pid_telemeters;

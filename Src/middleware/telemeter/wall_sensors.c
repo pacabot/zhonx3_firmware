@@ -34,6 +34,8 @@
 #include "peripherals/motors/motors.h"
 
 /* Middleware declarations */
+
+//Declarations for this module */
 #include "middleware/wall_sensors/wall_sensors.h"
 
 walls cell_state = { NO_WALL, NO_WALL, NO_WALL, NO_WALL };

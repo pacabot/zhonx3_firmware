@@ -20,7 +20,7 @@
 
 /* middleware include */
 #include "application/solverMaze/solverMaze.h"
-#include "middleware/controls/mazeControl/basicMoves.h"
+#include "middleware/moves/mazeMoves/mazeMoves.h"
 #include "middleware/controls/mainControl/mainControl.h"
 #include "middleware/controls/mainControl/positionControl.h"
 
@@ -41,21 +41,21 @@ void goOrientation(char *orientationZhonx, char directionToGo, int max_speed_rot
 #endif
             break;
         case RIGHT :
-            moveRotateInPlaceWithCalCCW90(max_speed_rotation);
+            mazeMoveRotateInPlaceWithCalCCW90(max_speed_rotation);
 #ifdef DEBUG_ROBOT_INTERFACE
             bluetoothWaitReady();
             bluetoothPrintf("RIGHT\n");
 #endif
             break;
         case UTURN :
-            moveRotateInPlace180WithCal(0, max_speed_rotation);
+            mazeMoveRotateInPlace180WithCal(0, max_speed_rotation);
 #ifdef DEBUG_ROBOT_INTERFACE
             bluetoothWaitReady();
             bluetoothPrintf("UTURN\n");
 #endif
             break;
         case LEFT :
-            moveRotateInPlaceWithCalCW90(max_speed_rotation);
+            mazeMoveRotateInPlaceWithCalCW90(max_speed_rotation);
 #ifdef DEBUG_ROBOT_INTERFACE
             bluetoothWaitReady();
             bluetoothPrintf("LEFT\n");
@@ -95,12 +95,12 @@ void move_zhonx(int direction_to_go, positionRobot *positionZhonx, int numberOfC
         bluetoothWaitReady();
         bluetoothPrintf("start cell ");
 #endif
-        moveStartCell(min_speed_translation, min_speed_translation);
+        mazeMoveStartCell(min_speed_translation, min_speed_translation);
         numberOfCell--;
     }
     else // so endMidOfCase=TRUE and positionZhonx->midOfCase=FALSE
     {
-        //moveHalfCell_IN(max_speed_translation, min_speed_translation); //TODO : change that to end cell
+        //mazeMoveHalfCell_IN(max_speed_translation, min_speed_translation); //TODO : change that to end cell
     }
     switch (turn)
     {
@@ -117,13 +117,11 @@ void move_zhonx(int direction_to_go, positionRobot *positionZhonx, int numberOfC
 #endif
             if (positionZhonx->midOfCell == TRUE)
             {
-//                while (hasMoveEnded() != TRUE);				//todo rotate in place
-//                move(90, 0, max_speed_rotation, 0);
-                moveRotateInPlaceWithCalCW90(max_speed_rotation);
+                mazeMoveRotateInPlaceWithCalCW90(max_speed_rotation);
             }
             else
             {
-                moveRotateCW90(max_speed_rotation, min_speed_translation);
+                mazeMoveRotateCW90(max_speed_rotation, min_speed_translation);
                 numberOfCell--;
             }
             break;
@@ -135,14 +133,12 @@ void move_zhonx(int direction_to_go, positionRobot *positionZhonx, int numberOfC
             if (positionZhonx->midOfCell == FALSE)
             {
                 numberOfCell--;
-                moveUTurn(max_speed_rotation, min_speed_translation,
+                mazeMoveUTurn(max_speed_rotation, min_speed_translation,
                           min_speed_translation);
             }
             else
             {
-//                moveUTurn(max_speed_rotation, max_speed_translation,
-//                          min_speed_translation); //TODO : rotate 180° in place
-                moveRotateInPlace180WithCal(0, max_speed_rotation);
+                mazeMoveRotateInPlace180WithCal(0, max_speed_rotation);
             }
             break;
         case LEFT:
@@ -152,13 +148,11 @@ void move_zhonx(int direction_to_go, positionRobot *positionZhonx, int numberOfC
 #endif
             if (positionZhonx->midOfCell == TRUE)
             {
-//                while (hasMoveEnded() != TRUE);
-//                move(-90, 0, max_speed_rotation, 0); // TODO : rotate in place
-                moveRotateInPlaceWithCalCCW90(max_speed_rotation);
+                mazeMoveRotateInPlaceWithCalCCW90(max_speed_rotation);
             }
             else
             {
-                moveRotateCCW90(max_speed_rotation, min_speed_translation);
+                mazeMoveRotateCCW90(max_speed_rotation, min_speed_translation);
                 numberOfCell--;
             }
 
@@ -166,11 +160,11 @@ void move_zhonx(int direction_to_go, positionRobot *positionZhonx, int numberOfC
     }
     if (numberOfCell == 1)
     {
-        moveCell(numberOfCell, min_speed_translation, min_speed_translation);
+        mazeMoveCell(numberOfCell, min_speed_translation, min_speed_translation);
     }
     if (numberOfCell > 1)
     {
-        moveCell(numberOfCell, max_speed_translation, min_speed_translation);
+        mazeMoveCell(numberOfCell, max_speed_translation, min_speed_translation);
     }
     positionZhonx->midOfCell = end_mid_of_case;
 
@@ -180,7 +174,7 @@ void doUTurn(positionRobot *positionZhonx, int max_speed_rotation, int max_speed
 {
     positionZhonx->orientation = (positionZhonx->orientation + 2) % 4;
 
-    moveResetStart(max_speed_rotation, max_speed_translation, min_speed_translation);
+    mazeMoveResetStart(max_speed_rotation, max_speed_translation, min_speed_translation);
     moveStop();
     motorsDriverSleep(ON);
 }
