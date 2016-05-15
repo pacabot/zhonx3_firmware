@@ -68,7 +68,7 @@ void adxrs620Init(void)
     sConfigInjected.InjectedChannel = ADC_CHANNEL_14;
     sConfigInjected.InjectedRank = 1;
     sConfigInjected.InjectedNbrOfConversion = 1;
-    sConfigInjected.InjectedSamplingTime = ADC_SAMPLETIME_28CYCLES;
+    sConfigInjected.InjectedSamplingTime = ADC_SAMPLETIME_144CYCLES;
     sConfigInjected.ExternalTrigInjecConvEdge =
     ADC_EXTERNALTRIGINJECCONVEDGE_RISING;
     sConfigInjected.ExternalTrigInjecConv = ADC_EXTERNALTRIGINJECCONV_T5_TRGO;

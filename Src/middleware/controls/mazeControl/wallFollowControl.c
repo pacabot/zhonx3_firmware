@@ -70,9 +70,9 @@ static arm_pid_instance_f32 telemeters_pid_instance;
 
 int wallFollowControlInit(void)
 {
-    telemeters_pid_instance.Kp = 11;
+    telemeters_pid_instance.Kp = 12;
     telemeters_pid_instance.Ki = 0;
-    telemeters_pid_instance.Kd = 310;
+    telemeters_pid_instance.Kd = 200;
 
     wall_follow_control.follow_pid.instance = &telemeters_pid_instance;
 
@@ -95,6 +95,7 @@ int wallFollowControlLoop(void)
     {
         expanderSetLeds(0b000);
         wall_follow_control.follow_command = 0;
+        wall_follow_control.follow_error = 0;
         pidControllerReset(wall_follow_control.follow_pid.instance);
         return WALL_FOLLOW_CONTROL_E_SUCCESS;
     }

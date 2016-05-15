@@ -26,6 +26,7 @@
 #include "peripherals/display/smallfonts.h"
 #include "peripherals/expander/pcf8574.h"
 #include "peripherals/telemeters/telemeters.h"
+#include "peripherals/motors/motors.h"
 
 /* Middleware declarations */
 
@@ -69,16 +70,16 @@ void encodersInit(void)
     htim3.Init.Prescaler = 0;
     htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
     htim3.Init.Period = 2047 * WELL_TURN_NB;
-    htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV4;
+    htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV2;
     sConfig.EncoderMode = TIM_ENCODERMODE_TI12;
     sConfig.IC1Polarity = TIM_ICPOLARITY_RISING;
     sConfig.IC1Selection = TIM_ICSELECTION_DIRECTTI;
-    sConfig.IC1Prescaler = TIM_ICPSC_DIV8;
-    sConfig.IC1Filter = 15;
+    sConfig.IC1Prescaler = TIM_ICPSC_DIV4;
+    sConfig.IC1Filter = 8;
     sConfig.IC2Polarity = TIM_ICPOLARITY_RISING;
     sConfig.IC2Selection = TIM_ICSELECTION_DIRECTTI;
-    sConfig.IC2Prescaler = TIM_ICPSC_DIV8;
-    sConfig.IC2Filter = 15;
+    sConfig.IC2Prescaler = TIM_ICPSC_DIV4;
+    sConfig.IC2Filter = 8;
     HAL_TIM_Encoder_Init(&htim3, &sConfig);
 
     sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
@@ -89,17 +90,17 @@ void encodersInit(void)
     htim1.Init.Prescaler = 0;
     htim1.Init.CounterMode = TIM_COUNTERMODE_UP;
     htim1.Init.Period = 2047 * WELL_TURN_NB;
-    htim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV4;
+    htim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV2;
     htim1.Init.RepetitionCounter = 0;
     sConfig.EncoderMode = TIM_ENCODERMODE_TI12;
     sConfig.IC1Polarity = TIM_ICPOLARITY_RISING;
     sConfig.IC1Selection = TIM_ICSELECTION_DIRECTTI;
-    sConfig.IC1Prescaler = TIM_ICPSC_DIV8;
-    sConfig.IC1Filter = 15;
+    sConfig.IC1Prescaler = TIM_ICPSC_DIV4;
+    sConfig.IC1Filter = 8;
     sConfig.IC2Polarity = TIM_ICPOLARITY_RISING;
     sConfig.IC2Selection = TIM_ICSELECTION_DIRECTTI;
-    sConfig.IC2Prescaler = TIM_ICPSC_DIV8;
-    sConfig.IC2Filter = 15;
+    sConfig.IC2Prescaler = TIM_ICPSC_DIV4;
+    sConfig.IC2Filter = 8;
     HAL_TIM_Encoder_Init(&htim1, &sConfig);
 
     sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
@@ -210,6 +211,12 @@ void encoderTest(void)
 {
     encodersInit();
     encodersReset();
+#if 0   //test encoders response
+    motorsInit();
+    motorsDriverSleep(OFF);
+    motorSet_DF(MOTOR_R, (int)(999));
+    motorSet_DF(MOTOR_L, (int)(999));
+#endif
 
     while (expanderJoyFiltered() != JOY_LEFT)
     {

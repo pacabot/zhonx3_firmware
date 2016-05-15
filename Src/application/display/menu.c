@@ -67,6 +67,7 @@ extern void repositionFrontDistCal(void);
 extern void repositionFrontTest(void);
 extern void adxrs620Cal(void);
 extern void pidGyro_GetCriticalPoint(void);
+extern void pidEncoders_GetCriticalPoint(void);
 extern void pidTelemeters_GetCriticalPoint(void);
 extern int test_move_zhonx(void);
 extern int startRun1(void);
@@ -157,7 +158,8 @@ const menuItem pidCal=
         "PID",          //9 characters max
         {
                 { "Gyro Kp critic", 'f', (void*)pidGyro_GetCriticalPoint},
-                { "Telemeter Kp critic", 'f', (void*)pidTelemeters_GetCriticalPoint},
+                { "Enc. Kp critic", 'f', (void*)pidEncoders_GetCriticalPoint},
+                { "Tel. Kp critic", 'f', (void*)pidTelemeters_GetCriticalPoint},
         }
 };
 
