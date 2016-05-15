@@ -406,11 +406,13 @@ void print_cell_state (walls cell_state)
 void waitStart()
 {
     tone(E5, 50);
-    while(getWallPresence(FRONT_WALL) == FALSE);
+    while((getTelemeterDist(TELEMETER_FL) >= WAIT_START_DISTANCE) &&
+            (getTelemeterDist(TELEMETER_FR) >= WAIT_START_DISTANCE));
     tone(E5, 50);
     HAL_Delay(20);
     tone(E5, 50);
-    while(getWallPresence(FRONT_WALL) == TRUE);
+    while((getTelemeterDist(TELEMETER_FL) <= WAIT_START_DISTANCE) ||
+            (getTelemeterDist(TELEMETER_FR) <= WAIT_START_DISTANCE));
     toneItMode(D6, 200);
 }
 
