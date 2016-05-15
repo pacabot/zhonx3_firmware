@@ -154,7 +154,7 @@
 //#define MAX_DECEL				(8000.0)	//mm/s/s
 
 #define MAX_TURN_SPEED			(500.00)	//mm/s
-#define MAX_TURN_ACCEL			(4000.00)	    //°/s/s
+#define MAX_TURN_ACCEL			(4000.00)	//°/s/s perhaps wrong scale //todo verify correct scale
 
 /**************************************************************************************/
 /***************                 Motors Constants                  ********************/
