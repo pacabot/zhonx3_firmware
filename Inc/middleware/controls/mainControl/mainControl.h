@@ -27,7 +27,7 @@ enum rotationTypeEnum
 {
     CW, CCW
 };
-enum mainControlWallFollowType
+enum mainControlMoveType
 {
     STRAIGHT, CURVE, ROTATE_IN_PLACE
 };
@@ -38,53 +38,20 @@ enum mainControlFollowType
 
 typedef struct
 {
-    enum mainControlWallFollowType moveType;
+    enum mainControlMoveType moveType;
     walls cellState;
 } move_params_struct;
 
-extern move_params_struct move_params;
-
 extern double ROTATION_DIAMETER;
 
-int mainControlInit(void);
-int mainControlStopPidLoop(void);
-int mainControl_IT(void);
-int setWallFollowControl(char isActive);
-char hasMoveEnded(void);
-int mainControlSetFollowType(enum mainControlFollowType follow_type);
-enum mainControlFollowType mainControlGetFollowType(void);
-enum mainControlWallFollowType mainControlGetWallFollowType(void);
-double positionControlSetSign(double sign);
-int moveStop(void);
-/**
- * @brief compute and start a new movement
- *
- * This function outputs all params for pids controller (speedControl and positionControl).
- *
- * @param
- *
- * angle => angle of rotation in degres (0° for strait move)
- * radius_or_distance => radius in mm of rotate if angle > 0 or distance in mm if angle = 0°
- * max_speed => max speed
- * end_speed => end speed for chain
- *
- * @retval status
- */
-int move(double angle, double radius_or_distance, double max_speed, double end_speed);
-/**
- * @brief compute and start a new straight movement
- *
- * This function outputs all params for pids controller (speedControl and positionControl).
- *
- * @param
- *
- * angle => angle of rotation in degres (0° for strait move)
- * distance => distance in mm
- * max_speed => max speed
- * end_speed => end speed for chain
- * accel     => acceleration mm/s²
- * @retval status
- */
-int moveStraight(double distance, double max_speed, double end_speed, double accel);
+int                             mainControlInit(void);
+int                             mainControlStopPidLoop(void);
+int                             mainControlSartPidLoop(void);
+int                             mainControl_IT(void);
+int                             mainControlSetFollowType(enum mainControlFollowType followType);
+enum mainControlFollowType      mainControlGetFollowType(void);
+enum mainControlMoveType        mainControlGetMoveType(void);
+int                             mainControlSetMoveType(enum mainControlMoveType moveType);
+char                            hasMoveEnded(void);
 
 #endif // __MAINCONTROL_H

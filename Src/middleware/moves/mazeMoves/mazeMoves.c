@@ -34,6 +34,7 @@
 #include "middleware/wall_sensors/wall_sensors.h"
 #include "middleware/controls/pidController/pidController.h"
 #include "middleware/wall_sensors/wall_sensors.h"
+#include "middleware/moves/basicMoves/basicMoves.h"
 
 /* Peripheral declarations */
 #include "peripherals/gyroscope/adxrs620.h"
@@ -83,7 +84,7 @@ int mazeMoveHalfCell_IN(double max_speed, double end_speed)
 {
     while (hasMoveEnded() != TRUE);
     wallFollowSetInitialPosition(OFFSET_DIST);
-    move(0, (HALF_CELL_LENGTH - OFFSET_DIST), max_speed, end_speed);
+    basicMove(0, (HALF_CELL_LENGTH - OFFSET_DIST), max_speed, end_speed);
 
     return MAZE_MOVES_E_SUCCESS;
 }
@@ -99,7 +100,7 @@ int mazeMoveHalfCell_OUT(double max_speed, double end_speed)
 {
     while (hasMoveEnded() != TRUE);
     wallFollowSetInitialPosition(HALF_CELL_LENGTH);
-    move(0, HALF_CELL_LENGTH - OFFSET_DIST, max_speed, end_speed);
+    basicMove(0, HALF_CELL_LENGTH - OFFSET_DIST, max_speed, end_speed);
 
     return MAZE_MOVES_E_SUCCESS;
 }
@@ -115,7 +116,7 @@ int mazeMoveMainDist(getOffsetsStruct *offset, double max_speed, double end_spee
 {
     while (hasMoveEnded() != TRUE);
     wallFollowSetInitialPosition(OFFSET_DIST); //absolute position into a cell
-    move(0, MAIN_DIST, max_speed, end_speed); //distance with last move offset
+    basicMove(0, MAIN_DIST, max_speed, end_speed); //distance with last move offset
     spyPostGetOffset(&offset->spyPost);
 
     return MAZE_MOVES_E_SUCCESS;
@@ -171,7 +172,7 @@ int mazeMoveOffsetDist(getOffsetsStruct *offset, double max_speed)
     }
     while (hasMoveEnded() != TRUE);
     wallFollowSetInitialPosition(CELL_LENGTH - OFFSET_DIST);    //absolute position into a cell
-    move(0, (OFFSET_DIST * 2.00) + offset_error, max_speed, max_speed);
+    basicMove(0, (OFFSET_DIST * 2.00) + offset_error, max_speed, max_speed);
     return MAZE_MOVES_E_SUCCESS;
 }
 
@@ -185,7 +186,7 @@ int mazeMoveOffsetDist(getOffsetsStruct *offset, double max_speed)
 int mazeMoveRotateInPlaceCW90(double speed_rotation)
 {
     while (hasMoveEnded() != TRUE);
-    move(90, 0, speed_rotation, 0);
+    basicMove(90, 0, speed_rotation, 0);
 
     return MAZE_MOVES_E_SUCCESS;
 }
@@ -200,7 +201,7 @@ int mazeMoveRotateInPlaceCW90(double speed_rotation)
 int mazeMoveRotateInPlaceCCW90(double speed_rotation)
 {
     while (hasMoveEnded() != TRUE);
-    move(-90, 0, speed_rotation, 0);
+    basicMove(-90, 0, speed_rotation, 0);
 
     return MAZE_MOVES_E_SUCCESS;
 }
@@ -215,7 +216,7 @@ int mazeMoveRotateInPlaceCCW90(double speed_rotation)
 int mazeMoveRotateInPlaceCW180(double speed_rotation)
 {
     while (hasMoveEnded() != TRUE);
-    move(180, 0, speed_rotation, 0);
+    basicMove(180, 0, speed_rotation, 0);
 
     return MAZE_MOVES_E_SUCCESS;
 }
@@ -231,31 +232,31 @@ int mazeMoveFrontAlignment(float max_speed)
     {
         if (getTelemeterDist(TELEMETER_FR) > getTelemeterDist(TELEMETER_FL))
         {
-            move(-30, 0, max_speed, max_speed);
+            basicMove(-30, 0, max_speed, max_speed);
             while (((getTelemeterDist(TELEMETER_FR) - getTelemeterDist(TELEMETER_FL))) > 1.00)
             {
                 if (hasMoveEnded() == TRUE)
                 {
-                    move(30, 0, max_speed, max_speed);
+                    basicMove(30, 0, max_speed, max_speed);
                     return MAZE_MOVES_E_SUCCESS;
                 }
             }
         }
         else
         {
-            move(30, 0, max_speed, max_speed);
+            basicMove(30, 0, max_speed, max_speed);
             while (((getTelemeterDist(TELEMETER_FL) - getTelemeterDist(TELEMETER_FR))) > 1.00)
             {
                 if (hasMoveEnded() == TRUE)
                 {
-                    move(-30, 0, max_speed, max_speed);
+                    basicMove(-30, 0, max_speed, max_speed);
                     return MAZE_MOVES_E_SUCCESS;
                 }
             }
         }
-        move(0, 0, 0, 0);
+        basicMove(0, 0, 0, 0);
         relative_dist = ((getTelemeterDist(TELEMETER_FL) + getTelemeterDist(TELEMETER_FR)) / 2.00) - 21.00;
-        move(0, relative_dist, 100, 100);
+        basicMove(0, relative_dist, 100, 100);
     }
     return MAZE_MOVES_E_SUCCESS;
 }
@@ -319,7 +320,7 @@ int mazeMoveStartCell(double max_speed, double out_speed)
 #endif
     while (hasMoveEnded() != TRUE);
     wallFollowSetInitialPosition(Z3_CENTER_BACK_DIST + HALF_WALL_THICKNESS);
-    move(0, ((CELL_LENGTH - (Z3_CENTER_BACK_DIST + HALF_WALL_THICKNESS)) - OFFSET_DIST), max_speed, out_speed);
+    basicMove(0, ((CELL_LENGTH - (Z3_CENTER_BACK_DIST + HALF_WALL_THICKNESS)) - OFFSET_DIST), max_speed, out_speed);
     while (hasMoveEnded() != TRUE);
 
     spyWallGetFrontDist(&offset.frontCal);
@@ -345,7 +346,7 @@ int mazeMoveRotateCW90(double max_turn_speed, double out_speed)
     bluetoothPrintf("\rMOVE ROTATE CW90");
 #endif
     while (hasMoveEnded() != TRUE);
-    move(90, (HALF_CELL_LENGTH - OFFSET_DIST), max_turn_speed, max_turn_speed);
+    basicMove(90, (HALF_CELL_LENGTH - OFFSET_DIST), max_turn_speed, max_turn_speed);
     while (hasMoveEnded() != TRUE);
 
     spyWallGetFrontDist(&offset.frontCal);
@@ -371,7 +372,7 @@ int mazeMoveRotateCCW90(double max_turn_speed, double out_speed)
     bluetoothPrintf("\rMOVE ROTATE CCW90");
 #endif
     while (hasMoveEnded() != TRUE);
-    move(-90, (HALF_CELL_LENGTH - OFFSET_DIST), max_turn_speed, max_turn_speed);
+    basicMove(-90, (HALF_CELL_LENGTH - OFFSET_DIST), max_turn_speed, max_turn_speed);
     while (hasMoveEnded() != TRUE);
 
     spyWallGetFrontDist(&offset.frontCal);
@@ -476,11 +477,11 @@ int mazeMoveUTurn(double speed_rotation, double max_speed, double out_speed)
     // go back and go out for maximize correct alignment
     while (hasMoveEnded() != TRUE);
     wallFollowSetInitialPosition(HALF_CELL_LENGTH);
-    move(0, -1.00 * (HALF_CELL_LENGTH - Z3_CENTER_BACK_DIST - UTURN_OFFSET + 15), max_speed, 0);
+    basicMove(0, -1.00 * (HALF_CELL_LENGTH - Z3_CENTER_BACK_DIST - UTURN_OFFSET + 15), max_speed, 0);
 
     wallFollowSetInitialPosition(Z3_CENTER_BACK_DIST + UTURN_OFFSET);
     while (hasMoveEnded() != TRUE);
-    move(0, (HALF_CELL_LENGTH - Z3_CENTER_BACK_DIST - UTURN_OFFSET), max_speed, max_speed);
+    basicMove(0, (HALF_CELL_LENGTH - Z3_CENTER_BACK_DIST - UTURN_OFFSET), max_speed, max_speed);
 
     mazeMoveHalfCell_OUT(max_speed, out_speed);
     mainControlSetFollowType(WALL_FOLLOW);
@@ -526,7 +527,7 @@ int mazeMoveResetStart(double speed_rotation, double max_speed, double out_speed
     // go back and go out for maximize correct alignment
     while (hasMoveEnded() != TRUE);
     wallFollowSetInitialPosition(HALF_CELL_LENGTH);
-    move(0, -1.00 * (HALF_CELL_LENGTH - Z3_CENTER_BACK_DIST - UTURN_OFFSET + 15), max_speed, 0);
+    basicMove(0, -1.00 * (HALF_CELL_LENGTH - Z3_CENTER_BACK_DIST - UTURN_OFFSET + 15), max_speed, 0);
     while (hasMoveEnded() != TRUE);
 
     return MAZE_MOVES_E_SUCCESS;
@@ -681,7 +682,7 @@ void movesTest2()
     HAL_Delay(2000);
     mazeMoveRotateInPlaceCW180(200);
 
-    //   move(180, 0, Vin, Vin);
+    //   basicMove(180, 0, Vin, Vin);
     while (hasMoveEnded() != TRUE);
     motorsBrake();
     abs_encoders = (encoderGetAbsDist(ENCODER_L) + encoderGetAbsDist(ENCODER_R)) - abs_encoders;

@@ -168,7 +168,7 @@ int positionControlLoop(void)
             / (PI * ROTATION_DIAMETER);
     }
 
-    if (mainControlGetWallFollowType() == ROTATE_IN_PLACE)
+    if (mainControlGetMoveType() == ROTATE_IN_PLACE)
     {
         position_control.nb_loop++;
         //        if (position_control.nb_loop < (position_params.nb_loop / 2))

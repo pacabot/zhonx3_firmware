@@ -23,6 +23,7 @@
 #include "middleware/wall_sensors/wall_sensors.h"
 #include "middleware/controls/pidController/pidController.h"
 #include "middleware/wall_sensors/wall_sensors.h"
+#include "middleware/moves/basicMoves/basicMoves.h"
 
 /* peripherale inlcudes*/
 #include "peripherals/motors/motors.h"
@@ -80,7 +81,7 @@ int run(labyrinthe *maze, positionRobot *positionZhonx, coordinate start_oordina
     moveRealZhonxArc((labyrinthe *)&maze, positionZhonx, way, max_speed_rotation, max_speed_translation, min_speed_translation);
     runTime = HAL_GetTick() - runTime;
 
-    moveStop();
+    basicMoveStop();
     motorsDriverSleep(ON); //because flash write cause interrupts damages
     telemetersStop();//because flash write cause interrupts damages
 

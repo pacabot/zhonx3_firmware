@@ -23,6 +23,7 @@
 #include "middleware/moves/mazeMoves/mazeMoves.h"
 #include "middleware/controls/mainControl/mainControl.h"
 #include "middleware/controls/mainControl/positionControl.h"
+#include "middleware/moves/basicMoves/basicMoves.h"
 
 #include "application/solverMaze/robotInterface.h"
 
@@ -175,7 +176,7 @@ void doUTurn(positionRobot *positionZhonx, int max_speed_rotation, int max_speed
     positionZhonx->orientation = (positionZhonx->orientation + 2) % 4;
 
     mazeMoveResetStart(max_speed_rotation, max_speed_translation, min_speed_translation);
-    moveStop();
+    basicMoveStop();
     motorsDriverSleep(ON);
 }
 

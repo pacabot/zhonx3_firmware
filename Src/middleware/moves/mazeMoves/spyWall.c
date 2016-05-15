@@ -32,6 +32,7 @@
 #include "middleware/controls/pidController/pidController.h"
 #include "middleware/display/pictures.h"
 #include "middleware/moves/mazeMoves/mazeMoves.h"
+#include "middleware/moves/basicMoves/basicMoves.h"
 
 /* Peripheral declarations */
 #include "peripherals/display/ssd1306.h"
@@ -112,14 +113,14 @@ void spyWallFrontDistCal(void)
 
     while (hasMoveEnded() != TRUE);
     wallFollowSetInitialPosition(0); //absolute position into a cell
-    move(0, MAIN_DIST + OFFSET_DIST, max_speed, max_speed); //distance with last move offset
+    basicMove(0, MAIN_DIST + OFFSET_DIST, max_speed, max_speed); //distance with last basicMove offset
 
     while (hasMoveEnded() != TRUE);
     left_dist = getTelemeterDist(TELEMETER_FL);
     right_dist = getTelemeterDist(TELEMETER_FR);
 
     telemetersStop();
-    moveStop();
+    basicMoveStop();
     motorsDriverSleep(ON);
 
     medium_dist = (right_dist + left_dist) / 2.00;
@@ -178,7 +179,7 @@ void spyWallFrontTest(void)
     Vmin = 100;
     Vmax = 100;
 
-    move(0, OFFSET_DIST, Vmax, Vmax);
+    basicMove(0, OFFSET_DIST, Vmax, Vmax);
     while (hasMoveEnded() != TRUE);
     mazeMoveCell(1, Vmax, Vmin);
     telemetersStop();

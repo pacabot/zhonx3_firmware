@@ -21,12 +21,18 @@
 #include <stdio.h>
 #include <stdint.h>
 
+/* Application declarations */
+#include "application/statistiques/statistiques.h"
+
 /* Middleware declarations */
 #include "middleware/controls/lineFollowerControl/lineFollowControl.h"
 #include "middleware/controls/mainControl/mainControl.h"
 #include "middleware/controls/mainControl/positionControl.h"
 #include "middleware/controls/mainControl/speedControl.h"
 #include "middleware/controls/mainControl/transfertFunction.h"
+#include "middleware/wall_sensors/wall_sensors.h"
+#include "middleware/controls/pidController/pidController.h"
+#include "middleware/moves/basicMoves/basicMoves.h"
 
 /* Peripheral declarations */
 #include "peripherals/lineSensors/lineSensors.h"
@@ -40,11 +46,8 @@
 #include "peripherals/telemeters/telemeters.h"
 #include "peripherals/bluetooth/bluetooth.h"
 
-/* Middleware declarations */
-#include "middleware/wall_sensors/wall_sensors.h"
-#include "middleware/controls/pidController/pidController.h"
+/* Declarations for this module */
 #include "application/lineFollower/lineFollower.h"
-#include "application/statistiques/statistiques.h"
 
 line_follower_struct line_follower;
 ground_sensors_struct max_Floor;	//global data to memorize maximum value of sensors
@@ -76,9 +79,9 @@ void lineSensorSendBluetooth(void)
 	lineSensorsStart();
 
 	tone(e, 500);
-	move(40, 0, 100, 0);
+	basicMove(40, 0, 100, 0);
 	while(hasMoveEnded() != TRUE);
-	move(-80, 0, 25, 0);
+	basicMove(-80, 0, 25, 0);
 	max_Floor.left = getLineSensorAdc(LINESENSOR_L);
 	max_Floor.front = getLineSensorAdc(LINESENSOR_F);
 	max_Floor.right = getLineSensorAdc(LINESENSOR_R);
@@ -126,10 +129,10 @@ void lineSensorSendBluetooth(void)
 			ssd1306Refresh(); */
 		}
 	}
-	move(40, 0, 100, 0);
+	basicMove(40, 0, 100, 0);
 	while(hasMoveEnded() != TRUE){}
 	// desactivate PID
-	pid_loop.start_state = FALSE;
+    mainControlStopPidLoop();
 	line_follower.active_state = FALSE;
 	telemetersStop();
 	motorsDriverSleep(ON);
@@ -154,9 +157,9 @@ void lineSensorsCalibration(void)
 	lineSensorsStart();
 
 	tone(e, 500);
-	move(40, 0, 100, 0);
+	basicMove(40, 0, 100, 0);
 	while(hasMoveEnded() != TRUE);
-	move(-80, 0, 150, 0);
+	basicMove(-80, 0, 150, 0);
 	// -------------------------------------------------------------
 	// Init line Sensor
 
@@ -193,7 +196,7 @@ void lineSensorsCalibration(void)
 	tone(b, 500);
 	tone(c, 500);
 
-	move(40, 0, 30, 30);
+	basicMove(40, 0, 30, 30);
 
 	ssd1306ClearScreen(MAIN_AREA);
 	while(hasMoveEnded() != TRUE)
@@ -363,7 +366,7 @@ void lineFollower(void)
 	//	HAL_Delay(500);
 
 	line_follower.active_state = TRUE;
-//	move(0, 10000, MAXSPEED, MAXSPEED);
+//	basicMove(0, 10000, MAXSPEED, MAXSPEED);
 	motorsDriverSleep(ON);
 	//	while(hasMoveEnded() != TRUE);
 	char foreward = TRUE;
@@ -401,11 +404,11 @@ ii++;
 		if (cdg<0)
 		{
 			cdg2=-sensor.left;
-			//if (cdg<-500) move(0, 10000, 500, 0);
+			//if (cdg<-500) basicMove(0, 10000, 500, 0);
 		} else
 		{
 			cdg2=sensor.right;
-			//if (cdg>500)move(0, 10000, 500, 0);
+			//if (cdg>500)basicMove(0, 10000, 500, 0);
 		}
 
 		//error=follow_control.follow_error*10;
@@ -435,27 +438,27 @@ ii++;
 			if (_Action==1)
 			{
 				foreward = FALSE;
-				move(0, 30, MAXSPEED, 0);
+				basicMove(0, 30, MAXSPEED, 0);
 				while(hasMoveEnded() != TRUE);
 				motorsBrake();
 			}
 
 			if (_Action==2)
 			{
-				move(0, 30, MAXSPEED, 0);
-				move(40, 0, 100, 0);
+				basicMove(0, 30, MAXSPEED, 0);
+				basicMove(40, 0, 100, 0);
 				while(hasMoveEnded() != TRUE);
-				move(-40, 0, 100, 0);
-//				move(360, 0, 200, 0);
+				basicMove(-40, 0, 100, 0);
+//				basicMove(360, 0, 200, 0);
 				while(hasMoveEnded() != TRUE);
 				lineSensorsStart();
 				mainControlSetFollowType(LINE_FOLLOW);
-//				move(0, 10000, MAXSPEED, MAXSPEED);
+//				basicMove(0, 10000, MAXSPEED, MAXSPEED);
 
 				_Action=0;
 			}
 
-			//move(0, 10000, MAXSPEED, MAXSPEED);
+			//basicMove(0, 10000, MAXSPEED, MAXSPEED);
 		}
 
 
@@ -466,10 +469,10 @@ ii++;
 		// -----------------------------------------------------------------------
 		//		if (((double)getLineSensorAdc(LINESENSOR_EXT_L)*1.2) > max_Floor.leftExt )
 		//		{
-		//			move(0, 30, 30, 0);
+		//			basicMove(0, 30, 30, 0);
 		//			tone(c, 500);
 		//			// capteur telemeter ON
-		//			move(0, 10000, MAXSPEED, 0);
+		//			basicMove(0, 10000, MAXSPEED, 0);
 		//		}
 
 	}
@@ -550,13 +553,13 @@ void lineFollower_IT(void)
 	//	if (follow_control.follow_error > 3.0 && vitesse==0)
 	//	{
 	//		// deceleration
-	//		move(0, 30, MAXSPEED, MINSPEED);
+	//		basicMove(0, 30, MAXSPEED, MINSPEED);
 	//		vitesse=-1;
 	//	}
 	//	else if (follow_control.follow_error < 3.0 && vitesse==0)
 	//	{
 	//		// acceleration
-	//		move(0, 30, MINSPEED, MAXSPEED);
+	//		basicMove(0, 30, MINSPEED, MAXSPEED);
 	//		vitesse=1;
 	//	}
 	//
@@ -564,11 +567,11 @@ void lineFollower_IT(void)
 	//	{
 	//		if (vitesse<0)
 	//		{
-	//			move(0, 10000, MINSPEED, MINSPEED);
+	//			basicMove(0, 10000, MINSPEED, MINSPEED);
 	//		}
 	//		else if (vitesse>0)
 	//		{
-	//			move(0, 10000, MAXSPEED, MAXSPEED);
+	//			basicMove(0, 10000, MAXSPEED, MAXSPEED);
 	//		}
 	//		vitesse=0;
 	//	}
@@ -581,7 +584,7 @@ void lineFollower_IT(void)
 		//	(double)getLineSensorAdc(LINESENSOR_EXT_L) < min_Floor.leftExt *1.2 &&
 		//	(double)getLineSensorAdc(LINESENSOR_EXT_R) < min_Floor.rightExt *1.2)
 	//{
-	//	move(0, 150, 250, 0);
+	//	basicMove(0, 150, 250, 0);
 	//}
 }
 

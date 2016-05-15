@@ -99,7 +99,7 @@ double wallFollowGetCommand(void)
 
 int wallFollowControlLoop(void)
 {
-    if (mainControlGetWallFollowType() != STRAIGHT)
+    if (mainControlGetMoveType() != STRAIGHT)
     {
         expanderSetLeds(0b000);
         wall_follow_control.follow_command = 0;

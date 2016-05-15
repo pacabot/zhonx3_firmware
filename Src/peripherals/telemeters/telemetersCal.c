@@ -15,7 +15,6 @@
 #include "stdbool.h"
 #include <arm_math.h>
 #include <math.h>
-#include <middleware/controls/mainControl/mainControl.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdint.h>
@@ -32,12 +31,13 @@
 #include "peripherals/bluetooth/bluetooth.h"
 #include "peripherals/motors/motors.h"
 #include "peripherals/encoders/ie512.h"
-
 #include "peripherals/eeprom/24lc64.h"
 #include "peripherals/flash/flash.h"
 
 /* Middleware declarations */
 #include "middleware/math/kalman_filter.h"
+#include "middleware/controls/mainControl/mainControl.h"
+#include "middleware/moves/basicMoves/basicMoves.h"
 
 /* Declarations for this module */
 #include "peripherals/telemeters/telemeters.h"
@@ -70,7 +70,7 @@ int wallSensorsCalibrationFront(void)
     telemetersStart();
 
     // take the measures
-    moveStraight(-MEASURED_DISTANCE, 50, 50, 20);
+    basicMoveStraight(-MEASURED_DISTANCE, 50, 50, 20);
     ssd1306Refresh();
     for (i = 0; i < TELEMETER_PROFILE_ARRAY_LENGTH; i++)
     {
@@ -167,7 +167,7 @@ int wallSensorsCalibrationDiag(void)
     telemetersStart();
 
     // take the measures
-    moveStraight(-number_of_millimeter_per_loop * TELEMETER_PROFILE_ARRAY_LENGTH, 50, 50, 20);
+    basicMoveStraight(-number_of_millimeter_per_loop * TELEMETER_PROFILE_ARRAY_LENGTH, 50, 50, 20);
     for (i = 0; i < TELEMETER_PROFILE_ARRAY_LENGTH; i++)
     {
         while ((((int) (encoderGetDist(ENCODER_L) + encoderGetDist(ENCODER_R))
