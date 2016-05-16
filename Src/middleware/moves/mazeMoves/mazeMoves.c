@@ -7,51 +7,32 @@
  */
 /**************************************************************************/
 /* STM32 hal library declarations */
-#include "stm32f4xx_hal.h"
+#include <stm32f4xx_hal.h>
 
 /* General declarations */
-#include "config/basetypes.h"
-#include "config/config.h"
-#include "config/errors.h"
-
-#include "stdbool.h"
-#include <arm_math.h>
-#include <math.h>
 #include <string.h>
-#include <stdio.h>
-#include <stdint.h>
+#include <config/basetypes.h>
 
 /* Middleware declarations */
-#include "middleware/controls/mazeControl/wallFollowControl.h"
-#include "middleware/controls/lineFollowerControl/lineFollowControl.h"
-#include "middleware/controls/mainControl/mainControl.h"
-#include "middleware/controls/mainControl/positionControl.h"
-#include "middleware/controls/mainControl/positionControl.h"
-#include "middleware/controls/mainControl/speedControl.h"
-#include "middleware/controls/mainControl/transfertFunction.h"
-#include "middleware/controls/mazeControl/wallFollowControl.h"
-#include "middleware/moves/mazeMoves/spyPost.h"
-#include "middleware/moves/mazeMoves/spyWall.h"
-#include "middleware/wall_sensors/wall_sensors.h"
-#include "middleware/controls/pidController/pidController.h"
-#include "middleware/wall_sensors/wall_sensors.h"
-#include "middleware/moves/basicMoves/basicMoves.h"
+#include <middleware/controls/mainControl/mainControl.h>
+#include <middleware/controls/mainControl/positionControl.h>
+#include <middleware/controls/mazeControl/wallFollowControl.h>
+#include <middleware/moves/basicMoves/basicMoves.h>
+#include <middleware/moves/mazeMoves/spyPost.h>
+#include <middleware/moves/mazeMoves/spyWall.h>
+#include <middleware/wall_sensors/wall_sensors.h>
 
 /* Peripheral declarations */
-#include "peripherals/gyroscope/adxrs620.h"
-#include "peripherals/times_base/times_base.h"
-#include "peripherals/display/ssd1306.h"
-#include "peripherals/display/smallfonts.h"
-#include "peripherals/expander/pcf8574.h"
-#include "peripherals/motors/motors.h"
-#include "peripherals/encoders/ie512.h"
-#include "peripherals/multimeter/multimeter.h"
-#include "peripherals/telemeters/telemeters.h"
-#include "peripherals/bluetooth/bluetooth.h"
-#include "peripherals/tone/tone.h"
+#include <peripherals/display/smallfonts.h>
+#include <peripherals/display/ssd1306.h>
+#include <peripherals/encoders/ie512.h>
+#include <peripherals/gyroscope/adxrs620.h>
+#include <peripherals/motors/motors.h>
+#include <peripherals/telemeters/telemeters.h>
+#include <peripherals/tone/tone.h>
 
 /* Declarations for this module */
-#include "middleware/moves/mazeMoves/mazeMoves.h"
+#include <middleware/moves/mazeMoves/mazeMoves.h>
 
 #define UTURN_OFFSET 40 //distance between the wall and rear robot in Uturn mode
 
@@ -256,7 +237,7 @@ int mazeMoveFrontAlignment(float max_speed)
             }
         }
         basicMove(0, 0, 0, 0);
-        relative_dist = ((getTelemeterDist(TELEMETER_FL) + getTelemeterDist(TELEMETER_FR)) / 2.00) - 21.00;
+        relative_dist = ((getTelemeterDist(TELEMETER_FL) + getTelemeterDist(TELEMETER_FR)) / 2.00) - 21.15; //todo add in flash
         basicMove(0, relative_dist, 100, 100);
     }
     return MAZE_MOVES_E_SUCCESS;
@@ -669,6 +650,8 @@ void movesTest2()
     //rotation test (used for verify move computes)
     positionControlSetPositionType(GYRO);
     mainControlSetFollowType(NO_FOLLOW);
+    telemetersStart();
+
     double abs_encoders = encoderGetAbsDist(ENCODER_L) + encoderGetAbsDist(ENCODER_R);
     Vin  = 10;
     Vout = 0;
@@ -679,9 +662,13 @@ void movesTest2()
     //    mazeMoveRotateInPlaceCW90(200);
     //    mazeMoveRotateInPlaceCW90(200);
 
-    mazeMoveRotateInPlaceCW180(200);
+//    mazeMoveRotateInPlaceCW180(200);
+//    HAL_Delay(2000);
+//    mazeMoveRotateInPlaceCW180(200);
+//    HAL_Delay(2000);
+
+    mazeMoveUTurn(200, 500, 500);
     HAL_Delay(2000);
-    mazeMoveRotateInPlaceCW180(200);
 
     //   basicMove(180, 0, Vin, Vin);
     while (hasMoveEnded() != TRUE);

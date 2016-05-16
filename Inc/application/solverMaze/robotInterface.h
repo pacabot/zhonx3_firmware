@@ -11,7 +11,10 @@
 //#define DEBUG_ROBOT_INTERFACE
 //#define PRINT_CELL_STATE
 
-#include "middleware/wall_sensors/wall_sensors.h"
+#include <application/solverMaze/robotInterface.h>
+#include <application/solverMaze/solverMaze.h>
+#include <middleware/settings/settings.h>
+#include <middleware/wall_sensors/wall_sensors.h>
 
 #define WAIT_START_DISTANCE 100.00
 

@@ -8,12 +8,11 @@
 #ifndef RESOLUTION_MAZE_H_
 #define RESOLUTION_MAZE_H_
 
-#define NAND(a,b) (!a && !b)
+#include <config/config.h>
+#include <middleware/settings/settings.h>
+#include <stddef.h>
 
-#include "config/module_id.h"
-#include "config/errors.h"
-#include "middleware/settings/settings.h"
-#include "config/config.h"
+#define NAND(a,b) (!a && !b)
 
 /* Error codes */
 #define MAZE_SOLVER_E_SUCCESS  0
@@ -53,8 +52,6 @@
 #define DISPLAY_OFFSET	    12	//offset for maze print on ssd1306
 #define MAX_STORABLE_MAZES  5
 
-#include <stdlib.h>
-#include "middleware/wall_sensors/wall_sensors.h"
 //Structures typedef
 typedef struct
 {

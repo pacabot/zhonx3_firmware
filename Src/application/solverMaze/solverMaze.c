@@ -9,39 +9,35 @@
  *
  */
 
-#include <stdio.h>
+/* STM32 hal library declarations */
+#include <stm32f4xx_hal.h>
+
+/* General declarations */
 #include <string.h>
-#include <math.h>
-
-#include "stm32f4xx_hal.h"
-#include "stm32f4xx.h"
-#include "config/basetypes.h"
-
-/* Middleware declarations */
-#include "middleware/controls/lineFollowerControl/lineFollowControl.h"
-#include "middleware/controls/mainControl/mainControl.h"
-#include "middleware/controls/mainControl/positionControl.h"
-#include "middleware/controls/mainControl/speedControl.h"
-#include "middleware/controls/mainControl/transfertFunction.h"
-#include "middleware/settings/settings.h"
-#include "middleware/wall_sensors/wall_sensors.h"
-#include "middleware/controls/pidController/pidController.h"
-#include "middleware/display/pictures.h"
-
-/* peripherale inlcudes*/
-#include "peripherals/times_base/times_base.h"
-#include "peripherals/display/ssd1306.h"
-#include "peripherals/expander/pcf8574.h"
-#include "peripherals/motors/motors.h"
-#include "peripherals/lineSensors/lineSensors.h"
-#include "peripherals/telemeters/telemeters.h"
-#include "peripherals/bluetooth/bluetooth.h"
-#include "peripherals/tone/tone.h"
+#include <config/basetypes.h>
 
 /* application include */
+#include <application/solverMaze/robotInterface.h>
+#include <application/solverMaze/run.h>
+#include <application/solverMaze/solverMaze.h>
+
+/* Middleware declarations */
+#include <middleware/controls/mainControl/mainControl.h>
+#include <middleware/controls/mainControl/positionControl.h>
+#include <middleware/display/pictures.h>
+
+/* peripherale inlcudes*/
+#include <peripherals/bluetooth/bluetooth.h>
+#include <peripherals/display/smallfonts.h>
+#include <peripherals/display/ssd1306.h>
+#include <peripherals/expander/pcf8574.h>
+#include <peripherals/motors/motors.h>
+#include <peripherals/telemeters/telemeters.h>
+#include <peripherals/tone/tone.h>
+
+/* Declarations for this module */
 #include "application/solverMaze/solverMaze.h"
-#include "application/solverMaze/robotInterface.h"
-#include "application/solverMaze/run.h"
+
 /*
  *  ********************** int maze (void) **********************
  *  this function is the main function of the maze solver
