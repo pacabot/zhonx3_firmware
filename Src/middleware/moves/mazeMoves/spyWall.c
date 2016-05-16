@@ -33,6 +33,7 @@
 #include "middleware/display/pictures.h"
 #include "middleware/moves/mazeMoves/mazeMoves.h"
 #include "middleware/moves/basicMoves/basicMoves.h"
+#include "middleware/settings/settings.h"
 
 /* Peripheral declarations */
 #include "peripherals/display/ssd1306.h"
@@ -63,15 +64,15 @@ int spyWallGetFrontDist(spyWallGetOffsetsStruct *offset)
     if (getWallPresence(FRONT_WALL) == TRUE)
     {
         //        bluetoothPrintf(", FRONT DETECTED");
-        if (getWallPresence(LEFT_WALL) == WALL_PRESENCE && getWallPresence(RIGHT_WALL) == WALL_PRESENCE)
+        if (getWallPresence(LEFT_WALL) == TRUE && getWallPresence(RIGHT_WALL) == TRUE)
         {
             offset->front_dist = ((getTelemeterDist(TELEMETER_FL) + getTelemeterDist(TELEMETER_FR)) / 2.00) - (zhonxCalib_data->spyWall.calib_value);
         }
-        else if (getWallPresence(LEFT_WALL) == WALL_PRESENCE)
+        else if (getWallPresence(LEFT_WALL) == TRUE)
         {
             offset->front_dist = getTelemeterDist(TELEMETER_FL) - zhonxCalib_data->spyWall.calib_value;
         }
-        else if (getWallPresence(RIGHT_WALL) == WALL_PRESENCE)
+        else if (getWallPresence(RIGHT_WALL) == TRUE)
         {
             offset->front_dist = getTelemeterDist(TELEMETER_FR) - zhonxCalib_data->spyWall.calib_value;
         }

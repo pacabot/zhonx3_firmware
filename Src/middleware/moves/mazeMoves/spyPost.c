@@ -45,6 +45,8 @@
 #include "middleware/controls/mainControl/transfertFunction.h"
 #include "middleware/moves/mazeMoves/mazeMoves.h"
 #include "middleware/moves/basicMoves/basicMoves.h"
+#include "middleware/wall_sensors/wall_sensors.h"
+#include "middleware/settings/settings.h"
 
 //Declarations for this module */
 #include "middleware/moves/mazeMoves/spyPost.h"

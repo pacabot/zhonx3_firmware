@@ -9,10 +9,6 @@
 #ifndef __MAINCONTROL_H__
 #define __MAINCONTROL_H__
 
-#include <middleware/controls/mainControl/speedControl.h>
-#include "config/config.h"
-#include "middleware/wall_sensors/wall_sensors.h"
-
 /* Module Identifier */
 #include "config/module_id.h"
 
@@ -36,12 +32,6 @@ enum mainControlFollowType
     LINE_FOLLOW, WALL_FOLLOW, NO_FOLLOW
 };
 
-typedef struct
-{
-    enum mainControlMoveType moveType;
-    walls cellState;
-} move_params_struct;
-
 extern double ROTATION_DIAMETER;
 
 int                             mainControlInit(void);
@@ -51,7 +41,7 @@ int                             mainControl_IT(void);
 int                             mainControlSetFollowType(enum mainControlFollowType followType);
 enum mainControlFollowType      mainControlGetFollowType(void);
 enum mainControlMoveType        mainControlGetMoveType(void);
-int                             mainControlSetMoveType(enum mainControlMoveType moveType);
+int                             mainControlSetMoveType(enum mainControlMoveType move_type);
 char                            hasMoveEnded(void);
 
 #endif // __MAINCONTROL_H

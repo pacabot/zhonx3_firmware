@@ -17,14 +17,12 @@
 #include "stdbool.h"
 #include <arm_math.h>
 #include <math.h>
-#include <middleware/settings/settings.h>
-#include <middleware/controls/mainControl/mainControl.h>
-#include <middleware/controls/mainControl/positionControl.h>
-#include <middleware/controls/mainControl/speedControl.h>
-#include <middleware/controls/mainControl/transfertFunction.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdint.h>
+
+/* Application declarations */
+#include "application/statistiques/statistiques.h"
 
 /* Peripheral declarations */
 #include "peripherals/display/ssd1306.h"
@@ -35,8 +33,14 @@
 #include "peripherals/tone/tone.h"
 #include "peripherals/bluetooth/bluetooth.h"
 #include "peripherals/gyroscope/adxrs620.h"
+#include "peripherals/telemeters/telemeters.h"
 
 /* Middleware declarations */
+#include "middleware/settings/settings.h"
+#include "middleware/controls/mainControl/mainControl.h"
+#include "middleware/controls/mainControl/positionControl.h"
+#include "middleware/controls/mainControl/speedControl.h"
+#include "middleware/controls/mainControl/transfertFunction.h"
 #include "middleware/controls/pidController/pidController.h"
 
 /* declaration for this module */

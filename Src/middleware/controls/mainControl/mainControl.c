@@ -53,8 +53,8 @@ typedef struct
     char speed_state;
 } control_params_struct;
 
+static enum mainControlMoveType moveType;
 static control_params_struct control_params;
-static move_params_struct move_params;
 static pid_loop_struct pid_loop;
 
 double ROTATION_DIAMETER;
@@ -79,7 +79,7 @@ int mainControlInit(void)
     positionControlSetPositionType(ENCODERS);
     mainControlSetFollowType(NO_FOLLOW);
 
-    move_params.moveType = STRAIGHT;
+    mainControlSetMoveType(STRAIGHT);
 
     control_params.wall_follow_state = 0;
     control_params.line_follow_state = 0;
@@ -173,12 +173,12 @@ enum mainControlFollowType mainControlGetFollowType()
 
 enum mainControlMoveType mainControlGetMoveType()
 {
-    return move_params.moveType;
+    return moveType;
 }
 
-int mainControlSetMoveType(enum mainControlMoveType moveType)
+int mainControlSetMoveType(enum mainControlMoveType move_type)
 {
-    move_params.moveType = moveType;
+    moveType = move_type;
     return MAIN_CONTROL_E_ERROR;
 }
 

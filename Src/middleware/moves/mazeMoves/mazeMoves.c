@@ -31,6 +31,7 @@
 #include "middleware/controls/mainControl/transfertFunction.h"
 #include "middleware/controls/mazeControl/wallFollowControl.h"
 #include "middleware/moves/mazeMoves/spyPost.h"
+#include "middleware/moves/mazeMoves/spyWall.h"
 #include "middleware/wall_sensors/wall_sensors.h"
 #include "middleware/controls/pidController/pidController.h"
 #include "middleware/wall_sensors/wall_sensors.h"

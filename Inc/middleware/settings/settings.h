@@ -9,6 +9,7 @@
 #define SETTING_H_
 
 /* dependencies */
+#include "arm_math.h"
 #include "config/module_id.h"
 #include "peripherals/flash/flash.h"
 #include "config/basetypes.h"
@@ -16,6 +17,7 @@
 #include "middleware/moves/mazeMoves/spyWall.h"
 #include "middleware/controls/pidController/pidCalculator.h"
 #include "peripherals/gyroscope/adxrs620.h"
+
 
 /*********************** ZHONX generation and version *********************************/
 #define ZHONX_GENERATION          "Z3"

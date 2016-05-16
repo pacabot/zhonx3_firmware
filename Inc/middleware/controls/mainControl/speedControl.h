@@ -27,13 +27,13 @@ enum speedRate
     LOWSPEED = 400, MEDIUMSPEED = 800, FASTSPEED = 1000, HIGHSPEED = 2000
 };
 
-int speedControlInit(void);
-char speedControlHasMoveEnded(void);
-double speedControlGetCurrentDist(void);
-double speedControlGetSpeedCommand(void);
-double speedControlSetSign(double sign);
-int speedControlLoop(void);
-int speedCompute(void);
-double speedProfileCompute(double distance, double max_speed, double end_speed, double max_accel);
+int     speedControlInit(void);
+char    speedControlHasMoveEnded(void);
+double  speedControlGetCurrentDist(void);
+double  speedControlGetSpeedCommand(void);
+double  speedControlSetSign(double sign);
+int     speedControlLoop(void);
+int     speedCompute(void);
+double  speedProfileCompute(double distance, double max_speed, double end_speed, double max_accel);
 
 #endif
