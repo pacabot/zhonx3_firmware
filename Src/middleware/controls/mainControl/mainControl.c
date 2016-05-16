@@ -187,8 +187,8 @@ char hasMoveEnded(void)
     if ((positionControlHasMoveEnded() == TRUE && speedControlHasMoveEnded() == TRUE) ||
             pid_loop.start_state == FALSE)
     {
-        pid_loop.start_state = FALSE;
-        motorsDriverSleep(ON);
+//        pid_loop.start_state = FALSE;
+//        motorsDriverSleep(ON);
         return TRUE;
     }
     return FALSE;

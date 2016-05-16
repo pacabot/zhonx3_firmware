@@ -10,7 +10,7 @@
 #define __MAINCONTROL_H__
 
 /* Module Identifier */
-#include "config/module_id.h"
+#include <config/module_id.h>
 
 /* Error codes */
 #define MAIN_CONTROL_E_SUCCESS  0

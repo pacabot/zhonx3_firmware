@@ -10,7 +10,8 @@
 #define __POSITIONCONTROL_H__
 
 /* Module Identifier */
-#include "config/module_id.h"
+#include <config/module_id.h>
+#include <config/errors.h>
 
 /* Error codes */
 #define POSITION_CONTROL_E_SUCCESS  0

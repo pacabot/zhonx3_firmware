@@ -5,38 +5,23 @@
  *      Author: Colin
  */
 /* STM32 hal library declarations */
-#include "stm32f4xx_hal.h"
-
 /* General declarations */
-#include "config/basetypes.h"
-#include "config/config.h"
-#include "config/errors.h"
-
-#include "stdbool.h"
-#include <arm_math.h>
 #include <math.h>
-#include <middleware/controls/mainControl/mainControl.h>
-#include <string.h>
-#include <stdio.h>
 #include <stdint.h>
+#include <config/basetypes.h>
 
 /* Application declarations */
-#include "application/statistiques/statistiques.h"
-
-/* Peripheral declarations */
-#include "peripherals/telemeters/telemeters.h"
-#include "peripherals/display/ssd1306.h"
-#include "peripherals/display/smallfonts.h"
-#include "peripherals/expander/pcf8574.h"
-#include "peripherals/display/ssd1306.h"
-#include "peripherals/expander/pcf8574.h"
-#include "peripherals/bluetooth/bluetooth.h"
-#include "peripherals/motors/motors.h"
 
 /* Middleware declarations */
 
+/* Peripheral declarations */
+#include <peripherals/display/smallfonts.h>
+#include <peripherals/display/ssd1306.h>
+#include <peripherals/expander/pcf8574.h>
+#include <peripherals/telemeters/telemeters.h>
+
 //Declarations for this module */
-#include "middleware/wall_sensors/wall_sensors.h"
+#include <middleware/wall_sensors/wall_sensors.h>
 
 int getWallPresence(wallSelectorEnum wallSelector)
 {
@@ -76,21 +61,21 @@ void testWallsSensors()
         {
             ssd1306DrawRect(0, 59, 54, 5);
         }
-        switch (getWallPresence(LEFT_WALL))
+        if (getWallPresence(LEFT_WALL) == TRUE)
         {
-            case TRUE:
-                ssd1306FillRect(0, 10, 5, 54);
-                break;
-            default:
-                break;
+            ssd1306FillRect(0, 10, 5, 54);
         }
-        switch (getWallPresence(RIGHT_WALL))
+        else
         {
-            case TRUE:
-                ssd1306FillRect(49, 10, 5, 54);
-                break;
-            default:
-                break;
+            ssd1306DrawRect(0, 10, 5, 54);
+        }
+        if (getWallPresence(RIGHT_WALL) == TRUE)
+        {
+            ssd1306FillRect(49, 10, 5, 54);
+        }
+        else
+        {
+            ssd1306DrawRect(49, 10, 5, 54);
         }
         ssd1306PrintIntAtLine(60, 1, "FL ", (uint32_t) (getTelemeterDist(TELEMETER_FL) * 10.00), &Font_5x8);
         ssd1306PrintIntAtLine(60, 2, "DL ", (uint32_t) (getTelemeterDist(TELEMETER_DL) * 10.00), &Font_5x8);

@@ -10,8 +10,9 @@
 #define __MAZEMOVES_H__
 
 /* Module Identifier */
-
 #include <config/module_id.h>
+#include <config/errors.h>
+
 #include <middleware/wall_sensors/wall_sensors.h>
 
 /* Error codes */

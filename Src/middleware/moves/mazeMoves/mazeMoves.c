@@ -212,30 +212,36 @@ int mazeMoveFrontAlignment(float max_speed)
     while (hasMoveEnded() != TRUE);
     if (getWallPresence(FRONT_WALL) == TRUE)
     {
+        expanderSetLeds(0b000);
         if (getTelemeterDist(TELEMETER_FR) > getTelemeterDist(TELEMETER_FL))
         {
-            basicMove(-30, 0, max_speed, max_speed);
-            while (((getTelemeterDist(TELEMETER_FR) - getTelemeterDist(TELEMETER_FL))) > 1.00)
+            toneItMode(A5, 300);
+            basicMove(-40, 0, max_speed, max_speed);
+            while (((getTelemeterDist(TELEMETER_FR) - getTelemeterDist(TELEMETER_FL))) > 0.00)
             {
-                if (hasMoveEnded() == TRUE)
-                {
-                    basicMove(30, 0, max_speed, max_speed);
-                    return MAZE_MOVES_E_SUCCESS;
-                }
+                expanderSetLeds(0b100);
+//                if (hasMoveEnded() == TRUE)
+//                {
+//                    basicMove(40, 0, max_speed, max_speed);
+//                    return MAZE_MOVES_E_SUCCESS;
+//                }
             }
         }
         else
         {
-            basicMove(30, 0, max_speed, max_speed);
-            while (((getTelemeterDist(TELEMETER_FL) - getTelemeterDist(TELEMETER_FR))) > 1.00)
+            toneItMode(A5, 300);
+            basicMove(40, 0, max_speed, max_speed);
+            while (((getTelemeterDist(TELEMETER_FL) - getTelemeterDist(TELEMETER_FR))) > 0.00)
             {
-                if (hasMoveEnded() == TRUE)
-                {
-                    basicMove(-30, 0, max_speed, max_speed);
-                    return MAZE_MOVES_E_SUCCESS;
-                }
+                expanderSetLeds(0b001);
+//                if (hasMoveEnded() == TRUE)
+//                {
+//                    basicMove(-40, 0, max_speed, max_speed);
+//                    return MAZE_MOVES_E_SUCCESS;
+//                }
             }
         }
+        expanderSetLeds(0b000);
         basicMove(0, 0, 0, 0);
         relative_dist = ((getTelemeterDist(TELEMETER_FL) + getTelemeterDist(TELEMETER_FR)) / 2.00) - 21.15; //todo add in flash
         basicMove(0, relative_dist, 100, 100);
@@ -542,21 +548,21 @@ void movesTest1()
     Vout = 600;
     Vmax = 600;
     Vrotate = 600;
-//    telemetersStart();
+    telemetersStart();
 
     positionControlSetPositionType(GYRO);
     mainControlSetFollowType(WALL_FOLLOW);
     //maze
     mazeMoveStartCell(Vmax, Vmax);
-    mazeMoveCell(1, Vmax, Vout);
-    mazeMoveRotateCCW90(Vrotate, Vout);
-    mazeMoveRotateCCW90(Vrotate, Vout);
-    mazeMoveUTurn(Vrotate, Vmax, Vout);
-    mazeMoveRotateCW90(Vrotate, Vout);
-    mazeMoveRotateCW90(Vrotate, Vout);
-    mazeMoveCell(1, Vmax, Vout);
+    mazeMoveCell(5, Vmax, Vout);
     mazeMoveUTurn(Vrotate, Vmax, Vout);
     mazeMoveCell(1, Vmax, Vout);
+    mazeMoveRotateCCW90(Vrotate, Vout);
+    mazeMoveCell(1, Vmax, Vout);
+    mazeMoveRotateCCW90(Vrotate, Vout);
+    mazeMoveUTurn(Vrotate, Vmax, Vout);
+    mazeMoveRotateCCW90(Vrotate, Vout);
+    mazeMoveUTurn(Vrotate, Vmax, Vout);
     //    mazeMoveStartCell(Vmax, Vmax);
     //    mazeMoveCell(1, Vmax, Vout);
     //    mazeMoveRotateCCW90(Vrotate, Vout);

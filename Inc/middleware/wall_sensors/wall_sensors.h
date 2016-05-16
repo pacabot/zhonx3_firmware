@@ -8,6 +8,10 @@
 #ifndef WALL_SENSORS_H_
 #define WALL_SENSORS_H_
 
+/* Module Identifier */
+#include <config/module_id.h>
+#include <config/errors.h>
+
 #define WALL_SENSORS_E_SUCCESS  0
 #define WALL_SENSORS_E_ERROR    MAKE_ERROR(WALL_SENSORS_MODULE_ID, 1)
 

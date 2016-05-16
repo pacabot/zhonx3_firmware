@@ -51,7 +51,7 @@
 #define MAX_FOLLOW_ERROR	 50.00	//Millimeter
 
 #define DEADZONE_DIST        80.00  //Distance between the start of the cell and doubt area
-#define DEADZONE             90.00  //doubt area
+#define DEADZONE             100.00  //doubt area
 #define GETWALLPRESENCEZONE  5.00
 
 enum telemeters_used wallFollowGetTelemeterUsed(void);
@@ -78,7 +78,7 @@ static arm_pid_instance_f32 telemeters_pid_instance;
 
 int wallFollowControlInit(void)
 {
-    telemeters_pid_instance.Kp = 12;
+    telemeters_pid_instance.Kp = 10;
     telemeters_pid_instance.Ki = 0;
     telemeters_pid_instance.Kd = 200;
 
@@ -117,7 +117,7 @@ int wallFollowControlLoop(void)
             break;
         case ALL_SIDE:
             wall_follow_control.follow_error = (double) getTelemeterDist(TELEMETER_DR)
-                    - (double) getTelemeterDist(TELEMETER_DL);
+            - (double) getTelemeterDist(TELEMETER_DL);
             expanderSetLeds(0b101);
             break;
         case LEFT_SIDE:
@@ -182,10 +182,10 @@ enum telemeters_used wallFollowGetTelemeterUsed(void)
     }
 #endif
 
-    if ((distance > DEADZONE_DIST - (DEADZONE / 2.00)) && (distance < DEADZONE_DIST + (DEADZONE / 2.00)))
+    if ((distance > DEADZONE_DIST - (DEADZONE / 2.00)) && (distance < DEADZONE_DIST + (DEADZONE / 2.00))) //check if the robot is into the DEADZONE
         telemeter_used = NO_SIDE;
-    else if (((distance > OFFSET_DIST) && (distance < OFFSET_DIST + GETWALLPRESENCEZONE))
-            || (distance > (DEADZONE_DIST + (DEADZONE / 2.00)) ))
+    else if (((distance > OFFSET_DIST) && (distance < OFFSET_DIST + GETWALLPRESENCEZONE))   //check if the robot is into the first wallControl zone
+            || (distance > (DEADZONE_DIST + (DEADZONE / 2.00)) ))                           //check if the robot is into the second wallControl zone
     {
         if ((getWallPresence(LEFT_WALL) == TRUE) && (getWallPresence(RIGHT_WALL) == TRUE))
         {
