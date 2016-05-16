@@ -862,9 +862,6 @@ int findArrival(labyrinthe maze, coordinate *end_coordinate)
                     && maze.cell[x][y].length != CANT_GO && maze.cell[x+1][y].length != CANT_GO
                     && maze.cell[x][y+1].length != CANT_GO && maze.cell[x+1][y+1].length != CANT_GO)
             {
-#ifdef PRINT_BLUETOOTH_BASIC_DEGUG
-                bluetoothPrintf("possible end find at : %i; %i\n", x, y);
-#endif
                 if ((maze.cell[x][y].wall_east != NO_WALL
                         || maze.cell[x][y].wall_south != NO_WALL)
                         && maze.cell[x][y].length != 0

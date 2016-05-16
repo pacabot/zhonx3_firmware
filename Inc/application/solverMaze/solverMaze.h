@@ -8,7 +8,7 @@
 #ifndef RESOLUTION_MAZE_H_
 #define RESOLUTION_MAZE_H_
 
-#define NAND(a,b) (!a && !b)
+#define NAND(a,b) (!(a) && !(b))
 
 #include "config/module_id.h"
 #include "config/errors.h"
@@ -20,8 +20,9 @@
 #define MAZE_SOLVER_E_ERROR    MAKE_ERROR(MAZE_SOLVER_MODULE_ID, 1)
 
 
-//definition for numerotation function
-#define CANT_GO 2147483647
+//definition for numberation function
+/* --the value of CANT_GO can be understand like infinity weight-- */
+#define CANT_GO 2147483647 //max value of signed int // TODO : rename it in  INFINITY_WEIGHT
 
 //orientation define
 #define NORTH 0

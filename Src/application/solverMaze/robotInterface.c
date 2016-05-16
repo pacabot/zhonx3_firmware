@@ -117,8 +117,6 @@ void move_zhonx(int direction_to_go, positionRobot *positionZhonx, int numberOfC
 #endif
             if (positionZhonx->midOfCell == TRUE)
             {
-//                while (hasMoveEnded() != TRUE);				//todo rotate in place
-//                move(90, 0, max_speed_rotation, 0);
                 moveRotateInPlaceWithCalCW90(max_speed_rotation);
             }
             else
@@ -140,8 +138,6 @@ void move_zhonx(int direction_to_go, positionRobot *positionZhonx, int numberOfC
             }
             else
             {
-//                moveUTurn(max_speed_rotation, max_speed_translation,
-//                          min_speed_translation); //TODO : rotate 180° in place
                 moveRotateInPlace180WithCal(0, max_speed_rotation);
             }
             break;
@@ -152,8 +148,6 @@ void move_zhonx(int direction_to_go, positionRobot *positionZhonx, int numberOfC
 #endif
             if (positionZhonx->midOfCell == TRUE)
             {
-//                while (hasMoveEnded() != TRUE);
-//                move(-90, 0, max_speed_rotation, 0); // TODO : rotate in place
                 moveRotateInPlaceWithCalCCW90(max_speed_rotation);
             }
             else
