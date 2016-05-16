@@ -242,7 +242,7 @@ int mazeMoveFrontAlignment(float max_speed)
             }
         }
         expanderSetLeds(0b000);
-        basicMove(0, 0, 0, 0);
+//        basicMove(0, 0, 0, 0);
         relative_dist = ((getTelemeterDist(TELEMETER_FL) + getTelemeterDist(TELEMETER_FR)) / 2.00) - 21.15; //todo add in flash
         basicMove(0, relative_dist, 100, 100);
     }
@@ -458,21 +458,8 @@ int mazeMoveUTurn(double speed_rotation, double max_speed, double out_speed)
     }
     // move HALF CELL IN
     mazeMoveHalfCell_IN(max_speed, 0);
-    mainControlSetFollowType(NO_FOLLOW); //todo this is the shit
-    // chose the correct turn for re-calibrate the robot if possible
     mazeMoveRotateInPlace180WithCal(wall_presence, speed_rotation);//speed_rotation);
-
-    // go back and go out for maximize correct alignment
-    while (hasMoveEnded() != TRUE);
-    wallFollowSetInitialPosition(HALF_CELL_LENGTH);
-    basicMove(0, -1.00 * (HALF_CELL_LENGTH - Z3_CENTER_BACK_DIST - UTURN_OFFSET + 15), max_speed, 0);
-
-    wallFollowSetInitialPosition(Z3_CENTER_BACK_DIST + UTURN_OFFSET);
-    while (hasMoveEnded() != TRUE);
-    basicMove(0, (HALF_CELL_LENGTH - Z3_CENTER_BACK_DIST - UTURN_OFFSET), max_speed, max_speed);
-
     mazeMoveHalfCell_OUT(max_speed, out_speed);
-    mainControlSetFollowType(WALL_FOLLOW);
     spyWallGetFrontDist(&offset.frontCal);
     mazeMoveOffsetDist(&offset, out_speed);
 

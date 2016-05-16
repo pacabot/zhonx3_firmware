@@ -139,6 +139,7 @@ void adxrs620Cal(void)
         ssd1306PrintIntAtLine(10, 3, "B =", (int32_t) (cal * 100000.00), &Font_5x8);
         ssd1306Refresh();
     }
+    motorsDriverSleep(ON);
 }
 
 void adxrs620Test(void)

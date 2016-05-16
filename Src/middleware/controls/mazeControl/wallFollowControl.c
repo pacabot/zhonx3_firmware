@@ -78,7 +78,7 @@ static arm_pid_instance_f32 telemeters_pid_instance;
 
 int wallFollowControlInit(void)
 {
-    telemeters_pid_instance.Kp = 10;
+    telemeters_pid_instance.Kp = 5;
     telemeters_pid_instance.Ki = 0;
     telemeters_pid_instance.Kd = 200;
 

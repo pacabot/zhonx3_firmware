@@ -76,6 +76,17 @@ int spyWallGetFrontDist(spyWallGetOffsetsStruct *offset)
         {
             offset->front_dist = getTelemeterDist(TELEMETER_FR) - zhonxCalib_data->spyWall.calib_value;
         }
+        else
+        {
+            offset->front_dist = ((getTelemeterDist(TELEMETER_FL) + getTelemeterDist(TELEMETER_FR)) / 2.00) - (zhonxCalib_data->spyWall.calib_value);
+            if (fabs(offset->front_dist) > OFFSET_DIST)
+            {
+                if (offset->front_dist > 0.00)
+                    offset->front_dist = OFFSET_DIST;
+                else
+                    offset->front_dist = -OFFSET_DIST;
+            }
+        }
     }
     else
         offset->front_dist = 0;
