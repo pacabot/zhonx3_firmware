@@ -39,6 +39,7 @@
 #define MAZE_MOVES_MODULE_ID				109
 #define SPYPOST_DRIVER_MODULE_ID            110
 #define SPYWALL_MODULE_ID                   111
+#define MAZE_MOVES_ADVANCED_MODULE_ID       112
 
 /* application 2xx*/
 #define MAZE_SOLVER_MODULE_ID			    201
