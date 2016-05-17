@@ -120,6 +120,7 @@ int maze_solver_new_maze(void)
     }
     else
     {
+
         ssd1306ClearScreen(MAIN_AREA);
         ssd1306PrintfAtLine(0, 0, &Font_5x8, "TARGET REACHED !!!");
         ssd1306PrintfAtLine(0, 2, &Font_7x8, "TIME : %d.%ds", explorationTime / 1000, explorationTime % 1000);
@@ -133,12 +134,12 @@ int maze_solver_new_maze(void)
         tone(B5, 400);
         findTheShortestPath(&maze, &zhonx_position, &start_position, &end_coordinate); //find the shortest path
     }
-    motorsDriverSleep(ON); //because flash write cause interrupts damages
-    telemetersStop();//because flash write cause interrupts damages
 #ifdef PRINT_BLUETOOTH_MAZE
     printLength(maze,8,8);
-    HAL_Delay(500);
 #endif
+    HAL_Delay(1000);
+    motorsDriverSleep(ON); //because flash write cause interrupts damages
+    telemetersStop();//because flash write cause interrupts damages
     rv=saveMaze(&maze, &start_position, &end_coordinate);    // Save maze into flash memory
     if (rv != FLASH_DRIVER_E_SUCCESS)
     {

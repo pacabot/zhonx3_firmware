@@ -81,6 +81,7 @@ extern void pidTelemeters_GetCriticalPoint(void);
 extern int test_move_zhonx(void);
 extern int startRun1(void);
 extern int startRun2(void);
+extern int mazeMoveAdvancedTest(void);
 extern int test_maze_flash(void);
 extern int _Factor;
 extern int _KP;
@@ -248,8 +249,9 @@ const menuItem tests_menu =
 const menuItem control_menu =
 {       "CONTROL",      //9 characters max
         {
-                { "Move Test 1",    function, (void*)movesTest1 },
-                { "Move Test 2",    function, (void*)movesTest2 },
+                { "Move Test 1",        function, (void*)movesTest1 },
+                { "Move Test 2",        function, (void*)movesTest2 },
+                { "Advanced Move 1",    function, (void*)mazeMoveAdvancedTest},
         }
 };
 

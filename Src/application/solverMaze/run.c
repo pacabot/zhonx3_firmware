@@ -44,15 +44,15 @@ int run(labyrinthe *maze, positionRobot *positionZhonx, coordinate start_oordina
 
     if (runType == 1)
     {
-        max_speed_rotation = RUN1_SPEED_ROTATION;
-        max_speed_translation = RUN1_MAX_SPEED_TRANSLATION;
-        min_speed_translation = RUN1_MIN_SPEED_TRANSLATION;
+        max_speed_rotation = zhonxSettings.speeds_run1.max_speed_rotation;
+        max_speed_translation = zhonxSettings.speeds_run1.max_speed_traslation;
+        min_speed_translation = zhonxSettings.speeds_run1.min_speed;
     }
     else if (runType == 2)
     {
-        max_speed_rotation = RUN2_SPEED_ROTATION;
-        max_speed_translation = RUN2_MAX_SPEED_TRANSLATION;
-        min_speed_translation = RUN2_MIN_SPEED_TRANSLATION;
+        max_speed_rotation = zhonxSettings.speeds_run2.max_speed_rotation;
+        max_speed_translation = zhonxSettings.speeds_run2.max_speed_traslation;
+        min_speed_translation = zhonxSettings.speeds_run2.min_speed;
     }
     else
     {
