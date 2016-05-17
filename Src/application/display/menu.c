@@ -39,6 +39,14 @@
 /* Declarations for this module */
 #include "application/display/menu.h"
 
+typedef enum
+{
+    function,
+    integer,
+    preset_value,
+    menue
+}line_on_menue_type;
+
 /*external functions */
 extern void bluetoothTest();
 extern void eepromTest();
@@ -74,7 +82,6 @@ extern int test_move_zhonx(void);
 extern int startRun1(void);
 extern int startRun2(void);
 extern int test_maze_flash(void);
-extern int mazeMoveAdvancedTest(void);
 extern int _Factor;
 extern int _KP;
 /*
@@ -83,136 +90,157 @@ extern int _KP;
  * {
  * 		"menu name",
  * 		{
- * 			{"line 1 name ",'type of argument', &(void*) pointeur_on_argument},		// 'type of argument' could be 'i' for int, or 'l' for long, or 'm' for  a menu, or 'f' for a function
+ * 			{"line 1 name ",'type of argument', &(void*) pointeur_on_argument},		// 'type of argument' could be integer for int, or 'l' for long, or menue for  a menu, or function for a function
  * 			{"line 1 name ",'type of argument', &(void*) pointeur_on_argument},		// maximum 20 line. if it's not enough you must add in "menu.h". for that you have to modify "MAX_LINE_IN_MENU"
- * 			{0,0,0} 					// the last ligne must be this one, this line will be not print but indispensable. /!\ cette ligne compte dans les 20 ligne du menu
+ * 			{(char*)NULL,        0,     NULL} 					// the last ligne must be this one, this line will be not print but indispensable. /!\ this line  compte dans les 20 ligne du menu
  * 		}
  * }
  */
 
-float toto = 4.0;
-float titi = 4.0;
-float tata = 4.0;
-
-const menuItem testGraphicMenu =
+const menuItem scan_settings_menu =
 {
-		"GRAPHICS",     //9 characters max
-		{
-				{"Default accel :", 'a',    (void*)&toto},
-				{"Max speed dist:", 'a',	(void*)&titi},
-				{"Default accel :", 'a',    (void*)&tata},
-				{"Graphique",       'g',    NULL},
-				{(char*)NULL,	     0,		NULL}
-		}
+        "SCAN SETT",         //9 characters max
+        {
+                {"min speed",           integer,(void*)&zhonxSettings.speeds_scan.min_speed},
+                {"max speed tanslation",integer,(void*)&zhonxSettings.speeds_scan.max_speed_traslation},
+                {"max speed tanslation",integer,(void*)&zhonxSettings.speeds_scan.max_speed_traslation},
+                {(char*)NULL,        0,     NULL}
+        }
 };
 
-const menuItem maze_menu=
+const menuItem run1_settings_menu =
 {
-		"MAZE",         //9 characters max
-		{
-                {"New maze",    'f',    (void*)maze_solver_new_maze},
-                {"Run1",        'f',    (void*)startRun1},
-                {"Run2",        'f',    (void*)startRun2},
-                {"Test_maze",   'f',    (void*)test_move_zhonx},
-				{"Calibration", 'b',    (void*)&zhonxSettings.calibration_enabled},
-				{"Color finish",'b',	(void*)&zhonxSettings.nime_competition},
-				{"X finish",    'i',	(void*)&zhonxSettings.maze_end_coordinate.x},
-				{"Y finish",    'i',	(void*)&zhonxSettings.maze_end_coordinate.y}
+        "RUN1 SETING",         //9 characters max
+        {
+                {"min speed",           integer,(void*)&zhonxSettings.speeds_run1.min_speed},
+                {"max speed tanslation",integer,(void*)&zhonxSettings.speeds_run1.max_speed_traslation},
+                {"max speed tanslation",integer,(void*)&zhonxSettings.speeds_run1.max_speed_traslation},
+                {(char*)NULL,        0,     NULL}
+        }
+};
+
+const menuItem run2_settings_menu =
+{
+        "RUN2 SETTING",         //9 characters max
+        {
+                {"min speed",           integer,(void*)&zhonxSettings.speeds_run2.min_speed},
+                {"max speed tanslation",integer,(void*)&zhonxSettings.speeds_run2.max_speed_traslation},
+                {"max speed tanslation",integer,(void*)&zhonxSettings.speeds_run2.max_speed_traslation},
+                {(char*)NULL,        0,     NULL}
+        }
+};
+
+const menuItem maze_menu =
+{
+        "MAZE",         //9 characters max
+        {
+                {"New maze",        function,    (void*)maze_solver_new_maze},
+                {"scan settings",   menue,    (void*)&scan_settings_menu},
+                {"Run1",            function,    (void*)startRun1},
+                {"Run1 settings",   menue,    (void*)&run1_settings_menu},
+                {"Run2",            function,    (void*)startRun2},
+                {"Run2 settings",   menue,    (void*)&run2_settings_menu},
+                {"Test maze move",  function,    (void*)test_move_zhonx},
+                {(char*)NULL,        0,     NULL}
+//				{"Calibration", 'b',    (void*)&zhonxSettings.calibration_enabled},
+//				{"Color finish",'b',	(void*)&zhonxSettings.nime_competition},
+//				{"X finish",    integer,	(void*)&zhonxSettings.maze_end_coordinate.x},
+//				{"Y finish",    integer,	(void*)&zhonxSettings.maze_end_coordinate.y}
 		}
 
 };
 
-const menuItem follower_menu=
+const menuItem follower_menu =
 {
 		"LINE FOLL",    //9 characters max
 		{
-				{"line follower",   'f',	(void*)lineFollower},
-				{"Calibration",     'f',    (void*)lineSensorsCalibration},
-				//{"Sensor Bluetooth",'f', (void*)lineSensorSendBluetooth},
-				{"Set F. K",        'i',    (void*)&_Factor},
-				{"Set F. KP",       'i',    (void*)&_KP},
+				{"line follower",   function,	(void*)lineFollower},
+				{"Calibration",     function,    (void*)lineSensorsCalibration},
+				//{"Sensor Bluetooth",function, (void*)lineSensorSendBluetooth},
+				{"Set F. K",        integer,    (void*)&_Factor},
+				{"Set F. KP",       integer,    (void*)&_KP},
 		}
 };
 
-const menuItem telemetersCal=
+const menuItem telemetersCal =
 {
         "TELEMETER",    //9 characters max
         {
-                {"Calibration front",   'f',    (void*)wallSensorsCalibrationFront},
-                {"Calibration diag",    'f',    (void*)wallSensorsCalibrationDiag},
-                {"Send calib values",   'f',    (void *)telemetersGetCalibrationValues},
-                {"Set BT baudrate",     'p',    (void *)&BTpresetBaudRate}
+                {"Calibration front",   function,    (void*)wallSensorsCalibrationFront},
+                {"Calibration diag",    function,    (void*)wallSensorsCalibrationDiag},
+                {"Send calib values",   function,    (void *)telemetersGetCalibrationValues},
+                {"Set BT baudrate",     preset_value,    (void *)&BTpresetBaudRate}
         }
 };
 
-const menuItem spyPostCal=
+const menuItem spyPostCal =
 {
         "SPYPOST",      //9 characters max
         {
-                { "Start calibration",  'f', (void*)spyPostCalibration},
-                { "Read Calibration.",  'f', (void*)spyPostReadCalibration},
-                { "SpyPost test.",      'f', (void*)spyPostTest},
+                { "Start calibration",  function, (void*)spyPostCalibration},
+                { "Read Calibration.",  function, (void*)spyPostReadCalibration},
+                { "SpyPost test.",      function, (void*)spyPostTest},
         }
 };
 
-const menuItem pidCal=
+const menuItem pidCal =
 {
         "PID",          //9 characters max
         {
-                { "Gyro Kp critic", 'f', (void*)pidGyro_GetCriticalPoint},
-                { "Enc. Kp critic", 'f', (void*)pidEncoders_GetCriticalPoint},
-                { "Tel. Kp critic", 'f', (void*)pidTelemeters_GetCriticalPoint},
+                { "Gyro Kp critic", function, (void*)pidGyro_GetCriticalPoint},
+                { "Enc. Kp critic", function, (void*)pidEncoders_GetCriticalPoint},
+                { "Tel. Kp critic", function, (void*)pidTelemeters_GetCriticalPoint},
         }
 };
 
-const menuItem frontCal=
+const menuItem frontCal =
 {
         "FRONT CAL",    //9 characters max
         {
-                { "Start calibration",  'f', (void*)spyWallFrontDistCal},
-                { "SpyWall test",    'f', (void*)spyWallFrontTest},
+                { "Start calibration",  function, (void*)spyWallFrontDistCal},
+                { "SpyWall test",       function, (void*)spyWallFrontTest},
         }
 };
 
-const menuItem gyroCal=
+const menuItem gyroCal =
 {
         "GYRO CAL",    //9 characters max
         {
-                { "Start calibration",  'f', (void*)adxrs620Cal},
-                { "Gyro test",          'f', (void*)adxrs620Test},
+                { "Start calibration",  function, (void*)adxrs620Cal},
+                { "Gyro test",          function, (void*)adxrs620Test},
         }
 };
 
-const menuItem calibration_menu=
+const menuItem calibration_menu =
 {
         "CALIB.",        //9 characters max
         {
-                {"Telemeters",      'm',  (void*)&telemetersCal},
-                {"SpyPost",         'm',  (void*)&spyPostCal},
-                {"SpyWall",         'm',  (void*)&frontCal},
-                {"Gyroscope",       'm',  (void*)&gyroCal},
-                {"PID",             'm',  (void*)&pidCal},
+                {"Telemeters",      menue,  (void*)&telemetersCal},
+                {"SpyPost",         menue,  (void*)&spyPostCal},
+                {"SpyWall",         menue,  (void*)&frontCal},
+                {"Gyroscope",       menue,  (void*)&gyroCal},
+                {"PID",             menue,  (void*)&pidCal},
         }
 };
 
-const menuItem tests_menu=
+const menuItem tests_menu =
 {
 		"TESTS",        //9 characters max
 		{
-				{"Wall sensor",		'f', (void*)testWallsSensors},
-				{"Bluetooth",		'f', (void*)bluetoothTest},
-				{"Multimeter",		'f', (void*)mulimeterTest},
-				{"Display",			'f', (void*)ssd1306Test},
-				{"Eeprom",			'f', (void*)eepromTest},
-				{"Encoders",		'f', (void*)encoderTest},
-				{"Joystick",		'f', (void*)joystickTest},
-				{"Gyroscope",		'f', (void*)adxrs620Test},
-				{"Telemeters",		'f', (void*)telemetersTest},
-				{"Beeper",			'f', (void*)toneTest},
-				{"Motors",			'f', (void*)motorsTest},
-				{"Line sensors",	'f', (void*)lineSensorsTest},
-				{"Expender LEDs",	'f', (void*)expenderLedTest},
-				{"flash maze",      'f', (void*)test_maze_flash},
+				{"Wall sensor",		function, (void*)testWallsSensors},
+				{"Bluetooth",		function, (void*)bluetoothTest},
+				{"Multimeter",		function, (void*)mulimeterTest},
+				{"Display",			function, (void*)ssd1306Test},
+				{"Eeprom",			function, (void*)eepromTest},
+				{"Encoders",		function, (void*)encoderTest},
+				{"Joystick",		function, (void*)joystickTest},
+				{"Gyroscope",		function, (void*)adxrs620Test},
+				{"Telemeters",		function, (void*)telemetersTest},
+				{"Beeper",			function, (void*)toneTest},
+				{"Motors",			function, (void*)motorsTest},
+				{"Line sensors",	function, (void*)lineSensorsTest},
+				{"Expender LEDs",	function, (void*)expenderLedTest},
+				{"flash maze",      function, (void*)test_maze_flash},
 				{0,0,0}
 		}
 };
@@ -220,9 +248,8 @@ const menuItem tests_menu=
 const menuItem control_menu =
 {       "CONTROL",      //9 characters max
         {
-                { "Move Test 1",        'f', (void*)movesTest1 },
-                { "Move Test 2",        'f', (void*)movesTest2 },
-                { "Advanced Move 1",    'f', (void*)mazeMoveAdvancedTest},
+                { "Move Test 1",    function, (void*)movesTest1 },
+                { "Move Test 2",    function, (void*)movesTest2 },
         }
 };
 
@@ -230,8 +257,8 @@ const menuItem zhonxNameMenu =
 {
 		"SET MAME",     //9 characters max
 		{
-				{"Meddle",  'f', setMeddle},
-				{"Dark",    'f', setDark},
+				{"Meddle",  function, setMeddle},
+				{"Dark",    function, setDark},
 				{NULL, 0, NULL}
 		}
 };
@@ -240,15 +267,13 @@ const menuItem mainMenu =
 {
 		(char *)CONFIG_ZHONX_INFO_ADDR,
 		{
-				//	{"telemeters calibration",'f',		(void*)telemeterFrontCalibration},
-				{"Maze menu",       'm',	(void*)&maze_menu},
-				{"Line menu",       'm',    (void*)&follower_menu},
-				{"Unit tests",      'm',    (void*)&tests_menu},
-				{"Calibration menu",'m',    (void*)&calibration_menu},
-                {"Control menu",    'm',    (void*)&control_menu},
-				{"Test graph",      'm',	(void*)&testGraphicMenu},
-				{"Zhonx Name",      'm',    (void*)&zhonxNameMenu},
-				{0,0,0}
+				{"Maze menu",       menue,	(void*)&maze_menu},
+				{"Line menu",       menue,    (void*)&follower_menu},
+				{"Unit tests",      menue,    (void*)&tests_menu},
+				{"Calibration menu",menue,    (void*)&calibration_menu},
+                {"Control menu",    menue,    (void*)&control_menu},
+				{"Zhonx Name",      menue,    (void*)&zhonxNameMenu},
+				{0, 0, 0}
 		}
 };
 
@@ -348,16 +373,16 @@ int menu(const menuItem Menu)
                     case 'b':
                         modifyBoolParam(Menu.line[line_menu].name, (unsigned char*) Menu.line[line_menu].param);
                         break;
-                    case 'i':
+                    case integer:
                         modifyLongParam(Menu.line[line_menu].name, (long*) (int*) Menu.line[line_menu].param);
                         break;
                     case 'l':
                         modifyLongParam(Menu.line[line_menu].name, (long*) Menu.line[line_menu].param);
                         break;
-                    case 'm':
+                    case menue:
                         menu(*(const menuItem*) Menu.line[line_menu].param);
                         break;
-                    case 'f':
+                    case function:
                         if (Menu.line[line_menu].param != NULL)
                         {
                             ssd1306ClearScreen(MAIN_AREA);
@@ -365,12 +390,7 @@ int menu(const menuItem Menu)
                             Menu.line[line_menu].param();
                         }
                         break;
-                    case 'g':
-                        graphMotorSettings((float*) Menu.line[line_menu - 3].param,
-                                           (float*) Menu.line[line_menu - 2].param,
-                                           (float*) Menu.line[line_menu - 1].param);
-                        break;
-                    case 'p':
+                    case preset_value:
                         modifyPresetParam(Menu.line[line_menu].name, (presetParam *)Menu.line[line_menu].param);
                         break;
                     default:
@@ -439,19 +459,19 @@ void displayMenu(const menuItem menu, int line)
                 else
                     ssd1306DrawStringAtLine(90, i, "no", &Font_5x8);
                 break;
-            case 'i':
+            case integer:
                 ssd1306PrintIntAtLine(90, i, " ", *((unsigned int*) menu.line[i + line].param), &Font_3x6);
                 break;
             case 'l':
                 ssd1306PrintIntAtLine(90, i, " ", *((unsigned long*) menu.line[i + line].param), &Font_3x6);
                 break;
-            case 'f':
+            case function:
                 ssd1306DrawStringAtLine(110, i, ">", &Font_3x6);
                 break;
-            case 'm':
+            case menue:
                 ssd1306DrawStringAtLine(110, i, "->", &Font_3x6);
                 break;
-            case 'p':
+            case preset_value:
                 ssd1306PrintIntAtLine(90, i, " ", (long) ((presetParam*) menu.line[i + line].param)->p_value,
                                       &Font_3x6);
                 break;

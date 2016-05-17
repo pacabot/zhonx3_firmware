@@ -11,16 +11,17 @@
 #include <config/config.h>
 #include <middleware/settings/settings.h>
 #include <stddef.h>
+#define NAND(a,b) (!(a) && !(b))
 
-#define NAND(a,b) (!a && !b)
 
 /* Error codes */
 #define MAZE_SOLVER_E_SUCCESS  0
 #define MAZE_SOLVER_E_ERROR    MAKE_ERROR(MAZE_SOLVER_MODULE_ID, 1)
 
 
-//definition for numerotation function
-#define CANT_GO 2147483647
+//definition for numberation function
+/* --the value of CANT_GO can be understand like infinity weight-- */
+#define CANT_GO 2147483647 //max value of signed int // TODO : rename it in  INFINITY_WEIGHT
 
 //orientation define
 #define NORTH 0
@@ -41,6 +42,24 @@
 #define END_FIND			1
 #define POSSIBLE_END_FIND	2
 
+#define RUN1_SPEED_ROTATION         (600)
+#define RUN1_MIN_SPEED_TRANSLATION  (600)
+#define RUN1_MAX_SPEED_TRANSLATION  (1000)
+
+#define RUN2_SPEED_ROTATION         (700)
+#define RUN2_MIN_SPEED_TRANSLATION  (700)
+#define RUN2_MAX_SPEED_TRANSLATION  (1200)
+
+#define SCAN_SPEED_ROTATION         (500)
+#define SCAN_MIN_SPEED_TRANSLATION  (500)
+#define SCAN_MAX_SPEED_TRANSLATION  (1000)
+
+#define SAFE_SPEED_ROTATION         (500)
+#define SAFE_SPEED_TRANSLATION      (500)
+
+#define RETURN_START_CELL
+
+
 #define PRINT_MAZE
 //#define PRINT_MAZE_DURING_RUN
 #define PRINT_BLUETOOTH_MAZE
@@ -52,6 +71,8 @@
 #define DISPLAY_OFFSET	    12	//offset for maze print on ssd1306
 #define MAX_STORABLE_MAZES  5
 
+#include <stdlib.h>
+#include "middleware/wall_sensors/wall_sensors.h"
 //Structures typedef
 typedef struct
 {
@@ -91,9 +112,8 @@ typedef struct
 
 // fonctions
 int maze_solver_new_maze(void);
-int exploration(labyrinthe *maze, positionRobot* positionZhonx,
-                const positionRobot *start_coordinates, coordinate *end_coordinate,
-                int max_speed_rotation, int max_speed_translation, int min_speed_translation);
+int exploration(labyrinthe *maze, positionRobot* positionZhonx,const positionRobot *start_coordinates,
+        coordinate *end_coordinate);
 int startRun1(void);
 int startRun2(void);
 int maze_solver_run(const int runType);

@@ -26,6 +26,15 @@ int settingsInit(void)
 	zhonxSettings.wall_know_cost = 1;
 	zhonxSettings.cell_cost = 5;
 	zhonxSettings.start_orientation = 0;
+    zhonxSettings.speeds_scan.max_speed_rotation = SCAN_SPEED_ROTATION;
+    zhonxSettings.speeds_scan.max_speed_traslation = SCAN_MAX_SPEED_TRANSLATION;
+    zhonxSettings.speeds_scan.min_speed = SCAN_MIN_SPEED_TRANSLATION;
+    zhonxSettings.speeds_run1.max_speed_rotation = RUN1_SPEED_ROTATION;
+    zhonxSettings.speeds_run1.max_speed_traslation = RUN1_MAX_SPEED_TRANSLATION;
+    zhonxSettings.speeds_run1.min_speed = RUN1_MIN_SPEED_TRANSLATION;
+    zhonxSettings.speeds_run2.max_speed_rotation = RUN2_SPEED_ROTATION;
+    zhonxSettings.speeds_run2.max_speed_traslation = RUN2_MAX_SPEED_TRANSLATION;
+    zhonxSettings.speeds_run2.min_speed = RUN2_MIN_SPEED_TRANSLATION;
 
     // Flash Initialization
     // TODO: Check returned values of the following functions

@@ -37,7 +37,6 @@
 int run(labyrinthe *maze, positionRobot *positionZhonx, coordinate start_oordinate, coordinate end_coordinate, int runType)
 {
     int rv = RUN_E_SUCCESS;
-    char choice;
     unsigned int runTime;
     coordinate way[MAZE_SIZE * MAZE_SIZE];
 
@@ -64,7 +63,6 @@ int run(labyrinthe *maze, positionRobot *positionZhonx, coordinate start_oordina
     mainControlSetFollowType(WALL_FOLLOW);
     positionControlSetPositionType(GYRO);
 
-    choice = -1;
     clearMazelength(maze);
     computeCellWeight(maze, end_coordinate, FALSE, FALSE);
     moveVirtualZhonx(*maze, *positionZhonx, way, end_coordinate);
@@ -100,8 +98,6 @@ int run(labyrinthe *maze, positionRobot *positionZhonx, coordinate start_oordina
 #ifdef RETURN_START_CELL
     telemetersStart();
     goToPosition(maze, positionZhonx, start_oordinate);
-    //		if(zhonxSettings.calibration_enabled == TRUE)
-    //			calibrateSimple();
     doUTurn(positionZhonx, SAFE_SPEED_ROTATION, SAFE_SPEED_TRANSLATION, SAFE_SPEED_TRANSLATION);
 #endif
 #ifdef PRINT_BLUETOOTH_BASIC_DEGUG

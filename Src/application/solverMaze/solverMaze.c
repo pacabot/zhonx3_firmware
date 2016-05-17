@@ -99,8 +99,7 @@ int maze_solver_new_maze(void)
     ssd1306Refresh();
 
     explorationTime = HAL_GetTick();
-    rv = exploration(&maze, &zhonx_position, &start_position, &end_coordinate,
-                     max_speed_rotation, max_speed_translation, min_speed_translation); //make exploration for go from the robot position and the end of the maze
+    rv = exploration(&maze, &zhonx_position, &start_position, &end_coordinate); //make exploration for go from the robot position and the end of the maze
     explorationTime = HAL_GetTick() - explorationTime;
     if (rv != MAZE_SOLVER_E_SUCCESS)
     {
@@ -231,8 +230,7 @@ int maze_solver_run(const int runType)
 }
 
 int exploration(labyrinthe *maze, positionRobot* positionZhonx,
-                const positionRobot *start_coordinates, coordinate *end_coordinate,
-                int max_speed_rotation, int max_speed_translation, int min_speed_translation)
+                const positionRobot *start_coordinates, coordinate *end_coordinate)
 {
     int rv = MAZE_SOLVER_E_SUCCESS;
     coordinate way[MAZE_SIZE * MAZE_SIZE] = { { -1, -1 }, { END_OF_LIST,
@@ -256,7 +254,7 @@ int exploration(labyrinthe *maze, positionRobot* positionZhonx,
 #endif
             return rv;
         }
-        rv = moveRealZhonxArc(maze, positionZhonx, way, max_speed_rotation, max_speed_translation, min_speed_translation);
+        rv = moveRealZhonxArc(maze, positionZhonx, way, SCAN_SPEED_ROTATION, SCAN_MAX_SPEED_TRANSLATION, SCAN_MIN_SPEED_TRANSLATION);
         if (rv != MAZE_SOLVER_E_SUCCESS)
         {
             ssd1306ClearScreen(MAIN_AREA);
@@ -838,9 +836,6 @@ int findArrival(labyrinthe maze, coordinate *end_coordinate)
                     && maze.cell[x][y].length != CANT_GO && maze.cell[x+1][y].length != CANT_GO
                     && maze.cell[x][y+1].length != CANT_GO && maze.cell[x+1][y+1].length != CANT_GO)
             {
-#ifdef PRINT_BLUETOOTH_BASIC_DEGUG
-                bluetoothPrintf("possible end find at : %i; %i\n", x, y);
-#endif
                 if ((maze.cell[x][y].wall_east != NO_WALL
                         || maze.cell[x][y].wall_south != NO_WALL)
                         && maze.cell[x][y].length != 0
