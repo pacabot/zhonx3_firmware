@@ -116,8 +116,8 @@ const menuItem run1_settings_menu =
         "RUN1 SETING",         //9 characters max
         {
                 {"min speed",           integer,(void*)&zhonxSettings.speeds_run1.min_speed},
-                {"max speed tanslation",integer,(void*)&zhonxSettings.speeds_run1.max_speed_traslation},
-                {"max speed tanslation",integer,(void*)&zhonxSettings.speeds_run1.max_speed_traslation},
+                {"max speed tans",integer,(void*)&zhonxSettings.speeds_run1.max_speed_traslation},
+                {"max speed tans",integer,(void*)&zhonxSettings.speeds_run1.max_speed_traslation},
                 {(char*)NULL,        0,     NULL}
         }
 };
@@ -127,8 +127,8 @@ const menuItem run2_settings_menu =
         "RUN2 SETTING",         //9 characters max
         {
                 {"min speed",           integer,(void*)&zhonxSettings.speeds_run2.min_speed},
-                {"max speed tanslation",integer,(void*)&zhonxSettings.speeds_run2.max_speed_traslation},
-                {"max speed tanslation",integer,(void*)&zhonxSettings.speeds_run2.max_speed_traslation},
+                {"max speed tans",integer,(void*)&zhonxSettings.speeds_run2.max_speed_traslation},
+                {"max speed tans",integer,(void*)&zhonxSettings.speeds_run2.max_speed_traslation},
                 {(char*)NULL,        0,     NULL}
         }
 };
