@@ -6,45 +6,40 @@
     @version  0.01
  */
 /**************************************************************************/
-/* STM32 hal library declarations */
-#include "stm32f4xx_hal.h"
-
 /* General declarations */
 #include "config/basetypes.h"
 #include "config/config.h"
 #include "config/errors.h"
-
-#include "stdbool.h"
-#include <arm_math.h>
-#include <math.h>
+#include <stm32f4xx_hal.h>
+#include <stm32f4xx_hal_gpio.h>
 #include <string.h>
-#include <stdio.h>
-#include <stdint.h>
+#include <sys/_stdint.h>
+
+/* Application declarations */
+#include <application/lineFollower/lineFollower.h>
 
 /* Middleware declarations */
-#include "middleware/controls/lineFollowerControl/lineFollowControl.h"
-#include "middleware/controls/mainControl/mainControl.h"
-#include "middleware/controls/mainControl/positionControl.h"
-#include "middleware/controls/mainControl/speedControl.h"
-#include "middleware/controls/mainControl/transfertFunction.h"
+#include <middleware/controls/mainControl/mainControl.h>
+#include <middleware/controls/mainControl/positionControl.h>
+#include <middleware/moves/basicMoves/basicMoves.h>
 
 /* Peripheral declarations */
-#include "peripherals/lineSensors/lineSensors.h"
-#include "peripherals/tone/tone.h"
-#include "peripherals/display/ssd1306.h"
-#include "peripherals/display/smallfonts.h"
-#include "peripherals/expander/pcf8574.h"
-#include "peripherals/motors/motors.h"
-#include "peripherals/encoders/ie512.h"
-#include "peripherals/multimeter/multimeter.h"
-#include "peripherals/telemeters/telemeters.h"
-#include "peripherals/bluetooth/bluetooth.h"
+#include <peripherals/bluetooth/bluetooth.h>
+#include <peripherals/display/smallfonts.h>
+#include <peripherals/display/ssd1306.h>
+#include <peripherals/encoders/ie512.h>
+#include <peripherals/expander/pcf8574.h>
+#include <peripherals/lineSensors/lineSensors.h>
+#include <peripherals/motors/motors.h>
+#include <peripherals/telemeters/telemeters.h>
+#include <peripherals/tone/tone.h>
 
 /* Middleware declarations */
 #include "middleware/wall_sensors/wall_sensors.h"
-#include "middleware/controls/pidController/pidController.h"us
+#include "middleware/controls/pidController/pidController.h"
 #include "application/lineFollower/lineFollower.h"
 #include "application/statistiques/statistiques.h"
+
 
 line_follower_struct line_follower;
 ground_sensors_struct max_Floor;	//global data to memorize maximum value of sensors
