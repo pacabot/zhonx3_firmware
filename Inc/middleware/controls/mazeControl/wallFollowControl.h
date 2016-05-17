@@ -23,6 +23,11 @@ enum telemeters_used
     NO_SIDE, ALL_SIDE, LEFT_SIDE, RIGHT_SIDE
 };
 
+enum wallFollowType
+{
+    PARALLEL, DIAGONAL
+};
+
 int     wallFollowControlInit(void);
 double  wallFollowGetCommand(void);
 int     wallFollowControlLoop(void);

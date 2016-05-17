@@ -61,9 +61,10 @@ static double current_position = 0;
 
 typedef struct
 {
-    double follow_error;
-    double follow_command;
-    char succes;
+    double  follow_error;
+    double  follow_command;
+    char    follow_type;
+    char    succes;
     pid_control_struct follow_pid;
 } wall_follow_control_struct;
 
@@ -97,6 +98,12 @@ double wallFollowGetCommand(void)
     return wall_follow_control.follow_command;
 }
 
+int wallFollowSetFollowType(enum wallFollowType wallFollowType)
+{
+    wall_follow_control.follow_type = wallFollowType;
+    return MAIN_CONTROL_E_ERROR;
+}
+
 int wallFollowControlLoop(void)
 {
     if (mainControlGetMoveType() != STRAIGHT)
@@ -108,26 +115,36 @@ int wallFollowControlLoop(void)
         return WALL_FOLLOW_CONTROL_E_SUCCESS;
     }
 
-    switch (wallFollowGetTelemeterUsed())
+    if (wall_follow_control.follow_type == PARALLEL)
     {
-        case NO_SIDE:
-            wall_follow_control.follow_error = 0;
-            pidControllerReset(wall_follow_control.follow_pid.instance);
-            expanderSetLeds(0b000);
-            break;
-        case ALL_SIDE:
-            wall_follow_control.follow_error = (double) getTelemeterDist(TELEMETER_DR)
-            - (double) getTelemeterDist(TELEMETER_DL);
-            expanderSetLeds(0b101);
-            break;
-        case LEFT_SIDE:
-            wall_follow_control.follow_error = DIAG_DIST_FOR_FOLLOW - (double) getTelemeterDist(TELEMETER_DL);
-            expanderSetLeds(0b100);
-            break;
-        case RIGHT_SIDE:
-            wall_follow_control.follow_error = -1.00 * (DIAG_DIST_FOR_FOLLOW - (double) getTelemeterDist(TELEMETER_DR));
-            expanderSetLeds(0b001);
-            break;
+        switch (wallFollowGetTelemeterUsed())
+        {
+            case NO_SIDE:
+                wall_follow_control.follow_error = 0;
+                pidControllerReset(wall_follow_control.follow_pid.instance);
+                expanderSetLeds(0b000);
+                break;
+            case ALL_SIDE:
+                wall_follow_control.follow_error = (double) getTelemeterDist(TELEMETER_DR)
+                - (double) getTelemeterDist(TELEMETER_DL);
+                expanderSetLeds(0b101);
+                break;
+            case LEFT_SIDE:
+                wall_follow_control.follow_error = DIAG_DIST_FOR_FOLLOW - (double) getTelemeterDist(TELEMETER_DL);
+                expanderSetLeds(0b100);
+                break;
+            case RIGHT_SIDE:
+                wall_follow_control.follow_error = -1.00 * (DIAG_DIST_FOR_FOLLOW - (double) getTelemeterDist(TELEMETER_DR));
+                expanderSetLeds(0b001);
+                break;
+        }
+    }
+    else if (wall_follow_control.follow_type == DIAGONAL)
+    {
+        if (getTelemeterDist(TELEMETER_FL) < 200.00)
+            wall_follow_control.follow_error = -1.00 * (200 - getTelemeterDist(TELEMETER_FL));
+        if (getTelemeterDist(TELEMETER_FR) < 200.00)
+            wall_follow_control.follow_error = (200 - getTelemeterDist(TELEMETER_FR));
     }
 
     if (fabs(wall_follow_control.follow_error) > MAX_FOLLOW_ERROR)
