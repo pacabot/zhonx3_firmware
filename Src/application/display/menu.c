@@ -41,10 +41,12 @@
 
 typedef enum
 {
+    void_line,
     function,
+    boolean,
     integer,
     preset_value,
-    menue
+    new_menu
 }line_on_menue_type;
 
 /*external functions */
@@ -91,7 +93,7 @@ extern int _KP;
  * {
  * 		"menu name",
  * 		{
- * 			{"line 1 name ",'type of argument', &(void*) pointeur_on_argument},		// 'type of argument' could be integer for int, or 'l' for long, or menue for  a menu, or function for a function
+ * 			{"line 1 name ",'type of argument', &(void*) pointeur_on_argument},		// 'type of argument' could be integer for int, or 'l' for long, or menu for  a menu, or function for a function
  * 			{"line 1 name ",'type of argument', &(void*) pointeur_on_argument},		// maximum 20 line. if it's not enough you must add in "menu.h". for that you have to modify "MAX_LINE_IN_MENU"
  * 			{(char*)NULL,        0,     NULL} 					// the last ligne must be this one, this line will be not print but indispensable. /!\ this line  compte dans les 20 ligne du menu
  * 		}
@@ -114,8 +116,8 @@ const menuItem run1_settings_menu =
         "RUN1 SETING",         //9 characters max
         {
                 {"min speed",           integer,(void*)&zhonxSettings.speeds_run1.min_speed},
-                {"max speed tanslation",integer,(void*)&zhonxSettings.speeds_run1.max_speed_traslation},
-                {"max speed tanslation",integer,(void*)&zhonxSettings.speeds_run1.max_speed_traslation},
+                {"max speed tans",integer,(void*)&zhonxSettings.speeds_run1.max_speed_traslation},
+                {"max speed tans",integer,(void*)&zhonxSettings.speeds_run1.max_speed_traslation},
                 {(char*)NULL,        0,     NULL}
         }
 };
@@ -125,8 +127,8 @@ const menuItem run2_settings_menu =
         "RUN2 SETTING",         //9 characters max
         {
                 {"min speed",           integer,(void*)&zhonxSettings.speeds_run2.min_speed},
-                {"max speed tanslation",integer,(void*)&zhonxSettings.speeds_run2.max_speed_traslation},
-                {"max speed tanslation",integer,(void*)&zhonxSettings.speeds_run2.max_speed_traslation},
+                {"max speed tans",integer,(void*)&zhonxSettings.speeds_run2.max_speed_traslation},
+                {"max speed tans",integer,(void*)&zhonxSettings.speeds_run2.max_speed_traslation},
                 {(char*)NULL,        0,     NULL}
         }
 };
@@ -136,15 +138,15 @@ const menuItem maze_menu =
         "MAZE",         //9 characters max
         {
                 {"New maze",        function,    (void*)maze_solver_new_maze},
-                {"scan settings",   menue,    (void*)&scan_settings_menu},
+                {"scan settings",   new_menu,    (void*)&scan_settings_menu},
                 {"Run1",            function,    (void*)startRun1},
-                {"Run1 settings",   menue,    (void*)&run1_settings_menu},
+                {"Run1 settings",   new_menu,    (void*)&run1_settings_menu},
                 {"Run2",            function,    (void*)startRun2},
-                {"Run2 settings",   menue,    (void*)&run2_settings_menu},
+                {"Run2 settings",   new_menu,    (void*)&run2_settings_menu},
                 {"Test maze move",  function,    (void*)test_move_zhonx},
                 {(char*)NULL,        0,     NULL}
-//				{"Calibration", 'b',    (void*)&zhonxSettings.calibration_enabled},
-//				{"Color finish",'b',	(void*)&zhonxSettings.nime_competition},
+//				{"Calibration", boolean,    (void*)&zhonxSettings.calibration_enabled},
+//				{"Color finish",boolean,	(void*)&zhonxSettings.nime_competition},
 //				{"X finish",    integer,	(void*)&zhonxSettings.maze_end_coordinate.x},
 //				{"Y finish",    integer,	(void*)&zhonxSettings.maze_end_coordinate.y}
 		}
@@ -216,11 +218,11 @@ const menuItem calibration_menu =
 {
         "CALIB.",        //9 characters max
         {
-                {"Telemeters",      menue,  (void*)&telemetersCal},
-                {"SpyPost",         menue,  (void*)&spyPostCal},
-                {"SpyWall",         menue,  (void*)&frontCal},
-                {"Gyroscope",       menue,  (void*)&gyroCal},
-                {"PID",             menue,  (void*)&pidCal},
+                {"Telemeters",      new_menu,  (void*)&telemetersCal},
+                {"SpyPost",         new_menu,  (void*)&spyPostCal},
+                {"SpyWall",         new_menu,  (void*)&frontCal},
+                {"Gyroscope",       new_menu,  (void*)&gyroCal},
+                {"PID",             new_menu,  (void*)&pidCal},
         }
 };
 
@@ -269,12 +271,12 @@ const menuItem mainMenu =
 {
 		(char *)CONFIG_ZHONX_INFO_ADDR,
 		{
-				{"Maze menu",       menue,	(void*)&maze_menu},
-				{"Line menu",       menue,    (void*)&follower_menu},
-				{"Unit tests",      menue,    (void*)&tests_menu},
-				{"Calibration menu",menue,    (void*)&calibration_menu},
-                {"Control menu",    menue,    (void*)&control_menu},
-				{"Zhonx Name",      menue,    (void*)&zhonxNameMenu},
+				{"Maze menu",       new_menu,	(void*)&maze_menu},
+				{"Line menu",       new_menu,    (void*)&follower_menu},
+				{"Unit tests",      new_menu,    (void*)&tests_menu},
+				{"Calibration menu",new_menu,    (void*)&calibration_menu},
+                {"Control menu",    new_menu,    (void*)&control_menu},
+				{"Zhonx Name",      new_menu,    (void*)&zhonxNameMenu},
 				{0, 0, 0}
 		}
 };
@@ -372,7 +374,7 @@ int menu(const menuItem Menu)
                 toneItMode(8000, 20);
                 switch (Menu.line[line_menu].type)
                 {
-                    case 'b':
+                    case boolean:
                         modifyBoolParam(Menu.line[line_menu].name, (unsigned char*) Menu.line[line_menu].param);
                         break;
                     case integer:
@@ -381,7 +383,7 @@ int menu(const menuItem Menu)
                     case 'l':
                         modifyLongParam(Menu.line[line_menu].name, (long*) Menu.line[line_menu].param);
                         break;
-                    case menue:
+                    case new_menu:
                         menu(*(const menuItem*) Menu.line[line_menu].param);
                         break;
                     case function:
@@ -455,7 +457,7 @@ void displayMenu(const menuItem menu, int line)
             ssd1306DrawStringAtLine(0, i, menu.line[line + i].name, &Font_5x8);
         switch (menu.line[line + i].type)
         {
-            case 'b':
+            case boolean:
                 if (*((bool*) menu.line[i + line].param) == true)
                     ssd1306DrawStringAtLine(90, i, "yes", &Font_5x8);
                 else
@@ -470,7 +472,7 @@ void displayMenu(const menuItem menu, int line)
             case function:
                 ssd1306DrawStringAtLine(110, i, ">", &Font_3x6);
                 break;
-            case menue:
+            case new_menu:
                 ssd1306DrawStringAtLine(110, i, "->", &Font_3x6);
                 break;
             case preset_value:
