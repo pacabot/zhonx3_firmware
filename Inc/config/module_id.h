@@ -24,23 +24,25 @@
 #define TELEMETERSCAL_DRIVER_MODULE_ID	    13
 #define TIMESBASE_DRIVER_MODULE_ID			14
 #define POWERMANAGMENT_DRIVER_MODULE_ID	    15
-#define SPYPOST_DRIVER_MODULE_ID            16
 
 /* middleware 1xx */
 
 #define SPEED_CONTROL_MODULE_ID				100
 #define MAIN_CONTROL_MODULE_ID			    101
 #define POSITION_CONTROL_MODULE_ID			102
-#define TRANSFERT_FUNCTION_MODULE_ID		105
-#define WALL_SENSORS_MODULE_ID			    106
-#define SETTING_MODULE_ID				    110
-#define RING_BUFFER_MODULE_ID		        111
-#define CMDLINE_PARSER_MODULE_ID	        112
-#define BASIC_MOVES_MODULE_ID			    113
-#define REPOSITION_MODULE_ID				114
+#define TRANSFERT_FUNCTION_MODULE_ID		103
+#define WALL_SENSORS_MODULE_ID			    104
+#define SETTING_MODULE_ID				    105
+#define RING_BUFFER_MODULE_ID		        106
+#define CMDLINE_PARSER_MODULE_ID	        107
+#define BASIC_MOVES_MODULE_ID			    108
+#define MAZE_MOVES_MODULE_ID				109
+#define SPYPOST_DRIVER_MODULE_ID            110
+#define SPYWALL_MODULE_ID                   111
 
 /* application 2xx*/
 #define MAZE_SOLVER_MODULE_ID			    201
 #define STATISTIQUES_MODULE_ID			    202
+#define RUN_MODULE_ID                       203
 
 #endif /* MODULE_ID_H_ */

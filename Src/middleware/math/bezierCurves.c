@@ -22,7 +22,7 @@ void courbe_de_bezier(int pointA[2], int pointB[2], int pointC[2], int pointD[2]
 
         double x = a * pointA[0] + b * pointB[0] + c * pointC[0] + d * pointD[0];
         double y = a * pointA[1] + b * pointB[1] + c * pointC[1] + d * pointD[1];
-        tableOfPoint[i].x = x;
-        tableOfPoint[i].y = y;
+        tableOfPoint[i].x = (char)x;
+        tableOfPoint[i].y = (char)y;
     }
 }

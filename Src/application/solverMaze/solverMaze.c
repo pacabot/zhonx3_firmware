@@ -9,39 +9,35 @@
  *
  */
 
-#include <stdio.h>
+/* STM32 hal library declarations */
+#include <stm32f4xx_hal.h>
+
+/* General declarations */
 #include <string.h>
-#include <math.h>
-
-#include "stm32f4xx_hal.h"
-#include "stm32f4xx.h"
-#include "config/basetypes.h"
-
-/* Middleware declarations */
-#include "middleware/controls/lineFollowerControl/lineFollowControl.h"
-#include "middleware/controls/mainControl/mainControl.h"
-#include "middleware/controls/mainControl/positionControl.h"
-#include "middleware/controls/mainControl/speedControl.h"
-#include "middleware/controls/mainControl/transfertFunction.h"
-#include "middleware/settings/settings.h"
-#include "middleware/wall_sensors/wall_sensors.h"
-#include "middleware/controls/pidController/pidController.h"
-#include "middleware/display/pictures.h"
-
-/* peripherale inlcudes*/
-#include "peripherals/times_base/times_base.h"
-#include "peripherals/display/ssd1306.h"
-#include "peripherals/expander/pcf8574.h"
-#include "peripherals/motors/motors.h"
-#include "peripherals/lineSensors/lineSensors.h"
-#include "peripherals/telemeters/telemeters.h"
-#include "peripherals/bluetooth/bluetooth.h"
-#include "peripherals/tone/tone.h"
+#include <config/basetypes.h>
 
 /* application include */
+#include <application/solverMaze/robotInterface.h>
+#include <application/solverMaze/run.h>
+#include <application/solverMaze/solverMaze.h>
+
+/* Middleware declarations */
+#include <middleware/controls/mainControl/mainControl.h>
+#include <middleware/controls/mainControl/positionControl.h>
+#include <middleware/display/pictures.h>
+
+/* peripherale inlcudes*/
+#include <peripherals/bluetooth/bluetooth.h>
+#include <peripherals/display/smallfonts.h>
+#include <peripherals/display/ssd1306.h>
+#include <peripherals/expander/pcf8574.h>
+#include <peripherals/motors/motors.h>
+#include <peripherals/telemeters/telemeters.h>
+#include <peripherals/tone/tone.h>
+
+/* Declarations for this module */
 #include "application/solverMaze/solverMaze.h"
-#include "application/solverMaze/robotInterface.h"
-#include "application/solverMaze/run.h"
+
 /*
  *  ********************** int maze (void) **********************
  *  this function is the main function of the maze solver
@@ -53,6 +49,11 @@ int maze_solver_new_maze(void)
     coordinate end_coordinate; // it's the coordinates which Zhonx have at the start
     positionRobot zhonx_position, start_position;
     labyrinthe maze;
+    unsigned int explorationTime;
+
+    int max_speed_rotation    = SCAN_SPEED_ROTATION;
+    int max_speed_translation = SCAN_MAX_SPEED_TRANSLATION;
+    int min_speed_translation = SCAN_MIN_SPEED_TRANSLATION;
 
     memset(&end_coordinate, 0, sizeof(coordinate));
     memset(&zhonx_position, 0, sizeof(positionRobot));
@@ -97,7 +98,9 @@ int maze_solver_new_maze(void)
     ssd1306PrintfAtLine(40, 0, &Font_5x8, "SCAN...");
     ssd1306Refresh();
 
+    explorationTime = HAL_GetTick();
     rv = exploration(&maze, &zhonx_position, &start_position, &end_coordinate); //make exploration for go from the robot position and the end of the maze
+    explorationTime = HAL_GetTick() - explorationTime;
     if (rv != MAZE_SOLVER_E_SUCCESS)
     {
 #ifdef PRINT_BLUETOOTH_BASIC_DEGUG
@@ -119,6 +122,7 @@ int maze_solver_new_maze(void)
     {
         ssd1306ClearScreen(MAIN_AREA);
         ssd1306PrintfAtLine(0, 0, &Font_5x8, "TARGET REACHED !!!");
+        ssd1306PrintfAtLine(0, 2, &Font_7x8, "TIME : %d.%ds", explorationTime / 1000, explorationTime % 1000);
         ssd1306Refresh();
         tone(G5, 100);
         HAL_Delay(100);
@@ -141,22 +145,20 @@ int maze_solver_new_maze(void)
     }
 #ifdef RETURN_START_CELL
     telemetersStart();//because flash write cause interrupts damages
-
-    ssd1306PrintfAtLine(0,0,&Font_5x8,"go to start position");
+    ssd1306ClearScreen(MAIN_AREA);
+    ssd1306PrintfAtLine(0,0,&Font_5x8,"RETURN TO START CELL");
+    ssd1306PrintfAtLine(0, 2, &Font_7x8, "TIME : %d.%ds", explorationTime / 1000, explorationTime % 1000);
     ssd1306Refresh();
     goToPosition(&maze, &zhonx_position, start_position.coordinate_robot);	//goto start position
 
     doUTurn(&zhonx_position, SAFE_SPEED_ROTATION, SAFE_SPEED_TRANSLATION, SAFE_SPEED_TRANSLATION);//initial position
 #endif
 #ifdef PRINT_BLUETOOTH_BASIC_DEGUG
-    bluetoothPrintf("uturn do\ngo back");
+    bluetoothPrintf("TIME : %d.%ds", explorationTime / 1000, explorationTime % 1000);
 #endif
-    ssd1306ClearScreen(MAIN_AREA);
-    ssd1306PrintfAtLine(40, 0, &Font_5x8, "END SEARCH");
-    ssd1306Refresh();
     telemetersStop();
     motorsDriverSleep(ON);
-    HAL_Delay(1000);
+    HAL_Delay(2000);
 #ifdef PRINT_MAZE
     ssd1306ClearScreen(MAIN_AREA);
     printMaze(maze, zhonx_position.coordinate_robot);
@@ -217,24 +219,10 @@ int maze_solver_run(const int runType)
     ssd1306ClearScreen(MAIN_AREA);
     printMaze(maze, zhonx_position.coordinate_robot);
 #endif
-    if (runType == 1)
-    {
-        run1(&maze, &zhonx_position,
-             start_position.coordinate_robot,
-             end_coordinate);
-    }
-    else if (runType == 2)
-    {
-        run2(&maze, &zhonx_position,
-             start_position.coordinate_robot,
-             end_coordinate);
-    }
-    else
-    {
-        HAL_Delay(100);
-        motorsDriverSleep(ON);
-        return MAZE_SOLVER_E_ERROR;
-    }
+
+    run(&maze, &zhonx_position,
+        start_position.coordinate_robot,
+        end_coordinate, runType);
 
     HAL_Delay(100);
     motorsDriverSleep(ON);
@@ -244,10 +232,6 @@ int maze_solver_run(const int runType)
 int exploration(labyrinthe *maze, positionRobot* positionZhonx,
                 const positionRobot *start_coordinates, coordinate *end_coordinate)
 {
-    int max_speed_rotation = SCAN_SPEED_ROTATION;
-    int max_speed_translation = SCAN_MAX_SPEED_TRANSLATION;
-    int min_speed_translation = SCAN_MIN_SPEED_TRANSLATION;
-
     int rv = MAZE_SOLVER_E_SUCCESS;
     coordinate way[MAZE_SIZE * MAZE_SIZE] = { { -1, -1 }, { END_OF_LIST,
             END_OF_LIST } };
@@ -262,14 +246,6 @@ int exploration(labyrinthe *maze, positionRobot* positionZhonx,
         rv = moveVirtualZhonx(*maze, *positionZhonx, way, *end_coordinate);
         if (rv != MAZE_SOLVER_E_SUCCESS)
         {
-            //            moveRealZhonxArc(maze, positionZhonx, way);
-            //            clearMazelength(maze);
-            //            computeCellWeight(maze, positionZhonx->coordinate_robot, TRUE, FALSE);
-            //            end_coordinate = &last_coordinate;// &positionZhonx->coordinate_robot;
-            //            last_coordinate = findEndCoordinate(way);
-            //            end_coordinate->x = last_coordinate.x;
-            //            end_coordinate->y = last_coordinate.y;
-            moveStop();
 #ifdef PRINT_MAZE_DURING_RUN
             printMaze(*maze, positionZhonx->coordinate_robot);
 #endif
@@ -278,10 +254,9 @@ int exploration(labyrinthe *maze, positionRobot* positionZhonx,
 #endif
             return rv;
         }
-        rv = moveRealZhonxArc(maze, positionZhonx, way, max_speed_rotation, max_speed_translation, min_speed_translation);
+        rv = moveRealZhonxArc(maze, positionZhonx, way, SCAN_SPEED_ROTATION, SCAN_MAX_SPEED_TRANSLATION, SCAN_MIN_SPEED_TRANSLATION);
         if (rv != MAZE_SOLVER_E_SUCCESS)
         {
-            moveStop();
             ssd1306ClearScreen(MAIN_AREA);
             ssd1306DrawBmp(warning_Img, 1, 15, 48, 43);
             ssd1306PrintfAtLine(55, 1, &Font_5x8, "ERROR WAY");
@@ -297,7 +272,6 @@ int exploration(labyrinthe *maze, positionRobot* positionZhonx,
 #endif
     }
     last_coordinate = findEndCoordinate(way);
-    moveStop();
 
     return rv;
 }

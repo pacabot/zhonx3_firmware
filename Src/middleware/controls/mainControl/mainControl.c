@@ -53,10 +53,9 @@ typedef struct
     char speed_state;
 } control_params_struct;
 
+static enum mainControlMoveType moveType;
 static control_params_struct control_params;
-move_params_struct move_params;
-
-int debug_1 = 0;
+static pid_loop_struct pid_loop;
 
 double ROTATION_DIAMETER;
 
@@ -80,7 +79,7 @@ int mainControlInit(void)
     positionControlSetPositionType(ENCODERS);
     mainControlSetFollowType(NO_FOLLOW);
 
-    move_params.moveType = STRAIGHT;
+    mainControlSetMoveType(STRAIGHT);
 
     control_params.wall_follow_state = 0;
     control_params.line_follow_state = 0;
@@ -92,6 +91,12 @@ int mainControlStopPidLoop(void)
 {
     pid_loop.start_state = FALSE;
     expanderSetLeds(0b000);
+    return MAIN_CONTROL_E_SUCCESS;
+}
+
+int mainControlSartPidLoop(void)
+{
+    pid_loop.start_state = TRUE;
     return MAIN_CONTROL_E_SUCCESS;
 }
 
@@ -135,9 +140,9 @@ int mainControl_IT(void)
     return MAIN_CONTROL_E_SUCCESS;
 }
 
-int mainControlSetFollowType(enum mainControlFollowType follow_type)
+int mainControlSetFollowType(enum mainControlFollowType followType)
 {
-    switch (follow_type)
+    switch (followType)
     {
         case LINE_FOLLOW:
             control_params.wall_follow_state = FALSE;
@@ -166,95 +171,15 @@ enum mainControlFollowType mainControlGetFollowType()
         return NO_FOLLOW;
 }
 
-enum mainControlWallFollowType mainControlGetWallFollowType()
+enum mainControlMoveType mainControlGetMoveType()
 {
-    return move_params.moveType;
+    return moveType;
 }
 
-int moveStop(void)
+int mainControlSetMoveType(enum mainControlMoveType move_type)
 {
-    while (hasMoveEnded() != TRUE);
-    moveStraight(0, 0, 0, 500);
-    HAL_Delay(100);
-    motorsBrake();
-    return POSITION_CONTROL_E_SUCCESS;
-}
-
-int moveEmergencyStop(void)
-{
-    moveStraight(0, 0, 0, 1000);
-    HAL_Delay(500);
-    motorsBrake();
-    return POSITION_CONTROL_E_SUCCESS;
-}
-
-int move(double angle, double radius_or_distance, double max_speed, double end_speed)
-{
-    double distance;
-    pid_loop.start_state = FALSE; //stop contol loop
-
-    encodersReset();
-    gyroResetAngle();
-
-    speedControlSetSign((double) SIGN(radius_or_distance));
-    radius_or_distance = fabsf(radius_or_distance);
-
-    positionControlSetSign((double) SIGN(angle));
-    angle = fabsl(angle);
-
-    if (lround(angle) == 0)
-    {
-        move_params.moveType = STRAIGHT;
-
-        speedProfileCompute(radius_or_distance, max_speed, end_speed, MAX_ACCEL);
-        positionProfileCompute(0, 0, max_speed);
-#ifdef DEBUG_MAIN_CONTROL
-        bluetoothPrintf("STRAIGHT = %d\n", (int32_t)radius_or_distance);
-#endif
-    }
-    else
-    {
-        distance = fabsf((PI * (2.00 * radius_or_distance) * (angle / 360.00)));
-
-        if (lround(radius_or_distance) == 0)
-        {
-            move_params.moveType = ROTATE_IN_PLACE;
-            speedProfileCompute(0, max_speed, end_speed, MAX_ACCEL);
-            positionProfileCompute(angle, 0, max_speed);
-        }
-        else
-        {
-            move_params.moveType = CURVE;
-            positionProfileCompute(angle, speedProfileCompute(distance, max_speed, end_speed, MAX_ACCEL), max_speed);
-        }
-#ifdef DEBUG_MAIN_CONTROL
-        bluetoothPrintf("CURVE = %d\n", (int32_t)angle);
-#endif
-    }
-
-    pid_loop.start_state = TRUE;
-    motorsDriverSleep(OFF);
-    return POSITION_CONTROL_E_SUCCESS;
-}
-
-int moveStraight(double distance, double max_speed, double end_speed, double accel)
-{
-    pid_loop.start_state = FALSE; //stop contol loop
-
-    encodersReset();
-    gyroResetAngle();
-
-    speedControlSetSign((double) SIGN(distance));
-    distance = fabsf(distance);
-
-    move_params.moveType = STRAIGHT;
-
-    speedProfileCompute(distance, max_speed, end_speed, accel);
-    positionProfileCompute(0, 0, max_speed);
-
-    pid_loop.start_state = TRUE;
-    motorsDriverSleep(OFF);
-    return POSITION_CONTROL_E_SUCCESS;
+    moveType = move_type;
+    return MAIN_CONTROL_E_ERROR;
 }
 
 char hasMoveEnded(void)
@@ -262,8 +187,8 @@ char hasMoveEnded(void)
     if ((positionControlHasMoveEnded() == TRUE && speedControlHasMoveEnded() == TRUE) ||
             pid_loop.start_state == FALSE)
     {
-        pid_loop.start_state = FALSE;
-        motorsDriverSleep(ON);
+//        pid_loop.start_state = FALSE;
+//        motorsDriverSleep(ON);
         return TRUE;
     }
     return FALSE;

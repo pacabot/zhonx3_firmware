@@ -16,8 +16,16 @@
 #define WALL_FOLLOW_CONTROL_E_SUCCESS  0
 #define WALL_FOLLOW_CONTROL_E_ERROR    MAKE_ERROR(WALL_FOLLOW_CONTROL_MODULE_ID, 1)
 
-int wallFollowControlInit(void);
-double wallFollowGetCommand(void);
-int wallFollowControlLoop(void);
+//#define DEBUG_WALLFOLLOW
+
+enum telemeters_used
+{
+    NO_SIDE, ALL_SIDE, LEFT_SIDE, RIGHT_SIDE
+};
+
+int     wallFollowControlInit(void);
+double  wallFollowGetCommand(void);
+int     wallFollowControlLoop(void);
+int     wallFollowSetInitialPosition(double initial_position);
 
 #endif

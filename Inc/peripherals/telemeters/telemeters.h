@@ -56,8 +56,6 @@ extern TELEMETERS_PROFILE *telemeters_profile;
 /* Exported functions for telemeterCal.c*/
 int wallSensorsCalibrationFront(void);
 int wallSensorsCalibrationDiag(void);
-void testWallsSensors();
-void testPostSensors();
 
 /* Exported functions for telemeter.c */
 void    telemetersInit(void);

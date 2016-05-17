@@ -27,7 +27,6 @@
 
 /* extern variables ---------------------------------------------------------*/
 /* global variables ---------------------------------------------------------*/
-pid_loop_struct pid_loop;
 
 GPIO_InitTypeDef GPIO_InitStruct;
 

@@ -15,7 +15,6 @@
 #include "stdbool.h"
 #include <arm_math.h>
 #include <math.h>
-#include <middleware/controls/mainControl/mainControl.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdint.h>
@@ -32,12 +31,14 @@
 #include "peripherals/bluetooth/bluetooth.h"
 #include "peripherals/motors/motors.h"
 #include "peripherals/encoders/ie512.h"
-
 #include "peripherals/eeprom/24lc64.h"
 #include "peripherals/flash/flash.h"
 
 /* Middleware declarations */
 #include "middleware/math/kalman_filter.h"
+#include "middleware/controls/mainControl/mainControl.h"
+#include "middleware/moves/basicMoves/basicMoves.h"
+#include "middleware/settings/settings.h"
 
 /* Declarations for this module */
 #include "peripherals/telemeters/telemeters.h"
@@ -70,7 +71,7 @@ int wallSensorsCalibrationFront(void)
     telemetersStart();
 
     // take the measures
-    moveStraight(-MEASURED_DISTANCE, 50, 50, 20);
+    basicMoveStraight(-MEASURED_DISTANCE, 50, 50, 20);
     ssd1306Refresh();
     for (i = 0; i < TELEMETER_PROFILE_ARRAY_LENGTH; i++)
     {
@@ -167,7 +168,7 @@ int wallSensorsCalibrationDiag(void)
     telemetersStart();
 
     // take the measures
-    moveStraight(-number_of_millimeter_per_loop * TELEMETER_PROFILE_ARRAY_LENGTH, 50, 50, 20);
+    basicMoveStraight(-number_of_millimeter_per_loop * TELEMETER_PROFILE_ARRAY_LENGTH, 50, 50, 20);
     for (i = 0; i < TELEMETER_PROFILE_ARRAY_LENGTH; i++)
     {
         while ((((int) (encoderGetDist(ENCODER_L) + encoderGetDist(ENCODER_R))
@@ -236,98 +237,4 @@ int wallSensorsCalibrationDiag(void)
     }
     HAL_Delay(3000);
     return TELEMETERS_DRIVER_E_SUCCESS;
-}
-
-void testWallsSensors()
-{
-    telemetersInit();
-    telemetersStart();
-    while (expanderJoyFiltered() != JOY_LEFT)
-    {
-        ssd1306ClearScreen(MAIN_AREA);
-        if (getWallPresence(FRONT_WALL) == WALL_PRESENCE)
-        {
-            ssd1306FillRect(0, 59, 54, 5);
-        }
-        else
-        {
-            ssd1306DrawRect(0, 59, 54, 5);
-        }
-        switch (getWallPresence(LEFT_WALL))
-        {
-            case WALL_PRESENCE:
-                ssd1306FillRect(0, 10, 5, 54);
-                break;
-            case NO_KNOWN:
-                ssd1306DrawRect(0, 10, 5, 54);
-                break;
-            default:
-                break;
-        }
-        switch (getWallPresence(RIGHT_WALL))
-        {
-            case WALL_PRESENCE:
-                ssd1306FillRect(49, 10, 5, 54);
-                break;
-            case NO_KNOWN:
-                ssd1306DrawRect(49, 10, 5, 54);
-                break;
-            default:
-                break;
-        }
-        ssd1306PrintIntAtLine(60, 1, "FL ", (uint32_t) (getTelemeterDist(TELEMETER_FL) * 10.00), &Font_5x8);
-        ssd1306PrintIntAtLine(60, 2, "DL ", (uint32_t) (getTelemeterDist(TELEMETER_DL) * 10.00), &Font_5x8);
-        ssd1306PrintIntAtLine(60, 3, "DR ", (uint32_t) (getTelemeterDist(TELEMETER_DR) * 10.00), &Font_5x8);
-        ssd1306PrintIntAtLine(60, 4, "FR ", (uint32_t) (getTelemeterDist(TELEMETER_FR) * 10.00), &Font_5x8);
-
-        ssd1306Refresh();
-    }
-    telemetersStop();
-}
-
-void testPostSensors()
-{
-    telemetersInit();
-    telemetersStart();
-
-    while (expanderJoyFiltered() != JOY_LEFT)
-    {
-        ssd1306ClearScreen(MAIN_AREA);
-
-        if (fabs(getTelemeterSpeed(TELEMETER_DL)) > 500)
-        {
-            ssd1306FillRect(0, 58, 5, 5);
-        }
-        //		else
-        //		{
-        //		ssd1306DrawRect(0,49,5,5);
-        //		}
-
-        //		ssd1306FillRect(0,0,5,5);
-        //		ssd1306DrawRect(0,0,5,5);
-
-        if (fabs(getTelemeterSpeed(TELEMETER_DR)) > 500)
-        {
-            ssd1306FillRect(49, 58, 5, 5);
-        }
-        //		else
-        //		{
-        //		ssd1306DrawRect(49,49,5,5);
-        //		}
-
-        //		ssd1306FillRect(49,49,5,5);
-        //
-        //		ssd1306DrawRect(49,49,5,5);
-        //
-        //		ssd1306FillRect(49,0,5,5);
-        //
-        //		ssd1306DrawRect(49,0,5,5);
-
-        ssd1306PrintIntAtLine(55, 1, "FL", (int32_t) getTelemeterSpeed(TELEMETER_FL), &Font_5x8);
-        ssd1306PrintIntAtLine(55, 2, "FR", (int32_t) getTelemeterSpeed(TELEMETER_DL), &Font_5x8);
-        ssd1306PrintIntAtLine(55, 3, "DL", (int32_t) getTelemeterSpeed(TELEMETER_DR), &Font_5x8);
-        ssd1306PrintIntAtLine(55, 4, "DR", (int32_t) getTelemeterSpeed(TELEMETER_FR), &Font_5x8);
-        ssd1306Refresh();
-    }
-    telemetersStop();
 }

@@ -14,15 +14,15 @@
 /**************************************************************************************/
 /***************                 Times definitions                 ********************/
 /**************************************************************************************/
-#define HI_TIME_FREQ			    (20000.00) 	        //use for master inner loop
-#define LOW_TIME_FREQ               (100.00)              //low inner loop
-#define CONTROL_TIME_FREQ           (1000.00)             //use for control inner loop
-#define LINE_FOLLOWER_TIME_FREQ     (1000.00)             //use for line follower inner loop
+#define HI_TIME_FREQ			    (20000.00) 	            //use for master inner loop
+#define LOW_TIME_FREQ               (100.00)                //low inner loop
+#define CONTROL_TIME_FREQ           (1000.00)               //use for control inner loop
+#define LINE_FOLLOWER_TIME_FREQ     (1000.00)               //use for line follower inner loop
 #define TELEMETERS_TIME_FREQ        ((1600.00) * (10.00))   //each telemeter use 1/10 of TELEMETERS_TIME_FREQ
-#define GYRO_TIME_FREQ			    (3500.00)            //for adc injected freq
-#define LINESENSORS_TIME_FREQ	    (4000.00)             //line sensor measure frequency
-#define MULTIMMETER_TIME_FREQ       (0.10)                //multimeter inner loop
-#define MOTORS_FREQ				    (23000.00)	        //motor pwm freq
+#define GYRO_TIME_FREQ			    (3500.00)               //for adc injected freq
+#define LINESENSORS_TIME_FREQ	    (4000.00)               //line sensor measure frequency
+#define MULTIMMETER_TIME_FREQ       (0.10)                  //multimeter inner loop
+#define MOTORS_FREQ				    (23000.00)	            //motor pwm freq
 
 /**************************************************************************************/
 /***************                 Gyro definitions                  ********************/
@@ -126,14 +126,34 @@
 #define MAIN_DIST               ((CELL_LENGTH) - ((OFFSET_DIST) * (2.00)))
 
 /**************************************************************************************/
+/***************                     Maze speed                    ********************/
+/**************************************************************************************/
+
+#define RUN1_SPEED_ROTATION         (600)
+#define RUN1_MIN_SPEED_TRANSLATION  (600)
+#define RUN1_MAX_SPEED_TRANSLATION  (1000)
+
+#define RUN2_SPEED_ROTATION         (700)
+#define RUN2_MIN_SPEED_TRANSLATION  (700)
+#define RUN2_MAX_SPEED_TRANSLATION  (1200)
+
+#define SCAN_SPEED_ROTATION         (500)
+#define SCAN_MIN_SPEED_TRANSLATION  (500)
+#define SCAN_MAX_SPEED_TRANSLATION  (1000)
+
+#define SAFE_SPEED_ROTATION         (500)
+#define SAFE_SPEED_TRANSLATION      (500)
+
+#define RETURN_START_CELL
+
+/**************************************************************************************/
 /***************                 Physical Constants                ********************/
 /**************************************************************************************/
 #define MAX_SPEED				(2000.00)	//mm/s
-#define MAX_ACCEL				(2000.00)   //mm/s/s
-//#define MAX_DECEL				(8000.0)	//mm/s/s
+#define MAX_ACCEL				(3000.00)   //mm/s/s
 
 #define MAX_TURN_SPEED			(500.00)	//mm/s
-#define MAX_TURN_ACCEL			(4000.00)	    //°/s/s
+#define MAX_TURN_ACCEL			(4000.00)	//°/s/s perhaps wrong scale //todo verify correct scale
 
 /**************************************************************************************/
 /***************                 Motors Constants                  ********************/

@@ -10,7 +10,8 @@
 #define __POSITIONCONTROL_H__
 
 /* Module Identifier */
-#include "config/module_id.h"
+#include <config/module_id.h>
+#include <config/errors.h>
 
 /* Error codes */
 #define POSITION_CONTROL_E_SUCCESS  0
@@ -30,13 +31,14 @@ enum positionType
     ENCODERS, GYRO
 };
 
-int positionControlInit(void);
-char positionControlHasMoveEnded(void);
-double positionControlGetCurrentAngle(void);
-double positionControlGetPositionCommand(void);
-char positionControlSetPositionType(enum positionType position_type);
-char positionControlEnablePositionCtrl(enum enablePositionCtrl enable_position_ctrl);
-int positionControlLoop(void);
-double positionProfileCompute(double angle, double loop_time, double max_speed);
+int     positionControlInit(void);
+char    positionControlHasMoveEnded(void);
+double  positionControlGetCurrentAngle(void);
+double  positionControlGetPositionCommand(void);
+char    positionControlSetPositionType(enum positionType position_type);
+char    positionControlEnablePositionCtrl(enum enablePositionCtrl enable_position_ctrl);
+double  positionControlSetSign(double sign);
+int     positionControlLoop(void);
+double  positionProfileCompute(double angle, double loop_time, double max_speed);
 
 #endif

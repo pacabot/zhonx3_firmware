@@ -6,35 +6,30 @@
  @version  0.0
  */
 /**************************************************************************/
-/* STM32 hal library declarations */
-#include "stm32f4xx_hal.h"
 
 /* General declarations */
-#include "config/basetypes.h"
-#include "config/config.h"
-#include "config/errors.h"
-
-#include "stdbool.h"
-#include <arm_math.h>
-#include <math.h>
-#include <string.h>
-#include <stdio.h>
+#include <stm32f4xx.h>
+#include <stm32f4xx_hal.h>
+#include <stm32f4xx_hal_adc.h>
+#include <stm32f4xx_hal_adc_ex.h>
+#include <stm32f4xx_hal_gpio.h>
 #include <stdint.h>
 
 /* Peripheral declarations */
-#include "peripherals/display/ssd1306.h"
-#include "peripherals/display/smallfonts.h"
-#include "peripherals/expander/pcf8574.h"
-#include "peripherals/multimeter/multimeter.h"
-
-#include "middleware/settings/settings.h"
-#include "middleware/flash_driver/flash_driver.h"
+#include <peripherals/display/smallfonts.h>
+#include <peripherals/display/ssd1306.h>
+#include <peripherals/expander/pcf8574.h>
+#include <peripherals/flash/flash.h>
+#include <peripherals/motors/motors.h>
 
 /* Middleware declarations */
-#include "middleware/display/banner.h"
+#include <middleware/display/banner.h>
+#include <middleware/moves/basicMoves/basicMoves.h>
+#include <middleware/settings/settings.h>
+#include <middleware/controls/mainControl/positionControl.h>
 
 /* Declarations for this module */
-#include "peripherals/gyroscope/adxrs620.h"
+#include <peripherals/gyroscope/adxrs620.h>
 
 /* Types definitions */
 typedef struct
@@ -68,9 +63,8 @@ void adxrs620Init(void)
     sConfigInjected.InjectedChannel = ADC_CHANNEL_14;
     sConfigInjected.InjectedRank = 1;
     sConfigInjected.InjectedNbrOfConversion = 1;
-    sConfigInjected.InjectedSamplingTime = ADC_SAMPLETIME_28CYCLES;
-    sConfigInjected.ExternalTrigInjecConvEdge =
-    ADC_EXTERNALTRIGINJECCONVEDGE_RISING;
+    sConfigInjected.InjectedSamplingTime = ADC_SAMPLETIME_3CYCLES;
+    sConfigInjected.ExternalTrigInjecConvEdge = ADC_EXTERNALTRIGINJECCONVEDGE_RISING;
     sConfigInjected.ExternalTrigInjecConv = ADC_EXTERNALTRIGINJECCONV_T5_TRGO;
     sConfigInjected.AutoInjectedConv = DISABLE;
     sConfigInjected.InjectedDiscontinuousConvMode = DISABLE;
@@ -118,8 +112,12 @@ void adxrs620Cal(void)
 {
     double cal;
     int rv;
-
     adxrs620Init();
+
+    positionControlSetPositionType(ENCODERS);
+    motorsDriverSleep(OFF);
+    basicMove(0,0,0,0);
+
     ssd1306ClearScreen(MAIN_AREA);
     ssd1306DrawStringAtLine(0, 1, "DON'T TOUTCH Z3!!", &Font_3x6);
     ssd1306Refresh();
@@ -140,6 +138,7 @@ void adxrs620Cal(void)
         ssd1306PrintIntAtLine(10, 3, "B =", (int32_t) (cal * 100000.00), &Font_5x8);
         ssd1306Refresh();
     }
+    motorsDriverSleep(ON);
 }
 
 void adxrs620Test(void)

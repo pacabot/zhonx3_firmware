@@ -43,23 +43,19 @@
 /* USER CODE BEGIN Includes */
 #include <string.h>
 
-#include "config/config.h"
-#include "config/basetypes.h"
-
-#include "peripherals/bluetooth/bluetooth.h"
-#include "peripherals/flash/flash.h"
-
-#include "middleware/settings/settings.h"
-#include "middleware/cmdline/cmdline_parser.h"
-#include "middleware/cmdline/commands/commads.h"
-#include "middleware/ring_buffer/ring_buffer.h"
-#include "middleware/controls/mazeControl/spyPost.h"
-#include "middleware/controls/mainControl/mainControl.h"
-#include "middleware/controls/mainControl/positionControl.h"
-#include "middleware/controls/mainControl/speedControl.h"
-#include "middleware/display/pictures.h"
-#include "middleware/controls/mazeControl/basicMoves.h"
-
+#include <application/display/menu.h>
+#include <middleware/cmdline/cmdline_parser.h>
+#include <middleware/controls/mainControl/mainControl.h>
+#include <middleware/controls/mainControl/positionControl.h>
+#include <middleware/moves/mazeMoves/spyPost.h>
+#include <middleware/settings/settings.h>
+#include <peripherals/bluetooth/bluetooth.h>
+#include <peripherals/display/ssd1306.h>
+#include <peripherals/expander/pcf8574.h>
+#include <peripherals/flash/flash.h>
+#include <peripherals/multimeter/multimeter.h>
+#include <peripherals/times_base/times_base.h>
+#include <peripherals/tone/tone.h>
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
@@ -79,7 +75,6 @@ static inline void blockingPrintf(const char *format, ...);
 /* USER CODE END PFP */
 
 /* USER CODE BEGIN 0 */
-#include "main.h"
 extern const menuItem mainMenu;
 extern const menuItem zhonxNameMenu;
 
@@ -142,7 +137,7 @@ int main(void)
     positionControlSetPositionType(GYRO);
     mainControlSetFollowType(NO_FOLLOW);
 
-    toneSetVolulme(30);
+    toneSetVolulme(100);
     tone(F4, 50);
     toneItMode(A4, 50);
 

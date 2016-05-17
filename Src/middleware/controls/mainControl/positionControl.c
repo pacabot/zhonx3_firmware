@@ -6,40 +6,28 @@
  @version  0.0
  */
 /**************************************************************************/
-/* STM32 hal library declarations */
-#include "stm32f4xx_hal.h"
 
 /* General declarations */
-#include "config/basetypes.h"
-#include "config/config.h"
-#include "config/errors.h"
-
-#include "stdbool.h"
 #include <arm_math.h>
+#include <config/basetypes.h>
+#include <config/config.h>
 #include <math.h>
-#include <middleware/controls/mainControl/mainControl.h>
-#include <middleware/controls/mainControl/speedControl.h>
-#include <middleware/controls/mainControl/transfertFunction.h>
 #include <string.h>
-#include <stdio.h>
-#include <stdint.h>
 
 /* Peripheral declarations */
-#include "peripherals/display/ssd1306.h"
-#include "peripherals/display/smallfonts.h"
-#include "peripherals/expander/pcf8574.h"
-#include "peripherals/telemeters/telemeters.h"
-#include "peripherals/encoders/ie512.h"
-#include "peripherals/gyroscope/adxrs620.h"
-#include "peripherals/motors/motors.h"
-#include "peripherals/times_base/times_base.h"
+#include <peripherals/encoders/ie512.h>
+#include <peripherals/gyroscope/adxrs620.h>
+#include <peripherals/times_base/times_base.h>
 
 /* Middleware declarations */
-#include "middleware/controls/pidController/pidController.h"
+#include <middleware/controls/mainControl/mainControl.h>
+#include <middleware/controls/pidController/pidController.h>
 
+/* Declarations for this module */
 #include <middleware/controls/mainControl/positionControl.h>
 
 #define MAX_POSITION_ERROR     30.00 //Degrees
+#define POSITION_ERROR_LIMITER 20.00 //Degrees
 
 typedef struct
 {
@@ -87,9 +75,9 @@ int positionControlInit(void)
     memset(&position_params, 0, sizeof(position_params_struct));
     positionProfileCompute(0, 0, 0);
 
-    gyro_pid_instance.Kp = 80;
+    gyro_pid_instance.Kp = 150;
     gyro_pid_instance.Ki = 0;//0.01;
-    gyro_pid_instance.Kd = 2000;
+    gyro_pid_instance.Kd = 3000;
 
     //    gyro_pid_instance.Kp = zhonxCalib_data->pid_gyro.Kp;
     //    gyro_pid_instance.Ki = zhonxCalib_data->pid_gyro.Ki / CONTROL_TIME_FREQ;
@@ -139,16 +127,6 @@ double positionControlSetSign(double sign)
 
 int positionControlLoop(void)
 {
-    //    if (mainControlGetWallFollowType() != CURVE)
-    //    {
-    //        if (position_control.enablePositionCtrl == NO_POSITION_CTRL)
-    //        {
-    //            position_control.position_command = 0;
-    //            pidControllerReset(position_control.position_pid.instance);
-    //            return POSITION_CONTROL_E_SUCCESS;
-    //        }
-    //    }
-
     if (position_control.positionType == GYRO)
     {
         if (position_params.sign > 0)
@@ -167,7 +145,7 @@ int positionControlLoop(void)
             / (PI * ROTATION_DIAMETER);
     }
 
-    if (mainControlGetWallFollowType() == ROTATE_IN_PLACE)
+    if (mainControlGetMoveType() == ROTATE_IN_PLACE)
     {
         position_control.nb_loop++;
         //        if (position_control.nb_loop < (position_params.nb_loop / 2))
@@ -211,6 +189,14 @@ int positionControlLoop(void)
     {
         ledPowerErrorBlink(1000, 150, 5);
         return POSITION_CONTROL_E_ERROR;
+    }
+
+    if (fabs(position_control.position_error) > POSITION_ERROR_LIMITER)
+    {
+        if (position_control.position_error > 0)
+            position_control.position_error = POSITION_ERROR_LIMITER;
+        else
+            position_control.position_error = -POSITION_ERROR_LIMITER;
     }
 
     position_control.position_command = (pidController(position_control.position_pid.instance,
@@ -284,6 +270,7 @@ double positionProfileCompute(double angle, double loop_time, double max_turn_sp
     position_control.current_angle_consign = 0;
     position_control.position_consign = 0;
     position_control.end_control = FALSE;
+    pidControllerReset(position_control.position_pid.instance);
 
     if (lround(angle) == 0)
     {

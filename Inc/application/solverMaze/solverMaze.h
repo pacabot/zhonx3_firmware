@@ -8,12 +8,11 @@
 #ifndef RESOLUTION_MAZE_H_
 #define RESOLUTION_MAZE_H_
 
+#include <config/config.h>
+#include <middleware/settings/settings.h>
+#include <stddef.h>
 #define NAND(a,b) (!(a) && !(b))
 
-#include "config/module_id.h"
-#include "config/errors.h"
-#include "middleware/settings/settings.h"
-#include "config/config.h"
 
 /* Error codes */
 #define MAZE_SOLVER_E_SUCCESS  0
@@ -94,7 +93,7 @@ typedef struct
     coordinate coordinate_robot;
     char orientation;
     char midOfCell;
-} positionRobot;
+}positionRobot;
 
 typedef struct
 {
@@ -103,13 +102,13 @@ typedef struct
     labyrinthe      maze;
     positionRobot   start_position;
     coordinate      end_coordinate;
-} MAZE_CONTAINER;
+}MAZE_CONTAINER;
 
 typedef struct
 {
     int             count_stored_mazes;
     MAZE_CONTAINER  mazes[MAX_STORABLE_MAZES];
-} STORED_MAZES;
+}STORED_MAZES;
 
 // fonctions
 int maze_solver_new_maze(void);

@@ -9,7 +9,6 @@
 #define _SPYPOST_H_
 
 #include "config/config.h"
-#include <stdint.h>
 
 #define SPYPOST_ENCODERS_STEPS_MEASURE_MM      1
 #define SPYPOST_CAL_DISTANCE                   (uint32_t)CELL_LENGTH

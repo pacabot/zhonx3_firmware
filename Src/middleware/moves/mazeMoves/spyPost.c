@@ -29,29 +29,27 @@
 #include "peripherals/display/ssd1306.h"
 #include "peripherals/display/smallfonts.h"
 #include "peripherals/expander/pcf8574.h"
-#include "peripherals/display/ssd1306.h"
-#include "peripherals/expander/pcf8574.h"
 #include "peripherals/bluetooth/bluetooth.h"
 #include "peripherals/motors/motors.h"
 #include "peripherals/encoders/ie512.h"
-
 #include "peripherals/eeprom/24lc64.h"
 #include "peripherals/flash/flash.h"
 
 /* Middleware declarations */
-#include "middleware/controls/mazeControl/basicMoves.h"
 #include "middleware/display/pictures.h"
 #include "middleware/controls/mazeControl/wallFollowControl.h"
 #include "middleware/controls/lineFollowerControl/lineFollowControl.h"
 #include "middleware/controls/mainControl/mainControl.h"
 #include "middleware/controls/mainControl/positionControl.h"
-#include "middleware/controls/mainControl/positionControl.h"
 #include "middleware/controls/mainControl/speedControl.h"
 #include "middleware/controls/mainControl/transfertFunction.h"
-#include "middleware/controls/mazeControl/reposition.h"
+#include "middleware/moves/mazeMoves/mazeMoves.h"
+#include "middleware/moves/basicMoves/basicMoves.h"
+#include "middleware/wall_sensors/wall_sensors.h"
+#include "middleware/settings/settings.h"
 
 //Declarations for this module */
-#include "middleware/controls/mazeControl/spyPost.h"
+#include "middleware/moves/mazeMoves/spyPost.h"
 
 // Index of left profile in the array
 #define SPYPOST_LEFT_PROFILE_IDX    0
@@ -467,9 +465,9 @@ void spyPostStartMeasure(spyPostProfileStruct *currentProfile, enum telemeterNam
     uint32_t i = 0;
     uint32_t sample = 0;
 
-    repositionSetInitialPosition(0.00); //absolute position into a cell
+    wallFollowSetInitialPosition(0.00); //absolute position into a cell
     //take the measures
-    move (0, SPYPOST_CAL_DISTANCE, SPYPOST_MOVE_SPEED, SPYPOST_MOVE_SPEED);
+    basicMove(0, SPYPOST_CAL_DISTANCE, SPYPOST_MOVE_SPEED, SPYPOST_MOVE_SPEED);
     for (i = 0; i < SPYPOST_ARRAY_PROFILE_LENGTH; i++)
     {
         while ((((uint32_t)(encoderGetDist(ENCODER_L) + encoderGetDist(ENCODER_R))
@@ -690,9 +688,9 @@ void spyPostTest()
     Vmin = 100;
     Vmax = 100;
 
-    move(0, OFFSET_DIST, Vmax, Vmax);
+    basicMove(0, OFFSET_DIST, Vmax, Vmax);
     while (hasMoveEnded() != TRUE);
-    moveCell(1, Vmax, Vmin);
+    mazeMoveCell(1, Vmax, Vmin);
     telemetersStop();
     HAL_Delay(1000);
     motorsDriverSleep(ON);
