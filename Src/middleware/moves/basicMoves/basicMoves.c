@@ -124,3 +124,23 @@ int basicMoveStraight(double distance, double max_speed, double end_speed, doubl
     motorsDriverSleep(OFF);
     return POSITION_CONTROL_E_SUCCESS;
 }
+
+int basicMoveClothoid(double distance, double max_speed, double end_speed, double accel)
+{
+    mainControlStopPidLoop(); //stop contol loop
+
+    encodersReset();
+    gyroResetAngle();
+
+    speedControlSetSign((double) SIGN(distance));
+    distance = fabsf(distance);
+
+    mainControlSetMoveType(CLOTHOID);
+
+    speedProfileCompute(distance, max_speed, end_speed, accel);
+    positionProfileCompute(0, 0, 0);
+
+    mainControlSartPidLoop();
+    motorsDriverSleep(OFF);
+    return POSITION_CONTROL_E_SUCCESS;
+}

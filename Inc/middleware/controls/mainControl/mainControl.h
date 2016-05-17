@@ -25,7 +25,7 @@ enum rotationTypeEnum
 };
 enum mainControlMoveType
 {
-    STRAIGHT, CURVE, ROTATE_IN_PLACE
+    STRAIGHT, CURVE, CLOTHOID, ROTATE_IN_PLACE
 };
 enum mainControlFollowType
 {

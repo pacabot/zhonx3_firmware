@@ -49,5 +49,6 @@ int basicMove(double angle, double radius_or_distance, double max_speed, double 
  * @retval status
  */
 int basicMoveStraight(double distance, double max_speed, double end_speed, double accel);
+int basicMoveClothoid(double distance, double max_speed, double end_speed, double accel);
 
 #endif // __BASICMOVES_H

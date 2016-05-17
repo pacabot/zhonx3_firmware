@@ -137,8 +137,6 @@ int speedControlLoop(void)
     else
         speed_control.current_distance = -1.00 * (encoderGetDist(ENCODER_L) + encoderGetDist(ENCODER_R)) / 2.00;
 
-    //	speedCompute();
-
     if (speed_control.nb_loop_accel < speed_params.nb_loop_accel)
     {
         speed_control.nb_loop_accel++;
@@ -176,7 +174,7 @@ int speedControlLoop(void)
     }
 
     speed_control.speed_command = pidController(speed_control.speed_pid.instance, speed_control.speed_error)
-            * (float) speed_params.sign;
+                            * (float) speed_params.sign;
 
     //bluetoothPrintf("speed error: %d \r\n", (int)(speed_control.speed_error * 100.00));
 
@@ -282,8 +280,10 @@ double speedProfileCompute(double distance, double max_speed, double end_speed, 
         return 0.0;
     }
 
-    speed_params.accel_dist = 0.50
-            * (((-1.00 * pow(speed_params.initial_speed, 2)) + pow(speed_params.max_speed, 2)) / speed_params.accel);
+    speed_params.accel_dist = (((pow(speed_params.max_speed, 2) - pow(speed_params.initial_speed, 2))) / ( 2.00 * speed_params.accel));
+
+//    speed_params.accel_dist = 0.50
+//            * (((-1.00 * pow(speed_params.initial_speed, 2)) + pow(speed_params.max_speed, 2)) / speed_params.accel);
     speed_params.decel_dist = -0.50
             * ((speed_params.end_speed - speed_params.max_speed) * (speed_params.end_speed + speed_params.max_speed))
             / speed_params.decel;
