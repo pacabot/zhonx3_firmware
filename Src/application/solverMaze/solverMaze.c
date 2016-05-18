@@ -355,6 +355,9 @@ int findTheShortestPath(labyrinthe *maze, positionRobot* positionZhonx,
         {
         }
         last_coordinate = findEndCoordinate(way);
+        clearMazelength(maze);
+        computeCellWeight(maze, *start_coordinates, false, false);
+        findArrival(*maze, end_coordinate);
         goToPosition(maze, positionZhonx, last_coordinate);
     }
     while ((last_coordinate.x != end_coordinate->x)
