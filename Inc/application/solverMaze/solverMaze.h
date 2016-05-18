@@ -62,7 +62,7 @@
 
 #define PRINT_MAZE
 //#define PRINT_MAZE_DURING_RUN
-#define PRINT_BLUETOOTH_MAZE
+//#define PRINT_BLUETOOTH_MAZE
 //#define PRINT_BLUETOOTH_MAZE_DURING_RUN
 //#define PRINT_BLUETOOTH_BASIC_DEGUG
 //#define PRINT_WALLS_DETECTED
@@ -112,6 +112,7 @@ typedef struct
 
 // fonctions
 int maze_solver_new_maze(void);
+int restartExplo();
 int exploration(labyrinthe *maze, positionRobot* positionZhonx,const positionRobot *start_coordinates,
         coordinate *end_coordinate);
 int startRun1(void);

@@ -419,7 +419,12 @@ int saveMaze(labyrinthe *maze, positionRobot *start_position, coordinate  *end_c
     int rv = 0;
     int selected_maze = 0;
     int cnt_mazes = stored_mazes->count_stored_mazes;
-
+#ifdef PRINT_BLUETOOTH_BASIC_DEGUG
+    bluetoothWaitReady();
+    bluetoothPrintf("start :\n\tcoordinates %d,%d\n\torientation %d\n\tmid of cell%d", start_position->coordinate_robot.x, start_position->coordinate_robot.y,start_position->orientation,start_position->midOfCell);
+    bluetoothWaitReady();
+    bluetoothPrintf("end :\n\tcoordinates %d,%d\n", end_coordinate->x, end_coordinate->y);
+#endif
     memcpy(&(maze_container.maze), maze, sizeof(labyrinthe));
     memcpy(&(maze_container.start_position), start_position, sizeof(positionRobot));
     memcpy(&(maze_container.end_coordinate), end_coordinate, sizeof(coordinate));
