@@ -189,18 +189,18 @@ int maze_solver_run(const int runType)
 
     /*init zhonx start position for nime micromouse competition*/
 
-    zhonx_position.coordinate_robot.x = 8;
-    zhonx_position.coordinate_robot.y = 8; // the robot start in the center of the maze
-    zhonx_position.orientation = zhonxSettings.start_orientation % 4;
+//    zhonx_position.coordinate_robot.x = 8;
+//    zhonx_position.coordinate_robot.y = 8; // the robot start in the center of the maze
+//    zhonx_position.orientation = zhonxSettings.start_orientation % 4;
     /*end of initialization for nime micromouse competition*/
-    zhonx_position.midOfCell = TRUE;
-    memcpy(&start_position, &zhonx_position, sizeof(positionRobot));
-    start_position.orientation += 2;
-    start_position.orientation = start_position.orientation % 4;
-    start_position.midOfCell = FALSE;
-    //newCell(ask_cell_state(), &maze, start_position);
-    newCell((walls){WALL_PRESENCE,WALL_PRESENCE,WALL_PRESENCE,WALL_PRESENCE}, &maze, start_position);
-    memcpy(&start_position, &zhonx_position, sizeof(positionRobot));
+//    zhonx_position.midOfCell = TRUE;
+//    memcpy(&start_position, &zhonx_position, sizeof(positionRobot));
+//    start_position.orientation += 2;
+//    start_position.orientation = start_position.orientation % 4;
+//    start_position.midOfCell = FALSE;
+//    //newCell(ask_cell_state(), &maze, start_position);
+//    newCell((walls){WALL_PRESENCE,WALL_PRESENCE,WALL_PRESENCE,WALL_PRESENCE}, &maze, start_position);
+    memcpy(&zhonx_position, &start_position, sizeof(positionRobot));
 
 
 #ifdef PRINT_BLUETOOTH_MAZE
@@ -234,9 +234,9 @@ int restartExplo()
     memset(&maze, 0, sizeof(labyrinthe));
 
     loadMaze(&maze, &start_position, &end_coordinate);
-    zhonx_position.midOfCell = TRUE;
-    memcpy(&start_position, &zhonx_position, sizeof(positionRobot));
-
+    memcpy(&zhonx_position, &start_position, sizeof(positionRobot));
+    mainControlSetFollowType(WALL_FOLLOW);
+    positionControlSetPositionType(GYRO);
 #ifdef PRINT_BLUETOOTH_MAZE
     printLength(maze,8,8);
 #endif
@@ -247,44 +247,15 @@ int restartExplo()
 #endif
     telemetersStart();
     waitStart();
-    rv = exploration(&maze, &zhonx_position, &start_position, &end_coordinate); //make exploration for go from the robot position and the end of the maze
 
-    if (rv != MAZE_SOLVER_E_SUCCESS)
-    {
-#ifdef PRINT_BLUETOOTH_BASIC_DEGUG
-        bluetoothWaitReady();
-        bluetoothPrintf("no solution");
+    findTheShortestPath(&maze, &zhonx_position, &start_position, &end_coordinate); //find the shortest path
+
+#ifdef RETURN_START_CELL
+    goToPosition(&maze, &zhonx_position, start_position.coordinate_robot);  //goto start position
+
+    doUTurn(&zhonx_position, SAFE_SPEED_ROTATION, SAFE_SPEED_TRANSLATION, SAFE_SPEED_TRANSLATION);//initial position
 #endif
-        ssd1306WaitReady();
-        ssd1306ClearScreen(MAIN_AREA);
-        ssd1306DrawBmp(warning_Img, 1, 15, 48, 43);
-        ssd1306PrintfAtLine(55, 1, &Font_5x8, "NO SOLUTION");
-        ssd1306Refresh();
-        tone(D4, 200);
-        HAL_Delay(50);
-        tone(C4H, 100);
-        HAL_Delay(40);
-        tone(C4, 150);
-    }
-    else
-    {
-        ssd1306ClearScreen(MAIN_AREA);
-        ssd1306PrintfAtLine(0, 0, &Font_5x8, "TARGET REACHED !!!");
-        ssd1306Refresh();
-        tone(G5, 100);
-        HAL_Delay(100);
-        tone(A5, 100);
-        HAL_Delay(100);
-        tone(B5, 50);
-        HAL_Delay(50);
-        tone(B5, 400);
-        motorsDriverSleep(ON); //because flash write cause interrupts damages
-        telemetersStop();//because flash write cause interrupts damages
-        rv=saveMaze(&maze, &start_position, &end_coordinate);    // Save maze into flash memory
-        motorsDriverSleep(OFF); //because flash write cause interrupts damages
-        telemetersStart();//because flash write cause interrupts damages
-        findTheShortestPath(&maze, &zhonx_position, &start_position, &end_coordinate); //find the shortest path
-    }
+
     HAL_Delay(100);
     motorsDriverSleep(ON); //because flash write cause interrupts damages
     telemetersStop();//because flash write cause interrupts damages
@@ -313,7 +284,7 @@ int exploration(labyrinthe *maze, positionRobot* positionZhonx,
 #ifdef PRINT_MAZE_DURING_RUN
             printMaze(*maze, positionZhonx->coordinate_robot);
 #endif
-#ifdef   PRINT_BLUETOOTH_MAZE_DURING_RUN
+#ifdef PRINT_BLUETOOTH_MAZE_DURING_RUN
             printLength(*maze, -1, -1);
 #endif
             return rv;
@@ -340,7 +311,7 @@ int exploration(labyrinthe *maze, positionRobot* positionZhonx,
 }
 
 int findTheShortestPath(labyrinthe *maze, positionRobot* positionZhonx,
-                        const positionRobot *start_coordinates, coordinate *end_coordinate)
+                        const positionRobot *start_position, coordinate *end_coordinate)
 {
     int rv = MAZE_SOLVER_E_SUCCESS;
     coordinate way[MAZE_SIZE * MAZE_SIZE] = { { -1, -1 }, { END_OF_LIST,
@@ -350,13 +321,13 @@ int findTheShortestPath(labyrinthe *maze, positionRobot* positionZhonx,
     {
         clearMazelength(maze);
         computeCellWeight(maze, *end_coordinate, TRUE, FALSE);
-        rv = moveVirtualZhonx(*maze, *start_coordinates, way, *end_coordinate);
+        rv = moveVirtualZhonx(*maze, *start_position, way, *end_coordinate);
         if (rv != MAZE_SOLVER_E_SUCCESS)
         {
         }
         last_coordinate = findEndCoordinate(way);
         clearMazelength(maze);
-        computeCellWeight(maze, *start_coordinates, false, false);
+        computeCellWeight(maze, start_position->coordinate_robot, false, false);
         findArrival(*maze, end_coordinate);
         goToPosition(maze, positionZhonx, last_coordinate);
     }
@@ -527,6 +498,9 @@ int moveRealZhonxArc(labyrinthe *maze, positionRobot *positionZhonx,
         {
             positionZhonx->coordinate_robot.x = way[i].x;
             positionZhonx->coordinate_robot.y = way[i].y;
+#ifdef PRINT_BLUETOOTH_ADVANCED_DEBUG
+            bluetoothPrintf("%d;%d\n",positionZhonx->coordinate_robot.x, positionZhonx->coordinate_robot.y)
+#endif
             i++;
             nb_move++;
         }

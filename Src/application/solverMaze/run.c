@@ -64,8 +64,18 @@ int run(labyrinthe *maze, positionRobot *positionZhonx, coordinate start_oordina
     positionControlSetPositionType(GYRO);
 
     clearMazelength(maze);
-    computeCellWeight(maze, end_coordinate, FALSE, FALSE);
-    moveVirtualZhonx(*maze, *positionZhonx, way, end_coordinate);
+    computeCellWeight(maze, end_coordinate, true, FALSE);
+#ifdef PRINT_BLUETOOTH_BASIC_DEGUG // todo debug
+    bluetoothWaitReady();
+    bluetoothPrintf("go to : %d,%d/n\
+                     we are at %d,%d" , end_coordinate.x,end_coordinate.y , positionZhonx->coordinate_robot.x, positionZhonx->coordinate_robot.y);
+#endif
+    rv = moveVirtualZhonx(*maze, *positionZhonx, way, end_coordinate);
+    if (rv != MAZE_SOLVER_E_SUCCESS)
+    {
+        bluetoothWaitReady();
+        bluetoothPrintf("no solution");
+    }
 
     telemetersStart();
     ssd1306PrintfAtLine(55, 0, &Font_3x6, "WAIT START...");
