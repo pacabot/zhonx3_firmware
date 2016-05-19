@@ -137,14 +137,14 @@
 #define RUN2_MIN_SPEED_TRANSLATION  (800)
 #define RUN2_MAX_SPEED_TRANSLATION  (1200)
 
-#define SCAN_SPEED_ROTATION         (200)
-#define SCAN_MIN_SPEED_TRANSLATION  (200)
-#define SCAN_MAX_SPEED_TRANSLATION  (500)
+#define SCAN_SPEED_ROTATION         (500)
+#define SCAN_MIN_SPEED_TRANSLATION  (500)
+#define SCAN_MAX_SPEED_TRANSLATION  (1000)
 
 #define SAFE_SPEED_ROTATION         (500)
 #define SAFE_SPEED_TRANSLATION      (500)
 
-#define RETURN_START_CELL
+//#define RETURN_START_CELL
 
 /**************************************************************************************/
 /***************                 Physical Constants                ********************/

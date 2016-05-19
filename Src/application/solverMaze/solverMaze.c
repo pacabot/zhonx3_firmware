@@ -147,10 +147,10 @@ int maze_solver_new_maze(void)
 #ifdef PRINT_BLUETOOTH_BASIC_DEGUG
     bluetoothPrintf("TIME : %d.%ds", explorationTime / 1000, explorationTime % 1000);
 #endif
+    HAL_Delay(2000);
     motorsDriverSleep(ON); //because flash write cause interrupts damages
     telemetersStop();//because flash write cause interrupts damages
     rv=saveMaze(&maze, &start_position, &end_coordinate);    // Save maze into flash memory
-    HAL_Delay(2000);
 #ifdef PRINT_MAZE
     ssd1306ClearScreen(MAIN_AREA);
     printMaze(maze, zhonx_position.coordinate_robot);
@@ -256,7 +256,7 @@ int restartExplo()
     doUTurn(&zhonx_position, SAFE_SPEED_ROTATION, SAFE_SPEED_TRANSLATION, SAFE_SPEED_TRANSLATION);//initial position
 #endif
 
-    HAL_Delay(100);
+    HAL_Delay(1000);
     motorsDriverSleep(ON); //because flash write cause interrupts damages
     telemetersStop();//because flash write cause interrupts damages
     rv=saveMaze(&maze, &start_position, &end_coordinate);    // Save maze into flash memory
