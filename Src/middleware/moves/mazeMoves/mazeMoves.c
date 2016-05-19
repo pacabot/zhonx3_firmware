@@ -352,7 +352,7 @@ int mazeMoveRotateCW90(double max_turn_speed, double out_speed)
     bluetoothPrintf("\rMOVE ROTATE CW90");
 #endif
     while (hasMoveEnded() != TRUE);
-    basicMove(90, (HALF_CELL_LENGTH - OFFSET_DIST) - 5.00, max_turn_speed, max_turn_speed); //todo remove compensation
+    basicMove(90, (HALF_CELL_LENGTH - OFFSET_DIST), max_turn_speed, max_turn_speed); //todo remove compensation
     while (hasMoveEnded() != TRUE);
 
     spyWallGetFrontDist(&offset.frontCal);
@@ -378,7 +378,7 @@ int mazeMoveRotateCCW90(double max_turn_speed, double out_speed)
     bluetoothPrintf("\rMOVE ROTATE CCW90");
 #endif
     while (hasMoveEnded() != TRUE);
-    basicMove(-90, (HALF_CELL_LENGTH - OFFSET_DIST) - 5.00, max_turn_speed, max_turn_speed); //todo remove compensation
+    basicMove(-90, (HALF_CELL_LENGTH - OFFSET_DIST), max_turn_speed, max_turn_speed); //todo remove compensation
     while (hasMoveEnded() != TRUE);
 
     spyWallGetFrontDist(&offset.frontCal);
