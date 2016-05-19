@@ -9,6 +9,7 @@
 #include <math.h>
 #include <stdint.h>
 #include <config/basetypes.h>
+#include <config/config.h>
 
 /* Application declarations */
 

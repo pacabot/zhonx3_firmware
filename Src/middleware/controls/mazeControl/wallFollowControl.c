@@ -74,7 +74,7 @@ int wallFollowControlInit(void)
 {
     telemeters_pid_instance.Kp = 8;
     telemeters_pid_instance.Ki = 0;
-    telemeters_pid_instance.Kd = 500;
+    telemeters_pid_instance.Kd = 200;
 
     wall_follow_control.follow_pid.instance = &telemeters_pid_instance;
 
@@ -108,37 +108,38 @@ int wallFollowControlLoop(void)
         return WALL_FOLLOW_CONTROL_E_SUCCESS;
     }
 
-//    if (wall_follow_control.follow_type == PARALLEL)
-//    {
-        switch (wallFollowGetTelemeterUsed())
-        {
-            case NO_SIDE:
-                wall_follow_control.follow_error = 0;
-                //pidControllerReset(wall_follow_control.follow_pid.instance);
-                expanderSetLeds(0b000);
-                break;
-            case ALL_SIDE:
-                wall_follow_control.follow_error = (double) getTelemeterDist(TELEMETER_DR)
-                - (double) getTelemeterDist(TELEMETER_DL);
-                expanderSetLeds(0b101);
-                break;
-            case LEFT_SIDE:
-                wall_follow_control.follow_error = WALL_FOLLOW_DIAG_DIST - (double) getTelemeterDist(TELEMETER_DL);
-                expanderSetLeds(0b100);
-                break;
-            case RIGHT_SIDE:
-                wall_follow_control.follow_error = -1.00 * (WALL_FOLLOW_DIAG_DIST - (double) getTelemeterDist(TELEMETER_DR));
-                expanderSetLeds(0b001);
-                break;
-        }
-//    }
-//    else if (wall_follow_control.follow_type == DIAGONAL)
-//    {
-//        if (getTelemeterDist(TELEMETER_FL) < 200.00)
-//            wall_follow_control.follow_error = -1.00 * (200 - getTelemeterDist(TELEMETER_FL));
-//        if (getTelemeterDist(TELEMETER_FR) < 200.00)
-//            wall_follow_control.follow_error = (200 - getTelemeterDist(TELEMETER_FR));
-//    }
+    //    if (wall_follow_control.follow_type == PARALLEL)
+    //    {
+    switch (wallFollowGetTelemeterUsed())
+    {
+        case NO_SIDE:
+            wall_follow_control.follow_error = 0;
+            pidControllerReset(wall_follow_control.follow_pid.instance);
+            expanderSetLeds(0b000);
+            return WALL_FOLLOW_CONTROL_E_SUCCESS;
+            break;
+        case ALL_SIDE:
+            wall_follow_control.follow_error = (double) getTelemeterDist(TELEMETER_DR)
+            - (double) getTelemeterDist(TELEMETER_DL);
+            expanderSetLeds(0b101);
+            break;
+        case LEFT_SIDE:
+            wall_follow_control.follow_error = WALL_FOLLOW_DIAG_DIST - (double) getTelemeterDist(TELEMETER_DL);
+            expanderSetLeds(0b100);
+            break;
+        case RIGHT_SIDE:
+            wall_follow_control.follow_error = -1.00 * (WALL_FOLLOW_DIAG_DIST - (double) getTelemeterDist(TELEMETER_DR));
+            expanderSetLeds(0b001);
+            break;
+    }
+    //    }
+    //    else if (wall_follow_control.follow_type == DIAGONAL)
+    //    {
+    //        if (getTelemeterDist(TELEMETER_FL) < 200.00)
+    //            wall_follow_control.follow_error = -1.00 * (200 - getTelemeterDist(TELEMETER_FL));
+    //        if (getTelemeterDist(TELEMETER_FR) < 200.00)
+    //            wall_follow_control.follow_error = (200 - getTelemeterDist(TELEMETER_FR));
+    //    }
 
     if (fabs(wall_follow_control.follow_error) > MAX_FOLLOW_ERROR)
     {
@@ -155,7 +156,6 @@ int wallFollowControlLoop(void)
 int wallFollowSetInitialPosition(double initial_position)
 {
     current_position = initial_position;
-    telemeter_used = NO_SIDE;
 #ifdef DEBUG_DISPLACEMENT
     bluetoothPrintf("initial dist = %d\n", (int)initial_position);
 #endif
@@ -243,11 +243,11 @@ enum telemeters_used wallFollowGetTelemeterUsed(void)
         robot_distance = robot_distance - (((double)cell_count) * CELL_LENGTH);
     }
 
-//    ssd1306ClearScreen(MAIN_AREA);
-//    ssd1306PrintIntAtLine(0, 1, "dist     =  ", (int)robot_distance, &Font_5x8);
-//    ssd1306PrintIntAtLine(0, 2, "cell cnt =  ", (int)cell_count, &Font_5x8);
-//    ssd1306PrintIntAtLine(0, 3, "enc.     =  ", (int)((encoderGetDist(ENCODER_L) + encoderGetDist(ENCODER_R)) / 2.00), &Font_5x8);
-//    ssd1306Refresh();
+    //    ssd1306ClearScreen(MAIN_AREA);
+    //    ssd1306PrintIntAtLine(0, 1, "dist     =  ", (int)robot_distance, &Font_5x8);
+    //    ssd1306PrintIntAtLine(0, 2, "cell cnt =  ", (int)cell_count, &Font_5x8);
+    //    ssd1306PrintIntAtLine(0, 3, "enc.     =  ", (int)((encoderGetDist(ENCODER_L) + encoderGetDist(ENCODER_R)) / 2.00), &Font_5x8);
+    //    ssd1306Refresh();
 
     telemeters_spot_distance = robot_distance + current_position + DEADZONE_VIEWING_OFFSET;
 
@@ -255,8 +255,11 @@ enum telemeters_used wallFollowGetTelemeterUsed(void)
     {
         telemeter_used = NO_SIDE;
     }
-    else if (((telemeters_spot_distance > (OFFSET_DIST + DEADZONE_VIEWING_OFFSET)) && (telemeters_spot_distance < (OFFSET_DIST + DEADZONE_VIEWING_OFFSET + DEADZONE_CHECKWALL_DIST)))   //check if the robot is into the first wallControl zone
-            || (telemeters_spot_distance > (DEADZONE_DIST + (DEADZONE / 2.00)) ))                           //check if the robot is into the second wallControl zone
+    //    else if (((telemeters_spot_distance > (OFFSET_DIST + DEADZONE_VIEWING_OFFSET)) && (telemeters_spot_distance < (OFFSET_DIST + DEADZONE_VIEWING_OFFSET + DEADZONE_CHECKWALL_DIST)))   //check if the robot is into the first wallControl zone
+    //            || (telemeters_spot_distance > (DEADZONE_DIST + (DEADZONE / 2.00)) ))                           //check if the robot is into the second wallControl zone
+
+    else if ((telemeters_spot_distance > (DEADZONE_DIST + (DEADZONE / 2.00)) ||
+             telemeters_spot_distance < (DEADZONE_DIST - (DEADZONE / 2.00)))  )
     {
         if ((getWallPresence(LEFT_WALL) == TRUE) && (getWallPresence(RIGHT_WALL) == TRUE))
         {
