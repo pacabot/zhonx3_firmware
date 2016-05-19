@@ -75,9 +75,9 @@ int positionControlInit(void)
     memset(&position_params, 0, sizeof(position_params_struct));
     positionProfileCompute(0, 0, 0);
 
-    gyro_pid_instance.Kp = 120;
+    gyro_pid_instance.Kp = 80;
     gyro_pid_instance.Ki = 0;//0.01;
-    gyro_pid_instance.Kd = 4000;
+    gyro_pid_instance.Kd = 3000;
 
     //    gyro_pid_instance.Kp = zhonxCalib_data->pid_gyro.Kp;
     //    gyro_pid_instance.Ki = zhonxCalib_data->pid_gyro.Ki / CONTROL_TIME_FREQ;
@@ -171,7 +171,7 @@ int positionControlLoop(void)
             position_control.end_control = TRUE;
         }
     }
-    else if (mainControlGetMoveType() == CURVE)
+    else
     {
         if (position_control.nb_loop < position_params.nb_loop)
         {
