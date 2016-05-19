@@ -183,7 +183,7 @@ void pidGyro_GetCriticalPoint(void)
     const int max_dist = 1000;
     position_pid.Kp = 150;
     position_pid.Ki = 0;
-    position_pid.Kd = 3000;
+    position_pid.Kd = 5000;
     arm_pid_instance_f32 coefs;
     int rv;
 

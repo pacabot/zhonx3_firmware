@@ -130,7 +130,7 @@
 #define DEADZONE                (100.00)        //doubt area
 #define DEADZONE_CHECKWALL_DIST (5.00)
 
-#define WALL_FOLLOW_DIAG_DIST   (82)
+#define WALL_FOLLOW_DIAG_DIST   (83.00)
 
 /**************************************************************************************/
 /***************                     Maze speed                    ********************/
@@ -140,8 +140,8 @@
 #define RUN1_MIN_SPEED_TRANSLATION  (600)
 #define RUN1_MAX_SPEED_TRANSLATION  (1000)
 
-#define RUN2_SPEED_ROTATION         (750)
-#define RUN2_MIN_SPEED_TRANSLATION  (750)
+#define RUN2_SPEED_ROTATION         (600)
+#define RUN2_MIN_SPEED_TRANSLATION  (600)
 #define RUN2_MAX_SPEED_TRANSLATION  (4000)
 
 #define SCAN_SPEED_ROTATION         (500)
