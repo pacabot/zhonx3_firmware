@@ -14,11 +14,11 @@
 /**************************************************************************************/
 /***************                 Times definitions                 ********************/
 /**************************************************************************************/
-#define HI_TIME_FREQ			    (20000.00) 	            //use for master inner loop
+#define HI_TIME_FREQ			    (26000.00) 	            //use for master inner loop
 #define LOW_TIME_FREQ               (100.00)                //low inner loop
 #define CONTROL_TIME_FREQ           (1000.00)               //use for control inner loop
 #define LINE_FOLLOWER_TIME_FREQ     (1000.00)               //use for line follower inner loop
-#define TELEMETERS_TIME_FREQ        ((1600.00) * (10.00))   //each telemeter use 1/10 of TELEMETERS_TIME_FREQ
+#define TELEMETERS_TIME_FREQ        ((2600.00) * (10.00))   //each telemeter use 1/10 of TELEMETERS_TIME_FREQ
 #define GYRO_TIME_FREQ			    (3500.00)               //for adc injected freq
 #define LINESENSORS_TIME_FREQ	    (4000.00)               //line sensor measure frequency
 #define MULTIMMETER_TIME_FREQ       (0.10)                  //multimeter inner loop
@@ -136,9 +136,9 @@
 /***************                     Maze speed                    ********************/
 /**************************************************************************************/
 
-#define RUN1_SPEED_ROTATION         (600)
-#define RUN1_MIN_SPEED_TRANSLATION  (600)
-#define RUN1_MAX_SPEED_TRANSLATION  (1000)
+#define RUN1_SPEED_ROTATION         (100)
+#define RUN1_MIN_SPEED_TRANSLATION  (100)
+#define RUN1_MAX_SPEED_TRANSLATION  (300)
 
 #define RUN2_SPEED_ROTATION         (600)
 #define RUN2_MIN_SPEED_TRANSLATION  (600)

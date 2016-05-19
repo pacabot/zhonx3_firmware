@@ -90,8 +90,7 @@ int wallSensorsCalibrationFront(void)
         ssd1306ProgressBar(10, 10, (i * 100) / TELEMETER_PROFILE_ARRAY_LENGTH);
         ssd1306Refresh();
     }
-    while (hasMoveEnded() != TRUE)
-        ;
+    while (hasMoveEnded() != TRUE);
     telemetersStop();
     motorsDriverSleep(ON);
 
