@@ -117,6 +117,7 @@ int wallFollowControlLoop(void)
             wall_follow_control.follow_command = 0;
             pidControllerReset(wall_follow_control.follow_pid.instance);
             expanderSetLeds(0b000);
+            return WALL_FOLLOW_CONTROL_E_SUCCESS;
             break;
         case ALL_SIDE:
             wall_follow_control.follow_error = (double) getTelemeterDist(TELEMETER_DR)
