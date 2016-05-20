@@ -44,7 +44,7 @@
 
 #define PRINT_MAZE
 //#define PRINT_MAZE_DURING_RUN
-//#define PRINT_BLUETOOTH_MAZE
+#define PRINT_BLUETOOTH_MAZE
 //#define PRINT_BLUETOOTH_MAZE_DURING_RUN
 //#define PRINT_BLUETOOTH_BASIC_DEGUG
 //#define PRINT_BLUETOOTH_ADVANCED_DEBUG
@@ -119,4 +119,5 @@ void waitStart(void);
 char diffway(coordinate way1[], coordinate way2[]);
 coordinate findEndCoordinate (coordinate coordinate_tab[]);
 int findArrival (labyrinthe maze, coordinate *end_coordinate);
+int print_no_solution();
 #endif /* RESOLUTION_MAZE_H_ */

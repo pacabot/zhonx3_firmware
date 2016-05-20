@@ -140,12 +140,12 @@
 #define RUN2_MIN_SPEED_TRANSLATION  (700)
 #define RUN2_MAX_SPEED_TRANSLATION  (4000)
 
-#define SCAN_SPEED_ROTATION         (500)
-#define SCAN_MIN_SPEED_TRANSLATION  (500)
-#define SCAN_MAX_SPEED_TRANSLATION  (2000)
+#define SCAN_SPEED_ROTATION         (50)
+#define SCAN_MIN_SPEED_TRANSLATION  (50)
+#define SCAN_MAX_SPEED_TRANSLATION  (100)
 
-#define SAFE_SPEED_ROTATION         (500)
-#define SAFE_SPEED_TRANSLATION      (500)
+#define SAFE_SPEED_ROTATION         (50)
+#define SAFE_SPEED_TRANSLATION      (50)
 
 #define RETURN_START_CELL
 
@@ -216,7 +216,7 @@
 /**************************************************************************************/
 /***************                     bluetooth                     ********************/
 /**************************************************************************************/
-#define DISABLE_BLUETOOTH
+//#define DISABLE_BLUETOOTH
 
 /**************************************************************************************/
 /***************                   Misc Constants                  ********************/
