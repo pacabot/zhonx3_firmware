@@ -69,7 +69,7 @@
 /***************                     Telemeters                    ********************/
 /**************************************************************************************/
 #define DISTANCE_WALL_DIAG          (180.00)
-#define DISTANCE_WALL_FRONT         (210.00)
+#define DISTANCE_WALL_FRONT         (220.00)
 
 /**************************************************************************************/
 /***************                       Battery                     ********************/
@@ -136,13 +136,13 @@
 #define RUN1_MIN_SPEED_TRANSLATION  (600)
 #define RUN1_MAX_SPEED_TRANSLATION  (2000)
 
-#define RUN2_SPEED_ROTATION         (650)
-#define RUN2_MIN_SPEED_TRANSLATION  (650)
+#define RUN2_SPEED_ROTATION         (700)
+#define RUN2_MIN_SPEED_TRANSLATION  (700)
 #define RUN2_MAX_SPEED_TRANSLATION  (4000)
 
 #define SCAN_SPEED_ROTATION         (500)
 #define SCAN_MIN_SPEED_TRANSLATION  (500)
-#define SCAN_MAX_SPEED_TRANSLATION  (1000)
+#define SCAN_MAX_SPEED_TRANSLATION  (2000)
 
 #define SAFE_SPEED_ROTATION         (500)
 #define SAFE_SPEED_TRANSLATION      (500)
@@ -153,7 +153,7 @@
 /***************                 Physical Constants                ********************/
 /**************************************************************************************/
 #define MAX_SPEED               (4000.00)   //mm/s
-#define MAX_ACCEL               (4000.00)   //mm/s/s
+#define MAX_ACCEL               (6000.00)   //mm/s/s
 
 #define MAX_CURVE_ACCEL         (1300.00)   //mm/s
 #define MAX_CURVE_SPEED         (800.00)   //mm/s
