@@ -84,7 +84,7 @@ int mazeMoveHalfCell_OUT(double max_speed, double end_speed)
 {
     while (hasMoveEnded() != TRUE);
     wallFollowSetInitialPosition(HALF_CELL_LENGTH);
-    basicMove(0, (HALF_CELL_LENGTH - OFFSET_DIST) - 10.00, max_speed, end_speed); //todo remove groze mede
+    basicMove(0, (HALF_CELL_LENGTH - OFFSET_DIST) - 20.00, max_speed, end_speed); //todo remove groze mede
 
     return MAZE_MOVES_E_SUCCESS;
 }

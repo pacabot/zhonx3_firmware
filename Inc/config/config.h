@@ -125,7 +125,7 @@
 #define DEADZONE                    (100.00)         //doubt area
 #define DEADZONE_CHECKWALL_DIST     (5.00)
 
-#define WALL_FOLLOW_DIAG_DIST       (88.00)     //88 DARK, 83 MEDDLE
+#define WALL_FOLLOW_DIAG_DIST       (85.00)     //85 DARK, 83 MEDDLE
 #define WALL_FOLLOW_MAX_DIAG_DIST   (120.00)
 
 /**************************************************************************************/
@@ -140,9 +140,9 @@
 #define RUN2_MIN_SPEED_TRANSLATION  (650)
 #define RUN2_MAX_SPEED_TRANSLATION  (4000)
 
-#define SCAN_SPEED_ROTATION         (200)
-#define SCAN_MIN_SPEED_TRANSLATION  (200)
-#define SCAN_MAX_SPEED_TRANSLATION  (200)
+#define SCAN_SPEED_ROTATION         (500)
+#define SCAN_MIN_SPEED_TRANSLATION  (500)
+#define SCAN_MAX_SPEED_TRANSLATION  (500)
 
 #define SAFE_SPEED_ROTATION         (500)
 #define SAFE_SPEED_TRANSLATION      (500)
