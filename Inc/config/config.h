@@ -68,7 +68,7 @@
 /**************************************************************************************/
 /***************                     Telemeters                    ********************/
 /**************************************************************************************/
-#define DISTANCE_WALL_DIAG          (140.00)
+#define DISTANCE_WALL_DIAG          (180.00)
 #define DISTANCE_WALL_FRONT         (210.00)
 
 /**************************************************************************************/
@@ -84,7 +84,7 @@
 /**************************************************************************************/
 /***************                 Mechanical Constants              ********************/
 /**************************************************************************************/
-#define WHEEL_DIAMETER			(23.90) 	//Wheel diameter in millimeters
+#define WHEEL_DIAMETER			(24.40) 	//Wheel diameter in millimeters
 #define WHEELS_DISTANCE			(63.20)	//Distance between right and left wheels
 #define WHEELS_SPACING			(25.96)	//Distance between front and rear wheels
 #define	GEAR_RATIO				(50.00 / 15.00)	//wheel gear teeth per motor gear teeth
@@ -117,15 +117,16 @@
 /**************************************************************************************/
 /***************                  Moves Constants                  ********************/
 /**************************************************************************************/
-#define OFFSET_DIST             (15.00)
-#define MAIN_DIST               ((CELL_LENGTH) - ((OFFSET_DIST) * (2.00)))
+#define OFFSET_DIST                 (15.00)
+#define MAIN_DIST                   ((CELL_LENGTH) - ((OFFSET_DIST) * (2.00)))
 
-#define DEADZONE_VIEWING_OFFSET (90.00) //(80.00)
-#define DEADZONE_DIST           (CELL_LENGTH)   //Distance between the start of the cell and doubt area
-#define DEADZONE                (120.00)        //doubt area
-#define DEADZONE_CHECKWALL_DIST (5.00)
+#define DEADZONE_VIEWING_OFFSET     (99.00)
+#define DEADZONE_DIST               (CELL_LENGTH)   //Distance between the start of the cell and doubt area
+#define DEADZONE                    (100.00)         //doubt area
+#define DEADZONE_CHECKWALL_DIST     (5.00)
 
-#define WALL_FOLLOW_DIAG_DIST   (83.00)
+#define WALL_FOLLOW_DIAG_DIST       (88.00)     //88 DARK, 83 MEDDLE
+#define WALL_FOLLOW_MAX_DIAG_DIST   (120.00)
 
 /**************************************************************************************/
 /***************                     Maze speed                    ********************/

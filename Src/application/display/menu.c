@@ -85,7 +85,8 @@ extern int startRun1(void);
 extern int startRun2(void);
 extern int mazeMoveAdvancedTest(void);
 extern int test_maze_flash(void);
-extern int restartExplo();
+extern int restartExplo(void);
+extern void wallFollowTest(void);
 extern int _Factor;
 extern int _KP;
 /*
@@ -246,6 +247,7 @@ const menuItem tests_menu =
 				{"Line sensors",	function, (void*)lineSensorsTest},
 				{"Expender LEDs",	function, (void*)expenderLedTest},
 				{"flash maze",      function, (void*)test_maze_flash},
+				{"wall Follow",     function, (void*)wallFollowTest},
 				{0,0,0}
 		}
 };

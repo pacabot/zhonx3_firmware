@@ -78,8 +78,8 @@ int spyWallGetFrontDist(spyWallGetOffsetsStruct *offset)
         }
         else
         {
-            offset->front_dist = ((getTelemeterDist(TELEMETER_FL) + getTelemeterDist(TELEMETER_FR)) / 2.00) - (zhonxCalib_data->spyWall.calib_value);
-            if (fabs(offset->front_dist) > OFFSET_DIST)
+            offset->front_dist = ((getTelemeterDist(TELEMETER_FL) + getTelemeterDist(TELEMETER_FR)) / 2.00) - ((zhonxCalib_data->spyWall.calib_value) + 20.00);
+            if (fabs(offset->front_dist) > (2.00 * OFFSET_DIST))
             {
                 if (offset->front_dist > 0.00)
                     offset->front_dist = OFFSET_DIST;
@@ -118,7 +118,10 @@ void spyWallFrontDistCal(void)
     ssd1306DrawStringAtLine(40, 1, "Wait", &Font_3x6);
     ssd1306Refresh();
 
-    mainControlSetFollowType(NO_FOLLOW);
+    positionControlSetPositionType(GYRO);
+    mainControlSetFollowType(WALL_FOLLOW);
+    wallFollowSetInitialPosition(0.00); //absolute position into a cell
+
     HAL_Delay(2000);
     telemetersStart();
     ssd1306ClearScreen(MAIN_AREA);
@@ -166,6 +169,7 @@ void spyWallFrontTest(void)
 
     positionControlSetPositionType(GYRO);
     mainControlSetFollowType(WALL_FOLLOW);
+    wallFollowSetInitialPosition(0.00); //absolute position into a cell
 
     while (expanderJoyFiltered() != JOY_RIGHT)
     {

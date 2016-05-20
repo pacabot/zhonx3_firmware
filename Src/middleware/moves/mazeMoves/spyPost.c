@@ -66,8 +66,8 @@
 
 #define SPYPOST_MOVE_SPEED 					   500
 
-#define MIN_STAT                               60   //minimum percentage for validate
-#define DIST_FOR_TIME_CALCULATION              10   //stop record before end to have time to calculate
+#define MIN_STAT                               80   //minimum percentage for validate
+#define DIST_FOR_TIME_CALCULATION              20   //stop record before end to have time to calculate
 
 #if (SPYPOST_MAX_DIAG_SENSOR_DISTANCE - SPYPOST_MIN_DIAG_SENSOR_DISTANCE) % (SPYPOST_NBITS_SAMPLING_RESOLUTION) != 0
 #error  MAX DIAG - MIN_DIAG must be a multiple of SAMPLING_RESOLUTION
@@ -490,8 +490,8 @@ void spyPostStartMeasure(spyPostProfileStruct *currentProfile, enum telemeterNam
 
     positionControlSetPositionType(GYRO);
     mainControlSetFollowType(WALL_FOLLOW);
-
     wallFollowSetInitialPosition(0.00); //absolute position into a cell
+
     //take the measures
     basicMove(0, SPYPOST_CAL_DISTANCE, SPYPOST_MOVE_SPEED, SPYPOST_MOVE_SPEED);
     for (i = 0; i < SPYPOST_ARRAY_PROFILE_LENGTH; i++)
