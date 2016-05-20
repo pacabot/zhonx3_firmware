@@ -19,7 +19,7 @@
 #define MAZE_MOVES_E_SUCCESS  0
 #define MAZE_MOVES_E_ERROR    MAKE_ERROR(MAZE_MOVES_MODULE_ID, 1)
 
-#define DEBUG_MAZE_MOVES
+//#define DEBUG_MAZE_MOVES
 
 typedef struct
 {

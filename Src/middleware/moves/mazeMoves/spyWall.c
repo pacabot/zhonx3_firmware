@@ -70,11 +70,11 @@ int spyWallGetFrontDist(spyWallGetOffsetsStruct *offset)
         }
         else if (getWallPresence(LEFT_WALL) == TRUE)
         {
-            offset->front_dist = getTelemeterDist(TELEMETER_FL) - zhonxCalib_data->spyWall.calib_value;
+            offset->front_dist = getTelemeterDist(TELEMETER_FL) - (zhonxCalib_data->spyWall.calib_value + 10.00);
         }
         else if (getWallPresence(RIGHT_WALL) == TRUE)
         {
-            offset->front_dist = getTelemeterDist(TELEMETER_FR) - zhonxCalib_data->spyWall.calib_value;
+            offset->front_dist = getTelemeterDist(TELEMETER_FR) - (zhonxCalib_data->spyWall.calib_value + 10.00);
         }
         else
         {
@@ -102,7 +102,9 @@ void spyWallFrontDistCal(void)
     double left_dist = 0;
     int max_speed = 50;
     int end_speed = 50;
-    while (expanderJoyFiltered() != JOY_RIGHT)
+
+    HAL_Delay(500);
+    while (expanderJoyState() != JOY_RIGHT)
     {
         ssd1306ClearScreen(MAIN_AREA);
         ssd1306DrawBmp(frontCal_Img, 25, 24, 74, 31);
@@ -112,7 +114,7 @@ void spyWallFrontDistCal(void)
         {
             return;
         }
-        HAL_Delay(10);
+        HAL_Delay(1);
     }
     ssd1306ClearScreen(MAIN_AREA);
     ssd1306DrawStringAtLine(40, 1, "Wait", &Font_3x6);
@@ -130,9 +132,11 @@ void spyWallFrontDistCal(void)
     wallFollowSetInitialPosition(0); //absolute position into a cell
     basicMove(0, MAIN_DIST + OFFSET_DIST, max_speed, max_speed); //distance with last basicMove offset
 
-    while (hasMoveEnded() != TRUE);
-    left_dist = getTelemeterDist(TELEMETER_FL);
-    right_dist = getTelemeterDist(TELEMETER_FR);
+    while (hasMoveEnded() != TRUE)
+    {
+        left_dist = getTelemeterDist(TELEMETER_FL);
+        right_dist = getTelemeterDist(TELEMETER_FR);
+    }
 
     telemetersStop();
     basicMoveStop();

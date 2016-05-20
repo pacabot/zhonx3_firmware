@@ -17,7 +17,7 @@
 #define STATISTIQUES_MODULE_ID_E_SUCCESS  0
 #define STATISTIQUES_MODULE_ID_ERROR    MAKE_ERROR(MAIN_CONTROL_MODULE_ID, 1)
 
-#define MAVRG_NBITS 3 //todo optimize for several functions
+#define MAVRG_NBITS 2 //todo optimize for several functions
 #define MAVRG_BUFF_SIZE (1 << MAVRG_NBITS)
 
 typedef struct

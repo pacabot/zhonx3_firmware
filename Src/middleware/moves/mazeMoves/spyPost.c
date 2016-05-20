@@ -64,10 +64,10 @@
 #define SPYPOST_REFERENCE_SAMPLE_HEIGHT 	   16	//16 bit height
 #define SPYPOST_REFERENCE_SAMPLE_WIDTH 		   30	//array length
 
-#define SPYPOST_MOVE_SPEED 					   500
+#define SPYPOST_MOVE_SPEED 					   200
 
-#define MIN_STAT                               80   //minimum percentage for validate
-#define DIST_FOR_TIME_CALCULATION              20   //stop record before end to have time to calculate
+#define MIN_STAT                               70   //minimum percentage for validate
+#define DIST_FOR_TIME_CALCULATION              10   //stop record before end to have time to calculate
 
 #if (SPYPOST_MAX_DIAG_SENSOR_DISTANCE - SPYPOST_MIN_DIAG_SENSOR_DISTANCE) % (SPYPOST_NBITS_SAMPLING_RESOLUTION) != 0
 #error  MAX DIAG - MIN_DIAG must be a multiple of SAMPLING_RESOLUTION
@@ -576,7 +576,7 @@ void spyPostKeepUsefulPart(spyPostProfileStruct *currentProfile)
 {
     uint64_t i, j;
     uint64_t y_min = SPYPOST_NBITS_SAMPLING_RESOLUTION;
-    uint64_t mask = (uint32_t)(pow(2, SPYPOST_REFERENCE_SAMPLE_HEIGHT) - 1);
+    uint64_t mask = (uint64_t)(pow(2, SPYPOST_REFERENCE_SAMPLE_HEIGHT) - 1);
 
     // search the minimal of the curve
     for (i = 0; i < SPYPOST_ARRAY_PROFILE_LENGTH; i++)
@@ -714,8 +714,8 @@ void spyPostTest()
     ssd1306ClearScreen(MAIN_AREA);
     telemetersStart();
 
-    Vmin = 100;
-    Vmax = 100;
+    Vmin = 500;
+    Vmax = 500;
 
     basicMove(0, OFFSET_DIST, Vmax, Vmax);
     while (hasMoveEnded() != TRUE);
