@@ -252,6 +252,13 @@ static int setZhonxName(void)
     }
     return 0;
 }
+
+void Infinite_Loop()
+{
+    telemetersStop();
+    motorsDriverSleep(ON);
+    motorsBrake();
+}
 /* USER CODE END 4 */
 
 #ifdef USE_FULL_ASSERT

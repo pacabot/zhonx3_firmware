@@ -154,6 +154,13 @@ int mazeMoveOffsetDist(getOffsetsStruct *offset, double max_speed)
         wallFollowSetInitialPosition(CELL_LENGTH - OFFSET_DIST);    //absolute position into a cell
         return MAZE_MOVES_E_SUCCESS;
     }
+    if (offset_error >= (OFFSET_DIST * 3.00))
+    {
+        while (hasMoveEnded() != TRUE);
+        wallFollowSetInitialPosition(CELL_LENGTH - OFFSET_DIST);    //absolute position into a cell
+        basicMove(0, (OFFSET_DIST * 2.00), max_speed, max_speed);
+        return MAZE_MOVES_E_SUCCESS;
+    }
     while (hasMoveEnded() != TRUE);
     wallFollowSetInitialPosition(CELL_LENGTH - OFFSET_DIST);    //absolute position into a cell
     basicMove(0, (OFFSET_DIST * 2.00) + offset_error, max_speed, max_speed);

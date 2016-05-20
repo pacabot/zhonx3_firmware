@@ -128,9 +128,6 @@ void accelMotor_GetStepResponse(void)
     bluetoothSend((uint8_t*) buff, i * 2);
 }
 
-void pidEncoder_GetCriticalPoint(void)
-{
-}
 /*
  * Kcr => critical proportional gain
  * Tcr => time period

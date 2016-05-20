@@ -99,7 +99,7 @@ int speedControlInit(void)
     memset(&speed_params, 0, sizeof(speed_params_struct));
     speedProfileCompute(0, 0, 0, 0);
 
-    encoder_pid_instance.Kp = 500;//638.00;
+    encoder_pid_instance.Kp = 700;//638.00;
     encoder_pid_instance.Ki = 0;//0.02666 / CONTROL_TIME_FREQ;
     encoder_pid_instance.Kd = 2 * CONTROL_TIME_FREQ;
 
