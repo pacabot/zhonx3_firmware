@@ -32,5 +32,6 @@ int     wallFollowControlInit(void);
 double  wallFollowGetCommand(void);
 int     wallFollowControlLoop(void);
 int     wallFollowSetInitialPosition(double initial_position);
+void    wallFollowTest(void);
 
 #endif
