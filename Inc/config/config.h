@@ -117,10 +117,10 @@
 /**************************************************************************************/
 /***************                  Moves Constants                  ********************/
 /**************************************************************************************/
-#define OFFSET_DIST             (10.00)
+#define OFFSET_DIST             (15.00)
 #define MAIN_DIST               ((CELL_LENGTH) - ((OFFSET_DIST) * (2.00)))
 
-#define DEADZONE_VIEWING_OFFSET (60.00) //(80.00)
+#define DEADZONE_VIEWING_OFFSET (90.00) //(80.00)
 #define DEADZONE_DIST           (CELL_LENGTH)   //Distance between the start of the cell and doubt area
 #define DEADZONE                (120.00)        //doubt area
 #define DEADZONE_CHECKWALL_DIST (5.00)
@@ -152,12 +152,12 @@
 /***************                 Physical Constants                ********************/
 /**************************************************************************************/
 #define MAX_SPEED               (4000.00)   //mm/s
-#define MAX_ACCEL               (6000.00)   //mm/s/s
+#define MAX_ACCEL               (4000.00)   //mm/s/s
 
 #define MAX_CURVE_ACCEL         (1300.00)   //mm/s
 #define MAX_CURVE_SPEED         (800.00)   //mm/s
 
-#define MAX_ROTATE_ACCEL        (4000.00)   //°/s/s perhaps wrong scale //todo verify correct scale
+#define MAX_ROTATE_ACCEL        (2000.00)   //°/s/s perhaps wrong scale //todo verify correct scale
 #define MAX_TURN_ACCEL          (2000.00)   //°/s/s perhaps wrong scale //todo verify correct scale
 
 /**************************************************************************************/
