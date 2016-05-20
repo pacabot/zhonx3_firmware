@@ -338,14 +338,15 @@ int findTheShortestPath(labyrinthe *maze, positionRobot* positionZhonx,
                 || (last_coordinate.y != end_coordinate->y))
     {
         goToPosition(maze, positionZhonx, last_coordinate);
+        newCell(getCellState(), maze, *positionZhonx);
         clearMazelength(maze);
-        computeCellWeight(maze, start_position->coordinate_robot, false, false);
+        computeCellWeight(maze, *end_coordinate, TRUE, FALSE);
         rv = moveVirtualZhonx(*maze, *start_position, way, *end_coordinate);
         if (rv != MAZE_SOLVER_E_SUCCESS)
         {
             print_no_solution();
         }
-        newCell(getCellState(), maze, *positionZhonx);
+        last_coordinate = findEndCoordinate(way);
     }
     return rv;
 }
@@ -363,8 +364,6 @@ int print_no_solution()
 int goToPosition(labyrinthe *maze, positionRobot* positionZhonx,
                  coordinate end_coordinate)
 {
-    bluetoothWaitReady();
-    bluetoothPrintf("goto %d, %d",end_coordinate.x, end_coordinate.y);
     int max_speed_rotation = SAFE_SPEED_ROTATION;
     int max_speed_translation = SAFE_SPEED_TRANSLATION;
     int min_speed_translation = SAFE_SPEED_TRANSLATION;
@@ -398,9 +397,6 @@ int goToPosition(labyrinthe *maze, positionRobot* positionZhonx,
             return rv;
         }
     }
-
-    bluetoothWaitReady();
-    bluetoothPrintf("end goto");
     return MAZE_SOLVER_E_SUCCESS;
 }
 
