@@ -108,8 +108,8 @@ const menuItem scan_settings_menu =
         "SCAN SETT",         //9 characters max
         {
                 {"min speed",           integer,(void*)&zhonxSettings.speeds_scan.min_speed},
-                {"max speed tans",integer,(void*)&zhonxSettings.speeds_scan.max_speed_traslation},
-                {"max speed rot",integer,(void*)&zhonxSettings.speeds_scan.max_speed_rotation},
+                {"max speed tans",      integer,(void*)&zhonxSettings.speeds_scan.max_speed_traslation},
+                {"max speed rot",       integer,(void*)&zhonxSettings.speeds_scan.max_speed_rotation},
                 {(char*)NULL,        0,     NULL}
         }
 };
@@ -119,8 +119,9 @@ const menuItem run1_settings_menu =
         "RUN1 SETING",         //9 characters max
         {
                 {"min speed",           integer,(void*)&zhonxSettings.speeds_run1.min_speed},
-                {"max speed tans",integer,(void*)&zhonxSettings.speeds_run1.max_speed_traslation},
-                {"max speed rot",integer,(void*)&zhonxSettings.speeds_run1.max_speed_rotation},
+                {"max speed tans",      integer,(void*)&zhonxSettings.speeds_run1.max_speed_traslation},
+                {"max speed rot",       integer,(void*)&zhonxSettings.speeds_run1.max_speed_rotation},
+                {"return to start",     boolean,(void*)&zhonxSettings.return_to_start_cell},
                 {(char*)NULL,        0,     NULL}
         }
 };
@@ -129,9 +130,10 @@ const menuItem run2_settings_menu =
 {
         "RUN2 SETTING",         //9 characters max
         {
-                {"min speed",       integer,(void*)&zhonxSettings.speeds_run2.min_speed},
-                {"max speed tans",  integer,(void*)&zhonxSettings.speeds_run2.max_speed_traslation},
-                {"max speed rot",   integer,(void*)&zhonxSettings.speeds_run2.max_speed_rotation},
+                {"min speed",           integer,(void*)&zhonxSettings.speeds_run2.min_speed},
+                {"max speed tans",      integer,(void*)&zhonxSettings.speeds_run2.max_speed_traslation},
+                {"max speed rot",       integer,(void*)&zhonxSettings.speeds_run2.max_speed_rotation},
+                {"return to start",     boolean,(void*)&zhonxSettings.return_to_start_cell},
                 {(char*)NULL,       0,     NULL}
         }
 };

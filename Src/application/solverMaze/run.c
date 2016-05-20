@@ -34,7 +34,7 @@
 #include "peripherals/tone/tone.h"
 #endif
 
-int run(labyrinthe *maze, positionRobot *positionZhonx, coordinate start_oordinate, coordinate end_coordinate, int runType)
+int run(labyrinthe *maze, positionRobot *positionZhonx, coordinate start_coordinate, coordinate end_coordinate, int runType)
 {
     int rv = RUN_E_SUCCESS;
     unsigned int runTime;
@@ -64,17 +64,21 @@ int run(labyrinthe *maze, positionRobot *positionZhonx, coordinate start_oordina
     positionControlSetPositionType(GYRO);
 
     clearMazelength(maze);
-    computeCellWeight(maze, end_coordinate, true, FALSE);
-#ifdef PRINT_BLUETOOTH_BASIC_DEGUG // todo debug
-    bluetoothWaitReady();
-    bluetoothPrintf("go to : %d,%d/n\
-                     we are at %d,%d" , end_coordinate.x,end_coordinate.y , positionZhonx->coordinate_robot.x, positionZhonx->coordinate_robot.y);
-#endif
+    computeCellWeight(maze, start_coordinate, FALSE, FALSE);
+    findArrival(*maze, &end_coordinate);
+    clearMazelength(maze);
+    computeCellWeight(maze, end_coordinate, FALSE, FALSE);
     rv = moveVirtualZhonx(*maze, *positionZhonx, way, end_coordinate);
     if (rv != MAZE_SOLVER_E_SUCCESS)
     {
+        ssd1306PrintfAtLine(64, 2, &Font_5x8,"the shorter way");
+        ssd1306PrintfAtLine(64, 3, &Font_5x8,"is not find");
+        HAL_Delay(1000);
+        return MAZE_SOLVER_E_ERROR;
+        #ifdef PRINT_BLUETOOTH_BASIC_DEGUG // todo debug
         bluetoothWaitReady();
         bluetoothPrintf("no solution");
+        #endif
     }
 
     telemetersStart();
@@ -105,12 +109,16 @@ int run(labyrinthe *maze, positionRobot *positionZhonx, coordinate start_oordina
     HAL_Delay(50);
     tone(B5, 400);
     HAL_Delay(2000);
-#ifdef RETURN_START_CELL
-    telemetersStart();
-    goToPosition(maze, positionZhonx, start_oordinate);
-    doUTurn(positionZhonx, SAFE_SPEED_ROTATION, SAFE_SPEED_TRANSLATION, SAFE_SPEED_TRANSLATION);
-#endif
+
+    if(zhonxSettings.return_to_start_cell == true)
+    {
+        telemetersStart();
+        goToPosition(maze, positionZhonx, start_coordinate);
+        doUTurn(positionZhonx, SAFE_SPEED_ROTATION, SAFE_SPEED_TRANSLATION, SAFE_SPEED_TRANSLATION);
+    }
+
 #ifdef PRINT_BLUETOOTH_BASIC_DEGUG
+    bluetoothWaitReady();
     bluetoothPrintf("TIME : %d.%ds", runTime / 1000, runTime % 1000);
 #endif
     ssd1306PrintfAtLine(30, 4, &Font_5x8, "END RUN");

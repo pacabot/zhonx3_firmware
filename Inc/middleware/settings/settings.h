@@ -51,6 +51,7 @@ typedef struct
 	int cell_cost;
 	int start_orientation;
 	unsigned int sleep_delay_s;
+	char return_to_start_cell;
     speed_settings speeds_scan;
     speed_settings speeds_run1;
     speed_settings speeds_run2;
