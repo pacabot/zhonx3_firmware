@@ -110,6 +110,7 @@ int bluetoothReceive(unsigned char *data, int length)
 
 void bluetoothPrintf(const char *format, ...)
 {
+#if !defined DISABLE_BLUETOOTH
     static char buffer[BLUETOOTH_BUFFER_SIZE];
     va_list va_args;
 
@@ -118,12 +119,15 @@ void bluetoothPrintf(const char *format, ...)
     va_end(va_args);
 
     bluetoothSend((unsigned char *) buffer, strlen(buffer));
+#endif
 }
 
 void bluetoothWaitReady(void)
 {
+#if !defined DISABLE_BLUETOOTH
     // Wait until UART becomes ready
     while (HAL_UART_GetState(&huart3) != HAL_UART_STATE_READY);
+#endif
 }
 
 char *bluetoothCmd(const char *cmd)

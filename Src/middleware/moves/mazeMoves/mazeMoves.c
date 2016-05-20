@@ -30,6 +30,8 @@
 #include <peripherals/motors/motors.h>
 #include <peripherals/telemeters/telemeters.h>
 #include <peripherals/tone/tone.h>
+#include <peripherals/expander/pcf8574.h>
+#include <peripherals/bluetooth/bluetooth.h>
 
 /* Declarations for this module */
 #include <middleware/moves/mazeMoves/mazeMoves.h>
@@ -57,10 +59,10 @@ static int mazeMoveFrontAlignment(float max_speed);
 
 /*
  *
- * 		o	 	  o
- * 		:         :
- * 		:    |    :
- * 		o         o
+ *      o         o
+ *      :         :
+ *      :    |    :
+ *      o         o
  */
 int mazeMoveHalfCell_IN(double max_speed, double end_speed)
 {
@@ -73,16 +75,16 @@ int mazeMoveHalfCell_IN(double max_speed, double end_speed)
 
 /*
  *
- * 		o	 	  o
- * 		:    |    :
- * 		:         :
- * 		o         :
+ *      o         o
+ *      :    |    :
+ *      :         :
+ *      o         :
  */
 int mazeMoveHalfCell_OUT(double max_speed, double end_speed)
 {
     while (hasMoveEnded() != TRUE);
     wallFollowSetInitialPosition(HALF_CELL_LENGTH);
-    basicMove(0, HALF_CELL_LENGTH - OFFSET_DIST, max_speed, end_speed);
+    basicMove(0, (HALF_CELL_LENGTH - OFFSET_DIST) - 10.00, max_speed, end_speed); //todo remove groze mede
 
     return MAZE_MOVES_E_SUCCESS;
 }
@@ -118,7 +120,7 @@ int mazeMoveOffsetDist(getOffsetsStruct *offset, double max_speed)
     if (offset->spyPost.left_x != 0)
     {
         offset_error = (double)offset->spyPost.left_x;
-#ifdef DEBUG_BASIC_MOVES
+#ifdef DEBUG_MAZE_MOVES
         bluetoothWaitReady();
         bluetoothPrintf(", L_OFFSET = %d, TYPE = %d", (int32_t)offset->spyPost.left_x, offset->spyPost.left_spyPostType);
 #endif
@@ -127,7 +129,7 @@ int mazeMoveOffsetDist(getOffsetsStruct *offset, double max_speed)
     else if (offset->spyPost.right_x != 0)
     {
         offset_error = (double)offset->spyPost.right_x;
-#ifdef DEBUG_BASIC_MOVES
+#ifdef DEBUG_MAZE_MOVES
         bluetoothWaitReady();
         bluetoothPrintf(", R_OFFSET = %d, TYPE = %d", (int32_t)offset->spyPost.right_x, offset->spyPost.right_spyPostType);
 #endif
@@ -136,7 +138,7 @@ int mazeMoveOffsetDist(getOffsetsStruct *offset, double max_speed)
     else if (offset->frontCal.front_dist != 0)
     {
         offset_error = (double)offset->frontCal.front_dist;
-#ifdef DEBUG_BASIC_MOVES
+#ifdef DEBUG_MAZE_MOVES
         bluetoothWaitReady();
         bluetoothPrintf(", F_OFFSET = %d", (int32_t)offset->frontCal.front_dist);
 #endif
@@ -263,27 +265,43 @@ int mazeMoveFrontAlignment(float max_speed)
 int mazeMoveCell(unsigned int nb_cell, double max_speed, double out_speed)
 {
     unsigned int i;
+    double decel_dist = 0;
+    double vmax_LastMainDist = 0;
     getOffsetsStruct offset;
     memset(&offset, 0, sizeof(getOffsetsStruct));
 
     if (nb_cell < 1)
         return MAZE_MOVES_E_ERROR;
 
-#ifdef DEBUG_BASIC_MOVES
+#ifdef DEBUG_MAZE_MOVES
     bluetoothWaitReady();
     bluetoothPrintf("\rMOVE %d CELL", nb_cell);
 #endif
 
-    if (nb_cell == 0)
-        return MAZE_MOVES_E_SUCCESS;
-
-    for (i = 0; i < (nb_cell - 1); i++)
+    if (nb_cell == 1)
     {
-        mazeMoveMainDist(&offset, max_speed, max_speed);
-        spyWallGetFrontDist(&offset.frontCal);
-        mazeMoveOffsetDist(&offset, max_speed);
+        mazeMoveMainDist(&offset, max_speed, out_speed);
     }
-    mazeMoveMainDist(&offset, max_speed, out_speed);
+    else
+    {
+        vmax_LastMainDist = sqrt(2.00 * MAX_ACCEL * MAIN_DIST + pow(out_speed, 2));
+        if (max_speed > vmax_LastMainDist)
+        {
+        while (hasMoveEnded() != TRUE);
+        wallFollowSetInitialPosition(OFFSET_DIST); //absolute position into a cell
+        basicMove(0, ((double)(nb_cell - 1) * MAIN_DIST) + ((double)(nb_cell - 1) * 2.00 * OFFSET_DIST), max_speed, vmax_LastMainDist);
+
+        mazeMoveMainDist(&offset, vmax_LastMainDist, out_speed);
+        }
+        else
+        {
+            while (hasMoveEnded() != TRUE);
+            wallFollowSetInitialPosition(OFFSET_DIST); //absolute position into a cell
+            basicMove(0, ((double)(nb_cell - 1) * MAIN_DIST) + ((double)(nb_cell - 1) * 2.00 * OFFSET_DIST), max_speed, max_speed);
+
+            mazeMoveMainDist(&offset, max_speed, out_speed);
+        }
+    }
     spyWallGetFrontDist(&offset.frontCal);
     mazeMoveOffsetDist(&offset, out_speed);
 
@@ -302,7 +320,7 @@ int mazeMoveStartCell(double max_speed, double out_speed)
     getOffsetsStruct offset;
     memset(&offset, 0, sizeof(getOffsetsStruct));
 
-#ifdef DEBUG_BASIC_MOVES
+#ifdef DEBUG_MAZE_MOVES
     bluetoothWaitReady();
     bluetoothPrintf("\rMOVE START CELL");
 #endif
@@ -329,12 +347,12 @@ int mazeMoveRotateCW90(double max_turn_speed, double out_speed)
     getOffsetsStruct offset;
     memset(&offset, 0, sizeof(getOffsetsStruct));
 
-#ifdef DEBUG_BASIC_MOVES
+#ifdef DEBUG_MAZE_MOVES
     bluetoothWaitReady();
     bluetoothPrintf("\rMOVE ROTATE CW90");
 #endif
     while (hasMoveEnded() != TRUE);
-    basicMove(90, (HALF_CELL_LENGTH - OFFSET_DIST), max_turn_speed, max_turn_speed);
+    basicMove(90, (HALF_CELL_LENGTH - OFFSET_DIST) - 5.00, max_turn_speed, max_turn_speed); //todo remove compensation
     while (hasMoveEnded() != TRUE);
 
     spyWallGetFrontDist(&offset.frontCal);
@@ -355,12 +373,12 @@ int mazeMoveRotateCCW90(double max_turn_speed, double out_speed)
     getOffsetsStruct offset;
     memset(&offset, 0, sizeof(getOffsetsStruct));
 
-#ifdef DEBUG_BASIC_MOVES
+#ifdef DEBUG_MAZE_MOVES
     bluetoothWaitReady();
     bluetoothPrintf("\rMOVE ROTATE CCW90");
 #endif
     while (hasMoveEnded() != TRUE);
-    basicMove(-90, (HALF_CELL_LENGTH - OFFSET_DIST), max_turn_speed, max_turn_speed);
+    basicMove(-90, (HALF_CELL_LENGTH - OFFSET_DIST) - 5.00, max_turn_speed, max_turn_speed); //todo remove compensation
     while (hasMoveEnded() != TRUE);
 
     spyWallGetFrontDist(&offset.frontCal);
@@ -429,12 +447,12 @@ int mazeMoveRotateInPlaceWithCalCCW90(double speed_rotation)
     return MAZE_MOVES_E_SUCCESS;
 }
 
-/*		 _________
- * 		o	 _	  o
- * 		:   / )   :
- * 		:   \'    :
- * 		o    |    o
- * 			 v
+/*       _________
+ *      o    _    o
+ *      :   / )   :
+ *      :   \'    :
+ *      o    |    o
+ *           v
  */
 int mazeMoveUTurn(double speed_rotation, double max_speed, double out_speed)
 {
@@ -442,7 +460,7 @@ int mazeMoveUTurn(double speed_rotation, double max_speed, double out_speed)
     memset(&offset, 0, sizeof(getOffsetsStruct));
     wallSelectorEnum wall_presence = FALSE;
 
-#ifdef DEBUG_BASIC_MOVES
+#ifdef DEBUG_MAZE_MOVES
     bluetoothWaitReady();
     bluetoothPrintf("\rMOVE U TURN");
 #endif
@@ -457,9 +475,9 @@ int mazeMoveUTurn(double speed_rotation, double max_speed, double out_speed)
         wall_presence = LEFT_WALL;
     }
     // move HALF CELL IN
-    mazeMoveHalfCell_IN(max_speed, 0);
+    mazeMoveHalfCell_IN(out_speed, 0);
     mazeMoveRotateInPlace180WithCal(wall_presence, speed_rotation);//speed_rotation);
-    mazeMoveHalfCell_OUT(max_speed, out_speed);
+    mazeMoveHalfCell_OUT(out_speed, out_speed);
     spyWallGetFrontDist(&offset.frontCal);
     mazeMoveOffsetDist(&offset, out_speed);
 
@@ -479,7 +497,7 @@ int mazeMoveResetStart(double speed_rotation, double max_speed, double out_speed
     memset(&offset, 0, sizeof(getOffsetsStruct));
     wallSelectorEnum wall_presence = FALSE;
 
-#ifdef DEBUG_BASIC_MOVES
+#ifdef DEBUG_MAZE_MOVES
     bluetoothWaitReady();
     bluetoothPrintf("\rMOVE RESET START");
 #endif
@@ -513,9 +531,39 @@ int mazeMoveResetStart(double speed_rotation, double max_speed, double out_speed
 /**************************************************************************************/
 void movesTest1()
 {
-    int Vout, Vmax, Vrotate;
+    int Vmin, Vmax, Vrotate;
 
     HAL_Delay(2000);
+
+#if 1
+    Vmin = 0;
+    Vmax = 400;
+    Vrotate = 100;
+    //telemetersStart();
+
+    positionControlSetPositionType(GYRO);
+    mainControlSetFollowType(NO_FOLLOW);
+
+    basicMove(0, (double)(500), Vmax, Vmin);
+
+
+//    mazeMoveStartCell(Vmax, Vmax);
+//    //mazeMoveCell(2, Vmax, Vmin);
+//    mazeMoveCell(1, Vmax, Vmin);
+//    mazeMoveCell(1, Vmax, Vmin);
+//    mazeMoveRotateCW90(Vmin, Vmin);
+//    mazeMoveCell(1, Vmax, 0);
+
+    while( hasMoveEnded() != TRUE);
+    ssd1306ClearScreen(MAIN_AREA);
+    ssd1306PrintIntAtLine(0, 2, "reel dist =  ", (int)((encoderGetDist(ENCODER_L) + encoderGetDist(ENCODER_R)) / 2.00), &Font_5x8);
+    //    ssd1306PrintIntAtLine(0, 1, "abs  dist =  ", (int)abs_encoders / 2, &Font_5x8);
+    //    ssd1306PrintIntAtLine(0, 2, "reel dist =  ", CELL_LENGTH, &Font_5x8);
+    ssd1306Refresh();
+    basicMove(0,0,0,0);
+    HAL_Delay(3000);
+
+#endif
 
 #if 0
     Vout = 600;
@@ -531,7 +579,7 @@ void movesTest1()
     mazeMoveUTurn(Vrotate, Vmax, Vmax);
 #endif
 
-#if 1
+#if 0
     Vout = 600;
     Vmax = 600;
     Vrotate = 600;
@@ -631,6 +679,7 @@ void movesTest1()
 #endif
 
     telemetersStop();
+    motorsDriverSleep(ON);
 }
 
 void movesTest2()

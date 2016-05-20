@@ -127,6 +127,8 @@ int maze_solver_new_maze(void)
         tone(B5, 400);
         motorsDriverSleep(ON); //because flash write cause interrupts damages
         telemetersStop();//because flash write cause interrupts damages
+        computeCellWeight(&maze,start_position.coordinate_robot, false, false);
+        findArrival(maze, &end_coordinate);
         rv=saveMaze(&maze, &start_position, &end_coordinate);    // Save maze into flash memory
         motorsDriverSleep(OFF); //because flash write cause interrupts damages
         telemetersStart();//because flash write cause interrupts damages
@@ -263,6 +265,19 @@ int restartExplo()
     motorsDriverSleep(OFF); //because flash write cause interrupts damages
     telemetersStart();//because flash write cause interrupts damages
     return MAZE_SOLVER_E_SUCCESS;
+}
+
+
+int printStoredMaze ()
+{
+    int rv = MAZE_SOLVER_E_SUCCESS;
+    labyrinthe maze;
+    positionRobot start_position;
+    coordinate end_coordinate;
+    loadMaze(&maze, &start_position, &end_coordinate);
+    printMaze(maze, (coordinate){-1,-1});
+    while (expanderJoyFiltered() != JOY_LEFT);
+    return rv;
 }
 
 int exploration(labyrinthe *maze, positionRobot* positionZhonx,
@@ -853,19 +868,19 @@ int findArrival(labyrinthe maze, coordinate *end_coordinate)
                 end_coordinate->x = x;
                 end_coordinate->y = y;
                 possible_end_find_cost = maze.cell[x][y].length;
-                if (maze.cell[x + 1][y].length < possible_end_find_cost)
+                if (maze.cell[x + 1][y].length > possible_end_find_cost)
                 {
                     end_coordinate->x = x + 1;
                     end_coordinate->y = y;
                     possible_end_find_cost = maze.cell[x + 1][y].length;
                 }
-                if (maze.cell[x][y + 1].length < possible_end_find_cost)
+                if (maze.cell[x][y + 1].length > possible_end_find_cost)
                 {
                     end_coordinate->x = x;
                     end_coordinate->y = y+1;
                     possible_end_find_cost = maze.cell[x][y + 1].length;
                 }
-                if (maze.cell[x + 1][y + 1].length < possible_end_find_cost)
+                if (maze.cell[x + 1][y + 1].length > possible_end_find_cost)
                 {
                     end_coordinate->x = x + 1;
                     end_coordinate->y = y + 1;

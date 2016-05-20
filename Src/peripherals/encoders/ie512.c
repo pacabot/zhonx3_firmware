@@ -218,9 +218,20 @@ void encoderTest(void)
     motorSet_DF(MOTOR_L, (int)(999));
 #endif
 
+#if 1   //test encoders response
+    telemetersStart();
+
     while (expanderJoyFiltered() != JOY_LEFT)
     {
         ssd1306ClearScreen(MAIN_AREA);
+        ssd1306PrintIntAtLine(0, 4, "R_DIST_ABS =  ", (signed int)getTelemeterAvrg(TELEMETER_DL), &Font_5x8);
+
+#else
+
+    while (expanderJoyFiltered() != JOY_LEFT)
+    {
+        ssd1306ClearScreen(MAIN_AREA);
+#endif
 
         ssd1306PrintIntAtLine(0, 0, "L_DIST_REL =  ", (signed int)encoderGetDist(ENCODER_L), &Font_5x8);
         ssd1306PrintIntAtLine(0, 1, "L_DIST_ABS =  ", (signed int)encoderGetAbsDist(ENCODER_L), &Font_5x8);

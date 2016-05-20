@@ -75,9 +75,9 @@ int positionControlInit(void)
     memset(&position_params, 0, sizeof(position_params_struct));
     positionProfileCompute(0, 0, 0);
 
-    gyro_pid_instance.Kp = 150;
+    gyro_pid_instance.Kp = 100;
     gyro_pid_instance.Ki = 0;//0.01;
-    gyro_pid_instance.Kd = 3000;
+    gyro_pid_instance.Kd = 2000;
 
     //    gyro_pid_instance.Kp = zhonxCalib_data->pid_gyro.Kp;
     //    gyro_pid_instance.Ki = zhonxCalib_data->pid_gyro.Ki / CONTROL_TIME_FREQ;
@@ -183,6 +183,28 @@ int positionControlLoop(void)
             position_control.end_control = TRUE;
         }
     }
+//    else if(mainControlGetMoveType() == CLOTHOID)
+//    {
+//        position_control.nb_loop++;
+//
+//        if (position_control.nb_loop < 1000)
+//        {
+//            position_control.current_angular_speed += 1.00/100.00 * 6.00;// position_params.anglar_acc_per_loop;
+//            position_control.current_angle_consign += position_control.current_angular_speed / CONTROL_TIME_FREQ;
+//        }
+//        else if (position_control.nb_loop < 2000)
+//        {
+////            position_control.current_angular_speed += 1.00/100.00;// position_params.anglar_acc_per_loop;
+//            position_control.current_angle_consign += position_control.current_angular_speed / CONTROL_TIME_FREQ;
+//        }
+//        else if (position_control.nb_loop < 3000)
+//        {
+//            position_control.current_angular_speed -= 1.00/100.00 * 6.00;// position_params.anglar_acc_per_loop;
+//            position_control.current_angle_consign += position_control.current_angular_speed / CONTROL_TIME_FREQ;
+//        }
+//        else
+//            position_control.end_control = TRUE;
+//    }
 
     position_control.position_error = position_control.current_angle_consign - position_control.current_angle;//for distance control
     if (fabs(position_control.position_error) > MAX_POSITION_ERROR)
