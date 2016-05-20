@@ -26,7 +26,7 @@
 /* Declarations for this module */
 #include <middleware/controls/mainControl/positionControl.h>
 
-#define MAX_POSITION_ERROR     30.00 //Degrees
+#define MAX_POSITION_ERROR     40.00 //Degrees
 #define POSITION_ERROR_LIMITER 20.00 //Degrees
 
 typedef struct

@@ -18,8 +18,8 @@
 #define LOW_TIME_FREQ               (100.00)                //low inner loop
 #define CONTROL_TIME_FREQ           (1000.00)               //use for control inner loop
 #define LINE_FOLLOWER_TIME_FREQ     (1000.00)               //use for line follower inner loop
-#define TELEMETERS_TIME_FREQ        ((2000.00) * (10.00))   //each telemeter use 1/10 of TELEMETERS_TIME_FREQ
-#define GYRO_TIME_FREQ			    (2500.00)               //for adc injected freq
+#define TELEMETERS_TIME_FREQ        ((1600.00) * (10.00))   //each telemeter use 1/10 of TELEMETERS_TIME_FREQ
+#define GYRO_TIME_FREQ			    (2000.00)               //for adc injected freq
 #define LINESENSORS_TIME_FREQ	    (4000.00)               //line sensor measure frequency
 #define MULTIMMETER_TIME_FREQ       (0.10)                  //multimeter inner loop
 #define MOTORS_FREQ				    (23000.00)	            //motor pwm freq
