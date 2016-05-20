@@ -70,11 +70,11 @@ int spyWallGetFrontDist(spyWallGetOffsetsStruct *offset)
         }
         else if (getWallPresence(LEFT_WALL) == TRUE)
         {
-            offset->front_dist = getTelemeterDist(TELEMETER_FL) - zhonxCalib_data->spyWall.calib_value;
+            offset->front_dist = getTelemeterDist(TELEMETER_FL) - (zhonxCalib_data->spyWall.calib_value + 10.00);
         }
         else if (getWallPresence(RIGHT_WALL) == TRUE)
         {
-            offset->front_dist = getTelemeterDist(TELEMETER_FR) - zhonxCalib_data->spyWall.calib_value;
+            offset->front_dist = getTelemeterDist(TELEMETER_FR) - (zhonxCalib_data->spyWall.calib_value + 10.00);
         }
         else
         {
