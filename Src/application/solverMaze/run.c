@@ -34,7 +34,7 @@
 #include "peripherals/tone/tone.h"
 #endif
 
-int run(labyrinthe *maze, positionRobot *positionZhonx, coordinate start_oordinate, coordinate end_coordinate, int runType)
+int run(labyrinthe *maze, positionRobot *positionZhonx, coordinate start_coordinate, coordinate end_coordinate, int runType)
 {
     int rv = RUN_E_SUCCESS;
     unsigned int runTime;
@@ -63,6 +63,9 @@ int run(labyrinthe *maze, positionRobot *positionZhonx, coordinate start_oordina
     mainControlSetFollowType(WALL_FOLLOW);
     positionControlSetPositionType(GYRO);
 
+    clearMazelength(maze);
+    computeCellWeight(maze, start_coordinate, FALSE, FALSE);
+    findArrival(*maze, &end_coordinate);
     clearMazelength(maze);
     computeCellWeight(maze, end_coordinate, FALSE, FALSE);
     rv = moveVirtualZhonx(*maze, *positionZhonx, way, end_coordinate);
@@ -110,7 +113,7 @@ int run(labyrinthe *maze, positionRobot *positionZhonx, coordinate start_oordina
     if(zhonxSettings.return_to_start_cell == true)
     {
         telemetersStart();
-        goToPosition(maze, positionZhonx, start_oordinate);
+        goToPosition(maze, positionZhonx, start_coordinate);
         doUTurn(positionZhonx, SAFE_SPEED_ROTATION, SAFE_SPEED_TRANSLATION, SAFE_SPEED_TRANSLATION);
     }
 

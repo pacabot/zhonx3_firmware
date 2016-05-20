@@ -235,6 +235,16 @@ int restartExplo()
 #endif
     telemetersStart();
     waitStart();
+    clearMazelength(&maze);
+    computeCellWeight(&maze, start_position.coordinate_robot, TRUE, FALSE);
+    if (findArrival(maze, &end_coordinate) != MAZE_SOLVER_E_SUCCESS)
+    {
+        rv = exploration(&maze, &zhonx_position, &start_position, &end_coordinate);
+        if(rv != MAZE_SOLVER_E_SUCCESS)
+        {
+            return rv;
+        }
+    }
 
     findTheShortestPath(&maze, &zhonx_position, &start_position, &end_coordinate); //find the shortest path
 
