@@ -106,7 +106,7 @@ void tone(int note, int duration)
 
 void toneItMode(int note, int duration_ms)
 {
-    int uwPrescalerValue;
+    static int uwPrescalerValue;
     tone_duration = (duration_ms / (1000 / LOW_TIME_FREQ)) + 1;
 
     uwPrescalerValue = (uint32_t) ((SystemCoreClock / 2) / (note * 1000)) - 1;

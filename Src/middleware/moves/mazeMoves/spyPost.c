@@ -714,8 +714,8 @@ void spyPostTest()
     ssd1306ClearScreen(MAIN_AREA);
     telemetersStart();
 
-    Vmin = 100;
-    Vmax = 100;
+    Vmin = 500;
+    Vmax = 500;
 
     basicMove(0, OFFSET_DIST, Vmax, Vmax);
     while (hasMoveEnded() != TRUE);
