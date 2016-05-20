@@ -120,7 +120,7 @@
 #define OFFSET_DIST             (15.00)
 #define MAIN_DIST               ((CELL_LENGTH) - ((OFFSET_DIST) * (2.00)))
 
-#define DEADZONE_VIEWING_OFFSET (70.00) //(80.00)
+#define DEADZONE_VIEWING_OFFSET (90.00) //(80.00)
 #define DEADZONE_DIST           (CELL_LENGTH)   //Distance between the start of the cell and doubt area
 #define DEADZONE                (120.00)        //doubt area
 #define DEADZONE_CHECKWALL_DIST (5.00)
