@@ -256,77 +256,77 @@ static int setZhonxName(void)
     return 0;
 }
 
-void HardFault_Handler()
-{
-    telemetersStop();
-    motorsDriverSleep(ON);
-    motorsBrake();
-    tone(A4, 4000);
-    halt();
-}
-
-void MemManage_Handler()
-{
-    telemetersStop();
-    motorsDriverSleep(ON);
-    motorsBrake();
-    tone(C4, 4000);
-    halt();
-}
-
-void BusFault_Handler()
-{
-    telemetersStop();
-    motorsDriverSleep(ON);
-    motorsBrake();
-    tone(C4, 4000);
-    halt();
-}
-
-void UsageFault_Handler()
-{
-    telemetersStop();
-    motorsDriverSleep(ON);
-    motorsBrake();
-    tone(D4, 4000);
-    halt();
-}
-
-void SVC_Handler()
-{
-    telemetersStop();
-    motorsDriverSleep(ON);
-    motorsBrake();
-    tone(E4, 4000);
-    halt();
-}
-
-void DebugMon_Handler()
-{
-    telemetersStop();
-    motorsDriverSleep(ON);
-    motorsBrake();
-    tone(F4, 4000);
-    halt();
-}
-
-void PendSV_Handler()
-{
-    telemetersStop();
-    motorsDriverSleep(ON);
-    motorsBrake();
-    tone(G4, 4000);
-    halt();
-}
-
-void FLASH_IRQHandler()
-{
-    telemetersStop();
-    motorsDriverSleep(ON);
-    motorsBrake();
-    tone(A5, 4000);
-    halt();
-}
+//void HardFault_Handler()
+//{
+//    telemetersStop();
+//    motorsDriverSleep(ON);
+//    motorsBrake();
+//    tone(A4, 4000);
+//    halt();
+//}
+//
+//void MemManage_Handler()
+//{
+//    telemetersStop();
+//    motorsDriverSleep(ON);
+//    motorsBrake();
+//    tone(C4, 4000);
+//    halt();
+//}
+//
+//void BusFault_Handler()
+//{
+//    telemetersStop();
+//    motorsDriverSleep(ON);
+//    motorsBrake();
+//    tone(C4, 4000);
+//    halt();
+//}
+//
+//void UsageFault_Handler()
+//{
+//    telemetersStop();
+//    motorsDriverSleep(ON);
+//    motorsBrake();
+//    tone(D4, 4000);
+//    halt();
+//}
+//
+//void SVC_Handler()
+//{
+//    telemetersStop();
+//    motorsDriverSleep(ON);
+//    motorsBrake();
+//    tone(E4, 4000);
+//    halt();
+//}
+//
+//void DebugMon_Handler()
+//{
+//    telemetersStop();
+//    motorsDriverSleep(ON);
+//    motorsBrake();
+//    tone(F4, 4000);
+//    halt();
+//}
+//
+//void PendSV_Handler()
+//{
+//    telemetersStop();
+//    motorsDriverSleep(ON);
+//    motorsBrake();
+//    tone(G4, 4000);
+//    halt();
+//}
+//
+//void FLASH_IRQHandler()
+//{
+//    telemetersStop();
+//    motorsDriverSleep(ON);
+//    motorsBrake();
+//    tone(A5, 4000);
+//    halt();
+//}
 
 /* USER CODE END 4 */
 
