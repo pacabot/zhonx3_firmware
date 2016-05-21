@@ -68,6 +68,14 @@ void goOrientation(char *orientationZhonx, char directionToGo, int max_speed_rot
 void move_zhonx(char direction_to_go, positionRobot *positionZhonx, unsigned int numberOfCell, char end_mid_of_case,
                 char chain, int max_speed_rotation, int max_speed_translation, int min_speed_translation)
 {
+
+#ifdef PRINT_BLUETOOTH_BASIC_DEGUG
+    static unsigned int time = 0;
+    if ( time != 0)
+    {
+        bluetoothPrintf("Reflection time : %d\n", time);
+    }
+#endif
     int turn = (4 + direction_to_go - positionZhonx->orientation) % 4;
     positionZhonx->orientation = direction_to_go;
 #ifdef DEBUG_ROBOT_INTERFACE
@@ -168,7 +176,9 @@ void move_zhonx(char direction_to_go, positionRobot *positionZhonx, unsigned int
         mazeMoveCell(numberOfCell, max_speed_translation, min_speed_translation);
 //    }
     positionZhonx->midOfCell = end_mid_of_case;
-
+#ifdef PRINT_BLUETOOTH_BASIC_DEGUG
+    time = HAL_GetTick();
+#endif
 }
 
 void doUTurn(positionRobot *positionZhonx, int max_speed_rotation, int max_speed_translation, int min_speed_translation)

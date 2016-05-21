@@ -135,9 +135,6 @@ int maze_solver_new_maze(void)
         telemetersStart();//because flash write cause interrupts damages
         findTheShortestPath(&maze, &zhonx_position, &start_position, &end_coordinate); //find the shortest path
     }
-#ifdef PRINT_BLUETOOTH_MAZE
-    printLength(maze,8,8);
-#endif
     ssd1306ClearScreen(MAIN_AREA);
     ssd1306PrintfAtLine(0,0,&Font_5x8,"RETURN TO START CELL");
     ssd1306PrintfAtLine(0, 2, &Font_7x8, "TIME : %d.%ds", explorationTime / 1000, explorationTime % 1000);
@@ -146,6 +143,9 @@ int maze_solver_new_maze(void)
 
     doUTurn(&zhonx_position, SAFE_SPEED_ROTATION, SAFE_SPEED_TRANSLATION, SAFE_SPEED_TRANSLATION);//initial position
 
+#ifdef PRINT_BLUETOOTH_MAZE
+    printLength(maze,8,8);
+#endif
 #ifdef PRINT_BLUETOOTH_BASIC_DEGUG
     bluetoothPrintf("TIME : %d.%ds", explorationTime / 1000, explorationTime % 1000);
 #endif
