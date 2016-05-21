@@ -102,7 +102,6 @@ void expanderLedState(char led, char val)
 
 void expanderSetLeds(char leds)
 {
-    return;
     sendData((char)(0xFF & (~(leds << 4))));
 }
 

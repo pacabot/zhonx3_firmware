@@ -51,7 +51,7 @@ static int mazeMoveOffsetDist(getOffsetsStruct *offset, double max_speed);
 static int mazeMoveRotateInPlaceCW90(double speed_rotation);
 static int mazeMoveRotateInPlaceCCW90(double speed_rotation);
 static int mazeMoveRotateInPlaceCW180(double speed_rotation);
-static int mazeMoveFrontAlignment(float max_speed);
+static int mazeMoveFrontAlignment(double max_speed);
 
 /**************************************************************************************/
 /***************                    Basic Moves                    ********************/
@@ -215,7 +215,7 @@ int mazeMoveRotateInPlaceCW180(double speed_rotation)
 /**************************************************************************************/
 /***************                  Specials Moves                   ********************/
 /**************************************************************************************/
-int mazeMoveFrontAlignment(float max_speed)
+int mazeMoveFrontAlignment(double max_speed)
 {
     double relative_dist = 0.00;
     while (hasMoveEnded() != TRUE);
@@ -237,11 +237,13 @@ int mazeMoveFrontAlignment(float max_speed)
                 expanderSetLeds(0b010);
             }
         }
+        basicMove(1, 1, 100.00, 100.00);
+        while (hasMoveEnded() != TRUE);
         expanderSetLeds(0b000);
         if (getTelemeterDist(TELEMETER_FR) > getTelemeterDist(TELEMETER_FL))
         {
             toneItMode(A5, 300);
-            basicMove(-40.00, 0, max_speed, max_speed);
+            basicMove(-40.00, 0, 200, 200);
             while (((getTelemeterDist(TELEMETER_FR) - getTelemeterDist(TELEMETER_FL))) > 0.00)
             {
                 expanderSetLeds(0b100);
@@ -255,7 +257,7 @@ int mazeMoveFrontAlignment(float max_speed)
         else
         {
             toneItMode(A5, 300);
-            basicMove(40.00, 0, max_speed, max_speed);
+            basicMove(40.00, 0, 200, 200);
             while (((getTelemeterDist(TELEMETER_FL) - getTelemeterDist(TELEMETER_FR))) > 0.00)
             {
                 expanderSetLeds(0b001);
@@ -727,7 +729,7 @@ void movesTest2()
 #if 1
     //rotation test (used for verify move computes)
     positionControlSetPositionType(GYRO);
-    mainControlSetFollowType(NO_FOLLOW);
+    mainControlSetFollowType(WALL_FOLLOW);
     telemetersStart();
 
     double abs_encoders = encoderGetAbsDist(ENCODER_L) + encoderGetAbsDist(ENCODER_R);

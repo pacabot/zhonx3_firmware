@@ -60,7 +60,7 @@ int basicMoveStop(void)
 int basicMove(double angle, double radius_or_distance, double max_speed, double end_speed)
 {
     double distance;
-    mainControlStopPidLoop(); //stop contol loop
+//    mainControlStopPidLoop(); //stop contol loop
 
     encodersReset();
     gyroResetAngle();
