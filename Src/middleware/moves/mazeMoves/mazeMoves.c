@@ -219,18 +219,29 @@ int mazeMoveFrontAlignment(float max_speed)
 {
     double relative_dist = 0.00;
     while (hasMoveEnded() != TRUE);
-    basicMove(0, -40, 100, 100);
-    while (((getTelemeterDist(TELEMETER_FL) + getTelemeterDist(TELEMETER_FR)) / 2.00) < 24.00)//todo add in flash
-    {
-        expanderSetLeds(0b010);
-    }
     if (getWallPresence(FRONT_WALL) == TRUE)
     {
+        if (((getTelemeterDist(TELEMETER_FL) + getTelemeterDist(TELEMETER_FR)) / 2.00) < 21.00)
+        {
+            basicMove(0, -50.00, 100.00, 100.00);
+            while (((getTelemeterDist(TELEMETER_FL) + getTelemeterDist(TELEMETER_FR)) / 2.00) < 21.00)//todo add in flash
+            {
+                expanderSetLeds(0b010);
+            }
+        }
+        else
+        {
+            basicMove(0, 50.00, 100.00, 100.00);
+            while (((getTelemeterDist(TELEMETER_FL) + getTelemeterDist(TELEMETER_FR)) / 2.00) > 21.00)//todo add in flash
+            {
+                expanderSetLeds(0b010);
+            }
+        }
         expanderSetLeds(0b000);
         if (getTelemeterDist(TELEMETER_FR) > getTelemeterDist(TELEMETER_FL))
         {
             toneItMode(A5, 300);
-            basicMove(-40, 0, max_speed, max_speed);
+            basicMove(-40.00, 0, max_speed, max_speed);
             while (((getTelemeterDist(TELEMETER_FR) - getTelemeterDist(TELEMETER_FL))) > 0.00)
             {
                 expanderSetLeds(0b100);
@@ -244,7 +255,7 @@ int mazeMoveFrontAlignment(float max_speed)
         else
         {
             toneItMode(A5, 300);
-            basicMove(40, 0, max_speed, max_speed);
+            basicMove(40.00, 0, max_speed, max_speed);
             while (((getTelemeterDist(TELEMETER_FL) - getTelemeterDist(TELEMETER_FR))) > 0.00)
             {
                 expanderSetLeds(0b001);

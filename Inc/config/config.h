@@ -112,7 +112,7 @@
 #define HALF_WALL_THICKNESS		((WALL_THICKNESS) / (2.00))
 #define CELL_LENGTH				(179.00)
 #define HALF_CELL_LENGTH		((CELL_LENGTH) / (2.00))
-#define MAZE_SIZE				(17)
+#define MAZE_SIZE				(40)
 
 /**************************************************************************************/
 /***************                  Moves Constants                  ********************/
@@ -158,8 +158,8 @@
 #define MAX_CURVE_ACCEL         (1300.00)   //mm/s
 #define MAX_CURVE_SPEED         (800.00)   //mm/s
 
-#define MAX_ROTATE_ACCEL        (2000.00)   //°/s/s perhaps wrong scale //todo verify correct scale
-#define MAX_TURN_ACCEL          (2000.00)   //°/s/s perhaps wrong scale //todo verify correct scale
+#define MAX_ROTATE_ACCEL        (500.00)   //°/s/s perhaps wrong scale //todo verify correct scale
+#define MAX_TURN_ACCEL          (4000.00)   //°/s/s perhaps wrong scale //todo verify correct scale
 
 /**************************************************************************************/
 /***************                 Motors Constants                  ********************/
