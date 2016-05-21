@@ -84,7 +84,7 @@ int mazeMoveHalfCell_OUT(double max_speed, double end_speed)
 {
     while (hasMoveEnded() != TRUE);
     wallFollowSetInitialPosition(HALF_CELL_LENGTH);
-    basicMove(0, (HALF_CELL_LENGTH - OFFSET_DIST) - 20.00, max_speed, end_speed); //todo remove groze mede
+    basicMove(0, (HALF_CELL_LENGTH - OFFSET_DIST), max_speed, end_speed); //todo remove groze mede
 
     return MAZE_MOVES_E_SUCCESS;
 }
@@ -117,21 +117,21 @@ int mazeMoveOffsetDist(getOffsetsStruct *offset, double max_speed)
 {
     double offset_error = 0;
 
-    if (offset->spyPost.left_x != 0)
-    {
-        offset_error = (double)offset->spyPost.left_x;
-#ifdef DEBUG_MAZE_MOVES
-        bluetoothWaitReady();
-        bluetoothPrintf(", L_OFFSET = %d, TYPE = %d", (int32_t)offset->spyPost.left_x, offset->spyPost.left_spyPostType);
-#endif
-        toneItMode(C4, 300);
-    }
-    else if (offset->spyPost.right_x != 0)
+    if (offset->spyPost.right_x != 0)
     {
         offset_error = (double)offset->spyPost.right_x;
 #ifdef DEBUG_MAZE_MOVES
         bluetoothWaitReady();
         bluetoothPrintf(", R_OFFSET = %d, TYPE = %d", (int32_t)offset->spyPost.right_x, offset->spyPost.right_spyPostType);
+#endif
+        toneItMode(C4, 300);
+    }
+    else if (offset->spyPost.left_x != 0)
+    {
+        offset_error = (double)offset->spyPost.left_x;
+#ifdef DEBUG_MAZE_MOVES
+        bluetoothWaitReady();
+        bluetoothPrintf(", L_OFFSET = %d, TYPE = %d", (int32_t)offset->spyPost.left_x, offset->spyPost.left_spyPostType);
 #endif
         toneItMode(C4, 300);
     }
@@ -219,6 +219,11 @@ int mazeMoveFrontAlignment(float max_speed)
 {
     double relative_dist = 0.00;
     while (hasMoveEnded() != TRUE);
+    basicMove(0, -40, 100, 100);
+    while (((getTelemeterDist(TELEMETER_FL) + getTelemeterDist(TELEMETER_FR)) / 2.00) < 24.00)//todo add in flash
+    {
+        expanderSetLeds(0b010);
+    }
     if (getWallPresence(FRONT_WALL) == TRUE)
     {
         expanderSetLeds(0b000);
@@ -229,11 +234,11 @@ int mazeMoveFrontAlignment(float max_speed)
             while (((getTelemeterDist(TELEMETER_FR) - getTelemeterDist(TELEMETER_FL))) > 0.00)
             {
                 expanderSetLeds(0b100);
-//                if (hasMoveEnded() == TRUE)
-//                {
-//                    basicMove(40, 0, max_speed, max_speed);
-//                    return MAZE_MOVES_E_SUCCESS;
-//                }
+                //                if (hasMoveEnded() == TRUE)
+                //                {
+                //                    basicMove(40, 0, max_speed, max_speed);
+                //                    return MAZE_MOVES_E_SUCCESS;
+                //                }
             }
         }
         else
@@ -243,17 +248,15 @@ int mazeMoveFrontAlignment(float max_speed)
             while (((getTelemeterDist(TELEMETER_FL) - getTelemeterDist(TELEMETER_FR))) > 0.00)
             {
                 expanderSetLeds(0b001);
-//                if (hasMoveEnded() == TRUE)
-//                {
-//                    basicMove(-40, 0, max_speed, max_speed);
-//                    return MAZE_MOVES_E_SUCCESS;
-//                }
+                //                if (hasMoveEnded() == TRUE)
+                //                {
+                //                    basicMove(-40, 0, max_speed, max_speed);
+                //                    return MAZE_MOVES_E_SUCCESS;
+                //                }
             }
         }
         expanderSetLeds(0b000);
-//        basicMove(0, 0, 0, 0);
-        relative_dist = ((getTelemeterDist(TELEMETER_FL) + getTelemeterDist(TELEMETER_FR)) / 2.00) - 21.15; //todo add in flash
-        basicMove(0, relative_dist, 100, 100);
+        basicMove(0, 0, 0, 0);
     }
     return MAZE_MOVES_E_SUCCESS;
 }
@@ -294,11 +297,11 @@ int mazeMoveCell(unsigned int nb_cell, double max_speed, double out_speed)
         vmax_LastMainDist = sqrt(2.00 * MAX_ACCEL * MAIN_DIST + pow(out_speed, 2));
         if (max_speed > vmax_LastMainDist)
         {
-        while (hasMoveEnded() != TRUE);
-        wallFollowSetInitialPosition(OFFSET_DIST); //absolute position into a cell
-        basicMove(0, ((double)(nb_cell - 1) * MAIN_DIST) + ((double)(nb_cell - 1) * 2.00 * OFFSET_DIST), max_speed, vmax_LastMainDist);
+            while (hasMoveEnded() != TRUE);
+            wallFollowSetInitialPosition(OFFSET_DIST); //absolute position into a cell
+            basicMove(0, ((double)(nb_cell - 1) * MAIN_DIST) + ((double)(nb_cell - 1) * 2.00 * OFFSET_DIST), max_speed, vmax_LastMainDist);
 
-        mazeMoveMainDist(&offset, vmax_LastMainDist, out_speed);
+            mazeMoveMainDist(&offset, vmax_LastMainDist, out_speed);
         }
         else
         {
@@ -542,7 +545,7 @@ void movesTest1()
 
     HAL_Delay(2000);
 
-#if 1
+#if 0
     Vmin = 0;
     Vmax = 400;
     Vrotate = 100;
@@ -554,12 +557,12 @@ void movesTest1()
     basicMove(0, (double)(500), Vmax, Vmin);
 
 
-//    mazeMoveStartCell(Vmax, Vmax);
-//    //mazeMoveCell(2, Vmax, Vmin);
-//    mazeMoveCell(1, Vmax, Vmin);
-//    mazeMoveCell(1, Vmax, Vmin);
-//    mazeMoveRotateCW90(Vmin, Vmin);
-//    mazeMoveCell(1, Vmax, 0);
+    //    mazeMoveStartCell(Vmax, Vmax);
+    //    //mazeMoveCell(2, Vmax, Vmin);
+    //    mazeMoveCell(1, Vmax, Vmin);
+    //    mazeMoveCell(1, Vmax, Vmin);
+    //    mazeMoveRotateCW90(Vmin, Vmin);
+    //    mazeMoveCell(1, Vmax, 0);
 
     while( hasMoveEnded() != TRUE);
     ssd1306ClearScreen(MAIN_AREA);
@@ -586,25 +589,40 @@ void movesTest1()
     mazeMoveUTurn(Vrotate, Vmax, Vmax);
 #endif
 
-#if 0
-    Vout = 600;
-    Vmax = 600;
-    Vrotate = 600;
+#if 1
+    Vmax = 200;
+    Vrotate = 200;
     telemetersStart();
 
     positionControlSetPositionType(GYRO);
     mainControlSetFollowType(WALL_FOLLOW);
     //maze
     mazeMoveStartCell(Vmax, Vmax);
-    mazeMoveCell(5, Vmax, Vout);
-    mazeMoveUTurn(Vrotate, Vmax, Vout);
-    mazeMoveCell(1, Vmax, Vout);
-    mazeMoveRotateCCW90(Vrotate, Vout);
-    mazeMoveCell(1, Vmax, Vout);
-    mazeMoveRotateCCW90(Vrotate, Vout);
-    mazeMoveUTurn(Vrotate, Vmax, Vout);
-    mazeMoveRotateCCW90(Vrotate, Vout);
-    mazeMoveUTurn(Vrotate, Vmax, Vout);
+    mazeMoveCell(1, Vmax, Vmax);
+    mazeMoveRotateCW90(Vrotate, Vmax);
+    mazeMoveCell(1, Vmax, Vmax);
+    mazeMoveRotateCW90(Vrotate, Vmax);
+    mazeMoveUTurn(Vrotate, Vmax, Vmax);
+    mazeMoveCell(1, Vmax, Vmax);
+    mazeMoveRotateCCW90(Vrotate, Vmax);
+    mazeMoveRotateCW90(Vrotate, Vmax);
+    mazeMoveRotateCW90(Vrotate, Vmax);
+    mazeMoveRotateCCW90(Vrotate, Vmax);
+    mazeMoveRotateCCW90(Vrotate, Vmax);
+    mazeMoveCell(1, Vmax, Vmax);
+    mazeMoveRotateCCW90(Vrotate, Vmax);
+    mazeMoveUTurn(Vrotate, Vmax, Vmax);
+    mazeMoveCell(1, Vmax, Vmax);
+    mazeMoveRotateCW90(Vrotate, Vmax);
+    mazeMoveCell(1, Vmax, Vmax);
+    mazeMoveRotateCCW90(Vrotate, Vmax);
+    mazeMoveRotateCCW90(Vrotate, Vmax);
+    mazeMoveCell(1, Vmax, Vmax);
+    mazeMoveRotateCW90(Vrotate, Vmax);
+    mazeMoveRotateCW90(Vrotate, Vmax);
+    mazeMoveCell(1, Vmax, Vmax);
+
+
     //    mazeMoveStartCell(Vmax, Vmax);
     //    mazeMoveCell(1, Vmax, Vout);
     //    mazeMoveRotateCCW90(Vrotate, Vout);
@@ -711,10 +729,10 @@ void movesTest2()
     //    mazeMoveRotateInPlaceCW90(200);
     //    mazeMoveRotateInPlaceCW90(200);
 
-//    mazeMoveRotateInPlaceCW180(200);
-//    HAL_Delay(2000);
-//    mazeMoveRotateInPlaceCW180(200);
-//    HAL_Delay(2000);
+    //    mazeMoveRotateInPlaceCW180(200);
+    //    HAL_Delay(2000);
+    //    mazeMoveRotateInPlaceCW180(200);
+    //    HAL_Delay(2000);
 
     mazeMoveUTurn(200, 500, 500);
     HAL_Delay(2000);

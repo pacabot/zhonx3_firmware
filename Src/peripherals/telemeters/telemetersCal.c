@@ -71,13 +71,12 @@ int wallSensorsCalibrationFront(void)
     telemetersStart();
 
     // take the measures
-    basicMoveStraight(-MEASURED_DISTANCE, 50, 50, 20);
+    basicMoveStraight(-MEASURED_DISTANCE, 15, 15, 200);
     ssd1306Refresh();
     for (i = 0; i < TELEMETER_PROFILE_ARRAY_LENGTH; i++)
     {
         while ((((int) (encoderGetDist(ENCODER_L) + encoderGetDist(ENCODER_R))
-                >= -(NUMBER_OF_MILLIMETER_BY_LOOP * 2 * i))) && (hasMoveEnded() != TRUE))
-            ;
+                >= -(NUMBER_OF_MILLIMETER_BY_LOOP * 2 * i))) && (hasMoveEnded() != TRUE));
 
         front_telemeters.left[i] = getTelemeterAvrg(TELEMETER_FL);
         front_telemeters.right[i] = getTelemeterAvrg(TELEMETER_FR);
@@ -167,12 +166,11 @@ int wallSensorsCalibrationDiag(void)
     telemetersStart();
 
     // take the measures
-    basicMoveStraight(-number_of_millimeter_per_loop * TELEMETER_PROFILE_ARRAY_LENGTH, 50, 50, 20);
+    basicMoveStraight(-number_of_millimeter_per_loop * TELEMETER_PROFILE_ARRAY_LENGTH, 15, 15, 200);
     for (i = 0; i < TELEMETER_PROFILE_ARRAY_LENGTH; i++)
     {
         while ((((int) (encoderGetDist(ENCODER_L) + encoderGetDist(ENCODER_R))
-                >= -(number_of_millimeter_per_loop * 2.00 * (double) i))) && (hasMoveEnded() != TRUE))
-            ;
+                >= -(number_of_millimeter_per_loop * 2.00 * (double) i))) && (hasMoveEnded() != TRUE));
 
         diag_telemeters.left[i] = getTelemeterAvrg(TELEMETER_DL);
         diag_telemeters.right[i] = getTelemeterAvrg(TELEMETER_DR);
@@ -185,8 +183,7 @@ int wallSensorsCalibrationDiag(void)
         ssd1306ProgressBar(10, 10, (i * 100) / TELEMETER_PROFILE_ARRAY_LENGTH);
         ssd1306Refresh();
     }
-    while (hasMoveEnded() != TRUE)
-        ;
+    while (hasMoveEnded() != TRUE);
     telemetersStop();
     motorsDriverSleep(ON);
 

@@ -260,7 +260,7 @@ double getTelemeterSpeed(enum telemeterName telemeter_name)
 void telemetersAdc2Start(void)
 {
     sConfig.Rank = 1;
-    sConfig.SamplingTime = ADC_SAMPLETIME_15CYCLES;
+    sConfig.SamplingTime = ADC_SAMPLETIME_3CYCLES;
     HAL_ADC_ConfigChannel(&hadc2, &sConfig);
     HAL_ADC_Start_IT(&hadc2);
     telemeters.it_cnt++;
@@ -269,7 +269,7 @@ void telemetersAdc2Start(void)
 void telemetersAdc3Start(void)
 {
     sConfig.Rank = 1;
-    sConfig.SamplingTime = ADC_SAMPLETIME_15CYCLES;
+    sConfig.SamplingTime = ADC_SAMPLETIME_3CYCLES;
     HAL_ADC_ConfigChannel(&hadc3, &sConfig);
     HAL_ADC_Start_IT(&hadc3);
 }
