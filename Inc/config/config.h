@@ -147,7 +147,7 @@
 #define SAFE_SPEED_ROTATION         (400)
 #define SAFE_SPEED_TRANSLATION      (400)
 
-//#define RETURN_START_CELL
+#define RETURN_START_CELL
 
 /**************************************************************************************/
 /***************                 Physical Constants                ********************/

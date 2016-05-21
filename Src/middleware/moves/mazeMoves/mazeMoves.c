@@ -610,30 +610,38 @@ void movesTest1()
     positionControlSetPositionType(GYRO);
     mainControlSetFollowType(WALL_FOLLOW);
     //maze
-    mazeMoveStartCell(Vmax, Vmax);
-    mazeMoveCell(1, Vmax, Vmax);
-    mazeMoveRotateCW90(Vrotate, Vmax);
-    mazeMoveCell(1, Vmax, Vmax);
-    mazeMoveRotateCW90(Vrotate, Vmax);
-    mazeMoveUTurn(Vrotate, Vmax, Vmax);
-    mazeMoveCell(1, Vmax, Vmax);
-    mazeMoveRotateCCW90(Vrotate, Vmax);
-    mazeMoveRotateCW90(Vrotate, Vmax);
-    mazeMoveRotateCW90(Vrotate, Vmax);
-    mazeMoveRotateCCW90(Vrotate, Vmax);
-    mazeMoveRotateCCW90(Vrotate, Vmax);
-    mazeMoveCell(1, Vmax, Vmax);
-    mazeMoveRotateCCW90(Vrotate, Vmax);
-    mazeMoveUTurn(Vrotate, Vmax, Vmax);
-    mazeMoveCell(1, Vmax, Vmax);
-    mazeMoveRotateCW90(Vrotate, Vmax);
-    mazeMoveCell(1, Vmax, Vmax);
-    mazeMoveRotateCCW90(Vrotate, Vmax);
-    mazeMoveRotateCCW90(Vrotate, Vmax);
-    mazeMoveCell(1, Vmax, Vmax);
-    mazeMoveRotateCW90(Vrotate, Vmax);
-    mazeMoveRotateCW90(Vrotate, Vmax);
-    mazeMoveCell(1, Vmax, Vmax);
+    while(1)
+    {
+        mazeMoveCell(1, Vmax, Vmax);
+        mazeMoveUTurn(Vrotate, Vmax, Vmax);
+        mazeMoveCell(1, Vmax, Vmax);
+        mazeMoveUTurn(Vrotate, Vmax, Vmax);
+    }
+
+    //    mazeMoveStartCell(Vmax, Vmax);
+    //    mazeMoveCell(1, Vmax, Vmax);
+    //    mazeMoveRotateCW90(Vrotate, Vmax);
+    //    mazeMoveCell(1, Vmax, Vmax);
+    //    mazeMoveRotateCW90(Vrotate, Vmax);
+    //    mazeMoveUTurn(Vrotate, Vmax, Vmax);
+    //    mazeMoveCell(1, Vmax, Vmax);
+    //    mazeMoveRotateCCW90(Vrotate, Vmax);
+    //    mazeMoveRotateCW90(Vrotate, Vmax);
+    //    mazeMoveRotateCW90(Vrotate, Vmax);
+    //    mazeMoveRotateCCW90(Vrotate, Vmax);
+    //    mazeMoveRotateCCW90(Vrotate, Vmax);
+    //    mazeMoveCell(1, Vmax, Vmax);
+    //    mazeMoveRotateCCW90(Vrotate, Vmax);
+    //    mazeMoveUTurn(Vrotate, Vmax, Vmax);
+    //    mazeMoveCell(1, Vmax, Vmax);
+    //    mazeMoveRotateCW90(Vrotate, Vmax);
+    //    mazeMoveCell(1, Vmax, Vmax);
+    //    mazeMoveRotateCCW90(Vrotate, Vmax);
+    //    mazeMoveRotateCCW90(Vrotate, Vmax);
+    //    mazeMoveCell(1, Vmax, Vmax);
+    //    mazeMoveRotateCW90(Vrotate, Vmax);
+    //    mazeMoveRotateCW90(Vrotate, Vmax);
+    //    mazeMoveCell(1, Vmax, Vmax);
 
 
     //    mazeMoveStartCell(Vmax, Vmax);

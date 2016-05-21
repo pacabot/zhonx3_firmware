@@ -256,15 +256,15 @@ static int setZhonxName(void)
     return 0;
 }
 
-//void HardFault_Handler()
-//{
-//    telemetersStop();
-//    motorsDriverSleep(ON);
-//    motorsBrake();
-//    tone(A4, 4000);
-//    halt();
-//}
-//
+void HardFault_Handler(void)
+{
+    telemetersStop();
+    motorsDriverSleep(ON);
+    motorsBrake();
+    tone(A4, 4000);
+    halt();
+}
+
 //void MemManage_Handler()
 //{
 //    telemetersStop();

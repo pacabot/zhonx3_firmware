@@ -270,13 +270,30 @@ double speedProfileCompute(double distance, double max_speed, double end_speed, 
 
     if (lround(distance) == 0)
     {
-        speed_params.initial_speed = 0;
         speed_control.end_control = TRUE;
+//        speed_params.initial_speed = 0;
+//        speed_control.end_control = TRUE;
+//        speed_params.nb_loop_accel = 0;
+//        speed_params.nb_loop_decel = 0;
+//        speed_params.nb_loop_maint = 0;
+//        speed_params.end_speed = 0;
+//        speed_params.distance_consign = 0;
+
+        speed_params.distance_consign = 0;
+        speed_params.max_speed = 0;
+        speed_params.initial_speed = 0;
+        speed_params.end_speed = 0;
+        speed_params.accel = 0;
+        speed_params.decel = 0;
+        speed_params.accel_dist = 0;
+        speed_params.decel_dist = 0;
+        speed_params.accel_dist_per_loop = 0;
+        speed_params.decel_dist_per_loop = 0;
         speed_params.nb_loop_accel = 0;
         speed_params.nb_loop_decel = 0;
         speed_params.nb_loop_maint = 0;
-        speed_params.end_speed = 0;
-        speed_params.distance_consign = 0;
+        speed_params.maintain_dist = 0;
+        speed_params.sign = 0;
         return 0.0;
     }
 
