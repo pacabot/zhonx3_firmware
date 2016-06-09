@@ -96,8 +96,16 @@ void move_zhonx(char direction_to_go, positionRobot *positionZhonx, unsigned int
         bluetoothWaitReady();
         bluetoothPrintf("start cell ");
 #endif
-        mazeMoveStartCell((double)max_speed_translation, (double)min_speed_translation);
         numberOfCell--;
+        if (numberOfCell <= 0)
+        {
+            mazeMoveStartCell((double)max_speed_translation, (double)min_speed_translation);
+        }
+        else
+        {
+            mazeMoveStartCell((double)max_speed_translation, (double)max_speed_translation);
+        }
+
     }
     else // so endMidOfCase=TRUE and positionZhonx->midOfCase=FALSE
     {
