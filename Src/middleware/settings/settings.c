@@ -20,7 +20,7 @@ int settingsInit(void)
 {
 	zhonxSettings.calibration_enabled=FALSE;
 	zhonxSettings.nime_competition=FALSE;
-	zhonxSettings.return_to_start_cell = FALSE;
+	zhonxSettings.return_to_start_cell = TRUE;
 	zhonxSettings.maze_end_coordinate.x=7;
 	zhonxSettings.maze_end_coordinate.y=7;
 	zhonxSettings.sleep_delay_s=300; // the robot will go sleep in zhonxSettings.sleep_delay_s S

@@ -21,7 +21,7 @@
 
 //definition for numberation function
 /* --the value of CANT_GO can be understand like infinity weight-- */
-#define CANT_GO 2147483647 //max value of signed int // TODO : rename it in  INFINITY_WEIGHT
+#define INFINITY_WEIGHT 0xFFFFFFFF
 
 //orientation define
 #define NORTH 0
@@ -44,7 +44,7 @@
 
 #define PRINT_MAZE
 //#define PRINT_MAZE_DURING_RUN
-#define PRINT_BLUETOOTH_MAZE
+//#define PRINT_BLUETOOTH_MAZE
 //#define PRINT_BLUETOOTH_MAZE_DURING_RUN
 //#define PRINT_BLUETOOTH_BASIC_DEGUG
 //#define PRINT_BLUETOOTH_ADVANCED_DEBUG
@@ -73,9 +73,9 @@ typedef struct
 
 typedef struct
 {
-    coordinate coordinate_robot;
     char orientation;
     char midOfCell;
+    coordinate coordinate_robot;
 }positionRobot;
 
 typedef struct

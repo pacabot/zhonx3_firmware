@@ -39,7 +39,7 @@ int getWallPresence(wallSelectorEnum wallSelector)
             else
                 return FALSE;
         case FRONT_WALL:
-            if ((getTelemeterDist(TELEMETER_FL) <= DISTANCE_WALL_FRONT) || (getTelemeterDist(TELEMETER_FR) <= DISTANCE_WALL_FRONT))
+            if (((getTelemeterDist(TELEMETER_FL) + getTelemeterDist(TELEMETER_FR)) / 2.00) <= DISTANCE_WALL_FRONT)
                 return TRUE;
             else
                 return FALSE;
