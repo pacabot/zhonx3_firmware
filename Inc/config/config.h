@@ -18,7 +18,7 @@
 #define LOW_TIME_FREQ               (100.00)                //low inner loop
 #define CONTROL_TIME_FREQ           (1000.00)               //use for control inner loop
 #define LINE_FOLLOWER_TIME_FREQ     (1000.00)               //use for line follower inner loop
-#define TELEMETERS_TIME_FREQ        ((1600.00) * (10.00))   //each telemeter use 1/10 of TELEMETERS_TIME_FREQ
+#define TELEMETERS_TIME_FREQ        ((2000.00) * (10.00))   //each telemeter use 1/10 of TELEMETERS_TIME_FREQ
 #define GYRO_TIME_FREQ			    (2000.00)               //for adc injected freq
 #define LINESENSORS_TIME_FREQ	    (4000.00)               //line sensor measure frequency
 #define MULTIMMETER_TIME_FREQ       (0.10)                  //multimeter inner loop
@@ -38,7 +38,7 @@
 #else
 #define GYRO_OUTPUT_RATIO	    (1) 	//output resistor ratio (low-pass filter)
 #endif
-#define GYRO_OUT_SENSITIVITY	((GYRO_OUTPUT_RATIO) * ((GYRO_VRATIO) / (5000.00)) * (GYRO_SENSITIVITY)) 	//1,32mV/deg/sec (3.3v Req 60K)
+#define GYRO_OUT_SENSITIVITY	((GYRO_OUTPUT_RATIO) * ((GYRO_VRATIO) / (5000.00)) * (GYRO_SENSITIVITY)) 	//1,32mV/deg/sec (3.3v Req 60K) saturation : 1363°/s
 #define GYRO_A_COEFF		    ((GYRO_VRATIO) / ((4095.00) * (GYRO_OUT_SENSITIVITY) * (GYRO_TIME_FREQ))) //integration multiplier coeff
 
 #define GYRO_T_SENSITIVITY 		(9.00)   //The temperature coefficient is ~9 mV/�C at 25�C
@@ -68,8 +68,8 @@
 /**************************************************************************************/
 /***************                     Telemeters                    ********************/
 /**************************************************************************************/
-#define DISTANCE_WALL_DIAG          (180.00)
-#define DISTANCE_WALL_FRONT         (220.00)
+#define DISTANCE_WALL_DIAG          (170.00)
+#define DISTANCE_WALL_FRONT         (195.00)
 
 /**************************************************************************************/
 /***************                       Battery                     ********************/
@@ -84,7 +84,7 @@
 /**************************************************************************************/
 /***************                 Mechanical Constants              ********************/
 /**************************************************************************************/
-#define WHEEL_DIAMETER			(24.40) 	//Wheel diameter in millimeters
+#define WHEEL_DIAMETER			(24.30) 	//Wheel diameter in millimeters
 #define WHEELS_DISTANCE			(63.20)	//Distance between right and left wheels
 #define WHEELS_SPACING			(25.96)	//Distance between front and rear wheels
 #define	GEAR_RATIO				(50.00 / 15.00)	//wheel gear teeth per motor gear teeth
@@ -125,27 +125,27 @@
 #define DEADZONE                    (100.00)         //doubt area
 #define DEADZONE_CHECKWALL_DIST     (5.00)
 
-#define WALL_FOLLOW_DIAG_DIST       (85.00)     //85 DARK, 83 MEDDLE
+#define WALL_FOLLOW_DIAG_DIST       (83.50)     //85 DARK, 83 MEDDLE
 #define WALL_FOLLOW_MAX_DIAG_DIST   (120.00)
 
 /**************************************************************************************/
 /***************                     Maze speed                    ********************/
 /**************************************************************************************/
 
-#define RUN1_SPEED_ROTATION         (600)
-#define RUN1_MIN_SPEED_TRANSLATION  (600)
-#define RUN1_MAX_SPEED_TRANSLATION  (2000)
+#define RUN1_SPEED_ROTATION         (500)
+#define RUN1_MIN_SPEED_TRANSLATION  (500)
+#define RUN1_MAX_SPEED_TRANSLATION  (1500)
 
-#define RUN2_SPEED_ROTATION         (700)
-#define RUN2_MIN_SPEED_TRANSLATION  (700)
-#define RUN2_MAX_SPEED_TRANSLATION  (4000)
+#define RUN2_SPEED_ROTATION         (600)
+#define RUN2_MIN_SPEED_TRANSLATION  (600)
+#define RUN2_MAX_SPEED_TRANSLATION  (3000)
 
-#define SCAN_SPEED_ROTATION         (500)
-#define SCAN_MIN_SPEED_TRANSLATION  (500)
-#define SCAN_MAX_SPEED_TRANSLATION  (2000)
+#define SCAN_SPEED_ROTATION         (400)
+#define SCAN_MIN_SPEED_TRANSLATION  (400)
+#define SCAN_MAX_SPEED_TRANSLATION  (800)
 
-#define SAFE_SPEED_ROTATION         (500)
-#define SAFE_SPEED_TRANSLATION      (500)
+#define SAFE_SPEED_ROTATION         (400)
+#define SAFE_SPEED_TRANSLATION      (400)
 
 #define RETURN_START_CELL
 
@@ -158,8 +158,8 @@
 #define MAX_CURVE_ACCEL         (1300.00)   //mm/s
 #define MAX_CURVE_SPEED         (800.00)   //mm/s
 
-#define MAX_ROTATE_ACCEL        (2000.00)   //°/s/s perhaps wrong scale //todo verify correct scale
-#define MAX_TURN_ACCEL          (2000.00)   //°/s/s perhaps wrong scale //todo verify correct scale
+#define MAX_ROTATE_ACCEL        (500.00)   //°/s/s perhaps wrong scale //todo verify correct scale
+#define MAX_TURN_ACCEL          (4000.00)   //°/s/s perhaps wrong scale //todo verify correct scale
 
 /**************************************************************************************/
 /***************                 Motors Constants                  ********************/

@@ -94,7 +94,9 @@ int run(labyrinthe *maze, positionRobot *positionZhonx, coordinate start_coordin
     }
     runTime = HAL_GetTick() - runTime;
 
+    HAL_Delay(1000);
     basicMoveStop();
+
     motorsDriverSleep(ON); //because flash write cause interrupts damages
     telemetersStop();//because flash write cause interrupts damages
 
@@ -111,7 +113,7 @@ int run(labyrinthe *maze, positionRobot *positionZhonx, coordinate start_coordin
     tone(B5, 400);
     HAL_Delay(2000);
 
-    if(zhonxSettings.return_to_start_cell == true)
+    if(zhonxSettings.return_to_start_cell == TRUE)
     {
         telemetersStart();
         goToPosition(maze, positionZhonx, start_coordinate);

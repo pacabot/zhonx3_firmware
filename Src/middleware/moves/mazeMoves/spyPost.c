@@ -56,18 +56,18 @@
 // Index of right profile in the array
 #define SPYPOST_RIGHT_PROFILE_IDX   1
 
-#define SPYPOST_TELEMETER_STEPS_MEASURE_MM     3
+#define SPYPOST_TELEMETER_STEPS_MEASURE_MM     4
 #define SPYPOST_NBITS_SAMPLING_RESOLUTION 	   64
 #define SPYPOST_MIN_DIAG_SENSOR_DISTANCE 	   40
 #define SPYPOST_MAX_DIAG_SENSOR_DISTANCE 	   ((SPYPOST_TELEMETER_STEPS_MEASURE_MM * SPYPOST_NBITS_SAMPLING_RESOLUTION) + SPYPOST_MIN_DIAG_SENSOR_DISTANCE)
 
 #define SPYPOST_REFERENCE_SAMPLE_HEIGHT 	   16	//16 bit height
-#define SPYPOST_REFERENCE_SAMPLE_WIDTH 		   30	//array length
+#define SPYPOST_REFERENCE_SAMPLE_WIDTH 		   40	//array length
 
-#define SPYPOST_MOVE_SPEED 					   200
+#define SPYPOST_MOVE_SPEED 					   100
 
 #define MIN_STAT                               70   //minimum percentage for validate
-#define DIST_FOR_TIME_CALCULATION              10   //stop record before end to have time to calculate
+#define DIST_FOR_TIME_CALCULATION              20   //stop record before end to have time to calculate
 
 #if (SPYPOST_MAX_DIAG_SENSOR_DISTANCE - SPYPOST_MIN_DIAG_SENSOR_DISTANCE) % (SPYPOST_NBITS_SAMPLING_RESOLUTION) != 0
 #error  MAX DIAG - MIN_DIAG must be a multiple of SAMPLING_RESOLUTION
@@ -132,6 +132,11 @@ uint32_t spyPostGetOffset(spyPostGetOffsetsStruct *offset)
 
     char left_wall_presence = FALSE;
     char right_wall_presence = FALSE;
+
+    if (mainControlGetFollowType() != WALL_FOLLOW)
+    {
+        return SPYPOST_DRIVER_E_SUCCESS;
+    }
 
     if (getWallPresence(LEFT_WALL) == TRUE)
     {
@@ -691,7 +696,7 @@ void spyPostTest()
     uint32_t Vmin, Vmax, Vrotate;
 
     positionControlSetPositionType(GYRO);
-    mainControlSetFollowType(NO_FOLLOW);
+    mainControlSetFollowType(WALL_FOLLOW);
 
     while (expanderJoyFiltered() != JOY_RIGHT)
     {
@@ -714,8 +719,8 @@ void spyPostTest()
     ssd1306ClearScreen(MAIN_AREA);
     telemetersStart();
 
-    Vmin = 500;
-    Vmax = 500;
+    Vmin = 200;
+    Vmax = 200;
 
     basicMove(0, OFFSET_DIST, Vmax, Vmax);
     while (hasMoveEnded() != TRUE);
