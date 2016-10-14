@@ -38,8 +38,7 @@ int run(labyrinthe *maze, positionRobot *positionZhonx, coordinate start_coordin
 {
     int rv = RUN_E_SUCCESS;
     unsigned int runTime;
-    coordinate way[MAZE_SIZE * MAZE_SIZE];
-
+    coordinate way[(MAZE_SIZE * MAZE_SIZE)];
     int max_speed_rotation, max_speed_translation, min_speed_translation;
 
     if (runType == 1)
@@ -64,9 +63,6 @@ int run(labyrinthe *maze, positionRobot *positionZhonx, coordinate start_coordin
     positionControlSetPositionType(GYRO);
 
     clearMazelength(maze);
-    computeCellWeight(maze, start_coordinate, FALSE, FALSE);
-    findArrival(*maze, &end_coordinate);
-    clearMazelength(maze);
     computeCellWeight(maze, end_coordinate, FALSE, FALSE);
     rv = moveVirtualZhonx(*maze, *positionZhonx, way, end_coordinate);
     if (rv != MAZE_SOLVER_E_SUCCESS)
@@ -74,11 +70,11 @@ int run(labyrinthe *maze, positionRobot *positionZhonx, coordinate start_coordin
         ssd1306PrintfAtLine(64, 2, &Font_5x8,"the shorter way");
         ssd1306PrintfAtLine(64, 3, &Font_5x8,"is not find");
         HAL_Delay(1000);
-        return MAZE_SOLVER_E_ERROR;
         #ifdef PRINT_BLUETOOTH_BASIC_DEGUG // todo debug
         bluetoothWaitReady();
         bluetoothPrintf("no solution");
         #endif
+        return MAZE_SOLVER_E_ERROR;
     }
 
     telemetersStart();
@@ -90,7 +86,12 @@ int run(labyrinthe *maze, positionRobot *positionZhonx, coordinate start_coordin
     ssd1306Refresh();
 
     runTime = HAL_GetTick();
-    moveRealZhonxArc((labyrinthe *)&maze, positionZhonx, way, max_speed_rotation, max_speed_translation, min_speed_translation);
+    rv = moveRealZhonxArc(maze, positionZhonx, way, max_speed_rotation, max_speed_translation, min_speed_translation);
+    if (rv != MAZE_SOLVER_E_SUCCESS)
+    {
+        ssd1306PrintfAtLine(60,3, &Font_5x8, "error way");
+        ssd1306Refresh();
+    }
     runTime = HAL_GetTick() - runTime;
 
     HAL_Delay(1000);
@@ -118,6 +119,7 @@ int run(labyrinthe *maze, positionRobot *positionZhonx, coordinate start_coordin
         goToPosition(maze, positionZhonx, start_coordinate);
         doUTurn(positionZhonx, SAFE_SPEED_ROTATION, SAFE_SPEED_TRANSLATION, SAFE_SPEED_TRANSLATION);
     }
+    telemetersStop();
 
 #ifdef PRINT_BLUETOOTH_BASIC_DEGUG
     bluetoothWaitReady();
@@ -125,7 +127,6 @@ int run(labyrinthe *maze, positionRobot *positionZhonx, coordinate start_coordin
 #endif
     ssd1306PrintfAtLine(30, 4, &Font_5x8, "END RUN");
     ssd1306Refresh();
-    telemetersStop();
     motorsDriverSleep(ON);
     while (expanderJoyFiltered() != JOY_LEFT);
     return rv;

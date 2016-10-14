@@ -135,17 +135,20 @@ int maze_solver_new_maze(void)
         telemetersStart();//because flash write cause interrupts damages
         findTheShortestPath(&maze, &zhonx_position, &start_position, &end_coordinate); //find the shortest path
     }
-#ifdef PRINT_BLUETOOTH_MAZE
-    printLength(maze,8,8);
-#endif
     ssd1306ClearScreen(MAIN_AREA);
     ssd1306PrintfAtLine(0,0,&Font_5x8,"RETURN TO START CELL");
     ssd1306PrintfAtLine(0, 2, &Font_7x8, "TIME : %d.%ds", explorationTime / 1000, explorationTime % 1000);
     ssd1306Refresh();
-    goToPosition(&maze, &zhonx_position, start_position.coordinate_robot);	//goto start position
+    goToPosition(&maze, &zhonx_position, start_position.coordinate_robot);  //goto start position
 
     doUTurn(&zhonx_position, SAFE_SPEED_ROTATION, SAFE_SPEED_TRANSLATION, SAFE_SPEED_TRANSLATION);//initial position
+    clearMazelength(&maze);
+    computeCellWeight(&maze, start_position.coordinate_robot, FALSE, FALSE);
+    findArrival(maze, &end_coordinate);
 
+#ifdef PRINT_BLUETOOTH_MAZE
+    printLength(maze,8,8);
+#endif
 #ifdef PRINT_BLUETOOTH_BASIC_DEGUG
     bluetoothPrintf("TIME : %d.%ds", explorationTime / 1000, explorationTime % 1000);
 #endif
@@ -193,7 +196,7 @@ int maze_solver_run(const int runType)
 
 
 #ifdef PRINT_BLUETOOTH_MAZE
-    printLength(maze,8,8);
+    printLength(maze,end_coordinate.x,end_coordinate.y);
 #endif
 
 #ifdef PRINT_MAZE
@@ -252,7 +255,9 @@ int restartExplo()
     goToPosition(&maze, &zhonx_position, start_position.coordinate_robot);  //goto start position
 
     doUTurn(&zhonx_position, SAFE_SPEED_ROTATION, SAFE_SPEED_TRANSLATION, SAFE_SPEED_TRANSLATION);//initial position
-
+    clearMazelength(&maze);
+    computeCellWeight(&maze, start_position.coordinate_robot, FALSE, FALSE);
+    findArrival(maze, &end_coordinate);
     HAL_Delay(1000);
     motorsDriverSleep(ON); //because flash write cause interrupts damages
     telemetersStop();//because flash write cause interrupts damages
@@ -268,6 +273,9 @@ int printStoredMaze ()
     positionRobot start_position;
     coordinate end_coordinate;
     loadMaze(&maze, &start_position, &end_coordinate);
+#ifdef PRINT_BLUETOOTH_MAZE
+    printLength(maze, end_coordinate.x, end_coordinate.y);
+#endif
     printMaze(maze, (coordinate){-1,-1});
     while (expanderJoyFiltered() != JOY_LEFT);
     return rv;
@@ -374,7 +382,7 @@ int goToPosition(labyrinthe *maze, positionRobot* positionZhonx,
     while (positionZhonx->coordinate_robot.x != end_coordinate.x
             || positionZhonx->coordinate_robot.y != end_coordinate.y)
     {
-        clearMazelength(maze);	// clear the length for make it with new walls
+        clearMazelength(maze);  // clear the length for make it with new walls
         computeCellWeight(maze, end_coordinate, TRUE, FALSE);// calculate length into the new maze
         rv = moveVirtualZhonx(*maze, *positionZhonx, way, end_coordinate);// create way for go to the end coordinate if it possible
         if (rv != MAZE_SOLVER_E_SUCCESS)
@@ -386,7 +394,7 @@ int goToPosition(labyrinthe *maze, positionRobot* positionZhonx,
             // no solution for go to the asked position
             return rv;
         }
-        rv = moveRealZhonxArc(maze, positionZhonx, way, max_speed_rotation, max_speed_translation, min_speed_translation);	// use way for go the end position or closer position if there are no-know wall
+        rv = moveRealZhonxArc(maze, positionZhonx, way, max_speed_rotation, max_speed_translation, min_speed_translation);  // use way for go the end position or closer position if there are no-know wall
         if (rv != MAZE_SOLVER_E_SUCCESS)
         {
 #ifdef PRINT_BLUETOOTH_BASIC_DEGUG
@@ -464,12 +472,8 @@ int moveVirtualZhonx(labyrinthe maze, positionRobot positionZhonxVirtuel,
 }
 
 int moveRealZhonxArc(labyrinthe *maze, positionRobot *positionZhonx,
-                     coordinate way[], int max_speed_rotation, int max_speed_translation, int min_speed_translation)
+                     coordinate *way_tab, int max_speed_rotation, int max_speed_translation, int min_speed_translation)
 {
-#ifdef PRINT_BLUETOOTH_BASIC_DEGUG
-    bluetoothWaitReady();
-    bluetoothPrintf("pat");
-#endif
     walls cell_state;
     char chain;
     int nb_move;
@@ -477,33 +481,49 @@ int moveRealZhonxArc(labyrinthe *maze, positionRobot *positionZhonx,
     char additionY = 0;
     char additionX = 0;
     char orientaionToGo = NORTH;
-    while (way[i].x != END_OF_LIST)
+#ifdef PRINT_BLUETOOTH_ADVANCED_DEBUG
+    bluetoothWaitReady();
+    bluetoothPrintf("position adresse : %d\n", positionZhonx);
+    bluetoothWaitReady();
+    bluetoothPrintf("way :\n");
+    while (way_tab[i].x != END_OF_LIST)
+    {
+
+        bluetoothWaitReady();
+        bluetoothPrintf("%d;%d\ti:%d\n",way_tab[i].x, way_tab[i].y, i);
+        i++;
+    }
+    bluetoothWaitReady();
+    bluetoothPrintf("go :\n");
+#endif
+    i=0;
+    while (way_tab[i].x != END_OF_LIST)
     {
         nb_move = 0;
-        if (way[i].x == (positionZhonx->coordinate_robot.x + 1)
-                && way[i].y == positionZhonx->coordinate_robot.y)
+        if (way_tab[i].x == (positionZhonx->coordinate_robot.x + 1)
+                && way_tab[i].y == positionZhonx->coordinate_robot.y)
         {
             additionX = 1;
             additionY = 0;
             orientaionToGo = EAST;
         }
-        else if (way[i].x == (positionZhonx->coordinate_robot.x - 1)
-                && way[i].y == positionZhonx->coordinate_robot.y)
+        else if (way_tab[i].x == (positionZhonx->coordinate_robot.x - 1)
+                && way_tab[i].y == positionZhonx->coordinate_robot.y)
         {
             additionX = -1;
             additionY = 0;
             orientaionToGo = WEST;
         }
-        else if (way[i].y == (positionZhonx->coordinate_robot.y - 1)
-                && way[i].x == positionZhonx->coordinate_robot.x)
+        else if (way_tab[i].y == (positionZhonx->coordinate_robot.y - 1)
+                && way_tab[i].x == positionZhonx->coordinate_robot.x)
         {
 
             additionX = 0;
             additionY = -1;
             orientaionToGo = NORTH;
         }
-        else if (way[i].y == (positionZhonx->coordinate_robot.y + 1)
-                && way[i].x == positionZhonx->coordinate_robot.x)
+        else if (way_tab[i].y == (positionZhonx->coordinate_robot.y + 1)
+                && way_tab[i].x == positionZhonx->coordinate_robot.x)
         {
 
             additionX = 0;
@@ -514,36 +534,47 @@ int moveRealZhonxArc(labyrinthe *maze, positionRobot *positionZhonx,
         {
 #ifdef PRINT_BLUETOOTH_BASIC_DEGUG
             bluetoothWaitReady();
-            bluetoothPrintf("Error way : position zhonx x= %d y=%d \t way x= %d y=%d \n",
-                            positionZhonx->coordinate_robot.x,positionZhonx->coordinate_robot.y, way[i].x, way[i].y);
+            bluetoothPrintf("Error way : position zhonx x= %d y=%d \t way x= %d y=%d i : %d \n",
+                            positionZhonx->coordinate_robot.x,positionZhonx->coordinate_robot.y, way_tab[i].x, way_tab[i].y, i);
 #endif
             return MAZE_SOLVER_E_ERROR;
         }
 
-        while ((way[i].x != END_OF_LIST)
-                && way[i].y == (positionZhonx->coordinate_robot.y + additionY)
-                && way[i].x == positionZhonx->coordinate_robot.x + additionX)
+        while ((way_tab[i].x != END_OF_LIST)
+                && way_tab[i].y == (positionZhonx->coordinate_robot.y + additionY)
+                && way_tab[i].x == (positionZhonx->coordinate_robot.x + additionX))
         {
-            positionZhonx->coordinate_robot.x = way[i].x;
-            positionZhonx->coordinate_robot.y = way[i].y;
+            positionZhonx->coordinate_robot.x = way_tab[i].x;
+            positionZhonx->coordinate_robot.y = way_tab[i].y;
 #ifdef PRINT_BLUETOOTH_ADVANCED_DEBUG
-            bluetoothPrintf("%d;%d\n",positionZhonx->coordinate_robot.x, positionZhonx->coordinate_robot.y);
+            bluetoothWaitReady();
+            bluetoothPrintf("%d;%d\ti:%d \t\t%d;%d\n",way_tab[i].x, way_tab[i].y, i,way_tab[19].x, way_tab[19].y);
 #endif
             i++;
             nb_move++;
         }
-        if (way[i].x == END_OF_LIST)
+        if (way_tab[i].x == END_OF_LIST)
             chain = FALSE;
         else
             chain = TRUE;
         move_zhonx(orientaionToGo, positionZhonx, nb_move, FALSE, TRUE, max_speed_rotation, max_speed_translation, min_speed_translation);
         cell_state = getCellState();
+
+#ifdef PRINT_BLUETOOTH_ADVANCED_DEBUG
+            bluetoothWaitReady();
+            bluetoothPrintf("befor move %d;%d\ti:%d \t\t%d;%d\n",way_tab[i].x, way_tab[i].y, i,way_tab[19].x, way_tab[19].y);
+#endif
         newCell(cell_state, maze, *positionZhonx);
+#ifdef PRINT_BLUETOOTH_ADVANCED_DEBUG
+            bluetoothWaitReady();
+            bluetoothPrintf("after move %d;%d\ti:%d \t\t%d;%d\n",way_tab[i].x, way_tab[i].y, i,way_tab[19].x, way_tab[19].y);
+#endif
 
     }
-#ifdef PRINT_BLUETOOTH_BASIC_DEGUG
+
+#ifdef PRINT_BLUETOOTH_ADVANCED_DEBUG
     bluetoothWaitReady();
-    bluetoothPrintf("colin");
+    bluetoothPrintf("end coordinate : %d;%d\ti:%d\n",way_tab[i].x, way_tab[i].y, i);
 #endif
     return MAZE_SOLVER_E_SUCCESS;
 }
@@ -655,7 +686,7 @@ void mazeInit(labyrinthe *maze)
             maze->cell[i][y].wall_west = NO_KNOWN;
             maze->cell[i][y].wall_south = NO_KNOWN;
             maze->cell[i][y].wall_east = NO_KNOWN;
-            maze->cell[i][y].length = CANT_GO;
+            maze->cell[i][y].length = INFINITY_WEIGHT;
         }
     }
     for (int i = 0; i < MAZE_SIZE; i++)
@@ -754,7 +785,7 @@ void printLength(const labyrinthe maze, const int x_robot, const int y_robot)
         bluetoothPrintf("\n %2d ", i);
         for (int j = 0; j < MAZE_SIZE; j++)
         {
-            if (maze.cell[j][i].length != CANT_GO)
+            if (maze.cell[j][i].length != INFINITY_WEIGHT)
             {
                 bluetoothWaitReady();
                 bluetoothPrintf("%4d", maze.cell[j][i].length);
@@ -794,7 +825,7 @@ void clearMazelength(labyrinthe* maze)
     {
         for (x = 0; x < MAZE_SIZE; x++)
         {
-            maze->cell[x][y].length = CANT_GO;
+            maze->cell[x][y].length = INFINITY_WEIGHT;
         }
     }
 }
@@ -866,7 +897,7 @@ coordinate findEndCoordinate(coordinate coordinate_tab[])
 
 int findArrival(labyrinthe maze, coordinate *end_coordinate)
 {
-    int possible_end_find_cost = CANT_GO;
+    int possible_end_find_cost = INFINITY_WEIGHT;
     for (int x = 0; x < (MAZE_SIZE - 1); x++)
     {
         for (int y = 0; y < (MAZE_SIZE - 1); ++y)
@@ -875,7 +906,7 @@ int findArrival(labyrinthe maze, coordinate *end_coordinate)
                     && maze.cell[x][y].wall_south == NO_WALL
                     && maze.cell[x][y + 1].wall_east == NO_WALL
                     && maze.cell[x + 1][y].wall_south == NO_WALL
-                    && maze.cell[x][y].length != CANT_GO)
+                    && maze.cell[x][y].length != INFINITY_WEIGHT)
             {
                 end_coordinate->x = x;
                 end_coordinate->y = y;
@@ -907,9 +938,9 @@ int findArrival(labyrinthe maze, coordinate *end_coordinate)
                     > maze.cell[x][y].length&&
                     maze.cell[x][y].wall_east != WALL_PRESENCE && maze.cell[x][y].wall_south != WALL_PRESENCE
                     && maze.cell[x][y+1].wall_east != WALL_PRESENCE && maze.cell[x+1][y].wall_south != WALL_PRESENCE
-                    && maze.cell[x][y].length != CANT_GO
-                    && maze.cell[x][y].length != CANT_GO && maze.cell[x+1][y].length != CANT_GO
-                    && maze.cell[x][y+1].length != CANT_GO && maze.cell[x+1][y+1].length != CANT_GO)
+                    && maze.cell[x][y].length != INFINITY_WEIGHT
+                    && maze.cell[x][y].length != INFINITY_WEIGHT && maze.cell[x+1][y].length != INFINITY_WEIGHT
+                    && maze.cell[x][y+1].length != INFINITY_WEIGHT && maze.cell[x+1][y+1].length != INFINITY_WEIGHT)
             {
                 if ((maze.cell[x][y].wall_east != NO_WALL
                         || maze.cell[x][y].wall_south != NO_WALL)
