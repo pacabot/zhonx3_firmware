@@ -9,6 +9,8 @@
 #define ROBOTINTERFACE_H_
 
 //#define DEBUG_ROBOT_INTERFACE
+//#define PRINT_CELL_STATE
+//#define PRINT_CELL_STATE_BLEUTOOTH
 
 #include <application/solverMaze/robotInterface.h>
 #include <application/solverMaze/solverMaze.h>

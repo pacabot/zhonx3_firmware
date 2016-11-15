@@ -21,7 +21,7 @@
 
 //definition for numberation function
 /* --the value of CANT_GO can be understand like infinity weight-- */
-#define INFINITY_WEIGHT 0xFFFFFFFF
+#define INFINITY_WEIGHT 0x7FFFFFFF
 
 //orientation define
 #define NORTH 0
@@ -43,12 +43,12 @@
 #define POSSIBLE_END_FIND	2
 
 #define PRINT_MAZE
-//#define PRINT_MAZE_DURING_RUN
-//#define PRINT_BLUETOOTH_MAZE
-//#define PRINT_BLUETOOTH_MAZE_DURING_RUN
-//#define PRINT_BLUETOOTH_BASIC_DEGUG
-//#define PRINT_BLUETOOTH_ADVANCED_DEBUG
-//#define PRINT_WALLS_DETECTED
+#define PRINT_MAZE_DURING_RUN
+#define PRINT_BLUETOOTH_MAZE
+#define PRINT_BLUETOOTH_MAZE_DURING_RUN
+#define PRINT_BLUETOOTH_BASIC_DEGUG
+#define PRINT_BLUETOOTH_ADVANCED_DEBUG
+#define PRINT_WALLS_DETECTED
 
 #define END_OF_LIST 255
 #define DISPLAY_OFFSET	    12	//offset for maze print on ssd1306
