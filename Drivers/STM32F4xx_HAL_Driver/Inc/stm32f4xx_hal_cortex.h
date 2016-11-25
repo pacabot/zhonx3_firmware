@@ -1,110 +1,111 @@
 /**
-  ******************************************************************************
-  * @file    stm32f4xx_hal_cortex.h
-  * @author  MCD Application Team
-  * @version V1.5.0
-  * @date    06-May-2016
-  * @brief   Header file of CORTEX HAL module.
-  ******************************************************************************
-  * @attention
-  *
-  * <h2><center>&copy; COPYRIGHT(c) 2016 STMicroelectronics</center></h2>
-  *
-  * Redistribution and use in source and binary forms, with or without modification,
-  * are permitted provided that the following conditions are met:
-  *   1. Redistributions of source code must retain the above copyright notice,
-  *      this list of conditions and the following disclaimer.
-  *   2. Redistributions in binary form must reproduce the above copyright notice,
-  *      this list of conditions and the following disclaimer in the documentation
-  *      and/or other materials provided with the distribution.
-  *   3. Neither the name of STMicroelectronics nor the names of its contributors
-  *      may be used to endorse or promote products derived from this software
-  *      without specific prior written permission.
-  *
-  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-  * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-  * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-  * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-  * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-  * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-  *
-  ******************************************************************************
-  */ 
+ ******************************************************************************
+ * @file    stm32f4xx_hal_cortex.h
+ * @author  MCD Application Team
+ * @version V1.4.4
+ * @date    22-January-2016
+ * @brief   Header file of CORTEX HAL module.
+ ******************************************************************************
+ * @attention
+ *
+ * <h2><center>&copy; COPYRIGHT(c) 2016 STMicroelectronics</center></h2>
+ *
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
+ *   1. Redistributions of source code must retain the above copyright notice,
+ *      this list of conditions and the following disclaimer.
+ *   2. Redistributions in binary form must reproduce the above copyright notice,
+ *      this list of conditions and the following disclaimer in the documentation
+ *      and/or other materials provided with the distribution.
+ *   3. Neither the name of STMicroelectronics nor the names of its contributors
+ *      may be used to endorse or promote products derived from this software
+ *      without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ ******************************************************************************
+ */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef __STM32F4xx_HAL_CORTEX_H
 #define __STM32F4xx_HAL_CORTEX_H
 
 #ifdef __cplusplus
- extern "C" {
+extern "C"
+{
 #endif
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx_hal_def.h"
 
 /** @addtogroup STM32F4xx_HAL_Driver
-  * @{
-  */
+ * @{
+ */
 
 /** @addtogroup CORTEX
-  * @{
-  */ 
+ * @{
+ */
 /* Exported types ------------------------------------------------------------*/
 /** @defgroup CORTEX_Exported_Types Cortex Exported Types
-  * @{
-  */
+ * @{
+ */
 
 #if (__MPU_PRESENT == 1)
 /** @defgroup CORTEX_MPU_Region_Initialization_Structure_definition MPU Region Initialization Structure Definition
-  * @brief  MPU Region initialization structure 
-  * @{
-  */
+ * @brief  MPU Region initialization structure 
+ * @{
+ */
 typedef struct
 {
-  uint8_t                Enable;                /*!< Specifies the status of the region. 
-                                                     This parameter can be a value of @ref CORTEX_MPU_Region_Enable                 */
-  uint8_t                Number;                /*!< Specifies the number of the region to protect. 
-                                                     This parameter can be a value of @ref CORTEX_MPU_Region_Number                 */
-  uint32_t               BaseAddress;           /*!< Specifies the base address of the region to protect.                           */
-  uint8_t                Size;                  /*!< Specifies the size of the region to protect. 
-                                                     This parameter can be a value of @ref CORTEX_MPU_Region_Size                   */
-  uint8_t                SubRegionDisable;      /*!< Specifies the number of the subregion protection to disable. 
-                                                     This parameter must be a number between Min_Data = 0x00 and Max_Data = 0xFF    */         
-  uint8_t                TypeExtField;          /*!< Specifies the TEX field level.
-                                                     This parameter can be a value of @ref CORTEX_MPU_TEX_Levels                    */                 
-  uint8_t                AccessPermission;      /*!< Specifies the region access permission type. 
-                                                     This parameter can be a value of @ref CORTEX_MPU_Region_Permission_Attributes  */
-  uint8_t                DisableExec;           /*!< Specifies the instruction access status. 
-                                                     This parameter can be a value of @ref CORTEX_MPU_Instruction_Access            */
-  uint8_t                IsShareable;           /*!< Specifies the shareability status of the protected region. 
-                                                     This parameter can be a value of @ref CORTEX_MPU_Access_Shareable              */
-  uint8_t                IsCacheable;           /*!< Specifies the cacheable status of the region protected. 
-                                                     This parameter can be a value of @ref CORTEX_MPU_Access_Cacheable              */
-  uint8_t                IsBufferable;          /*!< Specifies the bufferable status of the protected region. 
-                                                     This parameter can be a value of @ref CORTEX_MPU_Access_Bufferable             */
-}MPU_Region_InitTypeDef;
+    uint8_t Enable; /*!< Specifies the status of the region. 
+     This parameter can be a value of @ref CORTEX_MPU_Region_Enable                 */
+    uint8_t Number; /*!< Specifies the number of the region to protect. 
+     This parameter can be a value of @ref CORTEX_MPU_Region_Number                 */
+    uint32_t BaseAddress; /*!< Specifies the base address of the region to protect.                           */
+    uint8_t Size; /*!< Specifies the size of the region to protect. 
+     This parameter can be a value of @ref CORTEX_MPU_Region_Size                   */
+    uint8_t SubRegionDisable; /*!< Specifies the number of the subregion protection to disable. 
+     This parameter must be a number between Min_Data = 0x00 and Max_Data = 0xFF    */
+    uint8_t TypeExtField; /*!< Specifies the TEX field level.
+     This parameter can be a value of @ref CORTEX_MPU_TEX_Levels                    */
+    uint8_t AccessPermission; /*!< Specifies the region access permission type. 
+     This parameter can be a value of @ref CORTEX_MPU_Region_Permission_Attributes  */
+    uint8_t DisableExec; /*!< Specifies the instruction access status. 
+     This parameter can be a value of @ref CORTEX_MPU_Instruction_Access            */
+    uint8_t IsShareable; /*!< Specifies the shareability status of the protected region. 
+     This parameter can be a value of @ref CORTEX_MPU_Access_Shareable              */
+    uint8_t IsCacheable; /*!< Specifies the cacheable status of the region protected. 
+     This parameter can be a value of @ref CORTEX_MPU_Access_Cacheable              */
+    uint8_t IsBufferable; /*!< Specifies the bufferable status of the protected region. 
+     This parameter can be a value of @ref CORTEX_MPU_Access_Bufferable             */
+} MPU_Region_InitTypeDef;
 /**
-  * @}
-  */
+ * @}
+ */
 #endif /* __MPU_PRESENT */
 
 /**
-  * @}
-  */
+ * @}
+ */
 
 /* Exported constants --------------------------------------------------------*/
 
 /** @defgroup CORTEX_Exported_Constants CORTEX Exported Constants
-  * @{
-  */
+ * @{
+ */
 
 /** @defgroup CORTEX_Preemption_Priority_Group CORTEX Preemption Priority Group
-  * @{
-  */
+ * @{
+ */
 #define NVIC_PRIORITYGROUP_0         ((uint32_t)0x00000007U) /*!< 0 bits for pre-emption priority
                                                                  4 bits for subpriority */
 #define NVIC_PRIORITYGROUP_1         ((uint32_t)0x00000006U) /*!< 1 bits for pre-emption priority
@@ -116,89 +117,89 @@ typedef struct
 #define NVIC_PRIORITYGROUP_4         ((uint32_t)0x00000003U) /*!< 4 bits for pre-emption priority
                                                                  0 bits for subpriority */
 /**
-  * @}
-  */
+ * @}
+ */
 
 /** @defgroup CORTEX_SysTick_clock_source CORTEX _SysTick clock source 
-  * @{
-  */
+ * @{
+ */
 #define SYSTICK_CLKSOURCE_HCLK_DIV8    ((uint32_t)0x00000000U)
 #define SYSTICK_CLKSOURCE_HCLK         ((uint32_t)0x00000004U)
 
 /**
-  * @}
-  */
+ * @}
+ */
 
 #if (__MPU_PRESENT == 1)
 /** @defgroup CORTEX_MPU_HFNMI_PRIVDEF_Control MPU HFNMI and PRIVILEGED Access control
-  * @{
-  */
+ * @{
+ */
 #define  MPU_HFNMI_PRIVDEF_NONE      ((uint32_t)0x00000000U)  
 #define  MPU_HARDFAULT_NMI           ((uint32_t)0x00000002U)
 #define  MPU_PRIVILEGED_DEFAULT      ((uint32_t)0x00000004U)
 #define  MPU_HFNMI_PRIVDEF           ((uint32_t)0x00000006U)
 /**
-  * @}
-  */
+ * @}
+ */
 
 /** @defgroup CORTEX_MPU_Region_Enable CORTEX MPU Region Enable
-  * @{
-  */
+ * @{
+ */
 #define  MPU_REGION_ENABLE     ((uint8_t)0x01U)
 #define  MPU_REGION_DISABLE    ((uint8_t)0x00U)
 /**
-  * @}
-  */
+ * @}
+ */
 
 /** @defgroup CORTEX_MPU_Instruction_Access CORTEX MPU Instruction Access
-  * @{
-  */
+ * @{
+ */
 #define  MPU_INSTRUCTION_ACCESS_ENABLE      ((uint8_t)0x00U)
 #define  MPU_INSTRUCTION_ACCESS_DISABLE     ((uint8_t)0x01U)
 /**
-  * @}
-  */
+ * @}
+ */
 
 /** @defgroup CORTEX_MPU_Access_Shareable CORTEX MPU Instruction Access Shareable
-  * @{
-  */
+ * @{
+ */
 #define  MPU_ACCESS_SHAREABLE        ((uint8_t)0x01U)
 #define  MPU_ACCESS_NOT_SHAREABLE    ((uint8_t)0x00U)
 /**
-  * @}
-  */
+ * @}
+ */
 
 /** @defgroup CORTEX_MPU_Access_Cacheable CORTEX MPU Instruction Access Cacheable
-  * @{
-  */
+ * @{
+ */
 #define  MPU_ACCESS_CACHEABLE         ((uint8_t)0x01U)
 #define  MPU_ACCESS_NOT_CACHEABLE     ((uint8_t)0x00U)
 /**
-  * @}
-  */
+ * @}
+ */
 
 /** @defgroup CORTEX_MPU_Access_Bufferable CORTEX MPU Instruction Access Bufferable
-  * @{
-  */
+ * @{
+ */
 #define  MPU_ACCESS_BUFFERABLE         ((uint8_t)0x01U)
 #define  MPU_ACCESS_NOT_BUFFERABLE     ((uint8_t)0x00U)
 /**
-  * @}
-  */
+ * @}
+ */
 
 /** @defgroup CORTEX_MPU_TEX_Levels MPU TEX Levels
-  * @{
-  */
+ * @{
+ */
 #define  MPU_TEX_LEVEL0    ((uint8_t)0x00U)
 #define  MPU_TEX_LEVEL1    ((uint8_t)0x01U)
 #define  MPU_TEX_LEVEL2    ((uint8_t)0x02U)
 /**
-  * @}
-  */
+ * @}
+ */
 
 /** @defgroup CORTEX_MPU_Region_Size CORTEX MPU Region Size
-  * @{
-  */
+ * @{
+ */
 #define   MPU_REGION_SIZE_32B      ((uint8_t)0x04U)
 #define   MPU_REGION_SIZE_64B      ((uint8_t)0x05U)
 #define   MPU_REGION_SIZE_128B     ((uint8_t)0x06U)
@@ -228,12 +229,12 @@ typedef struct
 #define   MPU_REGION_SIZE_2GB      ((uint8_t)0x1EU)
 #define   MPU_REGION_SIZE_4GB      ((uint8_t)0x1FU)
 /**
-  * @}
-  */
-   
+ * @}
+ */
+
 /** @defgroup CORTEX_MPU_Region_Permission_Attributes CORTEX MPU Region Permission Attributes 
-  * @{
-  */
+ * @{
+ */
 #define  MPU_REGION_NO_ACCESS      ((uint8_t)0x00U)
 #define  MPU_REGION_PRIV_RW        ((uint8_t)0x01U)
 #define  MPU_REGION_PRIV_RW_URO    ((uint8_t)0x02U)
@@ -241,12 +242,12 @@ typedef struct
 #define  MPU_REGION_PRIV_RO        ((uint8_t)0x05U)
 #define  MPU_REGION_PRIV_RO_URO    ((uint8_t)0x06U)
 /**
-  * @}
-  */
+ * @}
+ */
 
 /** @defgroup CORTEX_MPU_Region_Number CORTEX MPU Region Number
-  * @{
-  */
+ * @{
+ */
 #define  MPU_REGION_NUMBER0    ((uint8_t)0x00U)
 #define  MPU_REGION_NUMBER1    ((uint8_t)0x01U)
 #define  MPU_REGION_NUMBER2    ((uint8_t)0x02U)
@@ -256,22 +257,21 @@ typedef struct
 #define  MPU_REGION_NUMBER6    ((uint8_t)0x06U)
 #define  MPU_REGION_NUMBER7    ((uint8_t)0x07U)
 /**
-  * @}
-  */
+ * @}
+ */
 #endif /* __MPU_PRESENT */
 
 /**
-  * @}
-  */
-
+ * @}
+ */
 
 /* Exported Macros -----------------------------------------------------------*/
 
 /* Exported functions --------------------------------------------------------*/
 /** @addtogroup CORTEX_Exported_Functions
-  * @{
-  */
-  
+ * @{
+ */
+
 /** @addtogroup CORTEX_Exported_Functions_Group1
  * @{
  */
@@ -283,8 +283,8 @@ void HAL_NVIC_DisableIRQ(IRQn_Type IRQn);
 void HAL_NVIC_SystemReset(void);
 uint32_t HAL_SYSTICK_Config(uint32_t TicksNumb);
 /**
-  * @}
-  */
+ * @}
+ */
 
 /** @addtogroup CORTEX_Exported_Functions_Group2
  * @{
@@ -303,20 +303,20 @@ void HAL_SYSTICK_CLKSourceConfig(uint32_t CLKSource);
 void HAL_SYSTICK_IRQHandler(void);
 void HAL_SYSTICK_Callback(void);
 /**
-  * @}
-  */
+ * @}
+ */
 
 /**
-  * @}
-  */
+ * @}
+ */
 
 /* Private types -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 /* Private constants ---------------------------------------------------------*/
 /* Private macros ------------------------------------------------------------*/
 /** @defgroup CORTEX_Private_Macros CORTEX Private Macros
-  * @{
-  */
+ * @{
+ */
 #define IS_NVIC_PRIORITY_GROUP(GROUP) (((GROUP) == NVIC_PRIORITYGROUP_0) || \
                                        ((GROUP) == NVIC_PRIORITYGROUP_1) || \
                                        ((GROUP) == NVIC_PRIORITYGROUP_2) || \
@@ -401,67 +401,66 @@ void HAL_SYSTICK_Callback(void);
 #endif /* __MPU_PRESENT */
 
 /**                                                                          
-  * @}                                                                  
-  */                                                                            
-                                                                                   
-/* Private functions ---------------------------------------------------------*/   
+ * @}                                                                  
+ */
+
+/* Private functions ---------------------------------------------------------*/
 /** @defgroup CORTEX_Private_Functions CORTEX Private Functions
-  * @brief    CORTEX private  functions 
-  * @{
-  */
+ * @brief    CORTEX private  functions 
+ * @{
+ */
 
 #if (__MPU_PRESENT == 1)
 /**
-  * @brief  Disables the MPU
-  * @retval None
-  */
+ * @brief  Disables the MPU
+ * @retval None
+ */
 __STATIC_INLINE void HAL_MPU_Disable(void)
 {
-  /* Disable fault exceptions */
-  SCB->SHCSR &= ~SCB_SHCSR_MEMFAULTENA_Msk;
-  
-  /* Disable the MPU */
-  MPU->CTRL  &= ~MPU_CTRL_ENABLE_Msk;
+    /* Disable fault exceptions */
+    SCB->SHCSR &= ~SCB_SHCSR_MEMFAULTENA_Msk;
+
+    /* Disable the MPU */
+    MPU->CTRL &= ~MPU_CTRL_ENABLE_Msk;
 }
 
 /**
-  * @brief  Enables the MPU
-  * @param  MPU_Control: Specifies the control mode of the MPU during hard fault, 
-  *          NMI, FAULTMASK and privileged access to the default memory 
-  *          This parameter can be one of the following values:
-  *            @arg MPU_HFNMI_PRIVDEF_NONE
-  *            @arg MPU_HARDFAULT_NMI
-  *            @arg MPU_PRIVILEGED_DEFAULT
-  *            @arg MPU_HFNMI_PRIVDEF
-  * @retval None
-  */
+ * @brief  Enables the MPU
+ * @param  MPU_Control: Specifies the control mode of the MPU during hard fault, 
+ *          NMI, FAULTMASK and privileged access to the default memory 
+ *          This parameter can be one of the following values:
+ *            @arg MPU_HFNMI_PRIVDEF_NONE
+ *            @arg MPU_HARDFAULT_NMI
+ *            @arg MPU_PRIVILEGED_DEFAULT
+ *            @arg MPU_HFNMI_PRIVDEF
+ * @retval None
+ */
 __STATIC_INLINE void HAL_MPU_Enable(uint32_t MPU_Control)
 {
-  /* Enable the MPU */
-  MPU->CTRL   = MPU_Control | MPU_CTRL_ENABLE_Msk;
-  
-  /* Enable fault exceptions */
-  SCB->SHCSR |= SCB_SHCSR_MEMFAULTENA_Msk;
+    /* Enable the MPU */
+    MPU->CTRL = MPU_Control | MPU_CTRL_ENABLE_Msk;
+
+    /* Enable fault exceptions */
+    SCB->SHCSR |= SCB_SHCSR_MEMFAULTENA_Msk;
 }
 #endif /* __MPU_PRESENT */
 
 /**
-  * @}
-  */
+ * @}
+ */
 
 /**
-  * @}
-  */ 
+ * @}
+ */
 
 /**
-  * @}
-  */
-  
+ * @}
+ */
+
 #ifdef __cplusplus
 }
 #endif
 
 #endif /* __STM32F4xx_HAL_CORTEX_H */
- 
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
