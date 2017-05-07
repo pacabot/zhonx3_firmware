@@ -129,7 +129,7 @@ void spyWallFrontDistCal(void)
     ssd1306ClearScreen(MAIN_AREA);
 
     while (hasMoveEnded() != TRUE);
-    wallFollowSetInitialPosition(0); //absolute position into a cell
+    wallFollowSetInitialPosition(0.00); //absolute position into a cell
     basicMove(0, MAIN_DIST + OFFSET_DIST, max_speed, max_speed); //distance with last basicMove offset
 
     while (hasMoveEnded() != TRUE)

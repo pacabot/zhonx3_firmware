@@ -5,7 +5,7 @@
   *                      of the ADC instances.
   ******************************************************************************
   *
-  * COPYRIGHT(c) 2016 STMicroelectronics
+  * COPYRIGHT(c) 2017 STMicroelectronics
   *
   * Redistribution and use in source and binary forms, with or without modification,
   * are permitted provided that the following conditions are met:
@@ -132,7 +132,8 @@ void MX_ADC2_Init(void)
   hadc2.Init.ScanConvMode = ENABLE;
   hadc2.Init.ContinuousConvMode = DISABLE;
   hadc2.Init.DiscontinuousConvMode = DISABLE;
-  hadc2.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
+  hadc2.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_RISING;
+  hadc2.Init.ExternalTrigConv = ADC_EXTERNALTRIGCONV_T1_CC1;
   hadc2.Init.DataAlign = ADC_DATAALIGN_RIGHT;
   hadc2.Init.NbrOfConversion = 1;
   hadc2.Init.DMAContinuousRequests = DISABLE;
@@ -198,7 +199,8 @@ void MX_ADC3_Init(void)
   hadc3.Init.ScanConvMode = ENABLE;
   hadc3.Init.ContinuousConvMode = DISABLE;
   hadc3.Init.DiscontinuousConvMode = DISABLE;
-  hadc3.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
+  hadc3.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_RISING;
+  hadc3.Init.ExternalTrigConv = ADC_EXTERNALTRIGCONV_T1_CC1;
   hadc3.Init.DataAlign = ADC_DATAALIGN_RIGHT;
   hadc3.Init.NbrOfConversion = 3;
   hadc3.Init.DMAContinuousRequests = DISABLE;
@@ -288,12 +290,12 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef* adcHandle)
     PC4     ------> ADC1_IN14
     PC5     ------> ADC1_IN15 
     */
-    GPIO_InitStruct.Pin = GYRO_TEMP_Pin;
+    GPIO_InitStruct.Pin = GPIO_PIN_7;
     GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
-    HAL_GPIO_Init(GYRO_TEMP_GPIO_Port, &GPIO_InitStruct);
+    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-    GPIO_InitStruct.Pin = GYRO_RATE_Pin|VBAT_Pin;
+    GPIO_InitStruct.Pin = GPIO_PIN_4|GPIO_PIN_5;
     GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
@@ -340,12 +342,12 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef* adcHandle)
     PA5     ------> ADC2_IN5
     PA6     ------> ADC2_IN6 
     */
-    GPIO_InitStruct.Pin = GPIO_PIN_0|R_FRONT_RX_Pin|LINE_SENSOR_R1_Pin;
+    GPIO_InitStruct.Pin = GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_3;
     GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
-    GPIO_InitStruct.Pin = LINE_SENSOR_L1_Pin|L_DIAG_RX_Pin|L_FRONT_RX_Pin;
+    GPIO_InitStruct.Pin = GPIO_PIN_4|GPIO_PIN_5|GPIO_PIN_6;
     GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
@@ -371,12 +373,12 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef* adcHandle)
     PA1     ------> ADC3_IN1
     PA3     ------> ADC3_IN3 
     */
-    GPIO_InitStruct.Pin = GPIO_PIN_0|LINE_SENSOR_R2_Pin;
+    GPIO_InitStruct.Pin = GPIO_PIN_0|GPIO_PIN_2;
     GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
-    GPIO_InitStruct.Pin = LINE_SENSOR_F_Pin|LINE_SENSOR_L2_Pin;
+    GPIO_InitStruct.Pin = GPIO_PIN_1|GPIO_PIN_3;
     GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
@@ -406,9 +408,9 @@ void HAL_ADC_MspDeInit(ADC_HandleTypeDef* adcHandle)
     PC4     ------> ADC1_IN14
     PC5     ------> ADC1_IN15 
     */
-    HAL_GPIO_DeInit(GYRO_TEMP_GPIO_Port, GYRO_TEMP_Pin);
+    HAL_GPIO_DeInit(GPIOA, GPIO_PIN_7);
 
-    HAL_GPIO_DeInit(GPIOC, GYRO_RATE_Pin|VBAT_Pin);
+    HAL_GPIO_DeInit(GPIOC, GPIO_PIN_4|GPIO_PIN_5);
 
     /* Peripheral DMA DeInit*/
     HAL_DMA_DeInit(adcHandle->DMA_Handle);
@@ -442,9 +444,9 @@ void HAL_ADC_MspDeInit(ADC_HandleTypeDef* adcHandle)
     PA5     ------> ADC2_IN5
     PA6     ------> ADC2_IN6 
     */
-    HAL_GPIO_DeInit(GPIOC, GPIO_PIN_0|R_FRONT_RX_Pin|LINE_SENSOR_R1_Pin);
+    HAL_GPIO_DeInit(GPIOC, GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_3);
 
-    HAL_GPIO_DeInit(GPIOA, LINE_SENSOR_L1_Pin|L_DIAG_RX_Pin|L_FRONT_RX_Pin);
+    HAL_GPIO_DeInit(GPIOA, GPIO_PIN_4|GPIO_PIN_5|GPIO_PIN_6);
 
     /* Peripheral interrupt Deinit*/
   /* USER CODE BEGIN ADC2:ADC_IRQn disable */
@@ -473,9 +475,9 @@ void HAL_ADC_MspDeInit(ADC_HandleTypeDef* adcHandle)
     PA1     ------> ADC3_IN1
     PA3     ------> ADC3_IN3 
     */
-    HAL_GPIO_DeInit(GPIOC, GPIO_PIN_0|LINE_SENSOR_R2_Pin);
+    HAL_GPIO_DeInit(GPIOC, GPIO_PIN_0|GPIO_PIN_2);
 
-    HAL_GPIO_DeInit(GPIOA, LINE_SENSOR_F_Pin|LINE_SENSOR_L2_Pin);
+    HAL_GPIO_DeInit(GPIOA, GPIO_PIN_1|GPIO_PIN_3);
 
     /* Peripheral interrupt Deinit*/
   /* USER CODE BEGIN ADC3:ADC_IRQn disable */

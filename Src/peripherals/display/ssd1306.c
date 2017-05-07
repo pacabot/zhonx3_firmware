@@ -108,7 +108,7 @@ static void CMD(uint8_t c)
     //	while (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY)
     //	{
     //	}
-    HAL_I2C_Master_Transmit_DMA(&hi2c1, (uint16_t) 120, (uint8_t*) aTxBuffer, 2);  //, 1000);
+    HAL_I2C_Master_Transmit(&hi2c1, (uint16_t) 120, (uint8_t*) aTxBuffer, 2, 1000);
 }
 
 //Send DATA
@@ -118,7 +118,7 @@ static void DATA(uint8_t c[], uint16_t size)
     //	while (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY)
     //	{
     //	}
-    HAL_I2C_Master_Transmit_DMA(&hi2c1, (uint16_t) 120, (uint8_t*) c, size); //, 1000);
+    HAL_I2C_Master_Transmit(&hi2c1, (uint16_t) 120, (uint8_t*) c, size, 1000);
 }
 
 /**************************************************************************/

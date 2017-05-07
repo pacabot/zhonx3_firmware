@@ -224,7 +224,7 @@ int mazeMoveFrontAlignment(double max_speed)
         if (((getTelemeterDist(TELEMETER_FL) + getTelemeterDist(TELEMETER_FR)) / 2.00) < 21.00)
         {
             basicMove(0, -50.00, 100.00, 100.00);
-            while (((getTelemeterDist(TELEMETER_FL) + getTelemeterDist(TELEMETER_FR)) / 2.00) < 21.00)//todo add in flash
+            while (((getTelemeterDist(TELEMETER_FL) + getTelemeterDist(TELEMETER_FR)) / 2.00) < 23.00)//todo add in flash
             {
                 expanderSetLeds(0b010);
             }
@@ -232,7 +232,7 @@ int mazeMoveFrontAlignment(double max_speed)
         else
         {
             basicMove(0, 50.00, 100.00, 100.00);
-            while (((getTelemeterDist(TELEMETER_FL) + getTelemeterDist(TELEMETER_FR)) / 2.00) > 21.00)//todo add in flash
+            while (((getTelemeterDist(TELEMETER_FL) + getTelemeterDist(TELEMETER_FR)) / 2.00) > 23.00)//todo add in flash
             {
                 expanderSetLeds(0b010);
             }

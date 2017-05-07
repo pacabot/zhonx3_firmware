@@ -38,7 +38,7 @@
 #else
 #define GYRO_OUTPUT_RATIO	    (1) 	//output resistor ratio (low-pass filter)
 #endif
-#define GYRO_OUT_SENSITIVITY	((GYRO_OUTPUT_RATIO) * ((GYRO_VRATIO) / (5000.00)) * (GYRO_SENSITIVITY)) 	//1,32mV/deg/sec (3.3v Req 60K) saturation : 1363°/s
+#define GYRO_OUT_SENSITIVITY	((GYRO_OUTPUT_RATIO) * ((GYRO_VRATIO) / (5000.00)) * (GYRO_SENSITIVITY)) 	//1,32mV/deg/sec (3.3v Req 60K)
 #define GYRO_A_COEFF		    ((GYRO_VRATIO) / ((4095.00) * (GYRO_OUT_SENSITIVITY) * (GYRO_TIME_FREQ))) //integration multiplier coeff
 
 #define GYRO_T_SENSITIVITY 		(9.00)   //The temperature coefficient is ~9 mV/�C at 25�C
@@ -125,7 +125,7 @@
 #define DEADZONE                    (100.00)         //doubt area
 #define DEADZONE_CHECKWALL_DIST     (5.00)
 
-#define WALL_FOLLOW_DIAG_DIST       (83.50)     //85 DARK, 83 MEDDLE
+#define WALL_FOLLOW_DIAG_DIST       (85.50)     //85 DARK, 83 MEDDLE
 #define WALL_FOLLOW_MAX_DIAG_DIST   (120.00)
 
 /**************************************************************************************/

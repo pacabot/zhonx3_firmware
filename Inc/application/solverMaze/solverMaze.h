@@ -21,7 +21,7 @@
 
 //definition for numberation function
 /* --the value of CANT_GO can be understand like infinity weight-- */
-#define INFINITY_WEIGHT 0xFFFFFFFF
+#define INFINITY_WEIGHT 0x7FFFFFFF
 
 //orientation define
 #define NORTH 0
@@ -42,7 +42,7 @@
 #define END_FIND			1
 #define POSSIBLE_END_FIND	2
 
-#define PRINT_MAZE
+//#define PRINT_MAZE
 //#define PRINT_MAZE_DURING_RUN
 //#define PRINT_BLUETOOTH_MAZE
 //#define PRINT_BLUETOOTH_MAZE_DURING_RUN

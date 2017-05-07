@@ -16,6 +16,9 @@
 #define TIMESBASE_DRIVER_E_SUCCESS  0
 #define TIMESBASE_DRIVER_E_ERROR    MAKE_ERROR(TIMESBASE_DRIVER_MODULE_ID, 1)
 
+#define PW_LED_GPIO_Port GPIOA
+#define PW_LED_Pin GPIO_PIN_15
+
 //#define DEDICATED_TIMER
 
 void timesBaseInit(void);

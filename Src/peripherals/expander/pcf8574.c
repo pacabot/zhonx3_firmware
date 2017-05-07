@@ -47,7 +47,8 @@ static void sendData(uint8_t aTxBuffer)
     //	while (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY);
     if (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY)
         return;
-    HAL_I2C_Master_Transmit_DMA(&hi2c1, (uint16_t) 64, (uint8_t*) &aTxBuffer, 1);
+    //HAL_I2C_Master_Transmit_DMA(&hi2c1, (uint16_t) 64, (uint8_t*) &aTxBuffer, 1);
+    HAL_I2C_Master_Transmit(&hi2c1, (uint16_t) 64, (uint8_t*) &aTxBuffer, 1, 1000);
 }
 
 //get DATA
@@ -102,6 +103,7 @@ void expanderLedState(char led, char val)
 
 void expanderSetLeds(char leds)
 {
+    return; //disable led
     sendData((char)(0xFF & (~(leds << 4))));
 }
 

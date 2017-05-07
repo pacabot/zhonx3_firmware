@@ -72,7 +72,7 @@ int wallSensorsCalibrationFront(void)
 
     // take the measures
     basicMoveStraight(-MEASURED_DISTANCE, 15, 15, 200);
-    ssd1306Refresh();
+    //ssd1306Refresh();
     for (i = 0; i < TELEMETER_PROFILE_ARRAY_LENGTH; i++)
     {
         while ((((int) (encoderGetDist(ENCODER_L) + encoderGetDist(ENCODER_R))
@@ -87,7 +87,7 @@ int wallSensorsCalibrationFront(void)
         ssd1306PrintIntAtLine(0, 4, "FR", (uint32_t) getTelemeterAvrg(TELEMETER_FR), &Font_5x8);
 
         ssd1306ProgressBar(10, 10, (i * 100) / TELEMETER_PROFILE_ARRAY_LENGTH);
-        ssd1306Refresh();
+//        ssd1306Refresh();
     }
     while (hasMoveEnded() != TRUE);
     telemetersStop();
@@ -117,7 +117,9 @@ int wallSensorsCalibrationFront(void)
     bluetoothPrintf("Saving Front telemeters profile into Flash memory...\n");
     ssd1306ClearScreen(MAIN_AREA);
     ssd1306PrintfAtLine(0, 1, &Font_5x8, "save into Flash memory...");
-    ssd1306Refresh();
+    //ssd1306Refresh();
+
+    HAL_Delay(1000);
 
     bluetoothPrintf("Saving Diagonal telemeters profile into Flash memory...\n");
     // Write telemeters profiles in Flash memory
