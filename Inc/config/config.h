@@ -125,8 +125,9 @@
 #define DEADZONE                    (100.00)         //doubt area
 #define DEADZONE_CHECKWALL_DIST     (5.00)
 
-#define WALL_FOLLOW_DIAG_DIST       (83.50)     //85 DARK, 83 MEDDLE
+#define WALL_FOLLOW_DIAG_DIST       (85.50)     //85 DARK, 83 MEDDLE
 #define WALL_FOLLOW_MAX_DIAG_DIST   (120.00)
+#define FRONT_SENSOR_DIST_FOR_CENTRING_ROBOT (28.00) //todo add in flash
 
 /**************************************************************************************/
 /***************                     Maze speed                    ********************/
