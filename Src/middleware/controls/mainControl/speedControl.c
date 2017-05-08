@@ -176,9 +176,17 @@ int speedControlLoop(void)
     }
 
     speed_control.speed_command = pidController(speed_control.speed_pid.instance, speed_control.speed_error)
-            * (float) speed_params.sign;
+            * speed_params.sign;
 
     //bluetoothPrintf("speed error: %d \r\n", (int)(speed_control.speed_error * 100.00));
+//    bluetoothPrintf("distance: %d,    "
+//            "command: %d,    "
+//            "error: %d    "
+//            "sign: %d \r\n",
+//            (int)(speed_control.current_distance * 100.00),
+//            (int)(speed_control.speed_command * 100.00),
+//            (int)(speed_control.speed_error * 100.00),
+//            (int)(speed_params.sign * 100.00));
 
     speed_control.old_distance = speed_control.current_distance;
 
@@ -271,13 +279,6 @@ double speedProfileCompute(double distance, double max_speed, double end_speed, 
     if (lround(distance) == 0)
     {
         speed_control.end_control = TRUE;
-//        speed_params.initial_speed = 0;
-//        speed_control.end_control = TRUE;
-//        speed_params.nb_loop_accel = 0;
-//        speed_params.nb_loop_decel = 0;
-//        speed_params.nb_loop_maint = 0;
-//        speed_params.end_speed = 0;
-//        speed_params.distance_consign = 0;
 
         speed_params.distance_consign = 0;
         speed_params.max_speed = 0;
@@ -289,11 +290,11 @@ double speedProfileCompute(double distance, double max_speed, double end_speed, 
         speed_params.decel_dist = 0;
         speed_params.accel_dist_per_loop = 0;
         speed_params.decel_dist_per_loop = 0;
+        speed_params.maintain_dist = 0;
+        speed_params.sign = 1;
+        speed_params.nb_loop_maint = 0;
         speed_params.nb_loop_accel = 0;
         speed_params.nb_loop_decel = 0;
-        speed_params.nb_loop_maint = 0;
-        speed_params.maintain_dist = 0;
-        speed_params.sign = 0;
         return 0.0;
     }
 

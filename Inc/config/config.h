@@ -69,7 +69,7 @@
 /***************                     Telemeters                    ********************/
 /**************************************************************************************/
 #define DISTANCE_WALL_DIAG          (170.00)
-#define DISTANCE_WALL_FRONT         (195.00)
+#define DISTANCE_WALL_FRONT         (200.00)
 
 /**************************************************************************************/
 /***************                       Battery                     ********************/
@@ -160,7 +160,7 @@
 #define MAX_CURVE_SPEED         (800.00)   //mm/s
 
 #define MAX_ROTATE_ACCEL        (500.00)   //°/s/s perhaps wrong scale //todo verify correct scale
-#define MAX_TURN_ACCEL          (4000.00)   //°/s/s perhaps wrong scale //todo verify correct scale
+#define MAX_TURN_ACCEL          (4000.00)    //°/s/s perhaps wrong scale //todo verify correct scale  //4000
 
 /**************************************************************************************/
 /***************                 Motors Constants                  ********************/

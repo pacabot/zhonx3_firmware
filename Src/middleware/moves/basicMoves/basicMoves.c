@@ -60,7 +60,7 @@ int basicMoveStop(void)
 int basicMove(double angle, double radius_or_distance, double max_speed, double end_speed)
 {
     double distance;
-//    mainControlStopPidLoop(); //stop contol loop
+    //    mainControlStopPidLoop(); //stop contol loop
 
     encodersReset();
     gyroResetAngle();
@@ -73,7 +73,11 @@ int basicMove(double angle, double radius_or_distance, double max_speed, double 
 
     if (lround(angle) == 0)
     {
-        mainControlSetMoveType(STRAIGHT);
+        if (lround(radius_or_distance) == 0)
+            mainControlSetMoveType(ROTATE_IN_PLACE);
+        else
+            mainControlSetMoveType(STRAIGHT);
+
         speedProfileCompute(radius_or_distance, max_speed, end_speed, MAX_ACCEL);
         positionProfileCompute(0, 0, max_speed);
 #ifdef DEBUG_MAIN_CONTROL
