@@ -444,6 +444,7 @@ int mazeMoveRotateInPlace180WithCal(wallSelectorEnum wall_presence, double speed
  */
 int mazeMoveRotateInPlaceWithCalCW90(double speed_rotation)
 {
+    mazeMoveFrontAlignment(speed_rotation);
     mazeMoveRotateInPlaceCW90(speed_rotation);
     // chose re-calibrate the robot if possible
     mazeMoveFrontAlignment(speed_rotation);
