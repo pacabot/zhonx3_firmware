@@ -12,6 +12,8 @@
 #include <middleware/settings/settings.h>
 #include <stddef.h>
 #define NAND(a,b) (!(a) && !(b))
+#define BETWEEN(x, min, max) ((((x) >= (min)) && ((x)<= (max))) ? (TRUE) : (FALSE))
+#define BETWEEN_strict(x, min, max) ((((x) > (min)) && ((x)< (max))) ? (TRUE) : (FALSE))
 
 
 /* Error codes */

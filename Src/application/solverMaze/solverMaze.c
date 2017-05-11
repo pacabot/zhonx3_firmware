@@ -94,12 +94,14 @@ int maze_solver_new_maze(void)
     explorationTime = HAL_GetTick();
     rv = exploration(&maze, &zhonx_position, &start_position, &end_coordinate); //make exploration for go from the robot position and the end of the maze
     explorationTime = HAL_GetTick() - explorationTime;
+
     if (rv != MAZE_SOLVER_E_SUCCESS)
     {
 #ifdef PRINT_BLUETOOTH_BASIC_DEGUG
         bluetoothWaitReady();
         bluetoothPrintf("no solution");
 #endif
+
         ssd1306WaitReady();
         ssd1306ClearScreen(MAIN_AREA);
         ssd1306DrawBmp(warning_Img, 1, 15, 48, 43);
@@ -125,14 +127,19 @@ int maze_solver_new_maze(void)
         tone(B5, 50);
         HAL_Delay(50);
         tone(B5, 400);
+
         motorsDriverSleep(ON); //because flash write cause interrupts damages
         telemetersStop();//because flash write cause interrupts damages
+
         clearMazelength(&maze);
         computeCellWeight(&maze,start_position.coordinate_robot, false, false);
         findArrival(maze, &end_coordinate);
+
         rv=saveMaze(&maze, &start_position, &end_coordinate);    // Save maze into flash memory
+
         motorsDriverSleep(OFF); //because flash write cause interrupts damages
         telemetersStart();//because flash write cause interrupts damages
+
         findTheShortestPath(&maze, &zhonx_position, &start_position, &end_coordinate); //find the shortest path
     }
     ssd1306ClearScreen(MAIN_AREA);
@@ -345,7 +352,15 @@ int findTheShortestPath(labyrinthe *maze, positionRobot* positionZhonx,
     while ((last_coordinate.x != end_coordinate->x)
                 || (last_coordinate.y != end_coordinate->y))
     {
-        goToPosition(maze, positionZhonx, last_coordinate);
+    	if(BETWEEN(last_coordinate.x, 0, MAZE_SIZE)
+    			&& BETWEEN(last_coordinate.y, 0, MAZE_SIZE))
+    	{
+    		goToPosition(maze, positionZhonx, last_coordinate);
+    	}
+    	else
+    	{
+    		goToPosition(maze, positionZhonx, start_position->coordinate_robot);
+    	}
         newCell(getCellState(), maze, *positionZhonx);
         clearMazelength(maze);
         computeCellWeight(maze, *end_coordinate, TRUE, FALSE);
@@ -887,12 +902,22 @@ char diffway(coordinate way1[], coordinate way2[])
 }
 coordinate findEndCoordinate(coordinate coordinate_tab[])
 {
+	coordinate rv;
     int i = 0;
     while (coordinate_tab[i].x != END_OF_LIST)
     {
         i++;
     }
-    return coordinate_tab[i - 1];
+    if(i > 0)
+    {
+    	rv = coordinate_tab[i - 1];
+    }
+    else
+    {
+    	rv.x=-1;
+    	rv.y=-1;
+    }
+    return rv;
 }
 
 int findArrival(labyrinthe maze, coordinate *end_coordinate)
