@@ -80,11 +80,11 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
                 rv = mainControl_IT();
             else
             {
+                HAL_TIM_Base_Stop_IT(&htim7);
                 telemetersStop();
                 motorsDriverSleep(ON);
                 motorsBrake();
-                HAL_TIM_Base_Stop_IT(&htim7);
-                tone(A4, 4000);
+                tone(A4, 3000);
             }
         }
         if (cnt % (int)(HI_TIME_FREQ / LINESENSORS_TIME_FREQ) == 0)

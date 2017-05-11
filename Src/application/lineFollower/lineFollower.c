@@ -633,7 +633,9 @@ void controlLoop(void)
 void lineFollower_IT(void)
 {
     if (line_follower.active_state == FALSE)
+    {
         return;
+    }
 	// Rapide
 	//	static int vitesse=0;
 

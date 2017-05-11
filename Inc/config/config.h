@@ -21,7 +21,7 @@
 #define TELEMETERS_TIME_FREQ        ((2000.00) * (10.00))   //each telemeter use 1/10 of TELEMETERS_TIME_FREQ
 #define GYRO_TIME_FREQ			    (2000.00)               //for adc injected freq
 #define LINESENSORS_TIME_FREQ	    (4000.00)               //line sensor measure frequency
-#define MULTIMMETER_TIME_FREQ       (0.10)                  //multimeter inner loop
+#define MULTIMMETER_TIME_FREQ       (1.00)                  //multimeter inner loop
 #define MOTORS_FREQ				    (23000.00)	            //motor pwm freq
 
 /**************************************************************************************/
@@ -76,9 +76,9 @@
 /**************************************************************************************/
 #define BATTERY_CELL_NUMBER					(2.00)	//2S
 #define BATTERY_LOWER_VOLTAGE_NO_LOAD		((3000) * (BATTERY_CELL_NUMBER))	//https://learn.sparkfun.com/tutorials/battery-technologies/lithium-polymer
-#define BATTERY_UPPER_VOLTAGE_NO_LOAD		((3700) * (BATTERY_CELL_NUMBER))
+#define BATTERY_UPPER_VOLTAGE_NO_LOAD		((4200) * (BATTERY_CELL_NUMBER))
 #define BATTERY_LOWER_VOLTAGE_OFFSET		((-)0.10) * (BATTERY_CELL_NUMBER))	//-0.1V/A
-#define BATTERY_COEFF_A						(((BATTERY_UPPER_VOLTAGE_NO_LOAD) - (BATTERY_LOWER_VOLTAGE_NO_LOAD)) / (100.00))
+#define BATTERY_COEFF_A						(((BATTERY_UPPER_VOLTAGE_NO_LOAD) - (BATTERY_LOWER_VOLTAGE_NO_LOAD)) / (100.00))  //Battery use ranging
 #define BATTERY_COEFF_B						((BATTERY_LOWER_VOLTAGE_NO_LOAD) / (BATTERY_COEFF_A))
 
 /**************************************************************************************/

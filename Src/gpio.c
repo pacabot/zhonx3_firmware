@@ -131,13 +131,13 @@ void MX_GPIO_Init(void)
 
     /*Configure GPIO pin Output Level */
     HAL_GPIO_WritePin(GPIOA,
-    EN_LINE_SENSORS_Pin | MOTORS_SLEEP_Pin | PW_LED_Pin,
+                      EN_LINE_SENSORS_Pin | MOTORS_SLEEP_Pin | PW_LED_Pin,
                       GPIO_PIN_RESET);
 
     /*Configure GPIO pin Output Level */
     HAL_GPIO_WritePin(
-    GPIOB,
-                      GET_ADC_BAT_Pin | L_FRONT_TX_Pin | R_FRONT_TX_Pin | DIAG_TX_Pin | WP_EEPROM_Pin, GPIO_PIN_RESET);
+            GPIOB,
+            GET_ADC_BAT_Pin | L_FRONT_TX_Pin | R_FRONT_TX_Pin | DIAG_TX_Pin | WP_EEPROM_Pin, GPIO_PIN_RESET);
 
 }
 

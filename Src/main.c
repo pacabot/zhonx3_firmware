@@ -49,6 +49,9 @@
 #include <middleware/controls/mainControl/positionControl.h>
 #include <middleware/moves/mazeMoves/spyPost.h>
 #include <middleware/settings/settings.h>
+#include "middleware/powerManagement/powerManagement.h"
+
+
 #include <peripherals/bluetooth/bluetooth.h>
 #include <peripherals/display/ssd1306.h>
 #include <peripherals/expander/pcf8574.h>
@@ -126,7 +129,6 @@ int main(void)
 
     /* USER CODE BEGIN 2 */
     expanderInit();
-    HAL_Delay(100);
     mainControlInit();
     ssd1306Init(0);
     timesBaseInit();
@@ -140,7 +142,7 @@ int main(void)
     positionControlSetPositionType(GYRO);
     mainControlSetFollowType(NO_FOLLOW);
 
-    toneSetVolulme(100);
+    toneSetVolulme(10);
     tone(F4, 50);
     toneItMode(A4, 50);
 
@@ -261,7 +263,7 @@ void HardFault_Handler(void)
     telemetersStop();
     motorsDriverSleep(ON);
     motorsBrake();
-    tone(A4, 4000);
+    tone(A4, 400);
     halt();
 }
 

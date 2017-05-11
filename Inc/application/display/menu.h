@@ -42,7 +42,6 @@ int modifyPresetParam(char *param_name, presetParam *param);
 void graphMotorSettings(float *acceleration, float *maxSpeed, float *deceleration);
 void printGraphMotor(float acceleration, float maxSpeed, float deceleration);
 void welcomeDisplay();
-void killOnLowBattery();
 void powerOffConfirmation();
 
 #endif /* MENU_H_ */

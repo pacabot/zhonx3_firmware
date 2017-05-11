@@ -17,7 +17,6 @@
 #include "stdbool.h"
 #include <arm_math.h>
 #include <math.h>
-#include <middleware/powerManagement/powerManagement.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdint.h>
@@ -27,20 +26,52 @@
 #include "peripherals/display/smallfonts.h"
 #include "peripherals/expander/pcf8574.h"
 #include "peripherals/multimeter/multimeter.h"
+#include "peripherals/tone/tone.h"
 
 /* Middleware declarations */
 #include "middleware/display/banner.h"
+#include "middleware/safety_stop/safety_stop.h"
 
 /* Declarations for this module */
+#include "middleware/powerManagement/powerManagement.h"
+
+#define KILL_DELAY 10000
 
 void batteryGauge_IT(void)
 {
-    if (HAL_GPIO_ReadPin(GPIOA, GPIO_BASE) == FALSE)
+    int bat_voltage = 0;
+
+    bat_voltage = multimeterGetBatVoltage();
+
+    if (HAL_GPIO_ReadPin(GPIO_BASE_PORT, GPIO_BASE_PIN) == FALSE)
     {
         bannerSetIcon(USB, TRUE);
     }
     else
     {
-        bannerSetIcon(BATTERY, (int) (multimeterGetBatVoltage() / BATTERY_COEFF_A - BATTERY_COEFF_B));
+        bannerSetIcon(BATTERY, bat_voltage);
     }
+    //killOnLowBattery(bat_voltage);
+}
+
+void killOnLowBattery(int bat_voltage)
+{
+    static int time = 0;
+
+    if ((bat_voltage < BATTERY_LOWER_VOLTAGE_NO_LOAD) && bat_voltage != 0)
+    {
+        time++;
+        toneItMode(A3, (MULTIMMETER_TIME_FREQ * 1000) / 2);
+        ssd1306ClearScreen(MAIN_AREA);
+        ssd1306PrintfAtLine(10, 1, &Font_8x8, "LOW BATTERY");
+        ssd1306PrintfAtLine(15, 3, &Font_7x8, "V = %d mV", bat_voltage);
+        ssd1306Refresh();
+        if (((int)(time * (MULTIMMETER_TIME_FREQ )) * 1000) >= KILL_DELAY)
+        {
+            emergencyStop();
+            halt();
+        }
+    }
+    else
+        time = 0;
 }

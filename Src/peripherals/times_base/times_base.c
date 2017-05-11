@@ -33,6 +33,7 @@
 /* Middleware declarations */
 #include "middleware/controls/pidController/pidController.h"
 #include "middleware/display/banner.h"
+#include "middleware/powerManagement/powerManagement.h"
 
 /* Declarations for this module */
 #include "peripherals/times_base/times_base.h"
@@ -195,6 +196,13 @@ void timesBaseInit(void)
     HAL_TIM_OC_ConfigChannel(&htim4, &sConfigOC, TIM_CHANNEL_4);
 
     HAL_TIM_OC_Start_IT(&htim4, TIM_CHANNEL_4);
+}
+
+void timeBaseStop()
+{
+    HAL_TIM_OC_Stop_IT(&htim4, TIM_CHANNEL_4);
+    HAL_TIM_Base_Stop_IT(&htim7);
+    HAL_TIM_Base_Stop_IT(&htim5);
 }
 
 char timeOut(unsigned char second, int loop_nb)

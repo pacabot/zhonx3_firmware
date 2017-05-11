@@ -34,6 +34,7 @@
 #include "middleware/settings/settings.h"
 #include "middleware/cmdline/cmdline_parser.h"
 #include "middleware/controls/mazeControl/wallFollowControl.h"
+#include "middleware/powerManagement/powerManagement.h"
 
 
 /* Declarations for this module */
@@ -303,7 +304,6 @@ int menu(const menuItem Menu)
     {
         HAL_Delay(1);
         int joystick = expanderJoyFiltered();
-        //		killOnLowBattery();
         switch (joystick)
         {
             case JOY_LEFT:
@@ -869,13 +869,4 @@ void powerOffConfirmation()
         while (1)
             ;
     }
-}
-void killOnLowBattery()
-{
-    //	if(multimeterGetBatVoltage() < (BATTERY_LOWER_VOLTAGE_NO_LOAD)*1000)
-    //	{
-    //		tone(A2,500);
-    //		HAL_Delay(400);
-    //		halt();
-    //	}
 }

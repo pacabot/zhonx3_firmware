@@ -133,9 +133,10 @@ void multimeter_ADC_IT(void)
     HAL_GPIO_WritePin(GPIOB, GET_ADC_BAT, RESET);
 }
 
-float multimeterGetBatVoltage(void)
+// Get bat voltage in mV
+int multimeterGetBatVoltage(void)
 {
-    return multimeter.vbat.value;
+    return (int)multimeter.vbat.value;
 }
 
 float multimeterSTM32Temp(void)
@@ -155,7 +156,7 @@ void mulimeterTest(void)
         ssd1306ClearScreen(MAIN_AREA);
         ssd1306PrintIntAtLine(0, 0, "Temp. Gyro =  ", (int) (multimeterGyroTemp() * 10.00), &Font_5x8);
         ssd1306PrintIntAtLine(0, 1, "Temp. STM32 =  ", (int) (multimeterSTM32Temp() * 10.00), &Font_5x8);
-        ssd1306PrintIntAtLine(0, 3, "vbat (mV) =  ", (int) multimeterGetBatVoltage(), &Font_5x8);
+        ssd1306PrintIntAtLine(0, 3, "vbat (mV) =  ", multimeterGetBatVoltage(), &Font_5x8);
         ssd1306Refresh();
     }
 }
