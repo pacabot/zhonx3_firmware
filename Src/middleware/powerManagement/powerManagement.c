@@ -51,7 +51,7 @@ void batteryGauge_IT(void)
     {
         bannerSetIcon(BATTERY, bat_voltage);
     }
-    //killOnLowBattery(bat_voltage);
+    killOnLowBattery(bat_voltage);
 }
 
 void killOnLowBattery(int bat_voltage)
