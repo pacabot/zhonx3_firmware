@@ -153,8 +153,8 @@ float multimeterGyroTemp(void)
 
 void mulimeterTest(void)
 {
-    telemetersInit();
-    telemetersStart();
+//    telemetersInit();
+//    telemetersStart();
 
     while (expanderJoyFiltered() != JOY_LEFT)
     {
@@ -164,5 +164,5 @@ void mulimeterTest(void)
         ssd1306PrintIntAtLine(0, 3, "vbat (mV) =  ", multimeterGetBatVoltage(), &Font_5x8);
         ssd1306Refresh();
     }
-    telemetersStop();
+//    telemetersStop();
 }
