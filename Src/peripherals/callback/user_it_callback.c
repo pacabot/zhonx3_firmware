@@ -137,14 +137,18 @@ void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
 
 void HAL_ADC_ConvHalfCpltCallback(ADC_HandleTypeDef* hadc)
 {
-    if (hadc == &hadc1)
-    {
-        multimeter_ADC_IT();
-    }
+//    if (hadc == &hadc1)
+//    {
+//        multimeter_ADC_IT();
+//    }
 }
 
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
 {
+    if (hadc == &hadc1)
+    {
+        multimeter_ADC_IT();
+    }
     if (hadc == &hadc2)
     {
         telemeters_ADC2_IT();

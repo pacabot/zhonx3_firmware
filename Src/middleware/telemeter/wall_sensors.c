@@ -101,30 +101,11 @@ void testPostSensors()
         {
             ssd1306FillRect(0, 58, 5, 5);
         }
-        //      else
-        //      {
-        //      ssd1306DrawRect(0,49,5,5);
-        //      }
-
-        //      ssd1306FillRect(0,0,5,5);
-        //      ssd1306DrawRect(0,0,5,5);
 
         if (fabs(getTelemeterSpeed(TELEMETER_DR)) > 500)
         {
             ssd1306FillRect(49, 58, 5, 5);
         }
-        //      else
-        //      {
-        //      ssd1306DrawRect(49,49,5,5);
-        //      }
-
-        //      ssd1306FillRect(49,49,5,5);
-        //
-        //      ssd1306DrawRect(49,49,5,5);
-        //
-        //      ssd1306FillRect(49,0,5,5);
-        //
-        //      ssd1306DrawRect(49,0,5,5);
 
         ssd1306PrintIntAtLine(55, 1, "FL", (int32_t) getTelemeterSpeed(TELEMETER_FL), &Font_5x8);
         ssd1306PrintIntAtLine(55, 2, "FR", (int32_t) getTelemeterSpeed(TELEMETER_DL), &Font_5x8);

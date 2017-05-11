@@ -27,12 +27,14 @@
 #include "peripherals/display/ssd1306.h"
 #include "peripherals/display/smallfonts.h"
 #include "peripherals/expander/pcf8574.h"
+#include "peripherals/telemeters/telemeters.h"
 
 /* Middleware declarations */
 #include "peripherals/multimeter/multimeter.h"
 
 /* Definition for ADCx Channel Pin */
-#define GET_ADC_BAT			GPIO_PIN_0
+#define GET_ADC_BAT_PIN			GPIO_PIN_0
+#define GET_ADC_BAT_PORT        GPIOB
 
 /* Types definitions */
 typedef struct
@@ -76,12 +78,12 @@ void mulimeterInit(void)
     /**Configure the global features of the ADC (Clock, Resolution, Data Alignment and number of conversion)
      */
     hadc1.Instance = ADC1;
-    hadc1.Init.ClockPrescaler = ADC_CLOCKPRESCALER_PCLK_DIV8;
+    hadc1.Init.ClockPrescaler = ADC_CLOCKPRESCALER_PCLK_DIV2;
     hadc1.Init.Resolution = ADC_RESOLUTION12b;
     hadc1.Init.ScanConvMode = ENABLE;
     hadc1.Init.ContinuousConvMode = DISABLE;
     hadc1.Init.DiscontinuousConvMode = DISABLE;
-    hadc1.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_RISINGFALLING;
+    hadc1.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_RISING;
     hadc1.Init.ExternalTrigConv = ADC_EXTERNALTRIGCONV_T4_CC4;
     hadc1.Init.DataAlign = ADC_DATAALIGN_RIGHT;
     hadc1.Init.NbrOfConversion = 3;
@@ -119,7 +121,7 @@ void mulimeterInit(void)
 void multimeter_IT(void)
 {
     multimeter.gpio_vbat_state = TRUE;
-    HAL_GPIO_WritePin(GPIOB, GET_ADC_BAT, SET);
+    HAL_GPIO_WritePin(GET_ADC_BAT_PORT, GET_ADC_BAT_PIN, SET);
     multimeter.timer_cnt++;
 }
 
@@ -130,7 +132,7 @@ void multimeter_ADC_IT(void)
     if (multimeter.gpio_vbat_state == TRUE)
         multimeter.vbat.value = ((float) ADC1MultimeterConvertedValues[2]) * VBAT_BRIDGE_COEFF;
     multimeter.gpio_vbat_state = FALSE;
-    HAL_GPIO_WritePin(GPIOB, GET_ADC_BAT, RESET);
+    HAL_GPIO_WritePin(GET_ADC_BAT_PORT, GET_ADC_BAT_PIN, RESET);
 }
 
 // Get bat voltage in mV
@@ -151,6 +153,9 @@ float multimeterGyroTemp(void)
 
 void mulimeterTest(void)
 {
+    telemetersInit();
+    telemetersStart();
+
     while (expanderJoyFiltered() != JOY_LEFT)
     {
         ssd1306ClearScreen(MAIN_AREA);
@@ -159,4 +164,5 @@ void mulimeterTest(void)
         ssd1306PrintIntAtLine(0, 3, "vbat (mV) =  ", multimeterGetBatVoltage(), &Font_5x8);
         ssd1306Refresh();
     }
+    telemetersStop();
 }
