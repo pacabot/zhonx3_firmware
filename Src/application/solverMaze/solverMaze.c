@@ -91,6 +91,8 @@ int maze_solver_new_maze(void)
     ssd1306PrintfAtLine(40, 0, &Font_5x8, "SCAN...");
     ssd1306Refresh();
 
+    HAL_Delay(500);
+
     explorationTime = HAL_GetTick();
     rv = exploration(&maze, &zhonx_position, &start_position, &end_coordinate); //make exploration for go from the robot position and the end of the maze
     explorationTime = HAL_GetTick() - explorationTime;
