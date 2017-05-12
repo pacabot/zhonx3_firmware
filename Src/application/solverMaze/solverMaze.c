@@ -313,7 +313,13 @@ int exploration(labyrinthe *maze, positionRobot* positionZhonx,
 #ifdef PRINT_BLUETOOTH_MAZE_DURING_RUN
             printLength(*maze, -1, -1);
 #endif
+            ssd1306ClearScreen(MAIN_AREA);
+            ssd1306DrawBmp(warning_Img, 1, 15, 48, 43);
+            ssd1306PrintfAtLine(55, 1, &Font_5x8, "NO SOLUTION");
+            ssd1306Refresh();
+            HAL_Delay(5000);
             return rv;
+
         }
         rv = moveRealZhonxArc(maze, positionZhonx, way, zhonxSettings.speeds_scan.max_speed_rotation, zhonxSettings.speeds_scan.max_speed_traslation, zhonxSettings.speeds_scan.min_speed);
         if (rv != MAZE_SOLVER_E_SUCCESS)
@@ -767,72 +773,60 @@ void printMaze(labyrinthe maze, coordinate robot_coordinate)
 
 void printLength(const labyrinthe maze, const int x_robot, const int y_robot)
 {
-    bluetoothWaitReady();
-    bluetoothPrintf("zhonx : %d; %d\n  ", x_robot, y_robot);
+	char maze_str [1024]= "";
+	sprintf(maze_str,"zhonx : %d; %d\n  ", x_robot, y_robot);
     for (int i = 0; i < MAZE_SIZE; i++)
     {
-        bluetoothWaitReady();
-        bluetoothPrintf("%5d", i);
+        sprintf(maze_str,"%5d", i);
     }
-    bluetoothWaitReady();
-    bluetoothPrintf("\n");
+    sprintf(maze_str,"\n");
     for (int i = 0; i < MAZE_SIZE; i++)
     {
-        bluetoothWaitReady();
-        bluetoothPrintf("    ");
+        sprintf(maze_str,"    ");
         for (int j = 0; j < MAZE_SIZE; j++)
         {
             if (maze.cell[j][i].wall_north == NO_KNOWN)
             {
-                bluetoothWaitReady();
-                bluetoothPrintf("- - +");
+                sprintf(maze_str,"- - +");
             }
             else if (maze.cell[j][i].wall_north == WALL_PRESENCE)
             {
-                bluetoothWaitReady();
-                bluetoothPrintf("----+");
+                sprintf(maze_str,"----+");
             }
             else
             {
-                bluetoothWaitReady();
-                bluetoothPrintf("    +");
+                sprintf(maze_str,"    +");
             }
         }
-        bluetoothWaitReady();
-        bluetoothPrintf("\n %2d ", i);
+        sprintf(maze_str,"\n %2d ", i);
         for (int j = 0; j < MAZE_SIZE; j++)
         {
             if (maze.cell[j][i].length != INFINITY_WEIGHT)
             {
-                bluetoothWaitReady();
-                bluetoothPrintf("%4d", maze.cell[j][i].length);
+                sprintf(maze_str,"%4d", maze.cell[j][i].length);
             }
             else
             {
-                bluetoothWaitReady();
-                bluetoothPrintf("+OO ");
+                sprintf(maze_str,"+OO ");
             }
             if (maze.cell[j][i].wall_east == NO_KNOWN)
             {
-                bluetoothWaitReady();
-                bluetoothPrintf("!");
+                sprintf(maze_str,"!");
             }
             else if (maze.cell[j][i].wall_east == WALL_PRESENCE)
             {
-                bluetoothWaitReady();
-                bluetoothPrintf("|");
+                sprintf(maze_str,"|");
             }
             else
             {
-                bluetoothWaitReady();
-                bluetoothPrintf(" ");
+                sprintf(maze_str," ");
             }
         }
-        bluetoothWaitReady();
-        bluetoothPrintf("\n");
+        sprintf(maze_str,"\n");
     }
+    sprintf(maze_str,"\n");
     bluetoothWaitReady();
-    bluetoothPrintf("\n");
+    bluetoothPrintf("%s", maze_str);
 }
 
 void clearMazelength(labyrinthe* maze)
@@ -925,6 +919,8 @@ coordinate findEndCoordinate(coordinate coordinate_tab[])
 int findArrival(labyrinthe maze, coordinate *end_coordinate)
 {
     int possible_end_find_cost = INFINITY_WEIGHT;
+    end_coordinate->x = -1;
+    end_coordinate->y = -1;
     for (int x = 0; x < (MAZE_SIZE - 1); x++)
     {
         for (int y = 0; y < (MAZE_SIZE - 1); ++y)
