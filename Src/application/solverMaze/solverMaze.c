@@ -311,7 +311,13 @@ int exploration(labyrinthe *maze, positionRobot* positionZhonx,
 #ifdef PRINT_BLUETOOTH_MAZE_DURING_RUN
             printLength(*maze, -1, -1);
 #endif
+            ssd1306ClearScreen(MAIN_AREA);
+            ssd1306DrawBmp(warning_Img, 1, 15, 48, 43);
+            ssd1306PrintfAtLine(55, 1, &Font_5x8, "NO SOLUTION");
+            ssd1306Refresh();
+            HAL_Delay(5000);
             return rv;
+
         }
         rv = moveRealZhonxArc(maze, positionZhonx, way, zhonxSettings.speeds_scan.max_speed_rotation, zhonxSettings.speeds_scan.max_speed_traslation, zhonxSettings.speeds_scan.min_speed);
         if (rv != MAZE_SOLVER_E_SUCCESS)
@@ -923,6 +929,8 @@ coordinate findEndCoordinate(coordinate coordinate_tab[])
 int findArrival(labyrinthe maze, coordinate *end_coordinate)
 {
     int possible_end_find_cost = INFINITY_WEIGHT;
+    end_coordinate->x = -1;
+    end_coordinate->y = -1;
     for (int x = 0; x < (MAZE_SIZE - 1); x++)
     {
         for (int y = 0; y < (MAZE_SIZE - 1); ++y)
