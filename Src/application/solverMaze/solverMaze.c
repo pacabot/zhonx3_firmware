@@ -773,72 +773,60 @@ void printMaze(labyrinthe maze, coordinate robot_coordinate)
 
 void printLength(const labyrinthe maze, const int x_robot, const int y_robot)
 {
-    bluetoothWaitReady();
-    bluetoothPrintf("zhonx : %d; %d\n  ", x_robot, y_robot);
+	char maze_str [1024]= "";
+	sprintf(maze_str,"zhonx : %d; %d\n  ", x_robot, y_robot);
     for (int i = 0; i < MAZE_SIZE; i++)
     {
-        bluetoothWaitReady();
-        bluetoothPrintf("%5d", i);
+        sprintf(maze_str,"%5d", i);
     }
-    bluetoothWaitReady();
-    bluetoothPrintf("\n");
+    sprintf(maze_str,"\n");
     for (int i = 0; i < MAZE_SIZE; i++)
     {
-        bluetoothWaitReady();
-        bluetoothPrintf("    ");
+        sprintf(maze_str,"    ");
         for (int j = 0; j < MAZE_SIZE; j++)
         {
             if (maze.cell[j][i].wall_north == NO_KNOWN)
             {
-                bluetoothWaitReady();
-                bluetoothPrintf("- - +");
+                sprintf(maze_str,"- - +");
             }
             else if (maze.cell[j][i].wall_north == WALL_PRESENCE)
             {
-                bluetoothWaitReady();
-                bluetoothPrintf("----+");
+                sprintf(maze_str,"----+");
             }
             else
             {
-                bluetoothWaitReady();
-                bluetoothPrintf("    +");
+                sprintf(maze_str,"    +");
             }
         }
-        bluetoothWaitReady();
-        bluetoothPrintf("\n %2d ", i);
+        sprintf(maze_str,"\n %2d ", i);
         for (int j = 0; j < MAZE_SIZE; j++)
         {
             if (maze.cell[j][i].length != INFINITY_WEIGHT)
             {
-                bluetoothWaitReady();
-                bluetoothPrintf("%4d", maze.cell[j][i].length);
+                sprintf(maze_str,"%4d", maze.cell[j][i].length);
             }
             else
             {
-                bluetoothWaitReady();
-                bluetoothPrintf("+OO ");
+                sprintf(maze_str,"+OO ");
             }
             if (maze.cell[j][i].wall_east == NO_KNOWN)
             {
-                bluetoothWaitReady();
-                bluetoothPrintf("!");
+                sprintf(maze_str,"!");
             }
             else if (maze.cell[j][i].wall_east == WALL_PRESENCE)
             {
-                bluetoothWaitReady();
-                bluetoothPrintf("|");
+                sprintf(maze_str,"|");
             }
             else
             {
-                bluetoothWaitReady();
-                bluetoothPrintf(" ");
+                sprintf(maze_str," ");
             }
         }
-        bluetoothWaitReady();
-        bluetoothPrintf("\n");
+        sprintf(maze_str,"\n");
     }
+    sprintf(maze_str,"\n");
     bluetoothWaitReady();
-    bluetoothPrintf("\n");
+    bluetoothPrintf("%s", maze_str);
 }
 
 void clearMazelength(labyrinthe* maze)
