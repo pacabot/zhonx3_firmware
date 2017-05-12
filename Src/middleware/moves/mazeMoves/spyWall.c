@@ -42,7 +42,6 @@
 #include "peripherals/telemeters/telemeters.h"
 #include "peripherals/encoders/ie512.h"
 #include "peripherals/gyroscope/adxrs620.h"
-#include "peripherals/tone/tone.h"
 #include "peripherals/bluetooth/bluetooth.h"
 #include "peripherals/motors/motors.h"
 

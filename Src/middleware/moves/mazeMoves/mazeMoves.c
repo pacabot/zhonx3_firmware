@@ -143,7 +143,7 @@ int mazeMoveOffsetDist(getOffsetsStruct *offset, double max_speed)
         bluetoothWaitReady();
         bluetoothPrintf(", F_OFFSET = %d", (int32_t)offset->frontCal.front_dist);
 #endif
-        toneItMode(A5, 200);
+        toneItMode(E6, 200);
     }
     else
     {
@@ -237,7 +237,7 @@ int mazeMoveFrontAlignment(double max_speed)
             while ((((getTelemeterDist(TELEMETER_FL) + getTelemeterDist(TELEMETER_FR)) / 2.00) > FRONT_SENSOR_DIST_FOR_CENTRING_ROBOT) && !hasMoveEnded());//todo add in flash
         }
         basicMove(0, 0, 0, 0);
-        toneItMode(A6, 300);
+        toneItMode(A7, 100);
         mazeMoveFrontParallelism(max_speed);
     }
     return MAZE_MOVES_E_SUCCESS;
@@ -258,7 +258,7 @@ int mazeMoveFrontParallelism(double max_speed)
             while ((((getTelemeterDist(TELEMETER_FL) - getTelemeterDist(TELEMETER_FR))) < 0) && !hasMoveEnded());
         }
         basicMove(0, 0, 0, 0);
-        toneItMode(A5, 300);
+        toneItMode(B5, 100);
     }
     return MAZE_MOVES_E_SUCCESS;
 }

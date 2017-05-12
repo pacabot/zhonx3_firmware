@@ -244,25 +244,21 @@ enum telemeters_used wallFollowGetTelemeterUsed(void)
         robot_distance = robot_distance - (((double)cell_count) * CELL_LENGTH);
     }
 
-    //    ssd1306ClearScreen(MAIN_AREA);
-    //    ssd1306PrintIntAtLine(0, 1, "dist     =  ", (int)robot_distance, &Font_5x8);
-    //    ssd1306PrintIntAtLine(0, 2, "cell cnt =  ", (int)cell_count, &Font_5x8);
-    //    ssd1306PrintIntAtLine(0, 3, "enc.     =  ", (int)((encoderGetDist(ENCODER_L) + encoderGetDist(ENCODER_R)) / 2.00), &Font_5x8);
-    //    ssd1306Refresh();
-
     telemeters_spot_distance = robot_distance + current_position + DEADZONE_VIEWING_OFFSET;
 
     if ((telemeters_spot_distance > DEADZONE_DIST - (DEADZONE / 2.00)) && (telemeters_spot_distance < DEADZONE_DIST + (DEADZONE / 2.00))) //check if the robot is into the DEADZONE
     {
         telemeter_used = NO_SIDE;
     }
-    //    else if (((telemeters_spot_distance > (OFFSET_DIST + DEADZONE_VIEWING_OFFSET)) && (telemeters_spot_distance < (OFFSET_DIST + DEADZONE_VIEWING_OFFSET + DEADZONE_CHECKWALL_DIST)))   //check if the robot is into the first wallControl zone
-    //            || (telemeters_spot_distance > (DEADZONE_DIST + (DEADZONE / 2.00)) ))                           //check if the robot is into the second wallControl zone
 
     else if ((telemeters_spot_distance > (DEADZONE_DIST + (DEADZONE * 0.65)) ||
             telemeters_spot_distance < (DEADZONE_DIST - (DEADZONE * 0.35)))  )
     {
-        if ((getTelemeterDist(TELEMETER_DL) < WALL_FOLLOW_MAX_DIAG_DIST) && (getTelemeterDist(TELEMETER_DR) < WALL_FOLLOW_MAX_DIAG_DIST))
+        if ((getTelemeterDist(TELEMETER_FL) < WALL_FOLLOW_MAX_FRONT_DIST) && (getTelemeterDist(TELEMETER_FR) < WALL_FOLLOW_MAX_FRONT_DIST))
+        {
+            telemeter_used = NO_SIDE;
+        }
+        else if ((getTelemeterDist(TELEMETER_DL) < WALL_FOLLOW_MAX_DIAG_DIST) && (getTelemeterDist(TELEMETER_DR) < WALL_FOLLOW_MAX_DIAG_DIST))
         {
             telemeter_used = ALL_SIDE;
         }
