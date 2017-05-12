@@ -17,6 +17,7 @@
 #include "middleware/settings/settings.h"
 #include "middleware/cmdline/commands/commads.h"
 #include "middleware/cmdline/cmdline_parser.h"
+#include "middleware/powerManagement/powerManagement.h"
 
 #include "stm32f4xx_hal.h"
 

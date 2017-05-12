@@ -220,26 +220,22 @@ int mazeMoveFrontAlignment(double max_speed)
 {
     double relative_dist = 0.00;
     while (hasMoveEnded() != TRUE);
-    mainControlSetMoveType(ROTATE_IN_PLACE);
 
     mazeMoveFrontParallelism(max_speed);
 
     // Front distance
     if (getWallPresence(FRONT_WALL) == TRUE)
     {
-//        for (int i = 0; i < 50; i++)
-//        {
-            if (((getTelemeterDist(TELEMETER_FL) + getTelemeterDist(TELEMETER_FR)) / 2.00) < FRONT_SENSOR_DIST_FOR_CENTRING_ROBOT)
-            {
-                basicMove(0, -20.00, 100.00, 100.00);
-                while ((((getTelemeterDist(TELEMETER_FL) + getTelemeterDist(TELEMETER_FR)) / 2.00) < FRONT_SENSOR_DIST_FOR_CENTRING_ROBOT) && !hasMoveEnded());//todo add in flash
-            }
-            else
-            {
-                basicMove(0, 20.00, 100.00, 100.00);
-                while ((((getTelemeterDist(TELEMETER_FL) + getTelemeterDist(TELEMETER_FR)) / 2.00) > FRONT_SENSOR_DIST_FOR_CENTRING_ROBOT) && !hasMoveEnded());//todo add in flash
-            }
-//        }
+        if (((getTelemeterDist(TELEMETER_FL) + getTelemeterDist(TELEMETER_FR)) / 2.00) < FRONT_SENSOR_DIST_FOR_CENTRING_ROBOT)
+        {
+            basicMove(0, -20.00, 100.00, 100.00);
+            while ((((getTelemeterDist(TELEMETER_FL) + getTelemeterDist(TELEMETER_FR)) / 2.00) < FRONT_SENSOR_DIST_FOR_CENTRING_ROBOT) && !hasMoveEnded());//todo add in flash
+        }
+        else
+        {
+            basicMove(0, 20.00, 100.00, 100.00);
+            while ((((getTelemeterDist(TELEMETER_FL) + getTelemeterDist(TELEMETER_FR)) / 2.00) > FRONT_SENSOR_DIST_FOR_CENTRING_ROBOT) && !hasMoveEnded());//todo add in flash
+        }
         basicMove(0, 0, 0, 0);
         toneItMode(A6, 300);
         mazeMoveFrontParallelism(max_speed);
@@ -251,20 +247,16 @@ int mazeMoveFrontParallelism(double max_speed)
 {
     if (getWallPresence(FRONT_WALL) == TRUE)
     {
-        // Front parallelism
-//        for (int i = 0; i < 20; i++)
-//        {
-            if (((getTelemeterDist(TELEMETER_FL) - getTelemeterDist(TELEMETER_FR))) > 0 )
-            {
-                basicMove(10, 0, 200.00, 200.00);
-                while ((((getTelemeterDist(TELEMETER_FL) - getTelemeterDist(TELEMETER_FR))) > 0) && !hasMoveEnded());
-            }
-            else
-            {
-                basicMove(-20, 0, 200.00, 200.00);
-                while ((((getTelemeterDist(TELEMETER_FL) - getTelemeterDist(TELEMETER_FR))) < 0) && !hasMoveEnded());
-            }
-//        }
+        if (((getTelemeterDist(TELEMETER_FL) - getTelemeterDist(TELEMETER_FR))) > 0 )
+        {
+            basicMove(10, 0, 200.00, 200.00);
+            while ((((getTelemeterDist(TELEMETER_FL) - getTelemeterDist(TELEMETER_FR))) > 0) && !hasMoveEnded());
+        }
+        else
+        {
+            basicMove(-20, 0, 200.00, 200.00);
+            while ((((getTelemeterDist(TELEMETER_FL) - getTelemeterDist(TELEMETER_FR))) < 0) && !hasMoveEnded());
+        }
         basicMove(0, 0, 0, 0);
         toneItMode(A5, 300);
     }
@@ -497,7 +489,7 @@ int mazeMoveUTurn(double speed_rotation, double max_speed, double out_speed)
     }
     // move HALF CELL IN
     mazeMoveHalfCell_IN(out_speed, 0);
-    mazeMoveRotateInPlace180WithCal(wall_presence, speed_rotation);//speed_rotation);
+    mazeMoveRotateInPlace180WithCal(wall_presence, speed_rotation);
     mazeMoveHalfCell_OUT(out_speed, out_speed);
     spyWallGetFrontDist(&offset.frontCal);
     mazeMoveOffsetDist(&offset, out_speed);

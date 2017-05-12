@@ -136,7 +136,6 @@ int positionControlLoop(void)
     }
     else //use encoders
     {
-        ledPowerErrorBlink(300, 300, 2);
         if (position_params.sign > 0)
             position_control.current_angle = 180.00 * (encoderGetDist(ENCODER_L) - encoderGetDist(ENCODER_R))
             / (PI * ROTATION_DIAMETER);

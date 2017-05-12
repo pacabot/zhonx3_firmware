@@ -78,5 +78,4 @@ extern CALIBRATION_DATA *zhonxCalib_data;
 extern presetParam BTpresetBaudRate;
 
 int settingsInit(void);
-void halt(void);
 #endif /* SETTING_H_ */

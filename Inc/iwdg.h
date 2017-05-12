@@ -1,8 +1,8 @@
 /**
   ******************************************************************************
-  * File Name          : RNG.h
+  * File Name          : IWDG.h
   * Description        : This file provides code for the configuration
-  *                      of the RNG instances.
+  *                      of the IWDG instances.
   ******************************************************************************
   *
   * COPYRIGHT(c) 2017 STMicroelectronics
@@ -32,8 +32,8 @@
   ******************************************************************************
   */
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __rng_H
-#define __rng_H
+#ifndef __iwdg_H
+#define __iwdg_H
 #ifdef __cplusplus
  extern "C" {
 #endif
@@ -45,13 +45,13 @@
 
 /* USER CODE END Includes */
 
-extern RNG_HandleTypeDef hrng;
+extern IWDG_HandleTypeDef hiwdg;
 
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */
 
-void MX_RNG_Init(void);
+void MX_IWDG_Init(void);
 
 /* USER CODE BEGIN Prototypes */
 
@@ -60,7 +60,7 @@ void MX_RNG_Init(void);
 #ifdef __cplusplus
 }
 #endif
-#endif /*__ rng_H */
+#endif /*__ iwdg_H */
 
 /**
   * @}

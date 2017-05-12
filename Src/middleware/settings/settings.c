@@ -44,17 +44,3 @@ int settingsInit(void)
 
     return SETTING_MODULE_E_SUCCESS;
 }
-
-// Shutdown the robot
-void halt(void)
-{
-    GPIO_InitTypeDef gpio;
-
-    gpio.Pin = GPIO_PIN_8;
-    gpio.Mode = GPIO_MODE_OUTPUT_PP;
-    gpio.Pull = GPIO_NOPULL;
-    gpio.Speed = GPIO_SPEED_HIGH;
-    HAL_GPIO_Init(GPIOB, &gpio);
-
-    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_8, GPIO_PIN_RESET);
-}

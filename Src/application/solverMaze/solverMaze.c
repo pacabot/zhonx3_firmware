@@ -81,15 +81,17 @@ int maze_solver_new_maze(void)
 #ifdef PRINT_MAZE_DURING_RUN
     printMaze(maze, zhonx_position.coordinate_robot);
 #endif
-
+    ssd1306ClearScreen(MAIN_AREA);
+    ssd1306Refresh();
+    HAL_Delay(400);
     telemetersStart();
     ssd1306ClearScreen(MAIN_AREA);
-    ssd1306PrintfAtLine(30, 0, &Font_5x8, "WAIT START...");
+    ssd1306PrintfAtLine(30, 1, &Font_5x8, "WAIT START...");
     ssd1306Refresh();
     waitStart();
     ssd1306ClearScreen(MAIN_AREA);
-    ssd1306PrintfAtLine(40, 0, &Font_5x8, "SCAN...");
     ssd1306Refresh();
+    HAL_Delay(100);
 
     explorationTime = HAL_GetTick();
     rv = exploration(&maze, &zhonx_position, &start_position, &end_coordinate); //make exploration for go from the robot position and the end of the maze

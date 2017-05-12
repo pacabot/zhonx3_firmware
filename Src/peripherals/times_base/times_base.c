@@ -33,6 +33,7 @@
 /* Middleware declarations */
 #include "middleware/controls/pidController/pidController.h"
 #include "middleware/display/banner.h"
+#include "middleware/powerManagement/powerManagement.h"
 
 /* Declarations for this module */
 #include "peripherals/times_base/times_base.h"
@@ -40,7 +41,7 @@
 //extern TIM_HandleTypeDef htim2;
 extern TIM_HandleTypeDef htim4;
 extern TIM_HandleTypeDef htim5;
-//extern TIM_HandleTypeDef htim6;
+extern TIM_HandleTypeDef htim6;
 extern TIM_HandleTypeDef htim7;
 
 GPIO_InitTypeDef GPIO_InitStruct;
@@ -118,7 +119,6 @@ void timesBaseInit(void)
     //    HAL_TIM_Base_Start_IT(&htim5);
     HAL_TIM_Base_Start(&htim5);
 
-#ifdef DEDICATED_TIMER
     uwPrescalerValue = (uint32_t) ((SystemCoreClock / 2) / (LOW_TIME_FREQ * 100));
 
     htim6.Instance = TIM6;
@@ -137,6 +137,7 @@ void timesBaseInit(void)
         //	    Error_Handler();
     }
 
+#ifdef DEDICATED_TIMER
     /*## Configure the TIM peripheral for ADC23 regular trigger ####################*/
     /* -----------------------------------------------------------------------
      Use TIM2 for start Regular conversion on ADC2 (telemeters, just use in timer base).
@@ -195,6 +196,13 @@ void timesBaseInit(void)
     HAL_TIM_OC_ConfigChannel(&htim4, &sConfigOC, TIM_CHANNEL_4);
 
     HAL_TIM_OC_Start_IT(&htim4, TIM_CHANNEL_4);
+}
+
+void timeBaseStop()
+{
+    HAL_TIM_OC_Stop_IT(&htim4, TIM_CHANNEL_4);
+    HAL_TIM_Base_Stop_IT(&htim7);
+    HAL_TIM_Base_Stop_IT(&htim5);
 }
 
 char timeOut(unsigned char second, int loop_nb)

@@ -23,8 +23,8 @@
 /* Declarations for this module */
 #include "middleware/display/banner.h"
 
-static void SetBeeperIcon(int charge_level);
-static void SetBatIcon(int charge_level);
+static void SetBeeperIcon(int volume);
+static void SetBatIcon(int voltage);
 void bannerExample(void);
 
 void bannerSetIcon(enum iconType icon, int val)
@@ -101,14 +101,17 @@ static void SetBeeperIcon(int volume)
     }
 }
 
-static void SetBatIcon(int charge_level)
+static void SetBatIcon(int voltage)
 {
     static int old_level = 0;
+    int charge_level = 0;
+
+    charge_level = voltage / BATTERY_COEFF_A - BATTERY_COEFF_B;
 
     if (charge_level > 100)
         charge_level = 100;
-    if (charge_level < 1)
-        charge_level = 1;
+    if (charge_level <= 0)
+        charge_level = 0;
 
     charge_level = charge_level * 12 / 100;
 
@@ -118,7 +121,11 @@ static void SetBatIcon(int charge_level)
     old_level = charge_level;
 
     ssd1306ClearRect(115, 0, 13, 7);
-    ssd1306DrawBmp(bat_Icon, 115, -1, 13, 8);
+
+    if (charge_level == 0)
+        ssd1306DrawBmp(batDead_Icon, 115, -1, 13, 8);
+    else
+        ssd1306DrawBmp(bat_Icon, 115, -1, 13, 8);
 
     if (charge_level >= 1)
         ssd1306DrawPixel(117, 4);

@@ -19,7 +19,7 @@
 void mulimeterInit(void);
 void multimeter_IT(void);
 void multimeter_ADC_IT(void);
-float multimeterGetBatVoltage(void);
+int multimeterGetBatVoltage(void);
 float multimeterSTM32Temp(void);
 float multimeterGyroTemp(void);
 void mulimeterTest(void);

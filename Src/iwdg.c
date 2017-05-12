@@ -1,8 +1,8 @@
 /**
   ******************************************************************************
-  * File Name          : RNG.h
+  * File Name          : IWDG.c
   * Description        : This file provides code for the configuration
-  *                      of the RNG instances.
+  *                      of the IWDG instances.
   ******************************************************************************
   *
   * COPYRIGHT(c) 2017 STMicroelectronics
@@ -31,36 +31,36 @@
   *
   ******************************************************************************
   */
-/* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __rng_H
-#define __rng_H
-#ifdef __cplusplus
- extern "C" {
-#endif
 
 /* Includes ------------------------------------------------------------------*/
-#include "stm32f4xx_hal.h"
+#include "iwdg.h"
 
-/* USER CODE BEGIN Includes */
+/* USER CODE BEGIN 0 */
 
-/* USER CODE END Includes */
+/* USER CODE END 0 */
 
-extern RNG_HandleTypeDef hrng;
+IWDG_HandleTypeDef hiwdg;
 
-/* USER CODE BEGIN Private defines */
+/* IWDG init function */
+void MX_IWDG_Init(void)
+{
 
-/* USER CODE END Private defines */
+  hiwdg.Instance = IWDG;
+  hiwdg.Init.Prescaler = IWDG_PRESCALER_16;
+  hiwdg.Init.Reload = 4095;
+  HAL_IWDG_Init(&hiwdg);
 
-void MX_RNG_Init(void);
-
-/* USER CODE BEGIN Prototypes */
-
-/* USER CODE END Prototypes */
-
-#ifdef __cplusplus
 }
-#endif
-#endif /*__ rng_H */
+
+void HAL_IWDG_MspInit(IWDG_HandleTypeDef* hiwdg)
+{
+
+}
+ 
+
+/* USER CODE BEGIN 1 */
+
+/* USER CODE END 1 */
 
 /**
   * @}
