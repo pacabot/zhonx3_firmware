@@ -44,24 +44,24 @@
 /* USER CODE BEGIN Includes */
 #include <string.h>
 
-#include <application/display/menu.h>
-#include <middleware/cmdline/cmdline_parser.h>
-#include <middleware/controls/mainControl/mainControl.h>
-#include <middleware/controls/mainControl/positionControl.h>
-#include <middleware/moves/mazeMoves/spyPost.h>
-#include <middleware/settings/settings.h>
+#include "application/display/menu.h"
+#include "middleware/cmdline/cmdline_parser.h"
+#include "middleware/controls/mainControl/mainControl.h"
+#include "middleware/controls/mainControl/positionControl.h"
+#include "middleware/moves/mazeMoves/spyPost.h"
+#include "middleware/settings/settings.h"
 #include "middleware/powerManagement/powerManagement.h"
+#include "middleware/safety_stop/safety_stop.h"
 
-
-#include <peripherals/bluetooth/bluetooth.h>
-#include <peripherals/display/ssd1306.h>
-#include <peripherals/expander/pcf8574.h>
-#include <peripherals/flash/flash.h>
-#include <peripherals/multimeter/multimeter.h>
-#include <peripherals/times_base/times_base.h>
-#include <peripherals/tone/tone.h>
-#include <peripherals/telemeters/telemeters.h>
-#include <peripherals/motors/motors.h>
+#include "peripherals/bluetooth/bluetooth.h"
+#include "peripherals/display/ssd1306.h"
+#include "peripherals/expander/pcf8574.h"
+#include "peripherals/flash/flash.h"
+#include "peripherals/multimeter/multimeter.h"
+#include "peripherals/times_base/times_base.h"
+#include "peripherals/tone/tone.h"
+#include "peripherals/telemeters/telemeters.h"
+#include "peripherals/motors/motors.h"
 
 /* USER CODE END Includes */
 
@@ -264,75 +264,9 @@ static int setZhonxName(void)
 
 void HardFault_Handler(void)
 {
-    telemetersStop();
-    motorsDriverSleep(ON);
-    motorsBrake();
-    tone(A4, 400);
+    emergencyStop();
     halt();
 }
-
-//void MemManage_Handler()
-//{
-//    telemetersStop();
-//    motorsDriverSleep(ON);
-//    motorsBrake();
-//    tone(C4, 4000);
-//    halt();
-//}
-//
-//void BusFault_Handler()
-//{
-//    telemetersStop();
-//    motorsDriverSleep(ON);
-//    motorsBrake();
-//    tone(C4, 4000);
-//    halt();
-//}
-//
-//void UsageFault_Handler()
-//{
-//    telemetersStop();
-//    motorsDriverSleep(ON);
-//    motorsBrake();
-//    tone(D4, 4000);
-//    halt();
-//}
-//
-//void SVC_Handler()
-//{
-//    telemetersStop();
-//    motorsDriverSleep(ON);
-//    motorsBrake();
-//    tone(E4, 4000);
-//    halt();
-//}
-//
-//void DebugMon_Handler()
-//{
-//    telemetersStop();
-//    motorsDriverSleep(ON);
-//    motorsBrake();
-//    tone(F4, 4000);
-//    halt();
-//}
-//
-//void PendSV_Handler()
-//{
-//    telemetersStop();
-//    motorsDriverSleep(ON);
-//    motorsBrake();
-//    tone(G4, 4000);
-//    halt();
-//}
-//
-//void FLASH_IRQHandler()
-//{
-//    telemetersStop();
-//    motorsDriverSleep(ON);
-//    motorsBrake();
-//    tone(A5, 4000);
-//    halt();
-//}
 
 /* USER CODE END 4 */
 

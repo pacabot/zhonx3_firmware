@@ -32,6 +32,8 @@
 #define GYRO_SENSITIVITY		(6.00)   	//Our example gyro is 6mV/deg/sec @5V
 #define ROTATION_THRESHOLD		(3.00)   	//Minimum deg/sec to keep track of - helps with gyro drifting
 
+#define GYRO_ANGLE_CORRECTION   (0.98)      //If the real 90° turn do not match exactly, adjust here
+
 #define GYRO_ZERO_VOLTAGE		((GYRO_VRATIO) / (2.00)) 	//Gyro is zeroed at Vrate/2 (mV)
 #ifdef GYRO_ROUT
 #define GYRO_OUTPUT_RATIO	    ((GYRO_ROUT) / ((GYRO_ROUT) + (180.00))) 	//output resistor ratio (low-pass filter)
@@ -39,7 +41,7 @@
 #define GYRO_OUTPUT_RATIO	    (1) 	//output resistor ratio (low-pass filter)
 #endif
 #define GYRO_OUT_SENSITIVITY	((GYRO_OUTPUT_RATIO) * ((GYRO_VRATIO) / (5000.00)) * (GYRO_SENSITIVITY)) 	//1,32mV/deg/sec (3.3v Req 60K)
-#define GYRO_A_COEFF		    ((GYRO_VRATIO) / ((4095.00) * (GYRO_OUT_SENSITIVITY) * (GYRO_TIME_FREQ))) //integration multiplier coeff
+#define GYRO_A_COEFF		    (GYRO_ANGLE_CORRECTION * ((GYRO_VRATIO) / ((4095.00) * (GYRO_OUT_SENSITIVITY) * (GYRO_TIME_FREQ)))) //integration multiplier coeff
 
 #define GYRO_T_SENSITIVITY 		(9.00)   //The temperature coefficient is ~9 mV/�C at 25�C
 #define GYRO_T_OUT_SENSITIVITY	((GYRO_T_SENSITIVITY) * ((GYRO_VRATIO) / (5000.00))) // ~3,564 mV/�C at 25°C (3.3v)
