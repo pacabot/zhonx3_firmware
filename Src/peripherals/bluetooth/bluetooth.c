@@ -35,7 +35,7 @@
 /* Declarations for this module */
 #include "peripherals/bluetooth/bluetooth.h"
 
-#define BLUETOOTH_BUFFER_SIZE 1024
+#define BLUETOOTH_BUFFER_SIZE 5000
 
 // Array of possible baud rates
 const int baudrates[] = { 1200, 2400, 4800, 9600, 19200, 38400, 57600, 115200, 230400, 460800,

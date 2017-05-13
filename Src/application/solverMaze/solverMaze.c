@@ -773,58 +773,58 @@ void printMaze(labyrinthe maze, coordinate robot_coordinate)
 
 void printLength(const labyrinthe maze, const int x_robot, const int y_robot)
 {
-	char maze_str [1024]= "";
-	sprintf(maze_str,"zhonx : %d; %d\n  ", x_robot, y_robot);
+    char maze_str [3000]= "";
+    sprintf(maze_str,"zhonx : %d; %d\n  ", x_robot, y_robot);
     for (int i = 0; i < MAZE_SIZE; i++)
-    {
-        sprintf(maze_str,"%5d", i);
-    }
-    sprintf(maze_str,"\n");
-    for (int i = 0; i < MAZE_SIZE; i++)
-    {
-        sprintf(maze_str,"    ");
-        for (int j = 0; j < MAZE_SIZE; j++)
-        {
-            if (maze.cell[j][i].wall_north == NO_KNOWN)
-            {
-                sprintf(maze_str,"- - +");
-            }
-            else if (maze.cell[j][i].wall_north == WALL_PRESENCE)
-            {
-                sprintf(maze_str,"----+");
-            }
-            else
-            {
-                sprintf(maze_str,"    +");
-            }
-        }
-        sprintf(maze_str,"\n %2d ", i);
-        for (int j = 0; j < MAZE_SIZE; j++)
-        {
-            if (maze.cell[j][i].length != INFINITY_WEIGHT)
-            {
-                sprintf(maze_str,"%4d", maze.cell[j][i].length);
-            }
-            else
-            {
-                sprintf(maze_str,"+OO ");
-            }
-            if (maze.cell[j][i].wall_east == NO_KNOWN)
-            {
-                sprintf(maze_str,"!");
-            }
-            else if (maze.cell[j][i].wall_east == WALL_PRESENCE)
-            {
-                sprintf(maze_str,"|");
-            }
-            else
-            {
-                sprintf(maze_str," ");
-            }
-        }
-        sprintf(maze_str,"\n");
-    }
-    sprintf(maze_str,"\n");
+	{
+	 sprintf(maze_str,"%s%5d", maze_str, i);
+	}
+	sprintf(maze_str,"%s\n", maze_str);
+	for (int i = 0; i < MAZE_SIZE; i++)
+	{
+	 sprintf(maze_str,"%s    ", maze_str);
+	  for (int j = 0; j < MAZE_SIZE; j++)
+	  {
+		  if (maze.cell[j][i].wall_north == NO_KNOWN)
+		  {
+			 sprintf(maze_str,"%s- - +", maze_str);
+		  }
+		  else if (maze.cell[j][i].wall_north == WALL_PRESENCE)
+		  {
+			 sprintf(maze_str,"%s----+", maze_str);
+		  }
+		  else
+		  {
+			 sprintf(maze_str,"%s    +", maze_str);
+		  }
+	  }
+	 sprintf(maze_str,"%s\n %2d ",maze_str, i);
+	  for (int j = 0; j < MAZE_SIZE; j++)
+	  {
+		  if (maze.cell[j][i].length != INFINITY_WEIGHT)
+		  {
+			 sprintf(maze_str,"%s%4d", maze_str, maze.cell[j][i].length);
+		  }
+		  else
+		  {
+			 sprintf(maze_str,"%s+OO ", maze_str);
+		  }
+		  if (maze.cell[j][i].wall_east == NO_KNOWN)
+		  {
+			 sprintf(maze_str,"%s!", maze_str);
+		  }
+		  else if (maze.cell[j][i].wall_east == WALL_PRESENCE)
+		  {
+			 sprintf(maze_str,"%s|", maze_str);
+		  }
+		  else
+		  {
+			 sprintf(maze_str,"%s ", maze_str);
+		  }
+	  }
+	 sprintf(maze_str,"%s\n", maze_str);
+	}
+	sprintf(maze_str,"%s\n", maze_str);
     bluetoothWaitReady();
     bluetoothPrintf("%s", maze_str);
 }
