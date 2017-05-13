@@ -32,7 +32,7 @@
 #define GYRO_SENSITIVITY		(6.00)   	//Our example gyro is 6mV/deg/sec @5V
 #define ROTATION_THRESHOLD		(3.00)   	//Minimum deg/sec to keep track of - helps with gyro drifting
 
-#define GYRO_ANGLE_CORRECTION   (0.98)      //If the real 90° turn do not match exactly, adjust here
+#define GYRO_ANGLE_CORRECTION   (0.992)      //If the real 90° turn do not match exactly, adjust here
 
 #define GYRO_ZERO_VOLTAGE		((GYRO_VRATIO) / (2.00)) 	//Gyro is zeroed at Vrate/2 (mV)
 #ifdef GYRO_ROUT
@@ -141,13 +141,13 @@
 #define RUN1_MIN_SPEED_TRANSLATION  (500)
 #define RUN1_MAX_SPEED_TRANSLATION  (1500)
 
-#define RUN2_SPEED_ROTATION         (600)
-#define RUN2_MIN_SPEED_TRANSLATION  (600)
-#define RUN2_MAX_SPEED_TRANSLATION  (3000)
+#define RUN2_SPEED_ROTATION         (550)
+#define RUN2_MIN_SPEED_TRANSLATION  (550)
+#define RUN2_MAX_SPEED_TRANSLATION  (2000)
 
-#define SCAN_SPEED_ROTATION         (400)
-#define SCAN_MIN_SPEED_TRANSLATION  (400)
-#define SCAN_MAX_SPEED_TRANSLATION  (800)
+#define SCAN_SPEED_ROTATION         (500)
+#define SCAN_MIN_SPEED_TRANSLATION  (500)
+#define SCAN_MAX_SPEED_TRANSLATION  (1000)
 
 #define SAFE_SPEED_ROTATION         (400)
 #define SAFE_SPEED_TRANSLATION      (400)
@@ -158,12 +158,12 @@
 /***************                 Physical Constants                ********************/
 /**************************************************************************************/
 #define MAX_SPEED               (4500.00)   //mm/s
-#define MAX_ACCEL               (7000.00)   //mm/s/s
+#define MAX_ACCEL               (8000.00)   //mm/s/s
 
 #define MAX_CURVE_ACCEL         (1300.00)   //mm/s
 #define MAX_CURVE_SPEED         (800.00)   //mm/s
 
-#define MAX_ROTATE_ACCEL        (500.00)   //°/s/s perhaps wrong scale //todo verify correct scale
+#define MAX_ROTATE_ACCEL        (600.00)   //°/s/s perhaps wrong scale //todo verify correct scale
 #define MAX_TURN_ACCEL          (4000.00)    //°/s/s perhaps wrong scale //todo verify correct scale  //4000
 
 /**************************************************************************************/
