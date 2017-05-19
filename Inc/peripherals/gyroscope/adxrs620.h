@@ -15,7 +15,8 @@
 // Structure that will contain the calibration values for the Gyroscope
 typedef struct
 {
-    double calib_value;
+    double calib_angle_coeff;
+    double calib_B_coeff;
 } gyro_calib_struct;
 
 /* Error codes */

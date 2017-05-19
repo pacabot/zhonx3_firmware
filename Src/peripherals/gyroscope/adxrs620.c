@@ -80,8 +80,11 @@ void adxrs620Init(void)
  ----------------------------------------------------------------------- */
 void adxrs620_ADC_IT(void)
 {
-    gyro.current_angle += (GYRO_A_COEFF * (gyro.adc_value = HAL_ADCEx_InjectedGetValue(&hadc1, ADC_INJECTED_RANK_1)))
-            - zhonxCalib_data->gyro.calib_value;  //optimized gyro integration DMA
+//    gyro.current_angle += (GYRO_A_COEFF * (gyro.adc_value = HAL_ADCEx_InjectedGetValue(&hadc1, ADC_INJECTED_RANK_1)))
+//            - zhonxCalib_data->gyro.calib_value;  //optimized gyro integration DMA
+
+    gyro.current_angle += ((zhonxCalib_data->gyro.calib_angle_coeff * GYRO_A_COEFF) * (gyro.adc_value = HAL_ADCEx_InjectedGetValue(&hadc1, ADC_INJECTED_RANK_1)))
+            - zhonxCalib_data->gyro.calib_B_coeff;  //optimized gyro integration DMA
 
     gyro.callback_cnt++;
 }
@@ -91,7 +94,7 @@ double adxrs620Calibrate(int nb_ech)
     double sample_sum = 0;
     for (int i = 0; i < nb_ech; i++)
     {
-        sample_sum += GYRO_A_COEFF * gyro.adc_value;
+        sample_sum += zhonxCalib_data->gyro.calib_angle_coeff * (GYRO_A_COEFF * gyro.adc_value);
         HAL_Delay(1);
     }
     return sample_sum / (double) nb_ech;
@@ -110,21 +113,69 @@ void gyroResetAngle(void)
 
 void adxrs620Cal(void)
 {
-    double cal;
+    double cal = 1.00;
     int rv;
     adxrs620Init();
 
     positionControlSetPositionType(ENCODERS);
-    motorsDriverSleep(OFF);
-    basicMove(0,0,0,0);
+    //motorsDriverSleep(OFF);
+    //basicMove(0,0,0,0);
 
+    rv = flash_write(zhonxSettings.h_flash,
+                     (unsigned char *)&(zhonxCalib_data->gyro.calib_angle_coeff),
+                     (unsigned char *)&cal, sizeof(double));
+    if (rv != FLASH_DRIVER_E_SUCCESS)
+    {
+        ssd1306PrintfAtLine(0, 2, &Font_5x8, "FAILED To write calibration value");
+        ssd1306Refresh();
+        HAL_Delay(2000);
+    }
+    cal = adxrs620Calibrate(2000);
+    rv = flash_write(zhonxSettings.h_flash,
+                     (unsigned char *)&(zhonxCalib_data->gyro.calib_B_coeff),
+                     (unsigned char *)&cal, sizeof(double));
+    if (rv != FLASH_DRIVER_E_SUCCESS)
+    {
+        ssd1306PrintfAtLine(0, 2, &Font_5x8, "FAILED To write calibration value");
+        ssd1306Refresh();
+        HAL_Delay(2000);
+    }
     ssd1306ClearScreen(MAIN_AREA);
-    ssd1306DrawStringAtLine(0, 1, "DON'T TOUTCH Z3!!", &Font_3x6);
+    ssd1306DrawStringAtLine(0, 1, "Place robot at 0°", &Font_3x6);
     ssd1306Refresh();
     HAL_Delay(3000);
-    cal = adxrs620Calibrate(5000);
+    ssd1306ClearScreen(MAIN_AREA);
+    ssd1306DrawStringAtLine(0, 1, "Read angle...", &Font_3x6);
+    ssd1306Refresh();
+    gyroResetAngle();
+    ssd1306ClearScreen(MAIN_AREA);
+    ssd1306DrawStringAtLine(0, 1, "Place robot at 360°", &Font_3x6);
+    ssd1306Refresh();
+    HAL_Delay(4000);
+    ssd1306ClearScreen(MAIN_AREA);
+    ssd1306DrawStringAtLine(0, 1, "Read angle...", &Font_3x6);
+    ssd1306Refresh();
+    cal = gyroGetAngle();
+    cal = fabs(360.00 / cal);
     rv = flash_write(zhonxSettings.h_flash,
-                     (unsigned char *)&(zhonxCalib_data->gyro.calib_value),
+                     (unsigned char *)&(zhonxCalib_data->gyro.calib_angle_coeff),
+                     (unsigned char *)&cal, sizeof(double));
+    if (rv != FLASH_DRIVER_E_SUCCESS)
+    {
+        ssd1306PrintfAtLine(0, 2, &Font_5x8, "FAILED To write calibration value");
+        ssd1306Refresh();
+        HAL_Delay(2000);
+    }
+    ssd1306ClearScreen(MAIN_AREA);
+    ssd1306PrintIntAtLine(10, 3, "A =", (int32_t) (cal * 100000.00), &Font_5x8);
+    ssd1306Refresh();
+    HAL_Delay(3000);
+    ssd1306ClearScreen(MAIN_AREA);
+    ssd1306DrawStringAtLine(0, 1, "Read static offset...", &Font_3x6);
+    ssd1306Refresh();
+    cal = adxrs620Calibrate(2000);
+    rv = flash_write(zhonxSettings.h_flash,
+                     (unsigned char *)&(zhonxCalib_data->gyro.calib_B_coeff),
                      (unsigned char *)&cal, sizeof(double));
     if (rv != FLASH_DRIVER_E_SUCCESS)
     {
@@ -138,6 +189,7 @@ void adxrs620Cal(void)
         ssd1306PrintIntAtLine(10, 3, "B =", (int32_t) (cal * 100000.00), &Font_5x8);
         ssd1306Refresh();
     }
+
     motorsDriverSleep(ON);
 }
 
