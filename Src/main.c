@@ -135,7 +135,7 @@ int main(void)
     mulimeterInit();
     bluetoothInit();
     toneInit();
-    spyPostInit();
+    spyPostInit();//test
 
     positionControlSetPositionType(GYRO);
     mainControlSetFollowType(NO_FOLLOW);
