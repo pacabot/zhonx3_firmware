@@ -219,12 +219,10 @@ void encoderTest(void)
 #endif
 
 #if 1   //test encoders response
-    telemetersStart();
 
     while (expanderJoyFiltered() != JOY_LEFT)
     {
         ssd1306ClearScreen(MAIN_AREA);
-        ssd1306PrintIntAtLine(0, 4, "R_DIST_ABS =  ", (signed int)getTelemeterAvrg(TELEMETER_DL), &Font_5x8);
 
 #else
 

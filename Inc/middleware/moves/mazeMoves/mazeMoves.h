@@ -41,4 +41,7 @@ int  mazeMoveResetStart(double speed_rotation, double max_speed, double out_spee
 void mazeMovesTest1(void);
 void mazeMovesTest2(void);
 
+void movesTest1(void);
+void movesTest2(void);
+
 #endif // __MAZEMOVES_H

@@ -33,5 +33,7 @@ void print_cell_state (walls cell_state);
 void waitStart();
 int saveMaze(labyrinthe *maze, positionRobot *start_position, coordinate  *end_coordinate);
 int loadMaze(labyrinthe *maze, positionRobot *start_position, coordinate  *end_coordinate);
+int test_move_zhonx ();
+int test_maze_flash ();
 
 #endif /* ROBOTINTERFACE_H_ */

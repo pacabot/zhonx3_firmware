@@ -24,16 +24,15 @@ extern line_follower_struct line_follower;
 
 #define MAXSPEED 300
 #define MINSPEED 100
-#define SPEED_COEFF 1.00
 
-typedef struct
-{
-    unsigned short int left;
-    unsigned short int front;
-    unsigned short int right;
-    unsigned short int leftExt;
-    unsigned short int rightExt;
-} ground_sensors_struct;
+//typedef struct
+//{
+//    unsigned short int left;
+//    unsigned short int front;
+//    unsigned short int right;
+//    unsigned short int leftExt;
+//    unsigned short int rightExt;
+//} ground_sensors_struct;
 typedef struct
 {
 	int left;
@@ -44,11 +43,10 @@ typedef struct
 } calibrate_sensors_struct;
 
 void lineSensorsCalibration(void);
-int EstAGauche();
 void lineFollower(void);
 int lineFollowerStop();
-int lineFollowerFigure();
 void lineFollower_IT(void);
 void controlLoop(void);
+void test_line_sensors();
 
 #endif /* LINE_FOLLOWER_H_ */

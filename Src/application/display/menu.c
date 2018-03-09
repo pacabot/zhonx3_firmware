@@ -19,14 +19,24 @@
 #include <stdio.h>
 #include <stdint.h>
 
-/* Application declarations */
-
 /* Peripheral declarations */
 #include "peripherals/display/ssd1306.h"
 #include "peripherals/display/smallfonts.h"
 #include "peripherals/expander/pcf8574.h"
 #include "peripherals/multimeter/multimeter.h"
 #include "peripherals/tone/tone.h"
+#include "peripherals/bluetooth/bluetooth.h"
+#include "peripherals/eeprom/24lc64.h"
+#include "peripherals/encoders/ie512.h"
+#include "peripherals/gyroscope/adxrs620.h"
+#include "peripherals/multimeter/multimeter.h"
+#include "peripherals/telemeters/telemeters.h"
+#include "peripherals/tone/tone.h"
+#include "peripherals/motors/motors.h"
+#include "peripherals/lineSensors/lineSensors.h"
+#include "peripherals/expander/pcf8574.h"
+//#include "peripherals/telemeters/telemetersCal.h"
+
 
 /* Middleware declarations */
 #include "middleware/display/icons.h"
@@ -34,7 +44,19 @@
 #include "middleware/settings/settings.h"
 #include "middleware/cmdline/cmdline_parser.h"
 #include "middleware/controls/mazeControl/wallFollowControl.h"
+#include "middleware/wall_sensors/wall_sensors.h"
+#include "middleware/moves/mazeMoves/mazeMoves.h"
+#include "middleware/moves/mazeMoves/mazeMovesAdvanced.h"
+#include "middleware/moves/mazeMoves/spyPost.h"
+#include "middleware/moves/mazeMoves/spyWall.h"
+#include "middleware/controls/pidController/pidCalculator.h"
+#include "middleware/controls/lineFollowerControl/lineFollowControl.h"
 
+/* Application declarations */
+
+#include "application/lineFollower/lineFollower.h"
+#include "application/solverMaze/solverMaze.h"
+#include "application/solverMaze/robotInterface.h"
 
 /* Declarations for this module */
 #include "application/display/menu.h"
@@ -50,55 +72,19 @@ typedef enum
 }line_on_menue_type;
 
 /*external functions */
-extern void bluetoothTest();
-extern void eepromTest();
-extern void encoderTest();
-extern void adxrs620Test();
-extern void mulimeterTest();
-extern void telemetersTest();
-extern void toneTest();
-extern void motorsTest();
-extern void lineSensorsTest();
-extern void lineFollower();
-extern int lineSensorsCalibration(void);
-extern void maze_solver_new_maze();
-extern void testWallsSensors();
-extern void movesTest1(void);
-extern void movesTest2(void);
-extern void expenderLedTest();
-extern int wallSensorsCalibrationFront(void);
-extern int wallSensorsCalibrationDiag(void);
 extern int setMeddle(void);
 extern int setDark(void);
-extern void telemetersGetCalibrationValues(void);
-extern uint32_t spyPostCalibration(void);
-extern void spyPostTest(void);
-extern uint32_t spyPostReadCalibration(void);
-extern void spyWallFrontDistCal(void);
-extern void spyWallFrontTest(void);
-extern void adxrs620Cal(void);
-extern void pidGyro_GetCriticalPoint(void);
-extern void pidEncoders_GetCriticalPoint(void);
-extern void pidTelemeters_GetCriticalPoint(void);
-extern int test_move_zhonx(void);
-extern int startRun1(void);
-extern int startRun2(void);
-extern int mazeMoveAdvancedTest(void);
-extern int test_maze_flash(void);
-extern int restartExplo(void);
-extern void wallFollowTest(void);
-extern int printStoredMaze();
-extern int _Factor;
-extern int _KP;
+
+
 /*
  * to create a new menu you have to create a new variable of type "const menuItem" like this :
  * const menuItem name =
  * {
  * 		"menu name",
  * 		{
- * 			{"line 1 name ",'type of argument', &(void*) pointeur_on_argument},		// 'type of argument' could be integer for int, or 'l' for long, or menu for  a menu, or function for a function
- * 			{"line 1 name ",'type of argument', &(void*) pointeur_on_argument},		// maximum 20 line. if it's not enough you must add in "menu.h". for that you have to modify "MAX_LINE_IN_MENU"
- * 			{(char*)NULL,        0,     NULL} 					// the last ligne must be this one, this line will be not print but indispensable. /!\ this line  compte dans les 20 ligne du menu
+ * 			{"line 1 name ",type_of_argument, &(void*) pointeur_on_argument},		// 'type of argument' could be integer for int, or 'l' for long, or menu for  a menu, or function for a function
+ * 			{"line 1 name ",type of argument, &(void*) pointeur_on_argument},		// maximum 20 line. if it's not enough you must add in "menu.h". for that you have to modify "MAX_LINE_IN_MENU"
+ * 			{NULL,        0,     NULL} 					// the last ligne must be this one, this line will be not print but indispensable. /!\ this line  compte dans les 20 ligne du menu
  * 		}
  * }
  */
@@ -110,7 +96,7 @@ const menuItem scan_settings_menu =
                 {"min speed",           integer,(void*)&zhonxSettings.speeds_scan.min_speed},
                 {"max speed tans",      integer,(void*)&zhonxSettings.speeds_scan.max_speed_traslation},
                 {"max speed rot",       integer,(void*)&zhonxSettings.speeds_scan.max_speed_rotation},
-                {(char*)NULL,        0,     NULL}
+                {NULL,       0,     NULL}
         }
 };
 
@@ -122,7 +108,7 @@ const menuItem run1_settings_menu =
                 {"max speed tans",      integer,(void*)&zhonxSettings.speeds_run1.max_speed_traslation},
                 {"max speed rot",       integer,(void*)&zhonxSettings.speeds_run1.max_speed_rotation},
                 {"return to start",     boolean,(void*)&zhonxSettings.return_to_start_cell},
-                {(char*)NULL,        0,     NULL}
+                {NULL,       0,     NULL}
         }
 };
 
@@ -134,7 +120,7 @@ const menuItem run2_settings_menu =
                 {"max speed tans",      integer,(void*)&zhonxSettings.speeds_run2.max_speed_traslation},
                 {"max speed rot",       integer,(void*)&zhonxSettings.speeds_run2.max_speed_rotation},
                 {"return to start",     boolean,(void*)&zhonxSettings.return_to_start_cell},
-                {(char*)NULL,       0,     NULL}
+                {NULL,       0,     NULL}
         }
 };
 
@@ -151,7 +137,7 @@ const menuItem maze_menu =
                 {"print maze",      function,    (void*)printStoredMaze},
                 {"restart explo",   function,    (void*)&restartExplo},
                 {"Test maze move",  function,    (void*)test_move_zhonx},
-                {(char*)NULL,        0,     NULL}
+                {NULL,        0,     NULL}
 //				{"Calibration", boolean,    (void*)&zhonxSettings.calibration_enabled},
 //				{"Color finish",boolean,	(void*)&zhonxSettings.nime_competition},
 //				{"X finish",    integer,	(void*)&zhonxSettings.maze_end_coordinate.x},
@@ -165,10 +151,12 @@ const menuItem follower_menu =
 		"LINE FOLL",    //9 characters max
 		{
 				{"line follower",   function,	(void*)lineFollower},
-				{"Calibration",     function,    (void*)lineSensorsCalibration},
+				{"Calibration",     function,   (void*)lineSensorsCalibration},
 				//{"Sensor Bluetooth",function, (void*)lineSensorSendBluetooth},
-				{"Set F. K",        integer,    (void*)&_Factor},
-				{"Set F. KP",       integer,    (void*)&_KP},
+				{"Set F. KP",       integer,    (void*)&Line_follower_KP},
+				{"Set F. KD",       integer,    (void*)&Line_follower_KD},
+				{"line sensor test",function,   (void*)test_line_sensors},
+				{NULL, 0, NULL}
 		}
 };
 
@@ -179,7 +167,8 @@ const menuItem telemetersCal =
                 {"Calibration front",   function,    (void*)wallSensorsCalibrationFront},
                 {"Calibration diag",    function,    (void*)wallSensorsCalibrationDiag},
                 {"Send calib values",   function,    (void *)telemetersGetCalibrationValues},
-                {"Set BT baudrate",     preset_value,    (void *)&BTpresetBaudRate}
+                {"Set BT baudrate",     preset_value,    (void *)&BTpresetBaudRate},
+				{NULL, 0, NULL}
         }
 };
 
@@ -190,6 +179,7 @@ const menuItem spyPostCal =
                 { "Start calibration",  function, (void*)spyPostCalibration},
                 { "Read Calibration.",  function, (void*)spyPostReadCalibration},
                 { "SpyPost test.",      function, (void*)spyPostTest},
+				{NULL, 0, NULL}
         }
 };
 
@@ -200,6 +190,7 @@ const menuItem pidCal =
                 { "Gyro Kp critic", function, (void*)pidGyro_GetCriticalPoint},
                 { "Enc. Kp critic", function, (void*)pidEncoders_GetCriticalPoint},
                 { "Tel. Kp critic", function, (void*)pidTelemeters_GetCriticalPoint},
+				{NULL, 0, NULL}
         }
 };
 
@@ -209,6 +200,7 @@ const menuItem frontCal =
         {
                 { "Start calibration",  function, (void*)spyWallFrontDistCal},
                 { "SpyWall test",       function, (void*)spyWallFrontTest},
+				{NULL, 0, NULL}
         }
 };
 
@@ -218,6 +210,7 @@ const menuItem gyroCal =
         {
                 { "Start calibration",  function, (void*)adxrs620Cal},
                 { "Gyro test",          function, (void*)adxrs620Test},
+				{NULL, 0, NULL}
         }
 };
 
@@ -230,6 +223,7 @@ const menuItem calibration_menu =
                 {"SpyWall",         new_menu,  (void*)&frontCal},
                 {"Gyroscope",       new_menu,  (void*)&gyroCal},
                 {"PID",             new_menu,  (void*)&pidCal},
+				{NULL, 0, NULL}
         }
 };
 
@@ -252,7 +246,7 @@ const menuItem tests_menu =
 				{"Expender LEDs",	function, (void*)expenderLedTest},
 				{"flash maze",      function, (void*)test_maze_flash},
 				{"wall Follow",     function, (void*)wallFollowTest},
-				{0,0,0}
+				{NULL, 0, NULL}
 		}
 };
 
@@ -261,7 +255,8 @@ const menuItem control_menu =
         {
                 { "Move Test 1",        function, (void*)movesTest1 },
                 { "Move Test 2",        function, (void*)movesTest2 },
-                { "Advanced Move 1",    function, (void*)mazeMoveAdvancedTest},
+				{ "Advanced Move 1",    function, (void*)mazeMoveAdvancedTest},
+				{NULL, 0, NULL}
         }
 };
 
@@ -285,7 +280,7 @@ const menuItem mainMenu =
 				{"Calibration menu",new_menu,    (void*)&calibration_menu},
                 {"Control menu",    new_menu,    (void*)&control_menu},
 				{"Zhonx Name",      new_menu,    (void*)&zhonxNameMenu},
-				{0, 0, 0}
+				{NULL, 0, NULL}
 		}
 };
 

@@ -120,4 +120,6 @@ char diffway(coordinate way1[], coordinate way2[]);
 coordinate findEndCoordinate (coordinate coordinate_tab[]);
 int findArrival (labyrinthe maze, coordinate *end_coordinate);
 int print_no_solution();
+int printStoredMaze ();
+
 #endif /* RESOLUTION_MAZE_H_ */

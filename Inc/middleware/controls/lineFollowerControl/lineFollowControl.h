@@ -38,6 +38,9 @@ typedef struct
 
 extern line_follow_control_struct line_follow_control;
 
+extern int Line_follower_KP;
+extern int Line_follower_KD;
+
 int lineFollowControlInit(void);
 int lineFollowControlLoop(void);
 
