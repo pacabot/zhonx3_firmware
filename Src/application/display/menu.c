@@ -152,7 +152,7 @@ const menuItem follower_menu =
 		{
 				{"line follower",   function,	(void*)lineFollower},
 				{"Calibration",     function,   (void*)lineSensorsCalibration},
-				//{"Sensor Bluetooth",function, (void*)lineSensorSendBluetooth},
+				{"speed",			integer,	(void*)&line_speed},
 				{"Set F. KP",       integer,    (void*)&Line_follower_KP},
 				{"Set F. KD",       integer,    (void*)&Line_follower_KD},
 				{"line sensor test",function,   (void*)test_line_sensors},
@@ -288,6 +288,8 @@ extern I2C_HandleTypeDef hi2c1;
 
 int menu(const menuItem Menu)
 {
+	encodersInit();
+	encodersReset();
     signed char line_screen = 1;
     signed char line_menu = 0;
     // Display main menu
@@ -299,119 +301,123 @@ int menu(const menuItem Menu)
         HAL_Delay(1);
         int joystick = expanderJoyFiltered();
         //		killOnLowBattery();
-        switch (joystick)
-        {
-            case JOY_LEFT:
-                return SUCCESS;
-                // Joystick down
-            case JOY_DOWN:
-                toneItMode(100, 10);
-                if (Menu.line[line_menu + 1].name != null)
-                {
-                    line_menu++;
-                    if (line_screen >= MAX_LINE_SCREEN)
-                    {
-                        displayMenu(Menu, line_menu - (line_screen - 1));
-                        ssd1306InvertArea(0, line_screen * MARGIN,
-                        HIGHLIGHT_LENGHT,
-                                          HIGHLIGHT_HEIGHT);
-                        ssd1306Refresh();
-                    }
-                    else
-                    {
-                        line_screen++;
-                        menuHighlightedMove((line_screen - 1) * ROW_HEIGHT + 1, (line_screen) * ROW_HEIGHT);
-                    }
-                }
-                else
-                {
-                    line_menu = 0;
-                    line_screen = 1;
-                    displayMenu(Menu, line_menu - (line_screen - 1));
-                    ssd1306InvertArea(0, line_screen * MARGIN,
-                    HIGHLIGHT_LENGHT,
-                                      HIGHLIGHT_HEIGHT);
-                    ssd1306Refresh();
-                }
-                break;
-            case JOY_UP:
-                toneItMode(100, 10);
-                if (line_menu > 0)
-                {
-                    line_menu--;
-                    if (line_screen <= 1)
-                    {
-                        displayMenu(Menu, line_menu);
-                        ssd1306InvertArea(0, MARGIN, HIGHLIGHT_LENGHT,
-                        HIGHLIGHT_HEIGHT);
-                        ssd1306Refresh();
-                    }
-                    else
-                    {
-                        line_screen--;
-                        menuHighlightedMove((line_screen + 1) * ROW_HEIGHT - 1, (line_screen) * ROW_HEIGHT);
-                    }
-                }
-                else
-                {
-                    while (Menu.line[line_menu + 1].name != null)
-                    {
-                        line_menu++;
-                    }
-                    if (line_menu < MAX_LINE_SCREEN - 1)
-                    {
-                        displayMenu(Menu, 0);
-                        line_screen = line_menu + 1;
-                    }
-                    else
-                    {
-                        line_screen = MAX_LINE_SCREEN;
-                        displayMenu(Menu, line_menu - (MAX_LINE_SCREEN - 1));
-                    }
-                    ssd1306InvertArea(0, MARGIN * line_screen, HIGHLIGHT_LENGHT,
-                    HIGHLIGHT_HEIGHT);
-                    ssd1306Refresh();
-                }
-                break;
-            case JOY_RIGHT: // Validate button joystick right
-                toneItMode(8000, 20);
-                switch (Menu.line[line_menu].type)
-                {
-                    case boolean:
-                        modifyBoolParam(Menu.line[line_menu].name, (unsigned char*) Menu.line[line_menu].param);
-                        break;
-                    case integer:
-                        modifyLongParam(Menu.line[line_menu].name, (long*) (int*) Menu.line[line_menu].param);
-                        break;
-                    case 'l':
-                        modifyLongParam(Menu.line[line_menu].name, (long*) Menu.line[line_menu].param);
-                        break;
-                    case new_menu:
-                        menu(*(const menuItem*) Menu.line[line_menu].param);
-                        break;
-                    case function:
-                        if (Menu.line[line_menu].param != NULL)
-                        {
-                            ssd1306ClearScreen(MAIN_AREA);
-                            ssd1306Refresh();
-                            Menu.line[line_menu].param();
-                        }
-                        break;
-                    case preset_value:
-                        modifyPresetParam(Menu.line[line_menu].name, (presetParam *)Menu.line[line_menu].param);
-                        break;
-                    default:
-                        break;
-                }
-                HAL_Delay(50);
-                displayMenu(Menu, line_menu - (line_screen - 1));
-                ssd1306InvertArea(0, MARGIN * line_screen, HIGHLIGHT_LENGHT,
-                HIGHLIGHT_HEIGHT);
-                ssd1306Refresh();
-                break;
-            default:
-                break;
-        }
+		if (joystick == JOY_LEFT || encoderGetDist(ENCODER_L) > 20)
+		{
+			return SUCCESS;
+		}
+		// Joystick down
+		if (joystick == JOY_DOWN || encoderGetDist(ENCODER_R) < -20)
+		{
+			toneItMode(100, 10);
+			if (Menu.line[line_menu + 1].name != null)
+			{
+				line_menu++;
+				if (line_screen >= MAX_LINE_SCREEN)
+				{
+					displayMenu(Menu, line_menu - (line_screen - 1));
+					ssd1306InvertArea(0, line_screen * MARGIN,
+					HIGHLIGHT_LENGHT,
+									  HIGHLIGHT_HEIGHT);
+					ssd1306Refresh();
+				}
+				else
+				{
+					line_screen++;
+					menuHighlightedMove((line_screen - 1) * ROW_HEIGHT + 1, (line_screen) * ROW_HEIGHT);
+				}
+				encodersReset();
+			}
+			else
+			{
+				line_menu = 0;
+				line_screen = 1;
+				displayMenu(Menu, line_menu - (line_screen - 1));
+				ssd1306InvertArea(0, line_screen * MARGIN,
+				HIGHLIGHT_LENGHT,
+								  HIGHLIGHT_HEIGHT);
+				ssd1306Refresh();
+			}
+			encodersReset();
+		}
+		if( joystick == JOY_UP || encoderGetDist(ENCODER_R) > 20)
+		{
+			toneItMode(100, 10);
+			if (line_menu > 0)
+			{
+				line_menu--;
+				if (line_screen <= 1)
+				{
+					displayMenu(Menu, line_menu);
+					ssd1306InvertArea(0, MARGIN, HIGHLIGHT_LENGHT,
+					HIGHLIGHT_HEIGHT);
+					ssd1306Refresh();
+				}
+				else
+				{
+					line_screen--;
+					menuHighlightedMove((line_screen + 1) * ROW_HEIGHT - 1, (line_screen) * ROW_HEIGHT);
+				}
+			}
+			else
+			{
+				while (Menu.line[line_menu + 1].name != null)
+				{
+					line_menu++;
+				}
+				if (line_menu < MAX_LINE_SCREEN - 1)
+				{
+					displayMenu(Menu, 0);
+					line_screen = line_menu + 1;
+				}
+				else
+				{
+					line_screen = MAX_LINE_SCREEN;
+					displayMenu(Menu, line_menu - (MAX_LINE_SCREEN - 1));
+				}
+				ssd1306InvertArea(0, MARGIN * line_screen, HIGHLIGHT_LENGHT,
+				HIGHLIGHT_HEIGHT);
+				ssd1306Refresh();
+			}
+			encodersReset();
+		}
+		if (joystick == JOY_RIGHT || encoderGetDist(ENCODER_L) < -20) // Validate button joystick right
+		{
+			toneItMode(8000, 20);
+			switch (Menu.line[line_menu].type)
+			{
+				case boolean:
+					modifyBoolParam(Menu.line[line_menu].name, (unsigned char*) Menu.line[line_menu].param);
+					break;
+				case integer:
+					modifyLongParam(Menu.line[line_menu].name, (long*) (int*) Menu.line[line_menu].param);
+					break;
+				case 'l':
+					modifyLongParam(Menu.line[line_menu].name, (long*) Menu.line[line_menu].param);
+					break;
+				case new_menu:
+					menu(*(const menuItem*) Menu.line[line_menu].param);
+					break;
+				case function:
+					if (Menu.line[line_menu].param != NULL)
+					{
+						ssd1306ClearScreen(MAIN_AREA);
+						ssd1306Refresh();
+						Menu.line[line_menu].param();
+					}
+					break;
+				case preset_value:
+					modifyPresetParam(Menu.line[line_menu].name, (presetParam *)Menu.line[line_menu].param);
+					break;
+				default:
+					break;
+			}
+			HAL_Delay(50);
+			displayMenu(Menu, line_menu - (line_screen - 1));
+			ssd1306InvertArea(0, MARGIN * line_screen, HIGHLIGHT_LENGHT,
+			HIGHLIGHT_HEIGHT);
+			ssd1306Refresh();
+			encodersReset();
+		}
         cmdline_parse();
     }
     return -1;
@@ -498,6 +504,7 @@ void displayMenu(const menuItem menu, int line)
 
 int modifyBoolParam(char *param_name, unsigned char *param)
 {
+	encodersReset();
     char str[4];
     bool param_copy = (bool) *param;
 
@@ -523,36 +530,35 @@ int modifyBoolParam(char *param_name, unsigned char *param)
     {
         int joystick = expanderJoyFiltered();
         HAL_Delay(100);
-        switch (joystick)
-        {
-            case JOY_LEFT:
-                return SUCCESS;
-                break;
+		if (joystick == JOY_LEFT || encoderGetDist(ENCODER_L) > 20)
+		{
+			return SUCCESS;
+		}
 
-            case JOY_DOWN:
-            case JOY_UP:
-                if (param_copy == true)
-                {
-                    param_copy = false;
-                    sprintf(str, "NO");
-                }
-                else
-                {
-                    param_copy = true;
-                    sprintf(str, "YES");
-                }
-                ssd1306ClearRectAtLine(0, 2, 128);
-                ssd1306DrawStringAtLine(0, 2, str, &Font_8x8);
-                ssd1306Refresh();
-                break;
-
-            case JOY_RIGHT:
-
-                *param = param_copy;
-                ssd1306ClearScreen(MAIN_AREA);
-                ssd1306Refresh();
-                return SUCCESS;
-                break;
+		if (joystick == JOY_DOWN || encoderGetDist(ENCODER_R) < -20 || joystick == JOY_UP || encoderGetDist(ENCODER_R) > 20)
+		{
+			if (param_copy == true)
+			{
+				param_copy = false;
+				sprintf(str, "NO");
+			}
+			else
+			{
+				param_copy = true;
+				sprintf(str, "YES");
+			}
+			ssd1306ClearRectAtLine(0, 2, 128);
+			ssd1306DrawStringAtLine(0, 2, str, &Font_8x8);
+			ssd1306Refresh();
+			encodersReset();
+		}
+		if (joystick == JOY_RIGHT || encoderGetDist(ENCODER_L) < -20)
+		{
+			*param = param_copy;
+			ssd1306ClearScreen(MAIN_AREA);
+			ssd1306Refresh();
+			return SUCCESS;
+			encodersReset();
         }
     }
     return SUCCESS;
@@ -560,6 +566,7 @@ int modifyBoolParam(char *param_name, unsigned char *param)
 
 int modifyLongParam(char *param_name, long *param)
 {
+	encodersReset();
     int step = 1;
     char str[40];
     long param_copy = *param;
@@ -583,11 +590,9 @@ int modifyLongParam(char *param_name, long *param)
 
     while (1)
     {
-        // Exit Button
         int joystick = expanderJoyFiltered();
-        switch (joystick)
-        {
-            case JOY_LEFT:
+		if (joystick == JOY_LEFT || encoderGetDist(ENCODER_L) > 20)
+		{
                 if (column == 10)
                     return SUCCESS;
                 else
@@ -599,44 +604,46 @@ int modifyLongParam(char *param_name, long *param)
                     ssd1306DrawStringAtLine((9 - column) * 9, 2, "-", &Font_8x8);
                     ssd1306Refresh();
                 }
-                break;
-            case JOY_UP:
-
-                //param_copy +=1;
-                param_copy += (step * pow(10, column));
-                sprintf(str, "%10i", (int) param_copy);
-                ssd1306ClearRectAtLine(0, 1, 128);
-                ssd1306DrawStringAtLine(0, 1, str, &Font_8x8);
-                ssd1306Refresh();
-                break;
-            case JOY_DOWN:
-
-                param_copy -= (step * pow(10, column));
-                //param_copy -= 1;
-                sprintf(str, "%10i", (int) param_copy);
-                ssd1306ClearRectAtLine(0, 1, 128);
-                ssd1306DrawStringAtLine(0, 1, str, &Font_8x8);
-                ssd1306Refresh();
-                break;
-            case JOY_RIGHT:
-                if (column == 0)
-                {
-                    *param = param_copy;
-                    ssd1306Refresh();
-                    return SUCCESS;
-                }
-                else
-                {
-                    column--;
-                    ssd1306ClearRectAtLine(0, 0, 128);
-                    ssd1306ClearRectAtLine(0, 2, 128);
-                    ssd1306DrawStringAtLine((9 - column) * 9, 0, "-", &Font_8x8);
-                    ssd1306DrawStringAtLine((9 - column) * 9, 2, "-", &Font_8x8);
-                    ssd1306Refresh();
-                }
-                break;
-            default:
-                break;
+    			encodersReset();
+		}
+		if (joystick == JOY_UP || encoderGetDist(ENCODER_R) > 20)
+		{
+			//param_copy +=1;
+			param_copy += (step * pow(10, column));
+			sprintf(str, "%10i", (int) param_copy);
+			ssd1306ClearRectAtLine(0, 1, 128);
+			ssd1306DrawStringAtLine(0, 1, str, &Font_8x8);
+			ssd1306Refresh();
+			encodersReset();
+		}
+		if (joystick == JOY_DOWN || encoderGetDist(ENCODER_R) < -20)
+		{
+			param_copy -= (step * pow(10, column));
+			//param_copy -= 1;
+			sprintf(str, "%10i", (int) param_copy);
+			ssd1306ClearRectAtLine(0, 1, 128);
+			ssd1306DrawStringAtLine(0, 1, str, &Font_8x8);
+			ssd1306Refresh();
+			encodersReset();
+		}
+		if (joystick == JOY_RIGHT || encoderGetDist(ENCODER_L) < -20)
+		{
+			if (column == 0)
+			{
+				*param = param_copy;
+				ssd1306Refresh();
+				return SUCCESS;
+			}
+			else
+			{
+				column--;
+				ssd1306ClearRectAtLine(0, 0, 128);
+				ssd1306ClearRectAtLine(0, 2, 128);
+				ssd1306DrawStringAtLine((9 - column) * 9, 0, "-", &Font_8x8);
+				ssd1306DrawStringAtLine((9 - column) * 9, 2, "-", &Font_8x8);
+				ssd1306Refresh();
+			}
+			encodersReset();
         }
     }
 

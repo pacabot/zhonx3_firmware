@@ -44,14 +44,14 @@ line_follower_struct line_follower;
 calibrate_sensors_struct max_Floor;	//global data to memorize maximum value of sensors
 calibrate_sensors_struct coef_Floor;	//global data to memorize coeff value (0..1000]
 calibrate_sensors_struct min_Floor;	//global data to memorize minimum value of sensors
-calibrate_sensors_struct sensor;
+int sensor[5];
 
 
 //__IO uint16_t ADC1ConvertedValues[2] = {0};
 //__IO uint16_t ADC3ConvertedValues[3] = {0};
 
 GPIO_InitTypeDef GPIO_InitStruct;
-
+int line_speed = 40;
 
 void lineSensorSendBluetooth(void)
 {
@@ -114,7 +114,7 @@ void lineSensorsCalibration(void)
 {
 	lineSensorsInit();
 
-	positionControlSetPositionType(GYRO);
+	positionControlSetPositionType(ENCODERS);
 	mainControlSetFollowType(NO_FOLLOW);
 
 	HAL_Delay(1000);
@@ -262,9 +262,9 @@ int lineFollowerFigure()
 {
 	static int dist=0;
 	int tmp = encoderGetDist(ENCODER_L);
-	if (sensor.front > 600 &&    // on est sur la ligne
-		sensor.leftExt > 600 &&  // A gauche on a une ligne
-		sensor.rightExt < 200)   // a droite on n' a pas de ligne
+	if (sensor[2] > 600 &&    // on est sur la ligne
+		sensor[0] > 600 &&  // A gauche on a une ligne
+		sensor[4] < 200)   // a droite on n' a pas de ligne
 	{
         if (dist==0) dist = tmp + 30;  // Au dela d'une certaine distance on n'est pas sur la double ligne
         if (tmp > dist + 35)
@@ -282,18 +282,18 @@ void line_print_info()
 {
 	double cdg=0;
 	double cdg2=0;
-	cdg=sensor.right-sensor.left;
+	cdg=sensor[3]-sensor[1];
 	if (cdg<0)
 	{
-		cdg2=-sensor.left;
+		cdg2=-sensor[1];
 	} else
 	{
-		cdg2=sensor.right;
+		cdg2=sensor[3];
 	}
 	ssd1306ClearScreen(MAIN_AREA);
-	ssd1306PrintIntAtLine(2, 1, "LEFT_EXT  = ", sensor.leftExt, &Font_5x8);
+	ssd1306PrintIntAtLine(2, 1, "LEFT_EXT  = ", sensor[0], &Font_5x8);
 	ssd1306PrintIntAtLine(2, 2, "suivi --  = ",(signed int) cdg2, &Font_5x8);
-	ssd1306PrintIntAtLine(2, 3, "RIGHT_EXT = ", sensor.rightExt, &Font_5x8);
+	ssd1306PrintIntAtLine(2, 3, "RIGHT_EXT = ", sensor[4], &Font_5x8);
 	ssd1306PrintIntAtLine(2, 4, "Roue = ", (signed int) (encoderGetDist(ENCODER_L) + encoderGetDist(ENCODER_R)) / 2, &Font_5x8);
 	ssd1306Refresh();
 }
@@ -304,7 +304,7 @@ void test_line_sensors()
 	lineSensorsStart();
 	line_follower.active_state = TRUE;
 	int joystick = expanderJoyFiltered();
-	basicMove(0, 30, MAXSPEED, 0);
+	basicMove(0, 30, line_speed, 0);
 	while (joystick!=JOY_LEFT)
 	{
 		line_print_info();
@@ -317,16 +317,10 @@ void test_line_sensors()
 // Intelligent function to manage zhonx on the line path
 void lineFollower(void)
 {
-	//static volatile telemetersStruct telemeters;
 
 	lineSensorsInit();
 	encodersInit();
-	encodersReset();
-
-//	positionControlSetPositionType(GYRO);
-	mainControlSetFollowType(LINE_FOLLOW);
-
-	lineSensorsStart();
+	lineFollowControlInit();
 
 	if (max_Floor.left-min_Floor.left< 100.0)
 	{
@@ -347,6 +341,10 @@ void lineFollower(void)
 		motorsDriverSleep(ON);
 		return;
 	}
+	encodersReset();
+	mainControlSetFollowType(LINE_FOLLOW);
+
+	lineSensorsStart();
 
 	tone(c, 100);
 	coef_Floor.left=100.0/(max_Floor.left-min_Floor.left);     //  100/(max_capteur-min_capteur) (0..100)
@@ -378,7 +376,7 @@ void lineFollower(void)
 
 	line_follower.active_state = TRUE;
 
-	basicMoveStraight(10000,MAXSPEED, MAXSPEED, 2000.0);
+	basicMoveStraight(10000,line_speed, line_speed, 2000.0);
 //	motorsDriverSleep(ON);
 
 	int ii=0;
@@ -388,12 +386,11 @@ void lineFollower(void)
 		line_print_info();
 	}
 
-	basicMoveStraight(30,MAXSPEED, 0, 4000.0);        // on s'arrete
-	line_follower.active_state = FALSE;
-	positionControlSetPositionType(GYRO);
 	mainControlSetFollowType(NO_FOLLOW);
+	basicMoveStraight(30,line_speed, 0, 4000.0);        // on s'arrete
+	line_follower.active_state = FALSE;
 	lineSensorsStop();
-	basicMove(0, 30, MAXSPEED, 0);
+	basicMove(0, 30, line_speed, 0);
 	while(hasMoveEnded() != TRUE);
 	motorsBrake();
 
@@ -425,20 +422,31 @@ void controlLoop(void)
 	double cdg=0;
 	double cdg2=0.0;
 
-	sensor.leftExt =(unsigned int)1000*(getLineSensorAdc(LINESENSOR_EXT_L)-min_Floor.leftExt)/max_Floor.leftExt;
-	sensor.left    =(unsigned int)1000*(getLineSensorAdc(LINESENSOR_L)-min_Floor.left)/max_Floor.left;
-	sensor.front   =(unsigned int)1000*(getLineSensorAdc(LINESENSOR_F)-min_Floor.front)/max_Floor.front;
-	sensor.right   =(unsigned int)1000*(getLineSensorAdc(LINESENSOR_R)-min_Floor.right)/max_Floor.right;
-	sensor.rightExt=(unsigned int)1000*(getLineSensorAdc(LINESENSOR_EXT_R)-min_Floor.rightExt)/max_Floor.rightExt;
-	cdg=sensor.right-sensor.left;
+	sensor[0] =(unsigned int)1000*(getLineSensorAdc(LINESENSOR_EXT_L)-min_Floor.leftExt)/max_Floor.leftExt;
+	sensor[1]    =(unsigned int)1000*(getLineSensorAdc(LINESENSOR_L)-min_Floor.left)/max_Floor.left;
+	sensor[2]   =(unsigned int)1000*(getLineSensorAdc(LINESENSOR_F)-min_Floor.front)/max_Floor.front;
+	sensor[3]   =(unsigned int)1000*(getLineSensorAdc(LINESENSOR_R)-min_Floor.right)/max_Floor.right;
+	sensor[4]=(unsigned int)1000*(getLineSensorAdc(LINESENSOR_EXT_R)-min_Floor.rightExt)/max_Floor.rightExt;
+	int max_i = 2;
+	int max= sensor[max_i];
+	for (int i = 1; i < 4; ++i)
+	{
+		if(max < sensor[i])
+		{
+			max = sensor[i];
+			max_i = i;
+		}
+	}
+
+	cdg=sensor[max_i + 1]-sensor[max_i - 1];
 	if (cdg<0)
 	{
-		cdg2=-sensor.left;
+		cdg2=-sensor[max_i - 1];
 	} else
 	{
-		cdg2=sensor.right;
+		cdg2=sensor[max_i + 1];
 	}
-	line_follower.position = (cdg2)/1000.0;
+	line_follower.position = (max_i - 2) + (cdg2)/1000.0 ;
 
 }
 void lineFollower_IT(void)
