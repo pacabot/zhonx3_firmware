@@ -153,6 +153,7 @@ const menuItem follower_menu =
 				{"line follower",   function,	(void*)lineFollower},
 				{"Calibration",     function,   (void*)lineSensorsCalibration},
 				{"speed",			integer,	(void*)&line_speed},
+				{"line length",		integer,	(void*)&line_length},
 				{"Set F. KP",       integer,    (void*)&Line_follower_KP},
 				{"Set F. KD",       integer,    (void*)&Line_follower_KD},
 				{"line sensor test",function,   (void*)test_line_sensors},

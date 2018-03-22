@@ -22,8 +22,10 @@ extern line_follower_struct line_follower;
 #define RIGHT_ 4
 #define RIGHTEXT 5
 
+#define CALIB_ANGL 120
+
 extern int line_speed;
-#define MINSPEED 10
+extern int line_length;
 
 //typedef struct
 //{

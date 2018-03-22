@@ -52,6 +52,7 @@ int sensor[5];
 
 GPIO_InitTypeDef GPIO_InitStruct;
 int line_speed = 40;
+int line_length = 200000;
 
 void lineSensorSendBluetooth(void)
 {
@@ -127,9 +128,9 @@ void lineSensorsCalibration(void)
 	lineSensorsStart();
 
 	tone(e, 500);
-	basicMove(40, 0, 100, 0);
+	basicMove(CALIB_ANGL / 2, 0, 100, 0);
 	while(hasMoveEnded() != TRUE);
-	basicMove(-80, 0, 150, 0);
+	basicMove(-CALIB_ANGL, 0, 150, 0);
 	// -------------------------------------------------------------
 	// Init line Sensor
 
@@ -166,7 +167,7 @@ void lineSensorsCalibration(void)
 	tone(b, 500);
 	tone(c, 500);
 
-	basicMove(40, 0, 30, 30);
+	basicMove(CALIB_ANGL / 2, 0, 30, 30);
 
 	ssd1306ClearScreen(MAIN_AREA);
 	while(hasMoveEnded() != TRUE)
@@ -238,20 +239,8 @@ void lineSensorsCalibration(void)
 		line_follower.position = (cdg2)/1000.0;
 
 		ssd1306ClearScreen(MAIN_AREA);
-		if (cdg>0)
-		{
-			ssd1306PrintIntAtLine(10, 1,  "Centre =  ", (uint16_t)cdg, &Font_5x8);
-		} else
-		{
-			ssd1306PrintIntAtLine(10, 1,  "Centre =- ", (uint16_t)-cdg, &Font_5x8);
-		}
-		if (D>B)
-		{
-			ssd1306PrintIntAtLine(10, 2,  "milieu =  ", (uint16_t)cdg2, &Font_5x8);
-		} else
-		{
-			ssd1306PrintIntAtLine(10, 2,  "milieu =- ", (uint16_t)-cdg2, &Font_5x8);
-		}
+		ssd1306PrintIntAtLine(10, 1,  "Centre =  ", cdg, &Font_5x8);
+		ssd1306PrintIntAtLine(10, 2,  "milieu = ", cdg2, &Font_5x8);
 		ssd1306Refresh();
 
 	}
@@ -282,18 +271,29 @@ void line_print_info()
 {
 	double cdg=0;
 	double cdg2=0;
-	cdg=sensor[3]-sensor[1];
+	int max_i = 2;
+	int max= sensor[max_i];
+	for (int i = 1; i < 4; ++i)
+	{
+		if(max < sensor[i])
+		{
+			max = sensor[i];
+			max_i = i;
+		}
+	}
+
+	cdg=sensor[max_i + 1]-sensor[max_i - 1];
 	if (cdg<0)
 	{
-		cdg2=-sensor[1];
+		cdg2=-sensor[max_i - 1];
 	} else
 	{
-		cdg2=sensor[3];
+		cdg2=sensor[max_i + 1];
 	}
+	cdg2 = (max_i - 2) * 1000 + (cdg2) ;
 	ssd1306ClearScreen(MAIN_AREA);
-	ssd1306PrintIntAtLine(2, 1, "LEFT_EXT  = ", sensor[0], &Font_5x8);
+	ssd1306PrintIntAtLine(2, 1, "MAX i = ",(signed int) max_i, &Font_5x8);
 	ssd1306PrintIntAtLine(2, 2, "suivi --  = ",(signed int) cdg2, &Font_5x8);
-	ssd1306PrintIntAtLine(2, 3, "RIGHT_EXT = ", sensor[4], &Font_5x8);
 	ssd1306PrintIntAtLine(2, 4, "Roue = ", (signed int) (encoderGetDist(ENCODER_L) + encoderGetDist(ENCODER_R)) / 2, &Font_5x8);
 	ssd1306Refresh();
 }
@@ -372,20 +372,19 @@ void lineFollower(void)
 	HAL_Delay(1000);
 	tone(c, 100);
 
-	//	HAL_Delay(500);
 
 	line_follower.active_state = TRUE;
 
-	basicMoveStraight(10000,line_speed, line_speed, 2000.0);
+	HAL_Delay(500);
+	basicMoveStraight(line_length,line_speed, line_speed, 2000.0);
 //	motorsDriverSleep(ON);
 
 	int ii=0;
 
-	while(expanderJoyFiltered()!=JOY_LEFT)
+	while(expanderJoyFiltered()!=JOY_LEFT && hasMoveEnded() == false)
 	{
 		line_print_info();
 	}
-
 	mainControlSetFollowType(NO_FOLLOW);
 	basicMoveStraight(30,line_speed, 0, 4000.0);        // on s'arrete
 	line_follower.active_state = FALSE;
