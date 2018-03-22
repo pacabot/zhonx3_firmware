@@ -37,15 +37,19 @@ sudo add-apt-repository ppa:terry.guo/gcc-arm-embedded
 sudo apt-get update
 sudo apt-get install gcc-arm-none-eabi
 ```
-## 5 - Lancer Éclipse ##
+## 5 - Installer gdb ##
+```
+sudo apt-get install gdb-arm-none-eabi
+```
+## 6 - Lancer Éclipse ##
 ```
 '/opt/eclipse/eclipse'
 ```
-## 6 - Installer plugin arm ##
+## 7 - Installer plugin arm ##
 dans Eclispe :
 help => install new software => renseigner dans le champ "work with" l'adresse suivante "http://gnuarmeclipse.sourceforge.net/updates"
 installez le plugin
-## 7 - Configurer la fonction "Flash" dans Eclipse ##
+## 8 - Configurer la fonction "Flash" dans Eclipse ##
 Cliquer sur l'icône en forme de flèche à droite de "External Tools" et choisir "External Tools Configuration"=>
 Cliquer sur "Program" et cliquer sur l'icône "New Launch Configuration"=>
 Saisir dans "Name" le nom de configuration "flash"
@@ -71,7 +75,7 @@ Saisir dans "Arguments" l'ensemble de lignes suivantes :
 ```
 Dans l'onglet "Common", cliquer sur la boîte à cocher "External Tools" (Display in favorites menu)=>
 Cliquer sur le bouton "Apply" puis sur "Close"
-## 8 - Configurer le Debug ##
+## 9 - Configurer le Debug ##
 Cliquer sur l'icône en forme de flèche à droite de "Debug zhonx3" et choisir "Debug Configurations"=>
 Cliquer sur "GDB OpenOCD Debugging" et cliquer sur l'icône "New Launch Configuration"=>
 Saisir dans "Name" le nom de configuration "Debug"=>
@@ -94,6 +98,10 @@ Dans la seconde partie (GDB Client Setpup), remplacer le contenu de la zone "Com
 set mem inaccessible-by-default off
 set remote hardware-breakpoint-limit 6
 set remote hardware-watchpoint-limit 4
+```
+remplacer le contenu de la zone "Executable" par la ligne suivante :
+```
+arm-none-eabi-gdb
 ```
 Dans l'onglet "Common", cliquer sur la boîte à cocher "Debug" (Display in favorites menu)=>
 Cliquer sur le bouton "Apply" puis sur "Close"
