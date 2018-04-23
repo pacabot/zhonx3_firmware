@@ -19,14 +19,24 @@
 #include <stdio.h>
 #include <stdint.h>
 
-/* Application declarations */
-
 /* Peripheral declarations */
 #include "peripherals/display/ssd1306.h"
 #include "peripherals/display/smallfonts.h"
 #include "peripherals/expander/pcf8574.h"
 #include "peripherals/multimeter/multimeter.h"
 #include "peripherals/tone/tone.h"
+#include "peripherals/bluetooth/bluetooth.h"
+#include "peripherals/eeprom/24lc64.h"
+#include "peripherals/encoders/ie512.h"
+#include "peripherals/gyroscope/adxrs620.h"
+#include "peripherals/multimeter/multimeter.h"
+#include "peripherals/telemeters/telemeters.h"
+#include "peripherals/tone/tone.h"
+#include "peripherals/motors/motors.h"
+#include "peripherals/lineSensors/lineSensors.h"
+#include "peripherals/expander/pcf8574.h"
+//#include "peripherals/telemeters/telemetersCal.h"
+
 
 /* Middleware declarations */
 #include "middleware/display/icons.h"
@@ -34,7 +44,19 @@
 #include "middleware/settings/settings.h"
 #include "middleware/cmdline/cmdline_parser.h"
 #include "middleware/controls/mazeControl/wallFollowControl.h"
+#include "middleware/wall_sensors/wall_sensors.h"
+#include "middleware/moves/mazeMoves/mazeMoves.h"
+#include "middleware/moves/mazeMoves/mazeMovesAdvanced.h"
+#include "middleware/moves/mazeMoves/spyPost.h"
+#include "middleware/moves/mazeMoves/spyWall.h"
+#include "middleware/controls/pidController/pidCalculator.h"
+#include "middleware/controls/lineFollowerControl/lineFollowControl.h"
 
+/* Application declarations */
+
+#include "application/lineFollower/lineFollower.h"
+#include "application/solverMaze/solverMaze.h"
+#include "application/solverMaze/robotInterface.h"
 
 /* Declarations for this module */
 #include "application/display/menu.h"
@@ -50,55 +72,19 @@ typedef enum
 }line_on_menue_type;
 
 /*external functions */
-extern void bluetoothTest();
-extern void eepromTest();
-extern void encoderTest();
-extern void adxrs620Test();
-extern void mulimeterTest();
-extern void telemetersTest();
-extern void toneTest();
-extern void motorsTest();
-extern void lineSensorsTest();
-extern void lineFollower();
-extern int lineSensorsCalibration(void);
-extern void maze_solver_new_maze();
-extern void testWallsSensors();
-extern void movesTest1(void);
-extern void movesTest2(void);
-extern void expenderLedTest();
-extern int wallSensorsCalibrationFront(void);
-extern int wallSensorsCalibrationDiag(void);
 extern int setMeddle(void);
 extern int setDark(void);
-extern void telemetersGetCalibrationValues(void);
-extern uint32_t spyPostCalibration(void);
-extern void spyPostTest(void);
-extern uint32_t spyPostReadCalibration(void);
-extern void spyWallFrontDistCal(void);
-extern void spyWallFrontTest(void);
-extern void adxrs620Cal(void);
-extern void pidGyro_GetCriticalPoint(void);
-extern void pidEncoders_GetCriticalPoint(void);
-extern void pidTelemeters_GetCriticalPoint(void);
-extern int test_move_zhonx(void);
-extern int startRun1(void);
-extern int startRun2(void);
-extern int mazeMoveAdvancedTest(void);
-extern int test_maze_flash(void);
-extern int restartExplo(void);
-extern void wallFollowTest(void);
-extern int printStoredMaze();
-extern int _Factor;
-extern int _KP;
+
+
 /*
  * to create a new menu you have to create a new variable of type "const menuItem" like this :
  * const menuItem name =
  * {
  * 		"menu name",
  * 		{
- * 			{"line 1 name ",'type of argument', &(void*) pointeur_on_argument},		// 'type of argument' could be integer for int, or 'l' for long, or menu for  a menu, or function for a function
- * 			{"line 1 name ",'type of argument', &(void*) pointeur_on_argument},		// maximum 20 line. if it's not enough you must add in "menu.h". for that you have to modify "MAX_LINE_IN_MENU"
- * 			{(char*)NULL,        0,     NULL} 					// the last ligne must be this one, this line will be not print but indispensable. /!\ this line  compte dans les 20 ligne du menu
+ * 			{"line 1 name ",type_of_argument, &(void*) pointeur_on_argument},		// 'type of argument' could be integer for int, or 'l' for long, or menu for  a menu, or function for a function
+ * 			{"line 1 name ",type of argument, &(void*) pointeur_on_argument},		// maximum 20 line. if it's not enough you must add in "menu.h". for that you have to modify "MAX_LINE_IN_MENU"
+ * 			{NULL,        0,     NULL} 					// the last ligne must be this one, this line will be not print but indispensable. /!\ this line  compte dans les 20 ligne du menu
  * 		}
  * }
  */
@@ -110,7 +96,7 @@ const menuItem scan_settings_menu =
                 {"min speed",           integer,(void*)&zhonxSettings.speeds_scan.min_speed},
                 {"max speed tans",      integer,(void*)&zhonxSettings.speeds_scan.max_speed_traslation},
                 {"max speed rot",       integer,(void*)&zhonxSettings.speeds_scan.max_speed_rotation},
-                {(char*)NULL,        0,     NULL}
+                {NULL,       0,     NULL}
         }
 };
 
@@ -122,7 +108,7 @@ const menuItem run1_settings_menu =
                 {"max speed tans",      integer,(void*)&zhonxSettings.speeds_run1.max_speed_traslation},
                 {"max speed rot",       integer,(void*)&zhonxSettings.speeds_run1.max_speed_rotation},
                 {"return to start",     boolean,(void*)&zhonxSettings.return_to_start_cell},
-                {(char*)NULL,        0,     NULL}
+                {NULL,       0,     NULL}
         }
 };
 
@@ -134,7 +120,7 @@ const menuItem run2_settings_menu =
                 {"max speed tans",      integer,(void*)&zhonxSettings.speeds_run2.max_speed_traslation},
                 {"max speed rot",       integer,(void*)&zhonxSettings.speeds_run2.max_speed_rotation},
                 {"return to start",     boolean,(void*)&zhonxSettings.return_to_start_cell},
-                {(char*)NULL,       0,     NULL}
+                {NULL,       0,     NULL}
         }
 };
 
@@ -151,7 +137,7 @@ const menuItem maze_menu =
                 {"print maze",      function,    (void*)printStoredMaze},
                 {"restart explo",   function,    (void*)&restartExplo},
                 {"Test maze move",  function,    (void*)test_move_zhonx},
-                {(char*)NULL,        0,     NULL}
+                {NULL,        0,     NULL}
 //				{"Calibration", boolean,    (void*)&zhonxSettings.calibration_enabled},
 //				{"Color finish",boolean,	(void*)&zhonxSettings.nime_competition},
 //				{"X finish",    integer,	(void*)&zhonxSettings.maze_end_coordinate.x},
@@ -165,10 +151,13 @@ const menuItem follower_menu =
 		"LINE FOLL",    //9 characters max
 		{
 				{"line follower",   function,	(void*)lineFollower},
-				{"Calibration",     function,    (void*)lineSensorsCalibration},
-				//{"Sensor Bluetooth",function, (void*)lineSensorSendBluetooth},
-				{"Set F. K",        integer,    (void*)&_Factor},
-				{"Set F. KP",       integer,    (void*)&_KP},
+				{"Calibration",     function,   (void*)lineSensorsCalibration},
+				{"speed",			integer,	(void*)&line_speed},
+				{"line length",		integer,	(void*)&line_length},
+				{"Set F. KP",       integer,    (void*)&Line_follower_KP},
+				{"Set F. KD",       integer,    (void*)&Line_follower_KD},
+				{"line sensor test",function,   (void*)test_line_sensors},
+				{NULL, 0, NULL}
 		}
 };
 
@@ -179,7 +168,8 @@ const menuItem telemetersCal =
                 {"Calibration front",   function,    (void*)wallSensorsCalibrationFront},
                 {"Calibration diag",    function,    (void*)wallSensorsCalibrationDiag},
                 {"Send calib values",   function,    (void *)telemetersGetCalibrationValues},
-                {"Set BT baudrate",     preset_value,    (void *)&BTpresetBaudRate}
+                {"Set BT baudrate",     preset_value,    (void *)&BTpresetBaudRate},
+				{NULL, 0, NULL}
         }
 };
 
@@ -190,6 +180,7 @@ const menuItem spyPostCal =
                 { "Start calibration",  function, (void*)spyPostCalibration},
                 { "Read Calibration.",  function, (void*)spyPostReadCalibration},
                 { "SpyPost test.",      function, (void*)spyPostTest},
+				{NULL, 0, NULL}
         }
 };
 
@@ -200,6 +191,7 @@ const menuItem pidCal =
                 { "Gyro Kp critic", function, (void*)pidGyro_GetCriticalPoint},
                 { "Enc. Kp critic", function, (void*)pidEncoders_GetCriticalPoint},
                 { "Tel. Kp critic", function, (void*)pidTelemeters_GetCriticalPoint},
+				{NULL, 0, NULL}
         }
 };
 
@@ -209,6 +201,7 @@ const menuItem frontCal =
         {
                 { "Start calibration",  function, (void*)spyWallFrontDistCal},
                 { "SpyWall test",       function, (void*)spyWallFrontTest},
+				{NULL, 0, NULL}
         }
 };
 
@@ -218,6 +211,7 @@ const menuItem gyroCal =
         {
                 { "Start calibration",  function, (void*)adxrs620Cal},
                 { "Gyro test",          function, (void*)adxrs620Test},
+				{NULL, 0, NULL}
         }
 };
 
@@ -230,6 +224,7 @@ const menuItem calibration_menu =
                 {"SpyWall",         new_menu,  (void*)&frontCal},
                 {"Gyroscope",       new_menu,  (void*)&gyroCal},
                 {"PID",             new_menu,  (void*)&pidCal},
+				{NULL, 0, NULL}
         }
 };
 
@@ -252,7 +247,7 @@ const menuItem tests_menu =
 				{"Expender LEDs",	function, (void*)expenderLedTest},
 				{"flash maze",      function, (void*)test_maze_flash},
 				{"wall Follow",     function, (void*)wallFollowTest},
-				{0,0,0}
+				{NULL, 0, NULL}
 		}
 };
 
@@ -261,7 +256,8 @@ const menuItem control_menu =
         {
                 { "Move Test 1",        function, (void*)movesTest1 },
                 { "Move Test 2",        function, (void*)movesTest2 },
-                { "Advanced Move 1",    function, (void*)mazeMoveAdvancedTest},
+				{ "Advanced Move 1",    function, (void*)mazeMoveAdvancedTest},
+				{NULL, 0, NULL}
         }
 };
 
@@ -285,7 +281,7 @@ const menuItem mainMenu =
 				{"Calibration menu",new_menu,    (void*)&calibration_menu},
                 {"Control menu",    new_menu,    (void*)&control_menu},
 				{"Zhonx Name",      new_menu,    (void*)&zhonxNameMenu},
-				{0, 0, 0}
+				{NULL, 0, NULL}
 		}
 };
 
@@ -293,6 +289,8 @@ extern I2C_HandleTypeDef hi2c1;
 
 int menu(const menuItem Menu)
 {
+	encodersInit();
+	encodersReset();
     signed char line_screen = 1;
     signed char line_menu = 0;
     // Display main menu
@@ -304,119 +302,123 @@ int menu(const menuItem Menu)
         HAL_Delay(1);
         int joystick = expanderJoyFiltered();
         //		killOnLowBattery();
-        switch (joystick)
-        {
-            case JOY_LEFT:
-                return SUCCESS;
-                // Joystick down
-            case JOY_DOWN:
-                toneItMode(100, 10);
-                if (Menu.line[line_menu + 1].name != null)
-                {
-                    line_menu++;
-                    if (line_screen >= MAX_LINE_SCREEN)
-                    {
-                        displayMenu(Menu, line_menu - (line_screen - 1));
-                        ssd1306InvertArea(0, line_screen * MARGIN,
-                        HIGHLIGHT_LENGHT,
-                                          HIGHLIGHT_HEIGHT);
-                        ssd1306Refresh();
-                    }
-                    else
-                    {
-                        line_screen++;
-                        menuHighlightedMove((line_screen - 1) * ROW_HEIGHT + 1, (line_screen) * ROW_HEIGHT);
-                    }
-                }
-                else
-                {
-                    line_menu = 0;
-                    line_screen = 1;
-                    displayMenu(Menu, line_menu - (line_screen - 1));
-                    ssd1306InvertArea(0, line_screen * MARGIN,
-                    HIGHLIGHT_LENGHT,
-                                      HIGHLIGHT_HEIGHT);
-                    ssd1306Refresh();
-                }
-                break;
-            case JOY_UP:
-                toneItMode(100, 10);
-                if (line_menu > 0)
-                {
-                    line_menu--;
-                    if (line_screen <= 1)
-                    {
-                        displayMenu(Menu, line_menu);
-                        ssd1306InvertArea(0, MARGIN, HIGHLIGHT_LENGHT,
-                        HIGHLIGHT_HEIGHT);
-                        ssd1306Refresh();
-                    }
-                    else
-                    {
-                        line_screen--;
-                        menuHighlightedMove((line_screen + 1) * ROW_HEIGHT - 1, (line_screen) * ROW_HEIGHT);
-                    }
-                }
-                else
-                {
-                    while (Menu.line[line_menu + 1].name != null)
-                    {
-                        line_menu++;
-                    }
-                    if (line_menu < MAX_LINE_SCREEN - 1)
-                    {
-                        displayMenu(Menu, 0);
-                        line_screen = line_menu + 1;
-                    }
-                    else
-                    {
-                        line_screen = MAX_LINE_SCREEN;
-                        displayMenu(Menu, line_menu - (MAX_LINE_SCREEN - 1));
-                    }
-                    ssd1306InvertArea(0, MARGIN * line_screen, HIGHLIGHT_LENGHT,
-                    HIGHLIGHT_HEIGHT);
-                    ssd1306Refresh();
-                }
-                break;
-            case JOY_RIGHT: // Validate button joystick right
-                toneItMode(8000, 20);
-                switch (Menu.line[line_menu].type)
-                {
-                    case boolean:
-                        modifyBoolParam(Menu.line[line_menu].name, (unsigned char*) Menu.line[line_menu].param);
-                        break;
-                    case integer:
-                        modifyLongParam(Menu.line[line_menu].name, (long*) (int*) Menu.line[line_menu].param);
-                        break;
-                    case 'l':
-                        modifyLongParam(Menu.line[line_menu].name, (long*) Menu.line[line_menu].param);
-                        break;
-                    case new_menu:
-                        menu(*(const menuItem*) Menu.line[line_menu].param);
-                        break;
-                    case function:
-                        if (Menu.line[line_menu].param != NULL)
-                        {
-                            ssd1306ClearScreen(MAIN_AREA);
-                            ssd1306Refresh();
-                            Menu.line[line_menu].param();
-                        }
-                        break;
-                    case preset_value:
-                        modifyPresetParam(Menu.line[line_menu].name, (presetParam *)Menu.line[line_menu].param);
-                        break;
-                    default:
-                        break;
-                }
-                HAL_Delay(50);
-                displayMenu(Menu, line_menu - (line_screen - 1));
-                ssd1306InvertArea(0, MARGIN * line_screen, HIGHLIGHT_LENGHT,
-                HIGHLIGHT_HEIGHT);
-                ssd1306Refresh();
-                break;
-            default:
-                break;
-        }
+		if (joystick == JOY_LEFT || encoderGetDist(ENCODER_L) > 20)
+		{
+			return SUCCESS;
+		}
+		// Joystick down
+		if (joystick == JOY_DOWN || encoderGetDist(ENCODER_R) < -20)
+		{
+			toneItMode(100, 10);
+			if (Menu.line[line_menu + 1].name != null)
+			{
+				line_menu++;
+				if (line_screen >= MAX_LINE_SCREEN)
+				{
+					displayMenu(Menu, line_menu - (line_screen - 1));
+					ssd1306InvertArea(0, line_screen * MARGIN,
+					HIGHLIGHT_LENGHT,
+									  HIGHLIGHT_HEIGHT);
+					ssd1306Refresh();
+				}
+				else
+				{
+					line_screen++;
+					menuHighlightedMove((line_screen - 1) * ROW_HEIGHT + 1, (line_screen) * ROW_HEIGHT);
+				}
+				encodersReset();
+			}
+			else
+			{
+				line_menu = 0;
+				line_screen = 1;
+				displayMenu(Menu, line_menu - (line_screen - 1));
+				ssd1306InvertArea(0, line_screen * MARGIN,
+				HIGHLIGHT_LENGHT,
+								  HIGHLIGHT_HEIGHT);
+				ssd1306Refresh();
+			}
+			encodersReset();
+		}
+		if( joystick == JOY_UP || encoderGetDist(ENCODER_R) > 20)
+		{
+			toneItMode(100, 10);
+			if (line_menu > 0)
+			{
+				line_menu--;
+				if (line_screen <= 1)
+				{
+					displayMenu(Menu, line_menu);
+					ssd1306InvertArea(0, MARGIN, HIGHLIGHT_LENGHT,
+					HIGHLIGHT_HEIGHT);
+					ssd1306Refresh();
+				}
+				else
+				{
+					line_screen--;
+					menuHighlightedMove((line_screen + 1) * ROW_HEIGHT - 1, (line_screen) * ROW_HEIGHT);
+				}
+			}
+			else
+			{
+				while (Menu.line[line_menu + 1].name != null)
+				{
+					line_menu++;
+				}
+				if (line_menu < MAX_LINE_SCREEN - 1)
+				{
+					displayMenu(Menu, 0);
+					line_screen = line_menu + 1;
+				}
+				else
+				{
+					line_screen = MAX_LINE_SCREEN;
+					displayMenu(Menu, line_menu - (MAX_LINE_SCREEN - 1));
+				}
+				ssd1306InvertArea(0, MARGIN * line_screen, HIGHLIGHT_LENGHT,
+				HIGHLIGHT_HEIGHT);
+				ssd1306Refresh();
+			}
+			encodersReset();
+		}
+		if (joystick == JOY_RIGHT || encoderGetDist(ENCODER_L) < -20) // Validate button joystick right
+		{
+			toneItMode(8000, 20);
+			switch (Menu.line[line_menu].type)
+			{
+				case boolean:
+					modifyBoolParam(Menu.line[line_menu].name, (unsigned char*) Menu.line[line_menu].param);
+					break;
+				case integer:
+					modifyLongParam(Menu.line[line_menu].name, (long*) (int*) Menu.line[line_menu].param);
+					break;
+				case 'l':
+					modifyLongParam(Menu.line[line_menu].name, (long*) Menu.line[line_menu].param);
+					break;
+				case new_menu:
+					menu(*(const menuItem*) Menu.line[line_menu].param);
+					break;
+				case function:
+					if (Menu.line[line_menu].param != NULL)
+					{
+						ssd1306ClearScreen(MAIN_AREA);
+						ssd1306Refresh();
+						Menu.line[line_menu].param();
+					}
+					break;
+				case preset_value:
+					modifyPresetParam(Menu.line[line_menu].name, (presetParam *)Menu.line[line_menu].param);
+					break;
+				default:
+					break;
+			}
+			HAL_Delay(50);
+			displayMenu(Menu, line_menu - (line_screen - 1));
+			ssd1306InvertArea(0, MARGIN * line_screen, HIGHLIGHT_LENGHT,
+			HIGHLIGHT_HEIGHT);
+			ssd1306Refresh();
+			encodersReset();
+		}
         cmdline_parse();
     }
     return -1;
@@ -503,6 +505,7 @@ void displayMenu(const menuItem menu, int line)
 
 int modifyBoolParam(char *param_name, unsigned char *param)
 {
+	encodersReset();
     char str[4];
     bool param_copy = (bool) *param;
 
@@ -528,36 +531,35 @@ int modifyBoolParam(char *param_name, unsigned char *param)
     {
         int joystick = expanderJoyFiltered();
         HAL_Delay(100);
-        switch (joystick)
-        {
-            case JOY_LEFT:
-                return SUCCESS;
-                break;
+		if (joystick == JOY_LEFT || encoderGetDist(ENCODER_L) > 20)
+		{
+			return SUCCESS;
+		}
 
-            case JOY_DOWN:
-            case JOY_UP:
-                if (param_copy == true)
-                {
-                    param_copy = false;
-                    sprintf(str, "NO");
-                }
-                else
-                {
-                    param_copy = true;
-                    sprintf(str, "YES");
-                }
-                ssd1306ClearRectAtLine(0, 2, 128);
-                ssd1306DrawStringAtLine(0, 2, str, &Font_8x8);
-                ssd1306Refresh();
-                break;
-
-            case JOY_RIGHT:
-
-                *param = param_copy;
-                ssd1306ClearScreen(MAIN_AREA);
-                ssd1306Refresh();
-                return SUCCESS;
-                break;
+		if (joystick == JOY_DOWN || encoderGetDist(ENCODER_R) < -20 || joystick == JOY_UP || encoderGetDist(ENCODER_R) > 20)
+		{
+			if (param_copy == true)
+			{
+				param_copy = false;
+				sprintf(str, "NO");
+			}
+			else
+			{
+				param_copy = true;
+				sprintf(str, "YES");
+			}
+			ssd1306ClearRectAtLine(0, 2, 128);
+			ssd1306DrawStringAtLine(0, 2, str, &Font_8x8);
+			ssd1306Refresh();
+			encodersReset();
+		}
+		if (joystick == JOY_RIGHT || encoderGetDist(ENCODER_L) < -20)
+		{
+			*param = param_copy;
+			ssd1306ClearScreen(MAIN_AREA);
+			ssd1306Refresh();
+			return SUCCESS;
+			encodersReset();
         }
     }
     return SUCCESS;
@@ -565,6 +567,7 @@ int modifyBoolParam(char *param_name, unsigned char *param)
 
 int modifyLongParam(char *param_name, long *param)
 {
+	encodersReset();
     int step = 1;
     char str[40];
     long param_copy = *param;
@@ -588,11 +591,9 @@ int modifyLongParam(char *param_name, long *param)
 
     while (1)
     {
-        // Exit Button
         int joystick = expanderJoyFiltered();
-        switch (joystick)
-        {
-            case JOY_LEFT:
+		if (joystick == JOY_LEFT || encoderGetDist(ENCODER_L) > 20)
+		{
                 if (column == 10)
                     return SUCCESS;
                 else
@@ -604,44 +605,46 @@ int modifyLongParam(char *param_name, long *param)
                     ssd1306DrawStringAtLine((9 - column) * 9, 2, "-", &Font_8x8);
                     ssd1306Refresh();
                 }
-                break;
-            case JOY_UP:
-
-                //param_copy +=1;
-                param_copy += (step * pow(10, column));
-                sprintf(str, "%10i", (int) param_copy);
-                ssd1306ClearRectAtLine(0, 1, 128);
-                ssd1306DrawStringAtLine(0, 1, str, &Font_8x8);
-                ssd1306Refresh();
-                break;
-            case JOY_DOWN:
-
-                param_copy -= (step * pow(10, column));
-                //param_copy -= 1;
-                sprintf(str, "%10i", (int) param_copy);
-                ssd1306ClearRectAtLine(0, 1, 128);
-                ssd1306DrawStringAtLine(0, 1, str, &Font_8x8);
-                ssd1306Refresh();
-                break;
-            case JOY_RIGHT:
-                if (column == 0)
-                {
-                    *param = param_copy;
-                    ssd1306Refresh();
-                    return SUCCESS;
-                }
-                else
-                {
-                    column--;
-                    ssd1306ClearRectAtLine(0, 0, 128);
-                    ssd1306ClearRectAtLine(0, 2, 128);
-                    ssd1306DrawStringAtLine((9 - column) * 9, 0, "-", &Font_8x8);
-                    ssd1306DrawStringAtLine((9 - column) * 9, 2, "-", &Font_8x8);
-                    ssd1306Refresh();
-                }
-                break;
-            default:
-                break;
+    			encodersReset();
+		}
+		if (joystick == JOY_UP || encoderGetDist(ENCODER_R) > 20)
+		{
+			//param_copy +=1;
+			param_copy += (step * pow(10, column));
+			sprintf(str, "%10i", (int) param_copy);
+			ssd1306ClearRectAtLine(0, 1, 128);
+			ssd1306DrawStringAtLine(0, 1, str, &Font_8x8);
+			ssd1306Refresh();
+			encodersReset();
+		}
+		if (joystick == JOY_DOWN || encoderGetDist(ENCODER_R) < -20)
+		{
+			param_copy -= (step * pow(10, column));
+			//param_copy -= 1;
+			sprintf(str, "%10i", (int) param_copy);
+			ssd1306ClearRectAtLine(0, 1, 128);
+			ssd1306DrawStringAtLine(0, 1, str, &Font_8x8);
+			ssd1306Refresh();
+			encodersReset();
+		}
+		if (joystick == JOY_RIGHT || encoderGetDist(ENCODER_L) < -20)
+		{
+			if (column == 0)
+			{
+				*param = param_copy;
+				ssd1306Refresh();
+				return SUCCESS;
+			}
+			else
+			{
+				column--;
+				ssd1306ClearRectAtLine(0, 0, 128);
+				ssd1306ClearRectAtLine(0, 2, 128);
+				ssd1306DrawStringAtLine((9 - column) * 9, 0, "-", &Font_8x8);
+				ssd1306DrawStringAtLine((9 - column) * 9, 2, "-", &Font_8x8);
+				ssd1306Refresh();
+			}
+			encodersReset();
         }
     }
 

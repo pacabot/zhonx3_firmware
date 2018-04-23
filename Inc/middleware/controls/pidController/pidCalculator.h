@@ -24,7 +24,7 @@ typedef struct
     double kd;
 } pid_coefs;
 
-void pidEncoder_GetCriticalPoint(void);
+void pidEncoders_GetCriticalPoint(void);
 void pidGyro_GetCriticalPoint(void);
 void pidTelemeters_GetCriticalPoint(void);
 

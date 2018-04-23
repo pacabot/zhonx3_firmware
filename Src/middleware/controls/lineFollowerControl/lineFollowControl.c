@@ -55,14 +55,15 @@
 line_follow_control_struct line_follow_control;
 line_follow_params_struct line_follow_params;
 arm_pid_instance_f32 line_follow_pid_instance;
-int _KP = 0;
+int Line_follower_KP = 2000;
+int Line_follower_KD = 80000; //810
 
 int lineFollowControlInit(void)
 {
 
-    line_follow_pid_instance.Kp = 151 + _KP;
+    line_follow_pid_instance.Kp = Line_follower_KP;
     line_follow_pid_instance.Ki = 0;
-    line_follow_pid_instance.Kd = 6000; //810
+    line_follow_pid_instance.Kd = Line_follower_KD;
 
     line_follow_control.line_follow_pid.instance = &line_follow_pid_instance;
 

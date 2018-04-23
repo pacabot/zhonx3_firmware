@@ -793,7 +793,7 @@ void printLength(const labyrinthe maze, const int x_robot, const int y_robot)
             else
             {
                 bluetoothWaitReady();
-                bluetoothPrintf("    ");
+                bluetoothPrintf("+OO ");
             }
             if (maze.cell[j][i].wall_east == NO_KNOWN)
             {

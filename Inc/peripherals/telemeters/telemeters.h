@@ -69,5 +69,6 @@ void    telemeters_DMA_IT(void);
 void    telemeters_ADC2_IT(void);
 void    telemeters_ADC3_IT(void);
 void    telemetersTest(void);
+void telemetersGetCalibrationValues(void);
 
 #endif //__TELEMETERS_H__

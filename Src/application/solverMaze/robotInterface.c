@@ -106,7 +106,7 @@ void move_zhonx(char direction_to_go, positionRobot *positionZhonx, unsigned int
         bluetoothWaitReady();
         bluetoothPrintf("start cell ");
 #endif
-        mazeMoveStartCell(max_speed_translation, min_speed_translation);
+        mazeMoveStartCell((double)max_speed_translation, (double)min_speed_translation);
         numberOfCell--;
     }
     else // so endMidOfCase=TRUE and positionZhonx->midOfCase=FALSE
@@ -215,9 +215,7 @@ int waitValidation(unsigned long timeout)
 
 void newCell(walls new_walls, labyrinthe *maze, positionRobot positionZhonx)
 {
-#ifdef PRINT_WALLS_DETECTED
     print_cell_state(new_walls);
-#endif
     switch (positionZhonx.orientation)
     {
         case NORTH:
@@ -394,6 +392,7 @@ walls ask_cell_state ()
 
 void print_cell_state (walls cell_state)
 {
+    #ifdef PRINT_WALLS_DETECTED
     ssd1306ClearRect(64,DISPLAY_OFFSET,54,5);
     ssd1306ClearRect(64,DISPLAY_OFFSET,5,54);
     ssd1306ClearRect(113,DISPLAY_OFFSET,5,54);
@@ -410,6 +409,26 @@ void print_cell_state (walls cell_state)
     {
         ssd1306FillRect(113,DISPLAY_OFFSET,5,54);
     }
+    #endif
+    #ifdef PRINT_CELL_STATE_BLEUTOOTH
+    if (cell_state.front == WALL_PRESENCE)
+    {
+        bluetoothPrintf("_");
+    }
+    if (cell_state.left == WALL_PRESENCE)
+    {
+        bluetoothPrintf("|");
+    }
+    else
+    {
+        bluetoothPrintf(" ");
+    }
+    if (cell_state.right == WALL_PRESENCE)
+    {
+        bluetoothPrintf("|");
+    }
+    bluetoothPrintf("\n");
+    #endif
 }
 
 void waitStart()

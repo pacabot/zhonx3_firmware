@@ -2,103 +2,80 @@
 
 Comment installer votre environnement de développement Eclipse sur linux
 
+
 # Détails #
 
-## 1 - installer Java ##
+## 1 - Telecharger Eclipse Luna C/C++ 64bits pour Linux ##
+http://www.eclipse.org/downloads/download.php?file=/technology/epp/downloads/release/mars/1/eclipse-cpp-mars-1-linux-gtk-x86_64.tar.gz&mirror_id=1099
+## 2 - Installer ##
+
 ```
-sudo add-apt-repository ppa:webupd8team/java
-sudo apt-get update
-sudo apt install -y oracle-java8-installer
-sudo apt install oracle-java8-set-default
-sudo apt-get install oracle-java8-unlimited-jce-policy (obligatoire pour faire fonctionner le dernier plugin gnu arm eclipse)
+sudo tar -xvzf '/home/zhonx/Téléchargements/eclipse-cpp-luna-SR1a-linux-gtk-x86_64.tar.gz' -C /opt   //extraction dans /opt
+sudo chmod -R +r /opt/eclipse                           //permission d'ecriture
 ```
-## 2 - Installer Eclipse Neon2 C/C++ 64bits pour Linux ##
+Créer exécutable
 ```
-Telechargement : https://www.eclipse.org/downloads/download.php?file=/oomph/epp/neon/R2a/eclipse-inst-linux64.tar.gz
-tar xvfz  ~/Téléchargements/eclipse-inst-linux64.tar.gz
-Lancement : ~/Téléchargements/eclipse-installer/eclipse-inst 
-Choisir Elipse IDE for C/C++ Developers
+sudo touch /usr/bin/eclipse
+sudo chmod 755 /usr/bin/eclipse
+sudo apt-get install gedit         //installation editeur gedit si vous ne l'avez pas
+sudo gedit /usr/bin/eclipse
 ```
-Créer exécutable :
-```
-gedit .local/share/applications/Eclipse.desktop
-```
-[Desktop Entry]
-Type=Application
-Name=Eclipse
-Comment=Eclipse Integrated Development Environment
-Icon=/home/eclipsePath/icon.xpm
-Exec=eclipsePath/eclipse
-Terminal=false
-Categories=Development;IDE;Java;
-Name[fr_FR]=Eclipse
-```
-chmod +x .local/share/applications/Eclipse.desktop
-```
+
 ## ajoutez ces 3 lignes (au fichier vide), enregistrez puis fermez : ##
+```
+#!/bin/sh
+export ECLIPSE_HOME="/opt/eclipse"
+$ECLIPSE_HOME/eclipse $*
 ```
 ## 3 - Installer openocd ##
 ```
 sudo apt-get install openocd libftdi-dev libusb-dev
-sudo add-apt-repository ppa:laurent-boulard/openocd
-sudo apt-get update
-sudo apt-get install openocd
 ```
 ## 4 - Installer gcc ##
 ```
-sudo add-apt-repository ppa:team-gcc-arm-embedded/ppa
+sudo add-apt-repository ppa:terry.guo/gcc-arm-embedded
 sudo apt-get update
-sudo apt-get install gcc-arm-embedded
+sudo apt-get install gcc-arm-none-eabi
 ```
-## 5 - Plugin GNU ARM Eclipse ##
+## 5 - Installer gdb ##
 ```
+sudo apt-get install gdb-arm-none-eabi
+```
+## 6 - Lancer Éclipse ##
+```
+'/opt/eclipse/eclipse'
+```
+## 7 - Installer plugin arm ##
 dans Eclispe :
-help => Eclipse Marketplace.... => find GNU ARM Eclipse
+help => install new software => renseigner dans le champ "work with" l'adresse suivante "http://gnuarmeclipse.sourceforge.net/updates"
 installez le plugin
-```
-## 6 - Plugin Dark Eclipse (optionnel) ##
-```
-dans Eclispe :
-help => Eclipse Marketplace.... => find Darkest Dark Theme 2017
-installez le plugin
-```
-## 7 - External Tools Configurations ##
-```
+## 8 - Configurer la fonction "Flash" dans Eclipse ##
 Cliquer sur l'icône en forme de flèche à droite de "External Tools" et choisir "External Tools Configuration"=>
 Cliquer sur "Program" et cliquer sur l'icône "New Launch Configuration"=>
 Saisir dans "Name" le nom de configuration "flash"
-Saisir dans "Location" : ${openocd_path}/${openocd_executable}
-Saisir dans "Working Directory" : ${workspace_loc:/${project_name}}
-Saisir dans "Arguments" l'ensemble de lignes suivantes (F4x_Discovery) :
+Saisir dans "Location" : cliquer sur l'icône "Browse Filesystem" :$
+```
+   sélectionner le fichier "/usr/bin/openocd"
+```
+Saisir dans "Working Directory" l'adresse :
+```
+${workspace_loc/${project_name}}
+```
+Saisir dans "Arguments" l'ensemble de lignes suivantes :
 ```
 -f interface/stlink-v2.cfg
--f target/stm32f4x.cfg
+-f target/stm32f4x_stlink.cfg
 
 -c "init" 
 
--c "reset halt" -c "sleep 100" -c "wait_halt 2" -c "flash write_image erase ${config_name:/${project_name}}/${project_name}.elf" -c "verify_image  ${config_name:/${project_name}}/${project_name}.elf" -c "sleep 100" -c "reset run" -c "exit"
-```
-Saisir dans "Arguments" l'ensemble de lignes suivantes (F4x_Nucleo) :
-```
--f interface/stlink-v2-1.cfg
--f target/stm32f4x.cfg
-
--c "init" 
-
--c "reset halt" -c "sleep 100" -c "wait_halt 2" -c "flash write_image erase ${config_name:/${project_name}}/${project_name}.elf" -c "verify_image  ${config_name:/${project_name}}/${project_name}.elf" -c "sleep 100" -c "reset run" -c "exit"
-```
-Saisir dans "Arguments" l'ensemble de lignes suivantes (F7x) :
-```
--f  board/stm32f7discovery.cfg
-
--c "init" 
-
--c "reset halt" -c "sleep 100" -c "wait_halt 2" -c "flash write_image erase ${config_name:/${project_name}}/${project_name}.elf" -c "verify_image  ${config_name:/${project_name}}/${project_name}.elf" -c "sleep 100" -c "reset run" -c "exit"
+-c "reset halt"
+-c "sleep 100"
+-c "wait_halt 2"
+-c "flash write_image erase ${config_name:/${project_name}}/${project_name}.elf" -c "verify_image  ${config_name:/${project_name}}/${project_name}.elf" -c "sleep 100" -c "reset run" -c "exit"
 ```
 Dans l'onglet "Common", cliquer sur la boîte à cocher "External Tools" (Display in favorites menu)=>
 Cliquer sur le bouton "Apply" puis sur "Close"
-```
-## 8 - Configurer le Debug ##
+## 9 - Configurer le Debug ##
 Cliquer sur l'icône en forme de flèche à droite de "Debug zhonx3" et choisir "Debug Configurations"=>
 Cliquer sur "GDB OpenOCD Debugging" et cliquer sur l'icône "New Launch Configuration"=>
 Saisir dans "Name" le nom de configuration "Debug"=>
@@ -113,22 +90,18 @@ ${project_name}
 Cliquer sur l'onglet "Debugger"
 Dans la première partie (OpenOCD setup), saisir dans "Config options" les deux lignes suivantes =>
 ```
-(F4x_Discovery) :
 -f interface/stlink-v2.cfg
 -f target/stm32f4x_stlink.cfg
 ```
-(F4x_Nucleo) :
--f interface/stlink-v2-1.cfg
--f target/stm32f4x.cfg
-```
-(F7x) :
--f  board/stm32f7discovery.cfg
-```
-Dans la seconde partie (GDB Client Setup), remplacer le contenu de la zone "Commandes" par l'ensemble des lignes suivantes :
+Dans la seconde partie (GDB Client Setpup), remplacer le contenu de la zone "Commandes" par l'ensemble des lignes suivantes :
 ```
 set mem inaccessible-by-default off
 set remote hardware-breakpoint-limit 6
 set remote hardware-watchpoint-limit 4
+```
+remplacer le contenu de la zone "Executable" par la ligne suivante :
+```
+arm-none-eabi-gdb
 ```
 Dans l'onglet "Common", cliquer sur la boîte à cocher "Debug" (Display in favorites menu)=>
 Cliquer sur le bouton "Apply" puis sur "Close"
