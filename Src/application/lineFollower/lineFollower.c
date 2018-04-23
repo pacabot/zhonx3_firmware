@@ -15,12 +15,16 @@
 #include <string.h>
 
 /* Application declarations */
-#include <application/lineFollower/lineFollower.h>
+#include "application/lineFollower/lineFollower.h"
+#include "application/statistiques/statistiques.h"
 
 /* Middleware declarations */
-#include <middleware/controls/mainControl/mainControl.h>
-#include <middleware/controls/mainControl/positionControl.h>
-#include <middleware/moves/basicMoves/basicMoves.h>
+#include "middleware/controls/mainControl/mainControl.h"
+#include "middleware/controls/mainControl/positionControl.h"
+#include "middleware/moves/basicMoves/basicMoves.h"
+#include "middleware/wall_sensors/wall_sensors.h"
+#include "middleware/controls/pidController/pidController.h"
+#include "middleware/controls/lineFollowerControl/lineFollowControl.h"
 
 /* Peripheral declarations */
 #include <peripherals/bluetooth/bluetooth.h>
@@ -32,12 +36,6 @@
 #include <peripherals/motors/motors.h>
 #include <peripherals/telemeters/telemeters.h>
 #include <peripherals/tone/tone.h>
-
-/* Middleware declarations */
-#include "middleware/wall_sensors/wall_sensors.h"
-#include "middleware/controls/pidController/pidController.h"
-#include "application/lineFollower/lineFollower.h"
-#include "application/statistiques/statistiques.h"
 
 
 line_follower_struct line_follower;
@@ -451,7 +449,9 @@ void controlLoop(void)
 void lineFollower_IT(void)
 {
     if (line_follower.active_state == FALSE)
+    {
         return;
+    }
 
 	controlLoop();
 }

@@ -32,6 +32,7 @@
 #include "peripherals/expander/pcf8574.h"
 #include "peripherals/telemeters/telemeters.h"
 #include "peripherals/tone/tone.h"
+#include "peripherals/bluetooth/bluetooth.h"
 #endif
 
 int run(labyrinthe *maze, positionRobot *positionZhonx, coordinate start_coordinate, coordinate end_coordinate, int runType)

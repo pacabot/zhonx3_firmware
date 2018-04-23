@@ -33,38 +33,47 @@
 /* Declarations for this module */
 #include "peripherals/expander/pcf8574.h"
 
-#define NORMAL_DELAY_REAPEAT 400
-#define FAST_DELAY_REAPEAT 70
-#define DONE 0
+#define EXPANDER_I2C_ADDRESS            (0x20 << 1)
+
+#define NORMAL_DELAY_REAPEAT            400
+#define FAST_DELAY_REAPEAT              70
+#define DONE                            0
+
 /* extern variables ---------------------------------------------------------*/
 extern I2C_HandleTypeDef hi2c1;
 unsigned int joy_activ_old_time;
 
 //Send DATA
-static void sendData(uint8_t aTxBuffer)
+static void sendData(uint8_t val)
 {
+    static uint8_t aTx;
+    aTx = val;
     // I2C
     //	while (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY);
     if (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY)
         return;
-    HAL_I2C_Master_Transmit_DMA(&hi2c1, (uint16_t) 64, (uint8_t*) &aTxBuffer, 1);
+//    HAL_I2C_Master_Transmit(&hi2c1, (uint16_t)EXPANDER_I2C_ADDRESS, (uint8_t*)&aTxBuffer, 1, 1000);
+    HAL_I2C_Master_Transmit_DMA(&hi2c1, (uint16_t)EXPANDER_I2C_ADDRESS, (uint8_t*)&aTx, 1);//, 1000);
+
 }
 
 //get DATA
 static char getData(void)
 {
     // I2C
-    static uint8_t aRxBuffer;
+    static uint8_t aRx;
 
     while (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY);
-    HAL_I2C_Master_Receive(&hi2c1, (uint16_t) 65, (uint8_t *) &aRxBuffer, 1, 1000);
+    HAL_I2C_Master_Receive(&hi2c1, (uint16_t)EXPANDER_I2C_ADDRESS, (uint8_t*)&aRx, 1, 1000);
 
-    return aRxBuffer;
+    return aRx;
 }
 
 void expanderInit(void)
 {
-    sendData(0xFF);
+//    sendData(0xFF);
+    uint8_t aTxBuffer = 0xFF;
+    HAL_I2C_Master_Transmit(&hi2c1, (uint16_t)EXPANDER_I2C_ADDRESS, (uint8_t*)&aTxBuffer, 1, 1000);
 }
 
 void expanderSetbit(char pin, char val)

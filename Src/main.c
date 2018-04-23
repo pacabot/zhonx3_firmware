@@ -1,10 +1,16 @@
+
 /**
  ******************************************************************************
- * File Name          : main.c
- * Description        : Main program body
+ * @file           : main.c
+ * @brief          : Main program body
  ******************************************************************************
+ ** This notice applies to any and all portions of this file
+ * that are not between comment pairs USER CODE BEGIN and
+ * USER CODE END. Other portions of this file, whether
+ * inserted by the user or by software development tools
+ * are owned by their respective copyright owners.
  *
- * COPYRIGHT(c) 2016 STMicroelectronics
+ * COPYRIGHT(c) 2018 STMicroelectronics
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -31,6 +37,7 @@
  ******************************************************************************
  */
 /* Includes ------------------------------------------------------------------*/
+#include "main.h"
 #include "stm32f4xx_hal.h"
 #include "adc.h"
 #include "dma.h"
@@ -86,12 +93,15 @@ static inline void blockingPrintf(const char *format, ...)
     bluetoothPrintf(format);
     bluetoothWaitReady();
 }
-
 /* USER CODE END 0 */
 
+/**
+ * @brief  The application entry point.
+ *
+ * @retval None
+ */
 int main(void)
 {
-
     /* USER CODE BEGIN 1 */
     CMDLINE_CONTEXT cmd_context;
     const char *zhonx_info = (char *)CONFIG_ZHONX_INFO_ADDR;
@@ -102,8 +112,16 @@ int main(void)
     /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
     HAL_Init();
 
+    /* USER CODE BEGIN Init */
+
+    /* USER CODE END Init */
+
     /* Configure the system clock */
     SystemClock_Config();
+
+    /* USER CODE BEGIN SysInit */
+
+    /* USER CODE END SysInit */
 
     /* Initialize all configured peripherals */
     MX_GPIO_Init();
@@ -123,12 +141,10 @@ int main(void)
     MX_TIM8_Init();
     MX_TIM11_Init();
     MX_USART3_UART_Init();
-
     /* USER CODE BEGIN 2 */
     expanderInit();
-    HAL_Delay(100);
-    mainControlInit();
     ssd1306Init(0);
+    mainControlInit();
     timesBaseInit();
     ledPowerBlink(990, 10);
     settingsInit();
@@ -136,6 +152,13 @@ int main(void)
     bluetoothInit();
     toneInit();
     spyPostInit();
+
+    for (int i = 0; i < 6; i++)
+    {
+        int j = 0b11100;
+        expanderSetLeds(j >> i);
+        HAL_Delay(20);
+    }
 
     positionControlSetPositionType(GYRO);
     mainControlSetFollowType(NO_FOLLOW);
@@ -182,7 +205,9 @@ int main(void)
 
 }
 
-/** System Clock Configuration
+/**
+ * @brief System Clock Configuration
+ * @retval None
  */
 void SystemClock_Config(void)
 {
@@ -190,10 +215,14 @@ void SystemClock_Config(void)
     RCC_OscInitTypeDef RCC_OscInitStruct;
     RCC_ClkInitTypeDef RCC_ClkInitStruct;
 
-    __PWR_CLK_ENABLE();
+    /**Configure the main internal regulator output voltage 
+     */
+    __HAL_RCC_PWR_CLK_ENABLE();
 
     __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
 
+    /**Initializes the CPU, AHB and APB busses clocks 
+     */
     RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
     RCC_OscInitStruct.HSEState = RCC_HSE_ON;
     RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
@@ -202,18 +231,31 @@ void SystemClock_Config(void)
     RCC_OscInitStruct.PLL.PLLN = 336;
     RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
     RCC_OscInitStruct.PLL.PLLQ = 7;
-    HAL_RCC_OscConfig(&RCC_OscInitStruct);
+    if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
+    {
+        _Error_Handler(__FILE__, __LINE__);
+    }
 
+    /**Initializes the CPU, AHB and APB busses clocks 
+     */
     RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
             |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
     RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
     RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
     RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV4;
     RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV4;
-    HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_5);
 
-    HAL_SYSTICK_Config(HAL_RCC_GetHCLKFreq() / 1000);
+    if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_5) != HAL_OK)
+    {
+        _Error_Handler(__FILE__, __LINE__);
+    }
 
+    /**Configure the Systick interrupt time 
+     */
+    HAL_SYSTICK_Config(HAL_RCC_GetHCLKFreq()/1000);
+
+    /**Configure the Systick 
+     */
     HAL_SYSTICK_CLKSourceConfig(SYSTICK_CLKSOURCE_HCLK);
 
     /* SysTick_IRQn interrupt configuration */
@@ -330,25 +372,38 @@ void HardFault_Handler(void)
 
 /* USER CODE END 4 */
 
-#ifdef USE_FULL_ASSERT
-
 /**
- * @brief Reports the name of the source file and the source line number
- * where the assert_param error has occurred.
- * @param file: pointer to the source file name
- * @param line: assert_param error line source number
+ * @brief  This function is executed in case of error occurrence.
+ * @param  file: The file name as string.
+ * @param  line: The line in file as a number.
+ * @retval None
+ */
+void _Error_Handler(char *file, int line)
+{
+    /* USER CODE BEGIN Error_Handler_Debug */
+    /* User can add his own implementation to report the HAL error return state */
+    while(1)
+    {
+    }
+    /* USER CODE END Error_Handler_Debug */
+}
+
+#ifdef  USE_FULL_ASSERT
+/**
+ * @brief  Reports the name of the source file and the source line number
+ *         where the assert_param error has occurred.
+ * @param  file: pointer to the source file name
+ * @param  line: assert_param error line source number
  * @retval None
  */
 void assert_failed(uint8_t* file, uint32_t line)
-{
+{ 
     /* USER CODE BEGIN 6 */
     /* User can add his own implementation to report the file name and line number,
      ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
     /* USER CODE END 6 */
-
 }
-
-#endif
+#endif /* USE_FULL_ASSERT */
 
 /**
  * @}

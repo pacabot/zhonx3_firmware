@@ -7,6 +7,7 @@
 
 #include "middleware/math/kalman_filter.h"
 #include "stdbool.h"
+#include "string.h"
 
 void kalman_filter_init(kalman_filter_params *params, float p, float q, float r)
 {
@@ -16,6 +17,7 @@ void kalman_filter_init(kalman_filter_params *params, float p, float q, float r)
 }
 float kalman_filter(kalman_filter_params *params, float value_to_filtre)
 {
+    memset(params, 0, sizeof(params));
     params->pc = params->p + params->q;
     params->k = params->pc / (params->pc + params->r);
     params->p = (1 - params->k) * params->pc;

@@ -6,44 +6,46 @@
  ******************************************************************************/
 /* Copyright (c) 2009 - 2015 ARM LIMITED
 
- All rights reserved.
- Redistribution and use in source and binary forms, with or without
- modification, are permitted provided that the following conditions are met:
- - Redistributions of source code must retain the above copyright
- notice, this list of conditions and the following disclaimer.
- - Redistributions in binary form must reproduce the above copyright
- notice, this list of conditions and the following disclaimer in the
- documentation and/or other materials provided with the distribution.
- - Neither the name of ARM nor the names of its contributors may be used
- to endorse or promote products derived from this software without
- specific prior written permission.
- *
- THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- ARE DISCLAIMED. IN NO EVENT SHALL COPYRIGHT HOLDERS AND CONTRIBUTORS BE
- LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- POSSIBILITY OF SUCH DAMAGE.
- ---------------------------------------------------------------------------*/
+   All rights reserved.
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions are met:
+   - Redistributions of source code must retain the above copyright
+     notice, this list of conditions and the following disclaimer.
+   - Redistributions in binary form must reproduce the above copyright
+     notice, this list of conditions and the following disclaimer in the
+     documentation and/or other materials provided with the distribution.
+   - Neither the name of ARM nor the names of its contributors may be used
+     to endorse or promote products derived from this software without
+     specific prior written permission.
+   *
+   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+   AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+   ARE DISCLAIMED. IN NO EVENT SHALL COPYRIGHT HOLDERS AND CONTRIBUTORS BE
+   LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+   CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+   SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+   INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+   CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+   POSSIBILITY OF SUCH DAMAGE.
+   ---------------------------------------------------------------------------*/
+
 
 #ifndef __CMSIS_ARMCC_V6_H
 #define __CMSIS_ARMCC_V6_H
 
+
 /* ###########################  Core Function Access  ########################### */
 /** \ingroup  CMSIS_Core_FunctionInterface
- \defgroup CMSIS_Core_RegAccFunctions CMSIS Core Register Access Functions
- @{
+    \defgroup CMSIS_Core_RegAccFunctions CMSIS Core Register Access Functions
+  @{
  */
 
 /**
- \brief   Enable IRQ Interrupts
- \details Enables IRQ interrupts by clearing the I-bit in the CPSR.
- Can only be executed in Privileged modes.
+  \brief   Enable IRQ Interrupts
+  \details Enables IRQ interrupts by clearing the I-bit in the CPSR.
+           Can only be executed in Privileged modes.
  */
 __attribute__((always_inline)) __STATIC_INLINE void __enable_irq(void)
 {
@@ -835,8 +837,7 @@ __attribute__((always_inline)) __STATIC_INLINE int32_t __REVSH(int32_t value)
 {
   int32_t result;
 
-  __ASM volatile ("revsh %0, %1" : __CMSIS_GCC_OUT_REG(result): __CMSIS_GCC_USE_REG(value)
-);
+  __ASM volatile ("revsh %0, %1" : __CMSIS_GCC_OUT_REG (result) : __CMSIS_GCC_USE_REG (value) );
   return(result);
 }
 
@@ -1016,533 +1017,553 @@ __attribute__((always_inline)) __STATIC_INLINE uint32_t __RRX(uint32_t value)
 {
   uint32_t result;
 
-  __ASM volatile ("rrx %0, %1" : __CMSIS_GCC_OUT_REG(result): __CMSIS_GCC_USE_REG(value)
-);
-return(result);
+  __ASM volatile ("rrx %0, %1" : __CMSIS_GCC_OUT_REG (result) : __CMSIS_GCC_USE_REG (value) );
+  return(result);
 }
 
+
 /**
- \brief   LDRT Unprivileged (8 bit)
- \details Executes a Unprivileged LDRT instruction for 8 bit value.
- \param [in]    ptr  Pointer to data
- \return             value of type uint8_t at (*ptr)
+  \brief   LDRT Unprivileged (8 bit)
+  \details Executes a Unprivileged LDRT instruction for 8 bit value.
+  \param [in]    ptr  Pointer to data
+  \return             value of type uint8_t at (*ptr)
  */
 __attribute__((always_inline)) __STATIC_INLINE uint8_t __LDRBT(volatile uint8_t *ptr)
 {
-uint32_t result;
+    uint32_t result;
 
-__ASM volatile ("ldrbt %0, %1" : "=r" (result) : "Q" (*ptr) );
-return ((uint8_t) result); /* Add explicit type cast here */
+   __ASM volatile ("ldrbt %0, %1" : "=r" (result) : "Q" (*ptr) );
+   return ((uint8_t) result);    /* Add explicit type cast here */
 }
 
+
 /**
- \brief   LDRT Unprivileged (16 bit)
- \details Executes a Unprivileged LDRT instruction for 16 bit values.
- \param [in]    ptr  Pointer to data
- \return        value of type uint16_t at (*ptr)
+  \brief   LDRT Unprivileged (16 bit)
+  \details Executes a Unprivileged LDRT instruction for 16 bit values.
+  \param [in]    ptr  Pointer to data
+  \return        value of type uint16_t at (*ptr)
  */
 __attribute__((always_inline)) __STATIC_INLINE uint16_t __LDRHT(volatile uint16_t *ptr)
 {
-uint32_t result;
+    uint32_t result;
 
-__ASM volatile ("ldrht %0, %1" : "=r" (result) : "Q" (*ptr) );
-return ((uint16_t) result); /* Add explicit type cast here */
+   __ASM volatile ("ldrht %0, %1" : "=r" (result) : "Q" (*ptr) );
+   return ((uint16_t) result);    /* Add explicit type cast here */
 }
 
+
 /**
- \brief   LDRT Unprivileged (32 bit)
- \details Executes a Unprivileged LDRT instruction for 32 bit values.
- \param [in]    ptr  Pointer to data
- \return        value of type uint32_t at (*ptr)
+  \brief   LDRT Unprivileged (32 bit)
+  \details Executes a Unprivileged LDRT instruction for 32 bit values.
+  \param [in]    ptr  Pointer to data
+  \return        value of type uint32_t at (*ptr)
  */
 __attribute__((always_inline)) __STATIC_INLINE uint32_t __LDRT(volatile uint32_t *ptr)
 {
-uint32_t result;
+    uint32_t result;
 
-__ASM volatile ("ldrt %0, %1" : "=r" (result) : "Q" (*ptr) );
-return(result);
+   __ASM volatile ("ldrt %0, %1" : "=r" (result) : "Q" (*ptr) );
+   return(result);
 }
 
+
 /**
- \brief   STRT Unprivileged (8 bit)
- \details Executes a Unprivileged STRT instruction for 8 bit values.
- \param [in]  value  Value to store
- \param [in]    ptr  Pointer to location
+  \brief   STRT Unprivileged (8 bit)
+  \details Executes a Unprivileged STRT instruction for 8 bit values.
+  \param [in]  value  Value to store
+  \param [in]    ptr  Pointer to location
  */
 __attribute__((always_inline)) __STATIC_INLINE void __STRBT(uint8_t value, volatile uint8_t *ptr)
 {
-__ASM volatile ("strbt %1, %0" : "=Q" (*ptr) : "r" ((uint32_t)value) );
+   __ASM volatile ("strbt %1, %0" : "=Q" (*ptr) : "r" ((uint32_t)value) );
 }
 
+
 /**
- \brief   STRT Unprivileged (16 bit)
- \details Executes a Unprivileged STRT instruction for 16 bit values.
- \param [in]  value  Value to store
- \param [in]    ptr  Pointer to location
+  \brief   STRT Unprivileged (16 bit)
+  \details Executes a Unprivileged STRT instruction for 16 bit values.
+  \param [in]  value  Value to store
+  \param [in]    ptr  Pointer to location
  */
 __attribute__((always_inline)) __STATIC_INLINE void __STRHT(uint16_t value, volatile uint16_t *ptr)
 {
-__ASM volatile ("strht %1, %0" : "=Q" (*ptr) : "r" ((uint32_t)value) );
+   __ASM volatile ("strht %1, %0" : "=Q" (*ptr) : "r" ((uint32_t)value) );
 }
 
+
 /**
- \brief   STRT Unprivileged (32 bit)
- \details Executes a Unprivileged STRT instruction for 32 bit values.
- \param [in]  value  Value to store
- \param [in]    ptr  Pointer to location
+  \brief   STRT Unprivileged (32 bit)
+  \details Executes a Unprivileged STRT instruction for 32 bit values.
+  \param [in]  value  Value to store
+  \param [in]    ptr  Pointer to location
  */
 __attribute__((always_inline)) __STATIC_INLINE void __STRT(uint32_t value, volatile uint32_t *ptr)
 {
-__ASM volatile ("strt %1, %0" : "=Q" (*ptr) : "r" (value) );
+   __ASM volatile ("strt %1, %0" : "=Q" (*ptr) : "r" (value) );
 }
 
 #endif /* ((__ARM_ARCH_7M__ == 1U) || (__ARM_ARCH_7EM__ == 1U) || (__ARM_ARCH_8M__ == 1U)) */
 
+
 #if (__ARM_ARCH_8M__ == 1U)
 
 /**
- \brief   Load-Acquire (8 bit)
- \details Executes a LDAB instruction for 8 bit value.
- \param [in]    ptr  Pointer to data
- \return             value of type uint8_t at (*ptr)
+  \brief   Load-Acquire (8 bit)
+  \details Executes a LDAB instruction for 8 bit value.
+  \param [in]    ptr  Pointer to data
+  \return             value of type uint8_t at (*ptr)
  */
 __attribute__((always_inline)) __STATIC_INLINE uint8_t __LDAB(volatile uint8_t *ptr)
 {
-uint32_t result;
+    uint32_t result;
 
-__ASM volatile ("ldab %0, %1" : "=r" (result) : "Q" (*ptr) );
-return ((uint8_t) result);
+   __ASM volatile ("ldab %0, %1" : "=r" (result) : "Q" (*ptr) );
+   return ((uint8_t) result);
 }
 
+
 /**
- \brief   Load-Acquire (16 bit)
- \details Executes a LDAH instruction for 16 bit values.
- \param [in]    ptr  Pointer to data
- \return        value of type uint16_t at (*ptr)
+  \brief   Load-Acquire (16 bit)
+  \details Executes a LDAH instruction for 16 bit values.
+  \param [in]    ptr  Pointer to data
+  \return        value of type uint16_t at (*ptr)
  */
 __attribute__((always_inline)) __STATIC_INLINE uint16_t __LDAH(volatile uint16_t *ptr)
 {
-uint32_t result;
+    uint32_t result;
 
-__ASM volatile ("ldah %0, %1" : "=r" (result) : "Q" (*ptr) );
-return ((uint16_t) result);
+   __ASM volatile ("ldah %0, %1" : "=r" (result) : "Q" (*ptr) );
+   return ((uint16_t) result);
 }
 
+
 /**
- \brief   Load-Acquire (32 bit)
- \details Executes a LDA instruction for 32 bit values.
- \param [in]    ptr  Pointer to data
- \return        value of type uint32_t at (*ptr)
+  \brief   Load-Acquire (32 bit)
+  \details Executes a LDA instruction for 32 bit values.
+  \param [in]    ptr  Pointer to data
+  \return        value of type uint32_t at (*ptr)
  */
 __attribute__((always_inline)) __STATIC_INLINE uint32_t __LDA(volatile uint32_t *ptr)
 {
-uint32_t result;
+    uint32_t result;
 
-__ASM volatile ("lda %0, %1" : "=r" (result) : "Q" (*ptr) );
-return(result);
+   __ASM volatile ("lda %0, %1" : "=r" (result) : "Q" (*ptr) );
+   return(result);
 }
 
+
 /**
- \brief   Store-Release (8 bit)
- \details Executes a STLB instruction for 8 bit values.
- \param [in]  value  Value to store
- \param [in]    ptr  Pointer to location
+  \brief   Store-Release (8 bit)
+  \details Executes a STLB instruction for 8 bit values.
+  \param [in]  value  Value to store
+  \param [in]    ptr  Pointer to location
  */
 __attribute__((always_inline)) __STATIC_INLINE void __STLB(uint8_t value, volatile uint8_t *ptr)
 {
-__ASM volatile ("stlb %1, %0" : "=Q" (*ptr) : "r" ((uint32_t)value) );
+   __ASM volatile ("stlb %1, %0" : "=Q" (*ptr) : "r" ((uint32_t)value) );
 }
 
+
 /**
- \brief   Store-Release (16 bit)
- \details Executes a STLH instruction for 16 bit values.
- \param [in]  value  Value to store
- \param [in]    ptr  Pointer to location
+  \brief   Store-Release (16 bit)
+  \details Executes a STLH instruction for 16 bit values.
+  \param [in]  value  Value to store
+  \param [in]    ptr  Pointer to location
  */
 __attribute__((always_inline)) __STATIC_INLINE void __STLH(uint16_t value, volatile uint16_t *ptr)
 {
-__ASM volatile ("stlh %1, %0" : "=Q" (*ptr) : "r" ((uint32_t)value) );
+   __ASM volatile ("stlh %1, %0" : "=Q" (*ptr) : "r" ((uint32_t)value) );
 }
 
+
 /**
- \brief   Store-Release (32 bit)
- \details Executes a STL instruction for 32 bit values.
- \param [in]  value  Value to store
- \param [in]    ptr  Pointer to location
+  \brief   Store-Release (32 bit)
+  \details Executes a STL instruction for 32 bit values.
+  \param [in]  value  Value to store
+  \param [in]    ptr  Pointer to location
  */
 __attribute__((always_inline)) __STATIC_INLINE void __STL(uint32_t value, volatile uint32_t *ptr)
 {
-__ASM volatile ("stl %1, %0" : "=Q" (*ptr) : "r" ((uint32_t)value) );
+   __ASM volatile ("stl %1, %0" : "=Q" (*ptr) : "r" ((uint32_t)value) );
 }
 
+
 /**
- \brief   Load-Acquire Exclusive (8 bit)
- \details Executes a LDAB exclusive instruction for 8 bit value.
- \param [in]    ptr  Pointer to data
- \return             value of type uint8_t at (*ptr)
+  \brief   Load-Acquire Exclusive (8 bit)
+  \details Executes a LDAB exclusive instruction for 8 bit value.
+  \param [in]    ptr  Pointer to data
+  \return             value of type uint8_t at (*ptr)
  */
 #define     __LDAEXB                 (uint8_t)__builtin_arm_ldaex
 
+
 /**
- \brief   Load-Acquire Exclusive (16 bit)
- \details Executes a LDAH exclusive instruction for 16 bit values.
- \param [in]    ptr  Pointer to data
- \return        value of type uint16_t at (*ptr)
+  \brief   Load-Acquire Exclusive (16 bit)
+  \details Executes a LDAH exclusive instruction for 16 bit values.
+  \param [in]    ptr  Pointer to data
+  \return        value of type uint16_t at (*ptr)
  */
 #define     __LDAEXH                 (uint16_t)__builtin_arm_ldaex
 
+
 /**
- \brief   Load-Acquire Exclusive (32 bit)
- \details Executes a LDA exclusive instruction for 32 bit values.
- \param [in]    ptr  Pointer to data
- \return        value of type uint32_t at (*ptr)
+  \brief   Load-Acquire Exclusive (32 bit)
+  \details Executes a LDA exclusive instruction for 32 bit values.
+  \param [in]    ptr  Pointer to data
+  \return        value of type uint32_t at (*ptr)
  */
 #define     __LDAEX                  (uint32_t)__builtin_arm_ldaex
 
+
 /**
- \brief   Store-Release Exclusive (8 bit)
- \details Executes a STLB exclusive instruction for 8 bit values.
- \param [in]  value  Value to store
- \param [in]    ptr  Pointer to location
- \return          0  Function succeeded
- \return          1  Function failed
+  \brief   Store-Release Exclusive (8 bit)
+  \details Executes a STLB exclusive instruction for 8 bit values.
+  \param [in]  value  Value to store
+  \param [in]    ptr  Pointer to location
+  \return          0  Function succeeded
+  \return          1  Function failed
  */
 #define     __STLEXB                 (uint32_t)__builtin_arm_stlex
 
+
 /**
- \brief   Store-Release Exclusive (16 bit)
- \details Executes a STLH exclusive instruction for 16 bit values.
- \param [in]  value  Value to store
- \param [in]    ptr  Pointer to location
- \return          0  Function succeeded
- \return          1  Function failed
+  \brief   Store-Release Exclusive (16 bit)
+  \details Executes a STLH exclusive instruction for 16 bit values.
+  \param [in]  value  Value to store
+  \param [in]    ptr  Pointer to location
+  \return          0  Function succeeded
+  \return          1  Function failed
  */
 #define     __STLEXH                 (uint32_t)__builtin_arm_stlex
 
+
 /**
- \brief   Store-Release Exclusive (32 bit)
- \details Executes a STL exclusive instruction for 32 bit values.
- \param [in]  value  Value to store
- \param [in]    ptr  Pointer to location
- \return          0  Function succeeded
- \return          1  Function failed
+  \brief   Store-Release Exclusive (32 bit)
+  \details Executes a STL exclusive instruction for 32 bit values.
+  \param [in]  value  Value to store
+  \param [in]    ptr  Pointer to location
+  \return          0  Function succeeded
+  \return          1  Function failed
  */
 #define     __STLEX                  (uint32_t)__builtin_arm_stlex
 
 #endif /* (__ARM_ARCH_8M__ == 1U) */
 
-/*@}*//* end of group CMSIS_Core_InstructionInterface */
+/*@}*/ /* end of group CMSIS_Core_InstructionInterface */
+
 
 /* ###################  Compiler specific Intrinsics  ########################### */
 /** \defgroup CMSIS_SIMD_intrinsics CMSIS SIMD Intrinsics
- Access to dedicated SIMD instructions
- @{
- */
+  Access to dedicated SIMD instructions
+  @{
+*/
 
 #if (__ARM_FEATURE_DSP == 1U)        /* ToDo:  ARMCC_V6: This should be ARCH >= ARMv7-M + SIMD */
 
 __attribute__((always_inline)) __STATIC_INLINE uint32_t __SADD8(uint32_t op1, uint32_t op2)
 {
-uint32_t result;
+  uint32_t result;
 
-__ASM volatile ("sadd8 %0, %1, %2" : "=r" (result) : "r" (op1), "r" (op2) );
-return(result);
+  __ASM volatile ("sadd8 %0, %1, %2" : "=r" (result) : "r" (op1), "r" (op2) );
+  return(result);
 }
 
 __attribute__((always_inline)) __STATIC_INLINE uint32_t __QADD8(uint32_t op1, uint32_t op2)
 {
-uint32_t result;
+  uint32_t result;
 
-__ASM volatile ("qadd8 %0, %1, %2" : "=r" (result) : "r" (op1), "r" (op2) );
-return(result);
+  __ASM volatile ("qadd8 %0, %1, %2" : "=r" (result) : "r" (op1), "r" (op2) );
+  return(result);
 }
 
 __attribute__((always_inline)) __STATIC_INLINE uint32_t __SHADD8(uint32_t op1, uint32_t op2)
 {
-uint32_t result;
+  uint32_t result;
 
-__ASM volatile ("shadd8 %0, %1, %2" : "=r" (result) : "r" (op1), "r" (op2) );
-return(result);
+  __ASM volatile ("shadd8 %0, %1, %2" : "=r" (result) : "r" (op1), "r" (op2) );
+  return(result);
 }
 
 __attribute__((always_inline)) __STATIC_INLINE uint32_t __UADD8(uint32_t op1, uint32_t op2)
 {
-uint32_t result;
+  uint32_t result;
 
-__ASM volatile ("uadd8 %0, %1, %2" : "=r" (result) : "r" (op1), "r" (op2) );
-return(result);
+  __ASM volatile ("uadd8 %0, %1, %2" : "=r" (result) : "r" (op1), "r" (op2) );
+  return(result);
 }
 
 __attribute__((always_inline)) __STATIC_INLINE uint32_t __UQADD8(uint32_t op1, uint32_t op2)
 {
-uint32_t result;
+  uint32_t result;
 
-__ASM volatile ("uqadd8 %0, %1, %2" : "=r" (result) : "r" (op1), "r" (op2) );
-return(result);
+  __ASM volatile ("uqadd8 %0, %1, %2" : "=r" (result) : "r" (op1), "r" (op2) );
+  return(result);
 }
 
 __attribute__((always_inline)) __STATIC_INLINE uint32_t __UHADD8(uint32_t op1, uint32_t op2)
 {
-uint32_t result;
+  uint32_t result;
 
-__ASM volatile ("uhadd8 %0, %1, %2" : "=r" (result) : "r" (op1), "r" (op2) );
-return(result);
+  __ASM volatile ("uhadd8 %0, %1, %2" : "=r" (result) : "r" (op1), "r" (op2) );
+  return(result);
 }
+
 
 __attribute__((always_inline)) __STATIC_INLINE uint32_t __SSUB8(uint32_t op1, uint32_t op2)
 {
-uint32_t result;
+  uint32_t result;
 
-__ASM volatile ("ssub8 %0, %1, %2" : "=r" (result) : "r" (op1), "r" (op2) );
-return(result);
+  __ASM volatile ("ssub8 %0, %1, %2" : "=r" (result) : "r" (op1), "r" (op2) );
+  return(result);
 }
 
 __attribute__((always_inline)) __STATIC_INLINE uint32_t __QSUB8(uint32_t op1, uint32_t op2)
 {
-uint32_t result;
+  uint32_t result;
 
-__ASM volatile ("qsub8 %0, %1, %2" : "=r" (result) : "r" (op1), "r" (op2) );
-return(result);
+  __ASM volatile ("qsub8 %0, %1, %2" : "=r" (result) : "r" (op1), "r" (op2) );
+  return(result);
 }
 
 __attribute__((always_inline)) __STATIC_INLINE uint32_t __SHSUB8(uint32_t op1, uint32_t op2)
 {
-uint32_t result;
+  uint32_t result;
 
-__ASM volatile ("shsub8 %0, %1, %2" : "=r" (result) : "r" (op1), "r" (op2) );
-return(result);
+  __ASM volatile ("shsub8 %0, %1, %2" : "=r" (result) : "r" (op1), "r" (op2) );
+  return(result);
 }
 
 __attribute__((always_inline)) __STATIC_INLINE uint32_t __USUB8(uint32_t op1, uint32_t op2)
 {
-uint32_t result;
+  uint32_t result;
 
-__ASM volatile ("usub8 %0, %1, %2" : "=r" (result) : "r" (op1), "r" (op2) );
-return(result);
+  __ASM volatile ("usub8 %0, %1, %2" : "=r" (result) : "r" (op1), "r" (op2) );
+  return(result);
 }
 
 __attribute__((always_inline)) __STATIC_INLINE uint32_t __UQSUB8(uint32_t op1, uint32_t op2)
 {
-uint32_t result;
+  uint32_t result;
 
-__ASM volatile ("uqsub8 %0, %1, %2" : "=r" (result) : "r" (op1), "r" (op2) );
-return(result);
+  __ASM volatile ("uqsub8 %0, %1, %2" : "=r" (result) : "r" (op1), "r" (op2) );
+  return(result);
 }
 
 __attribute__((always_inline)) __STATIC_INLINE uint32_t __UHSUB8(uint32_t op1, uint32_t op2)
 {
-uint32_t result;
+  uint32_t result;
 
-__ASM volatile ("uhsub8 %0, %1, %2" : "=r" (result) : "r" (op1), "r" (op2) );
-return(result);
+  __ASM volatile ("uhsub8 %0, %1, %2" : "=r" (result) : "r" (op1), "r" (op2) );
+  return(result);
 }
+
 
 __attribute__((always_inline)) __STATIC_INLINE uint32_t __SADD16(uint32_t op1, uint32_t op2)
 {
-uint32_t result;
+  uint32_t result;
 
-__ASM volatile ("sadd16 %0, %1, %2" : "=r" (result) : "r" (op1), "r" (op2) );
-return(result);
+  __ASM volatile ("sadd16 %0, %1, %2" : "=r" (result) : "r" (op1), "r" (op2) );
+  return(result);
 }
 
 __attribute__((always_inline)) __STATIC_INLINE uint32_t __QADD16(uint32_t op1, uint32_t op2)
 {
-uint32_t result;
+  uint32_t result;
 
-__ASM volatile ("qadd16 %0, %1, %2" : "=r" (result) : "r" (op1), "r" (op2) );
-return(result);
+  __ASM volatile ("qadd16 %0, %1, %2" : "=r" (result) : "r" (op1), "r" (op2) );
+  return(result);
 }
 
 __attribute__((always_inline)) __STATIC_INLINE uint32_t __SHADD16(uint32_t op1, uint32_t op2)
 {
-uint32_t result;
+  uint32_t result;
 
-__ASM volatile ("shadd16 %0, %1, %2" : "=r" (result) : "r" (op1), "r" (op2) );
-return(result);
+  __ASM volatile ("shadd16 %0, %1, %2" : "=r" (result) : "r" (op1), "r" (op2) );
+  return(result);
 }
 
 __attribute__((always_inline)) __STATIC_INLINE uint32_t __UADD16(uint32_t op1, uint32_t op2)
 {
-uint32_t result;
+  uint32_t result;
 
-__ASM volatile ("uadd16 %0, %1, %2" : "=r" (result) : "r" (op1), "r" (op2) );
-return(result);
+  __ASM volatile ("uadd16 %0, %1, %2" : "=r" (result) : "r" (op1), "r" (op2) );
+  return(result);
 }
 
 __attribute__((always_inline)) __STATIC_INLINE uint32_t __UQADD16(uint32_t op1, uint32_t op2)
 {
-uint32_t result;
+  uint32_t result;
 
-__ASM volatile ("uqadd16 %0, %1, %2" : "=r" (result) : "r" (op1), "r" (op2) );
-return(result);
+  __ASM volatile ("uqadd16 %0, %1, %2" : "=r" (result) : "r" (op1), "r" (op2) );
+  return(result);
 }
 
 __attribute__((always_inline)) __STATIC_INLINE uint32_t __UHADD16(uint32_t op1, uint32_t op2)
 {
-uint32_t result;
+  uint32_t result;
 
-__ASM volatile ("uhadd16 %0, %1, %2" : "=r" (result) : "r" (op1), "r" (op2) );
-return(result);
+  __ASM volatile ("uhadd16 %0, %1, %2" : "=r" (result) : "r" (op1), "r" (op2) );
+  return(result);
 }
 
 __attribute__((always_inline)) __STATIC_INLINE uint32_t __SSUB16(uint32_t op1, uint32_t op2)
 {
-uint32_t result;
+  uint32_t result;
 
-__ASM volatile ("ssub16 %0, %1, %2" : "=r" (result) : "r" (op1), "r" (op2) );
-return(result);
+  __ASM volatile ("ssub16 %0, %1, %2" : "=r" (result) : "r" (op1), "r" (op2) );
+  return(result);
 }
 
 __attribute__((always_inline)) __STATIC_INLINE uint32_t __QSUB16(uint32_t op1, uint32_t op2)
 {
-uint32_t result;
+  uint32_t result;
 
-__ASM volatile ("qsub16 %0, %1, %2" : "=r" (result) : "r" (op1), "r" (op2) );
-return(result);
+  __ASM volatile ("qsub16 %0, %1, %2" : "=r" (result) : "r" (op1), "r" (op2) );
+  return(result);
 }
 
 __attribute__((always_inline)) __STATIC_INLINE uint32_t __SHSUB16(uint32_t op1, uint32_t op2)
 {
-uint32_t result;
+  uint32_t result;
 
-__ASM volatile ("shsub16 %0, %1, %2" : "=r" (result) : "r" (op1), "r" (op2) );
-return(result);
+  __ASM volatile ("shsub16 %0, %1, %2" : "=r" (result) : "r" (op1), "r" (op2) );
+  return(result);
 }
 
 __attribute__((always_inline)) __STATIC_INLINE uint32_t __USUB16(uint32_t op1, uint32_t op2)
 {
-uint32_t result;
+  uint32_t result;
 
-__ASM volatile ("usub16 %0, %1, %2" : "=r" (result) : "r" (op1), "r" (op2) );
-return(result);
+  __ASM volatile ("usub16 %0, %1, %2" : "=r" (result) : "r" (op1), "r" (op2) );
+  return(result);
 }
 
 __attribute__((always_inline)) __STATIC_INLINE uint32_t __UQSUB16(uint32_t op1, uint32_t op2)
 {
-uint32_t result;
+  uint32_t result;
 
-__ASM volatile ("uqsub16 %0, %1, %2" : "=r" (result) : "r" (op1), "r" (op2) );
-return(result);
+  __ASM volatile ("uqsub16 %0, %1, %2" : "=r" (result) : "r" (op1), "r" (op2) );
+  return(result);
 }
 
 __attribute__((always_inline)) __STATIC_INLINE uint32_t __UHSUB16(uint32_t op1, uint32_t op2)
 {
-uint32_t result;
+  uint32_t result;
 
-__ASM volatile ("uhsub16 %0, %1, %2" : "=r" (result) : "r" (op1), "r" (op2) );
-return(result);
+  __ASM volatile ("uhsub16 %0, %1, %2" : "=r" (result) : "r" (op1), "r" (op2) );
+  return(result);
 }
 
 __attribute__((always_inline)) __STATIC_INLINE uint32_t __SASX(uint32_t op1, uint32_t op2)
 {
-uint32_t result;
+  uint32_t result;
 
-__ASM volatile ("sasx %0, %1, %2" : "=r" (result) : "r" (op1), "r" (op2) );
-return(result);
+  __ASM volatile ("sasx %0, %1, %2" : "=r" (result) : "r" (op1), "r" (op2) );
+  return(result);
 }
 
 __attribute__((always_inline)) __STATIC_INLINE uint32_t __QASX(uint32_t op1, uint32_t op2)
 {
-uint32_t result;
+  uint32_t result;
 
-__ASM volatile ("qasx %0, %1, %2" : "=r" (result) : "r" (op1), "r" (op2) );
-return(result);
+  __ASM volatile ("qasx %0, %1, %2" : "=r" (result) : "r" (op1), "r" (op2) );
+  return(result);
 }
 
 __attribute__((always_inline)) __STATIC_INLINE uint32_t __SHASX(uint32_t op1, uint32_t op2)
 {
-uint32_t result;
+  uint32_t result;
 
-__ASM volatile ("shasx %0, %1, %2" : "=r" (result) : "r" (op1), "r" (op2) );
-return(result);
+  __ASM volatile ("shasx %0, %1, %2" : "=r" (result) : "r" (op1), "r" (op2) );
+  return(result);
 }
 
 __attribute__((always_inline)) __STATIC_INLINE uint32_t __UASX(uint32_t op1, uint32_t op2)
 {
-uint32_t result;
+  uint32_t result;
 
-__ASM volatile ("uasx %0, %1, %2" : "=r" (result) : "r" (op1), "r" (op2) );
-return(result);
+  __ASM volatile ("uasx %0, %1, %2" : "=r" (result) : "r" (op1), "r" (op2) );
+  return(result);
 }
 
 __attribute__((always_inline)) __STATIC_INLINE uint32_t __UQASX(uint32_t op1, uint32_t op2)
 {
-uint32_t result;
+  uint32_t result;
 
-__ASM volatile ("uqasx %0, %1, %2" : "=r" (result) : "r" (op1), "r" (op2) );
-return(result);
+  __ASM volatile ("uqasx %0, %1, %2" : "=r" (result) : "r" (op1), "r" (op2) );
+  return(result);
 }
 
 __attribute__((always_inline)) __STATIC_INLINE uint32_t __UHASX(uint32_t op1, uint32_t op2)
 {
-uint32_t result;
+  uint32_t result;
 
-__ASM volatile ("uhasx %0, %1, %2" : "=r" (result) : "r" (op1), "r" (op2) );
-return(result);
+  __ASM volatile ("uhasx %0, %1, %2" : "=r" (result) : "r" (op1), "r" (op2) );
+  return(result);
 }
 
 __attribute__((always_inline)) __STATIC_INLINE uint32_t __SSAX(uint32_t op1, uint32_t op2)
 {
-uint32_t result;
+  uint32_t result;
 
-__ASM volatile ("ssax %0, %1, %2" : "=r" (result) : "r" (op1), "r" (op2) );
-return(result);
+  __ASM volatile ("ssax %0, %1, %2" : "=r" (result) : "r" (op1), "r" (op2) );
+  return(result);
 }
 
 __attribute__((always_inline)) __STATIC_INLINE uint32_t __QSAX(uint32_t op1, uint32_t op2)
 {
-uint32_t result;
+  uint32_t result;
 
-__ASM volatile ("qsax %0, %1, %2" : "=r" (result) : "r" (op1), "r" (op2) );
-return(result);
+  __ASM volatile ("qsax %0, %1, %2" : "=r" (result) : "r" (op1), "r" (op2) );
+  return(result);
 }
 
 __attribute__((always_inline)) __STATIC_INLINE uint32_t __SHSAX(uint32_t op1, uint32_t op2)
 {
-uint32_t result;
+  uint32_t result;
 
-__ASM volatile ("shsax %0, %1, %2" : "=r" (result) : "r" (op1), "r" (op2) );
-return(result);
+  __ASM volatile ("shsax %0, %1, %2" : "=r" (result) : "r" (op1), "r" (op2) );
+  return(result);
 }
 
 __attribute__((always_inline)) __STATIC_INLINE uint32_t __USAX(uint32_t op1, uint32_t op2)
 {
-uint32_t result;
+  uint32_t result;
 
-__ASM volatile ("usax %0, %1, %2" : "=r" (result) : "r" (op1), "r" (op2) );
-return(result);
+  __ASM volatile ("usax %0, %1, %2" : "=r" (result) : "r" (op1), "r" (op2) );
+  return(result);
 }
 
 __attribute__((always_inline)) __STATIC_INLINE uint32_t __UQSAX(uint32_t op1, uint32_t op2)
 {
-uint32_t result;
+  uint32_t result;
 
-__ASM volatile ("uqsax %0, %1, %2" : "=r" (result) : "r" (op1), "r" (op2) );
-return(result);
+  __ASM volatile ("uqsax %0, %1, %2" : "=r" (result) : "r" (op1), "r" (op2) );
+  return(result);
 }
 
 __attribute__((always_inline)) __STATIC_INLINE uint32_t __UHSAX(uint32_t op1, uint32_t op2)
 {
-uint32_t result;
+  uint32_t result;
 
-__ASM volatile ("uhsax %0, %1, %2" : "=r" (result) : "r" (op1), "r" (op2) );
-return(result);
+  __ASM volatile ("uhsax %0, %1, %2" : "=r" (result) : "r" (op1), "r" (op2) );
+  return(result);
 }
 
 __attribute__((always_inline)) __STATIC_INLINE uint32_t __USAD8(uint32_t op1, uint32_t op2)
 {
-uint32_t result;
+  uint32_t result;
 
-__ASM volatile ("usad8 %0, %1, %2" : "=r" (result) : "r" (op1), "r" (op2) );
-return(result);
+  __ASM volatile ("usad8 %0, %1, %2" : "=r" (result) : "r" (op1), "r" (op2) );
+  return(result);
 }
 
 __attribute__((always_inline)) __STATIC_INLINE uint32_t __USADA8(uint32_t op1, uint32_t op2, uint32_t op3)
 {
-uint32_t result;
+  uint32_t result;
 
-__ASM volatile ("usada8 %0, %1, %2, %3" : "=r" (result) : "r" (op1), "r" (op2), "r" (op3) );
-return(result);
+  __ASM volatile ("usada8 %0, %1, %2, %3" : "=r" (result) : "r" (op1), "r" (op2), "r" (op3) );
+  return(result);
 }
 
 #define __SSAT16(ARG1,ARG2) \
@@ -1561,194 +1582,190 @@ return(result);
 
 __attribute__((always_inline)) __STATIC_INLINE uint32_t __UXTB16(uint32_t op1)
 {
-uint32_t result;
+  uint32_t result;
 
-__ASM volatile ("uxtb16 %0, %1" : "=r" (result) : "r" (op1));
-return(result);
+  __ASM volatile ("uxtb16 %0, %1" : "=r" (result) : "r" (op1));
+  return(result);
 }
 
 __attribute__((always_inline)) __STATIC_INLINE uint32_t __UXTAB16(uint32_t op1, uint32_t op2)
 {
-uint32_t result;
+  uint32_t result;
 
-__ASM volatile ("uxtab16 %0, %1, %2" : "=r" (result) : "r" (op1), "r" (op2) );
-return(result);
+  __ASM volatile ("uxtab16 %0, %1, %2" : "=r" (result) : "r" (op1), "r" (op2) );
+  return(result);
 }
 
 __attribute__((always_inline)) __STATIC_INLINE uint32_t __SXTB16(uint32_t op1)
 {
-uint32_t result;
+  uint32_t result;
 
-__ASM volatile ("sxtb16 %0, %1" : "=r" (result) : "r" (op1));
-return(result);
+  __ASM volatile ("sxtb16 %0, %1" : "=r" (result) : "r" (op1));
+  return(result);
 }
 
 __attribute__((always_inline)) __STATIC_INLINE uint32_t __SXTAB16(uint32_t op1, uint32_t op2)
 {
-uint32_t result;
+  uint32_t result;
 
-__ASM volatile ("sxtab16 %0, %1, %2" : "=r" (result) : "r" (op1), "r" (op2) );
-return(result);
+  __ASM volatile ("sxtab16 %0, %1, %2" : "=r" (result) : "r" (op1), "r" (op2) );
+  return(result);
 }
 
-__attribute__((always_inline)) __STATIC_INLINE uint32_t __SMUAD (uint32_t op1, uint32_t op2)
+__attribute__((always_inline)) __STATIC_INLINE uint32_t __SMUAD  (uint32_t op1, uint32_t op2)
 {
-uint32_t result;
+  uint32_t result;
 
-__ASM volatile ("smuad %0, %1, %2" : "=r" (result) : "r" (op1), "r" (op2) );
-return(result);
+  __ASM volatile ("smuad %0, %1, %2" : "=r" (result) : "r" (op1), "r" (op2) );
+  return(result);
 }
 
 __attribute__((always_inline)) __STATIC_INLINE uint32_t __SMUADX (uint32_t op1, uint32_t op2)
 {
-uint32_t result;
+  uint32_t result;
 
-__ASM volatile ("smuadx %0, %1, %2" : "=r" (result) : "r" (op1), "r" (op2) );
-return(result);
+  __ASM volatile ("smuadx %0, %1, %2" : "=r" (result) : "r" (op1), "r" (op2) );
+  return(result);
 }
 
 __attribute__((always_inline)) __STATIC_INLINE uint32_t __SMLAD (uint32_t op1, uint32_t op2, uint32_t op3)
 {
-uint32_t result;
+  uint32_t result;
 
-__ASM volatile ("smlad %0, %1, %2, %3" : "=r" (result) : "r" (op1), "r" (op2), "r" (op3) );
-return(result);
+  __ASM volatile ("smlad %0, %1, %2, %3" : "=r" (result) : "r" (op1), "r" (op2), "r" (op3) );
+  return(result);
 }
 
 __attribute__((always_inline)) __STATIC_INLINE uint32_t __SMLADX (uint32_t op1, uint32_t op2, uint32_t op3)
 {
-uint32_t result;
+  uint32_t result;
 
-__ASM volatile ("smladx %0, %1, %2, %3" : "=r" (result) : "r" (op1), "r" (op2), "r" (op3) );
-return(result);
+  __ASM volatile ("smladx %0, %1, %2, %3" : "=r" (result) : "r" (op1), "r" (op2), "r" (op3) );
+  return(result);
 }
 
 __attribute__((always_inline)) __STATIC_INLINE uint64_t __SMLALD (uint32_t op1, uint32_t op2, uint64_t acc)
 {
-union llreg_u
-{
+  union llreg_u{
     uint32_t w32[2];
     uint64_t w64;
-}llr;
-llr.w64 = acc;
+  } llr;
+  llr.w64 = acc;
 
 #ifndef __ARMEB__   /* Little endian */
-__ASM volatile ("smlald %0, %1, %2, %3" : "=r" (llr.w32[0]), "=r" (llr.w32[1]): "r" (op1), "r" (op2) , "0" (llr.w32[0]), "1" (llr.w32[1]) );
+  __ASM volatile ("smlald %0, %1, %2, %3" : "=r" (llr.w32[0]), "=r" (llr.w32[1]): "r" (op1), "r" (op2) , "0" (llr.w32[0]), "1" (llr.w32[1]) );
 #else               /* Big endian */
-__ASM volatile ("smlald %0, %1, %2, %3" : "=r" (llr.w32[1]), "=r" (llr.w32[0]): "r" (op1), "r" (op2) , "0" (llr.w32[1]), "1" (llr.w32[0]) );
+  __ASM volatile ("smlald %0, %1, %2, %3" : "=r" (llr.w32[1]), "=r" (llr.w32[0]): "r" (op1), "r" (op2) , "0" (llr.w32[1]), "1" (llr.w32[0]) );
 #endif
 
-return(llr.w64);
+  return(llr.w64);
 }
 
 __attribute__((always_inline)) __STATIC_INLINE uint64_t __SMLALDX (uint32_t op1, uint32_t op2, uint64_t acc)
 {
-union llreg_u
-{
+  union llreg_u{
     uint32_t w32[2];
     uint64_t w64;
-}llr;
-llr.w64 = acc;
+  } llr;
+  llr.w64 = acc;
 
 #ifndef __ARMEB__   /* Little endian */
-__ASM volatile ("smlaldx %0, %1, %2, %3" : "=r" (llr.w32[0]), "=r" (llr.w32[1]): "r" (op1), "r" (op2) , "0" (llr.w32[0]), "1" (llr.w32[1]) );
+  __ASM volatile ("smlaldx %0, %1, %2, %3" : "=r" (llr.w32[0]), "=r" (llr.w32[1]): "r" (op1), "r" (op2) , "0" (llr.w32[0]), "1" (llr.w32[1]) );
 #else               /* Big endian */
-__ASM volatile ("smlaldx %0, %1, %2, %3" : "=r" (llr.w32[1]), "=r" (llr.w32[0]): "r" (op1), "r" (op2) , "0" (llr.w32[1]), "1" (llr.w32[0]) );
+  __ASM volatile ("smlaldx %0, %1, %2, %3" : "=r" (llr.w32[1]), "=r" (llr.w32[0]): "r" (op1), "r" (op2) , "0" (llr.w32[1]), "1" (llr.w32[0]) );
 #endif
 
-return(llr.w64);
+  return(llr.w64);
 }
 
-__attribute__((always_inline)) __STATIC_INLINE uint32_t __SMUSD (uint32_t op1, uint32_t op2)
+__attribute__((always_inline)) __STATIC_INLINE uint32_t __SMUSD  (uint32_t op1, uint32_t op2)
 {
-uint32_t result;
+  uint32_t result;
 
-__ASM volatile ("smusd %0, %1, %2" : "=r" (result) : "r" (op1), "r" (op2) );
-return(result);
+  __ASM volatile ("smusd %0, %1, %2" : "=r" (result) : "r" (op1), "r" (op2) );
+  return(result);
 }
 
 __attribute__((always_inline)) __STATIC_INLINE uint32_t __SMUSDX (uint32_t op1, uint32_t op2)
 {
-uint32_t result;
+  uint32_t result;
 
-__ASM volatile ("smusdx %0, %1, %2" : "=r" (result) : "r" (op1), "r" (op2) );
-return(result);
+  __ASM volatile ("smusdx %0, %1, %2" : "=r" (result) : "r" (op1), "r" (op2) );
+  return(result);
 }
 
 __attribute__((always_inline)) __STATIC_INLINE uint32_t __SMLSD (uint32_t op1, uint32_t op2, uint32_t op3)
 {
-uint32_t result;
+  uint32_t result;
 
-__ASM volatile ("smlsd %0, %1, %2, %3" : "=r" (result) : "r" (op1), "r" (op2), "r" (op3) );
-return(result);
+  __ASM volatile ("smlsd %0, %1, %2, %3" : "=r" (result) : "r" (op1), "r" (op2), "r" (op3) );
+  return(result);
 }
 
 __attribute__((always_inline)) __STATIC_INLINE uint32_t __SMLSDX (uint32_t op1, uint32_t op2, uint32_t op3)
 {
-uint32_t result;
+  uint32_t result;
 
-__ASM volatile ("smlsdx %0, %1, %2, %3" : "=r" (result) : "r" (op1), "r" (op2), "r" (op3) );
-return(result);
+  __ASM volatile ("smlsdx %0, %1, %2, %3" : "=r" (result) : "r" (op1), "r" (op2), "r" (op3) );
+  return(result);
 }
 
 __attribute__((always_inline)) __STATIC_INLINE uint64_t __SMLSLD (uint32_t op1, uint32_t op2, uint64_t acc)
 {
-union llreg_u
-{
+  union llreg_u{
     uint32_t w32[2];
     uint64_t w64;
-}llr;
-llr.w64 = acc;
+  } llr;
+  llr.w64 = acc;
 
 #ifndef __ARMEB__   /* Little endian */
-__ASM volatile ("smlsld %0, %1, %2, %3" : "=r" (llr.w32[0]), "=r" (llr.w32[1]): "r" (op1), "r" (op2) , "0" (llr.w32[0]), "1" (llr.w32[1]) );
+  __ASM volatile ("smlsld %0, %1, %2, %3" : "=r" (llr.w32[0]), "=r" (llr.w32[1]): "r" (op1), "r" (op2) , "0" (llr.w32[0]), "1" (llr.w32[1]) );
 #else               /* Big endian */
-__ASM volatile ("smlsld %0, %1, %2, %3" : "=r" (llr.w32[1]), "=r" (llr.w32[0]): "r" (op1), "r" (op2) , "0" (llr.w32[1]), "1" (llr.w32[0]) );
+  __ASM volatile ("smlsld %0, %1, %2, %3" : "=r" (llr.w32[1]), "=r" (llr.w32[0]): "r" (op1), "r" (op2) , "0" (llr.w32[1]), "1" (llr.w32[0]) );
 #endif
 
-return(llr.w64);
+  return(llr.w64);
 }
 
 __attribute__((always_inline)) __STATIC_INLINE uint64_t __SMLSLDX (uint32_t op1, uint32_t op2, uint64_t acc)
 {
-union llreg_u
-{
+  union llreg_u{
     uint32_t w32[2];
     uint64_t w64;
-}llr;
-llr.w64 = acc;
+  } llr;
+  llr.w64 = acc;
 
 #ifndef __ARMEB__   /* Little endian */
-__ASM volatile ("smlsldx %0, %1, %2, %3" : "=r" (llr.w32[0]), "=r" (llr.w32[1]): "r" (op1), "r" (op2) , "0" (llr.w32[0]), "1" (llr.w32[1]) );
+  __ASM volatile ("smlsldx %0, %1, %2, %3" : "=r" (llr.w32[0]), "=r" (llr.w32[1]): "r" (op1), "r" (op2) , "0" (llr.w32[0]), "1" (llr.w32[1]) );
 #else               /* Big endian */
-__ASM volatile ("smlsldx %0, %1, %2, %3" : "=r" (llr.w32[1]), "=r" (llr.w32[0]): "r" (op1), "r" (op2) , "0" (llr.w32[1]), "1" (llr.w32[0]) );
+  __ASM volatile ("smlsldx %0, %1, %2, %3" : "=r" (llr.w32[1]), "=r" (llr.w32[0]): "r" (op1), "r" (op2) , "0" (llr.w32[1]), "1" (llr.w32[0]) );
 #endif
 
-return(llr.w64);
+  return(llr.w64);
 }
 
-__attribute__((always_inline)) __STATIC_INLINE uint32_t __SEL (uint32_t op1, uint32_t op2)
+__attribute__((always_inline)) __STATIC_INLINE uint32_t __SEL  (uint32_t op1, uint32_t op2)
 {
-uint32_t result;
+  uint32_t result;
 
-__ASM volatile ("sel %0, %1, %2" : "=r" (result) : "r" (op1), "r" (op2) );
-return(result);
+  __ASM volatile ("sel %0, %1, %2" : "=r" (result) : "r" (op1), "r" (op2) );
+  return(result);
 }
 
-__attribute__((always_inline)) __STATIC_INLINE int32_t __QADD( int32_t op1, int32_t op2)
+__attribute__((always_inline)) __STATIC_INLINE  int32_t __QADD( int32_t op1,  int32_t op2)
 {
-int32_t result;
+  int32_t result;
 
-__ASM volatile ("qadd %0, %1, %2" : "=r" (result) : "r" (op1), "r" (op2) );
-return(result);
+  __ASM volatile ("qadd %0, %1, %2" : "=r" (result) : "r" (op1), "r" (op2) );
+  return(result);
 }
 
-__attribute__((always_inline)) __STATIC_INLINE int32_t __QSUB( int32_t op1, int32_t op2)
+__attribute__((always_inline)) __STATIC_INLINE  int32_t __QSUB( int32_t op1,  int32_t op2)
 {
-int32_t result;
+  int32_t result;
 
-__ASM volatile ("qsub %0, %1, %2" : "=r" (result) : "r" (op1), "r" (op2) );
-return(result);
+  __ASM volatile ("qsub %0, %1, %2" : "=r" (result) : "r" (op1), "r" (op2) );
+  return(result);
 }
 
 #define __PKHBT(ARG1,ARG2,ARG3) \
@@ -1770,13 +1787,14 @@ return(result);
 
 __attribute__((always_inline)) __STATIC_INLINE uint32_t __SMMLA (int32_t op1, int32_t op2, int32_t op3)
 {
-int32_t result;
+ int32_t result;
 
-__ASM volatile ("smmla %0, %1, %2, %3" : "=r" (result): "r" (op1), "r" (op2), "r" (op3) );
-return(result);
+ __ASM volatile ("smmla %0, %1, %2, %3" : "=r" (result): "r"  (op1), "r" (op2), "r" (op3) );
+ return(result);
 }
 
 #endif /* (__ARM_FEATURE_DSP == 1U) */
 /*@} end of group CMSIS_SIMD_intrinsics */
+
 
 #endif /* __CMSIS_ARMCC_V6_H */

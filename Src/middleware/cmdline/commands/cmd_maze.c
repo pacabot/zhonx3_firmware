@@ -11,6 +11,7 @@
 #include "config/basetypes.h"
 #include "config/config.h"
 #include "config/errors.h"
+#include "stm32f4xx_hal.h"
 
 #include "middleware/cmdline/commands/commads.h"
 #include "middleware/cmdline/cmdline_parser.h"

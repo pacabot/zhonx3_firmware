@@ -46,6 +46,8 @@
 #define SSD1306_BANNERSIZE			    (SSD1306_LCDWIDTH)
 #define SSD1306_MAINSIZE				((SSD1306_LCDWIDTH * SSD1306_LCDPAGEHEIGHT) - SSD1306_BANNERSIZE)
 
+#define OLED_I2C_ADDRESS                120
+
 // Commands
 #define SSD1306_SETCONTRAST             0x81
 #define SSD1306_DISPLAYALLON_RESUME     0xA4
@@ -74,7 +76,6 @@
 
 /* extern variables ---------------------------------------------------------*/
 extern I2C_HandleTypeDef hi2c1;
-//extern DMA_HandleTypeDef hdma_i2c1_tx;
 
 /* Private variables ---------------------------------------------------------*/
 //static unsigned char banner_aera_buffer[SSD1306_BANNERSIZE];
@@ -101,24 +102,24 @@ static void CMD(uint8_t c)
     // I2C
     uint8_t control = 0x00;   // Co = 0, D/C = 0
 
-    uint8_t aTxBuffer[2]; // = {control, c};
+    static uint8_t aTxBuffer[2];
     aTxBuffer[0] = control;
     aTxBuffer[1] = c;
 
-    //	while (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY)
-    //	{
-    //	}
-    HAL_I2C_Master_Transmit_DMA(&hi2c1, (uint16_t) 120, (uint8_t*) aTxBuffer, 2);  //, 1000);
+    	while (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY)
+    	{
+    	}
+    HAL_I2C_Master_Transmit_DMA(&hi2c1, (uint16_t)OLED_I2C_ADDRESS, (uint8_t*)aTxBuffer, 2);
 }
 
 //Send DATA
-static void DATA(uint8_t c[], uint16_t size)
+static void DATA(uint8_t *c, uint16_t size)
 {
     // I2C
-    //	while (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY)
-    //	{
-    //	}
-    HAL_I2C_Master_Transmit_DMA(&hi2c1, (uint16_t) 120, (uint8_t*) c, size); //, 1000);
+//    	while (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY)
+//    	{
+//    	}
+    HAL_I2C_Master_Transmit_DMA(&hi2c1, (uint16_t)OLED_I2C_ADDRESS, (uint8_t*)c, size);
 }
 
 /**************************************************************************/
@@ -194,9 +195,20 @@ void ssd1306Init(unsigned char vccstate)
 
     // Initialization sequence
     CMD(SSD1306_DISPLAYOFF);                    // 0xAE
+    CMD(SSD1306_SETDISPLAYCLOCKDIV);            // 0xD5
+    CMD(0x80);                                  // the suggested ratio 0x80
     CMD(SSD1306_SETLOWCOLUMN | 0x0);            // low col = 0
     CMD(SSD1306_SETHIGHCOLUMN | 0x0);           // hi col = 0
     CMD(SSD1306_SETSTARTLINE | 0x0);            // line #0
+    CMD(SSD1306_CHARGEPUMP);                    //0x8D
+    if (vccstate == SSD1306_EXTERNALVCC)
+    {
+        CMD(0x10);
+    }
+    else
+    {
+        CMD(0x14);
+    }
     CMD(SSD1306_SETCONTRAST);                   // 0x81
     if (vccstate == SSD1306_EXTERNALVCC)
     {
@@ -204,7 +216,7 @@ void ssd1306Init(unsigned char vccstate)
     }
     else
     {
-        CMD(254);								// contrast (0-255)
+        CMD(0xCF);								// contrast (0-255)
     }
     CMD(SSD1306_NORMALDISPLAY);                 // 0xA6 NORMAL MODE (A7 for inverse display)
     //	CMD(SSD1306_INVERTDISPLAY);             // 0xA6 NORMAL MODE (A7 for inverse display)
@@ -213,8 +225,6 @@ void ssd1306Init(unsigned char vccstate)
     CMD(0x3F);                                  // 0x3F 1/64 duty
     CMD(SSD1306_SETDISPLAYOFFSET);              // 0xD3
     CMD(0x0);                                   // no offset
-    CMD(SSD1306_SETDISPLAYCLOCKDIV);            // 0xD5
-    CMD(0b10000000);                            // the suggested ratio 0x80
     CMD(SSD1306_SETPRECHARGE);                  // 0xd9
     if (vccstate == SSD1306_EXTERNALVCC)
     {
@@ -235,16 +245,6 @@ void ssd1306Init(unsigned char vccstate)
     //	CMD(SSD1306_COMSCANDEC);				// Normal display
     CMD(SSD1306_SEGREMAP);					    //   For rotate
     CMD(SSD1306_COMSCANINC);					// 180 degrees display
-
-    CMD(SSD1306_CHARGEPUMP);                    //0x8D
-    if (vccstate == SSD1306_EXTERNALVCC)
-    {
-        CMD(0x10);
-    }
-    else
-    {
-        CMD(0x14);
-    }
 
     // Enabled the OLED panel
     CMD(SSD1306_DISPLAYON);
