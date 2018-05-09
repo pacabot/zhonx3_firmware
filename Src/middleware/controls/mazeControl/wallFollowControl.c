@@ -40,7 +40,6 @@
 /* Middleware declarations */
 #include "middleware/wall_sensors/wall_sensors.h"
 #include "middleware/controls/pidController/pidController.h"
-#include "application/lineFollower/lineFollower.h"
 
 /* Declarations for this module */
 #include "middleware/controls/mazeControl/wallFollowControl.h"
