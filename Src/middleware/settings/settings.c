@@ -4,7 +4,7 @@
  *  Created on: 3 avr. 2015
  *      Author: Colin
  */
-
+#include "stm32f4xx_hal.h"
 #include "config/basetypes.h"
 #include "config/config.h"
 #include "middleware/settings/settings.h"
@@ -26,7 +26,6 @@ int settingsInit(void)
 	zhonxSettings.sleep_delay_s=300; // the robot will go sleep in zhonxSettings.sleep_delay_s S
 	zhonxSettings.wall_know_cost = 1;
 	zhonxSettings.cell_cost = 5;
-	zhonxSettings.start_orientation = 0;
     zhonxSettings.speeds_scan.max_speed_rotation = SCAN_SPEED_ROTATION;
     zhonxSettings.speeds_scan.max_speed_traslation = SCAN_MAX_SPEED_TRANSLATION;
     zhonxSettings.speeds_scan.min_speed = SCAN_MIN_SPEED_TRANSLATION;

@@ -113,13 +113,13 @@ int mainControl_IT(void)
         rv = lineFollowControlLoop();
         if (rv != LINE_FOLLOW_CONTROL_E_SUCCESS)
             return rv;
-        rv = speedControlLoop();
-        if (rv != SPEED_CONTROL_E_SUCCESS)
-            return rv;
-        rv = transfertFunctionLoop();
-        if (rv != TRANSFERT_FUNCTION_E_SUCCESS)
-            return rv;
-        return MAIN_CONTROL_E_SUCCESS;
+//        rv = speedControlLoop();
+//        if (rv != SPEED_CONTROL_E_SUCCESS)
+//            return rv;
+//        rv = transfertFunctionLoop();
+//        if (rv != TRANSFERT_FUNCTION_E_SUCCESS)
+//            return rv;
+//        return MAIN_CONTROL_E_SUCCESS; // TODO test if it is an error
     }
     else if (control_params.wall_follow_state == TRUE)
     {

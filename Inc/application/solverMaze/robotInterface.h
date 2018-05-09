@@ -12,14 +12,13 @@
 //#define PRINT_CELL_STATE
 //#define PRINT_CELL_STATE_BLEUTOOTH
 
-#include <application/solverMaze/robotInterface.h>
 #include <application/solverMaze/solverMaze.h>
 #include <middleware/settings/settings.h>
 #include <middleware/wall_sensors/wall_sensors.h>
 
 #define WAIT_START_DISTANCE 100.00
 
-void goOrientation(char *orientationZhonx, char directionToGo, int max_speed_rotation);
+void goOrientation(enum direction *directionZhonx, enum direction directionToGo, int max_speed_rotation);
 void doUTurn(positionRobot *positionZhonx, int max_speed_rotation, int max_speed_translation, int min_speed_translation);
 void moveZhonxArc(int direction_to_go, positionRobot *positionZhonx, int numberOfCase, char end_mid_of_case, char chain);
 int floorSensorCalibrate(void);

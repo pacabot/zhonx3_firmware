@@ -22,14 +22,6 @@
 
 typedef struct
 {
-    int sign;
-    int active_state;
-} line_follow_params_struct;
-
-extern line_follow_params_struct line_follow_params;
-
-typedef struct
-{
     double line_follow_error;
     double line_follow_command;
     char succes;

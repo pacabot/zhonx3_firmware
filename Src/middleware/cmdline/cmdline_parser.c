@@ -8,6 +8,7 @@
 /**************************************************************************/
 
 /* General declarations */
+#include "stm32f4xx_hal.h"
 #include "config/basetypes.h"
 #include "config/config.h"
 #include "config/errors.h"
@@ -18,8 +19,6 @@
 #include <stdarg.h>
 
 #include "usart.h"
-#include "stm32f4xx_hal_uart.h"
-#include "stm32f4xx_hal_def.h"
 
 #include "peripherals/bluetooth/bluetooth.h"
 #include "peripherals/display/ssd1306.h"

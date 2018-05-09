@@ -22,5 +22,8 @@
 /Debug/
 /Release/
 
+# ignore generated documentation
+doxygen/
+
 *.gpdsc
 

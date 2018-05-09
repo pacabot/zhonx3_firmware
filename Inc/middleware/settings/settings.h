@@ -49,7 +49,6 @@ typedef struct
 	coordinate maze_end_coordinate;
 	int wall_know_cost;
 	int cell_cost;
-	int start_orientation;
 	unsigned int sleep_delay_s;
 	char return_to_start_cell;
     speed_settings speeds_scan;

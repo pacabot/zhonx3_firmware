@@ -29,33 +29,33 @@
 
 STORED_MAZES *stored_mazes = (STORED_MAZES *)STORED_MAZES_ADDR;
 
-void goOrientation(char *orientationZhonx, char directionToGo, int max_speed_rotation)
+void goOrientation(enum direction *directionZhonx, enum direction directionToGo, int max_speed_rotation)
 {
-    int turn = (4 + directionToGo - *orientationZhonx) % 4;
-    *orientationZhonx = directionToGo;
+    enum orientation turn = (4 + directionToGo - *directionZhonx) % 4;
+    *directionZhonx = directionToGo;
     switch (turn)
     {
-        case FORWARD :
+        case forward :
 #ifdef DEBUG_ROBOT_INTERFACE
             bluetoothWaitReady();
             bluetoothPrintf("FORWARD\n");
 #endif
             break;
-        case RIGHT :
+        case right :
             mazeMoveRotateInPlaceWithCalCCW90(max_speed_rotation);
 #ifdef DEBUG_ROBOT_INTERFACE
             bluetoothWaitReady();
             bluetoothPrintf("RIGHT\n");
 #endif
             break;
-        case UTURN :
+        case uturn :
             mazeMoveRotateInPlace180WithCal(0, max_speed_rotation);
 #ifdef DEBUG_ROBOT_INTERFACE
             bluetoothWaitReady();
             bluetoothPrintf("UTURN\n");
 #endif
             break;
-        case LEFT :
+        case left :
             mazeMoveRotateInPlaceWithCalCW90(max_speed_rotation);
 #ifdef DEBUG_ROBOT_INTERFACE
             bluetoothWaitReady();
@@ -69,17 +69,17 @@ void move_zhonx(char direction_to_go, positionRobot *positionZhonx, unsigned int
                 char chain, int max_speed_rotation, int max_speed_translation, int min_speed_translation)
 {
 
-#ifdef PRINT_BLUETOOTH_BASIC_DEGUG
-    static unsigned int time = 0;
-    if ( time != 0)
-    {
-        bluetoothPrintf("Reflection time : %d\n", HAL_GetTick() - time);
-    }
-    bluetoothWaitReady();
-    bluetoothPrintf("position adresse : 0X%x\n", positionZhonx);
-#endif
-    int turn = (4 + direction_to_go - positionZhonx->orientation) % 4;
-    positionZhonx->orientation = direction_to_go;
+	#ifdef PRINT_BLUETOOTH_BASIC_DEGUG
+		static unsigned int time = 0;
+		if ( time != 0)
+		{
+			bluetoothPrintf("Reflection time : %d\n", HAL_GetTick() - time);
+		}
+		bluetoothWaitReady();
+		bluetoothPrintf("position adresse : 0X%x\n", positionZhonx);
+	#endif
+    enum orientation turn = (8 + direction_to_go - positionZhonx->robot_direction) % 8;
+    positionZhonx->robot_direction = direction_to_go;
 #ifdef DEBUG_ROBOT_INTERFACE
     if (positionZhonx->midOfCell == TRUE)
     {
@@ -115,13 +115,13 @@ void move_zhonx(char direction_to_go, positionRobot *positionZhonx, unsigned int
     }
     switch (turn)
     {
-        case FORWARD:
+        case forward:
 #ifdef DEBUG_ROBOT_INTERFACE
             bluetoothWaitReady();
             bluetoothPrintf("FORWARD\n");
 #endif
             break;
-        case RIGHT:
+        case right:
 #ifdef DEBUG_ROBOT_INTERFACE
             bluetoothWaitReady();
             bluetoothPrintf("RIGHT\n");
@@ -136,7 +136,7 @@ void move_zhonx(char direction_to_go, positionRobot *positionZhonx, unsigned int
                 numberOfCell--;
             }
             break;
-        case UTURN:
+        case uturn:
 #ifdef DEBUG_ROBOT_INTERFACE
             bluetoothWaitReady();
             bluetoothPrintf("UTURN\n");
@@ -152,7 +152,7 @@ void move_zhonx(char direction_to_go, positionRobot *positionZhonx, unsigned int
 //                mazeMoveRotateInPlace180WithCal(0, (double)max_speed_rotation);
             }
             break;
-        case LEFT:
+        case left:
 #ifdef DEBUG_ROBOT_INTERFACE
             bluetoothWaitReady();
             bluetoothPrintf("LEFT\n");
@@ -187,7 +187,7 @@ void move_zhonx(char direction_to_go, positionRobot *positionZhonx, unsigned int
 
 void doUTurn(positionRobot *positionZhonx, int max_speed_rotation, int max_speed_translation, int min_speed_translation)
 {
-    positionZhonx->orientation = (positionZhonx->orientation + 2) % 4;
+    positionZhonx->robot_direction = (positionZhonx->robot_direction + 2) % 4;
 
     mazeMoveResetStart(max_speed_rotation, max_speed_translation, min_speed_translation);
     basicMoveStop();
@@ -216,9 +216,9 @@ int waitValidation(unsigned long timeout)
 void newCell(walls new_walls, labyrinthe *maze, positionRobot positionZhonx)
 {
     print_cell_state(new_walls);
-    switch (positionZhonx.orientation)
+    switch (positionZhonx.robot_direction)
     {
-        case NORTH:
+        case north:
             if (positionZhonx.midOfCell == FALSE)
             {
                 maze->cell[(int) (positionZhonx.coordinate_robot.x)][(int) (positionZhonx.coordinate_robot.y)].wall_east =
@@ -241,7 +241,7 @@ void newCell(walls new_walls, labyrinthe *maze, positionRobot positionZhonx)
                     new_walls.front;
             break;
 
-        case EAST:
+        case east:
 
             if (positionZhonx.midOfCell == FALSE)
             {
@@ -265,7 +265,7 @@ void newCell(walls new_walls, labyrinthe *maze, positionRobot positionZhonx)
                     new_walls.front;
             break;
 
-        case SOUTH:
+        case south:
 
             if (positionZhonx.midOfCell == FALSE)
             {
@@ -288,7 +288,7 @@ void newCell(walls new_walls, labyrinthe *maze, positionRobot positionZhonx)
                     new_walls.front;
             break;
 
-        case WEST:
+        case west:
             if (positionZhonx.midOfCell == FALSE)
             {
                 maze->cell[(int) (positionZhonx.coordinate_robot.x)][(int) (positionZhonx.coordinate_robot.y)].wall_north =
@@ -538,7 +538,7 @@ int saveMaze(labyrinthe *maze, positionRobot *start_position, coordinate  *end_c
 #endif
 #ifdef PRINT_BLUETOOTH_BASIC_DEGUG
     bluetoothWaitReady();
-    bluetoothPrintf("start :\n\tcoordinates %d,%d\n\torientation %d\n\tmid of cell%d", start_position->coordinate_robot.x, start_position->coordinate_robot.y,start_position->orientation,start_position->midOfCell);
+    bluetoothPrintf("start :\n\tcoordinates %d,%d\n\torientation %d\n\tmid of cell%d", start_position->coordinate_robot.x, start_position->coordinate_robot.y,start_position->robot_direction,start_position->midOfCell);
     bluetoothWaitReady();
     bluetoothPrintf("end :\n\tcoordinates %d,%d\n", end_coordinate->x, end_coordinate->y);
 #endif
@@ -569,7 +569,7 @@ int loadMaze(labyrinthe *maze, positionRobot *start_position, coordinate  *end_c
     memcpy(end_coordinate, &(maze_container.end_coordinate), sizeof(coordinate));
 #ifdef PRINT_BLUETOOTH_BASIC_DEGUG
     bluetoothWaitReady();
-    bluetoothPrintf("start :\n\tcoordinates %d,%d\n\torientation %d\n\tmid of cell%d", start_position->coordinate_robot.x, start_position->coordinate_robot.y,start_position->orientation,start_position->midOfCell);
+    bluetoothPrintf("start :\n\tcoordinates %d,%d\n\torientation %d\n\tmid of cell%d", start_position->coordinate_robot.x, start_position->coordinate_robot.y,start_position->robot_direction,start_position->midOfCell);
     bluetoothWaitReady();
     bluetoothPrintf("end :\n\tcoordinates %d,%d\n", end_coordinate->x, end_coordinate->y);
 #endif
@@ -603,7 +603,7 @@ int test_move_zhonx ()
     zhonx_position.coordinate_robot.x = 8;
     zhonx_position.coordinate_robot.y = 8;
     zhonx_position.midOfCell = TRUE;
-    zhonx_position.orientation = NORTH;
+    zhonx_position.robot_direction = north;
     coordinate way[]={{8,7},{8,6},{8,5},{8,4},{8,3},{8,2},{8,1},{8,0},{9,0},{10,0},{11,0},{10,0},{9,0},{8,0},{8,1},{8,2},{8,3},{8,4},{8,5},{8,6},{8,7},{8,8},{END_OF_LIST,END_OF_LIST}};
     motorsInit();
     HAL_Delay(2000);

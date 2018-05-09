@@ -151,7 +151,7 @@ const menuItem follower_menu =
 		"LINE FOLL",    //9 characters max
 		{
 				{"line follower",   function,	(void*)lineFollower},
-				{"Calibration",     function,   (void*)lineSensorsCalibration},
+				{"Calibration",     function,   (void*)floorSensorCalib},
 				{"speed",			integer,	(void*)&line_speed},
 				{"line length",		integer,	(void*)&line_length},
 				{"Set F. KP",       integer,    (void*)&Line_follower_KP},
@@ -168,8 +168,8 @@ const menuItem telemetersCal =
                 {"Calibration front",   function,    (void*)wallSensorsCalibrationFront},
                 {"Calibration diag",    function,    (void*)wallSensorsCalibrationDiag},
                 {"Send calib values",   function,    (void *)telemetersGetCalibrationValues},
-                {"Set BT baudrate",     preset_value,    (void *)&BTpresetBaudRate},
-				{NULL, 0, NULL}
+                {"Set BT baudrate",     preset_value,(void *)&BTpresetBaudRate},
+                {NULL, 0, NULL}
         }
 };
 
@@ -180,7 +180,7 @@ const menuItem spyPostCal =
                 { "Start calibration",  function, (void*)spyPostCalibration},
                 { "Read Calibration.",  function, (void*)spyPostReadCalibration},
                 { "SpyPost test.",      function, (void*)spyPostTest},
-				{NULL, 0, NULL}
+		{NULL, 0, NULL}
         }
 };
 
@@ -191,7 +191,7 @@ const menuItem pidCal =
                 { "Gyro Kp critic", function, (void*)pidGyro_GetCriticalPoint},
                 { "Enc. Kp critic", function, (void*)pidEncoders_GetCriticalPoint},
                 { "Tel. Kp critic", function, (void*)pidTelemeters_GetCriticalPoint},
-				{NULL, 0, NULL}
+                {NULL, 0, NULL}
         }
 };
 
@@ -201,7 +201,7 @@ const menuItem frontCal =
         {
                 { "Start calibration",  function, (void*)spyWallFrontDistCal},
                 { "SpyWall test",       function, (void*)spyWallFrontTest},
-				{NULL, 0, NULL}
+                {NULL, 0, NULL}
         }
 };
 
@@ -211,7 +211,7 @@ const menuItem gyroCal =
         {
                 { "Start calibration",  function, (void*)adxrs620Cal},
                 { "Gyro test",          function, (void*)adxrs620Test},
-				{NULL, 0, NULL}
+                {NULL, 0, NULL}
         }
 };
 
@@ -224,7 +224,7 @@ const menuItem calibration_menu =
                 {"SpyWall",         new_menu,  (void*)&frontCal},
                 {"Gyroscope",       new_menu,  (void*)&gyroCal},
                 {"PID",             new_menu,  (void*)&pidCal},
-				{NULL, 0, NULL}
+                {NULL, 0, NULL}
         }
 };
 
@@ -256,8 +256,8 @@ const menuItem control_menu =
         {
                 { "Move Test 1",        function, (void*)movesTest1 },
                 { "Move Test 2",        function, (void*)movesTest2 },
-				{ "Advanced Move 1",    function, (void*)mazeMoveAdvancedTest},
-				{NULL, 0, NULL}
+                { "Advanced Move 1",    function, (void*)mazeMoveAdvancedTest},
+                {NULL, 0, NULL}
         }
 };
 
@@ -275,11 +275,11 @@ const menuItem mainMenu =
 {
 		(char *)CONFIG_ZHONX_INFO_ADDR,
 		{
-				{"Maze menu",       new_menu,	(void*)&maze_menu},
+				{"Maze menu",       new_menu,	 (void*)&maze_menu},
 				{"Line menu",       new_menu,    (void*)&follower_menu},
 				{"Unit tests",      new_menu,    (void*)&tests_menu},
 				{"Calibration menu",new_menu,    (void*)&calibration_menu},
-                {"Control menu",    new_menu,    (void*)&control_menu},
+				{"Control menu",    new_menu,    (void*)&control_menu},
 				{"Zhonx Name",      new_menu,    (void*)&zhonxNameMenu},
 				{NULL, 0, NULL}
 		}

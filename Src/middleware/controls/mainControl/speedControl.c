@@ -249,7 +249,9 @@ int speedCompute(void)
 /**************************************************************************/
 double speedProfileCompute(double distance, double max_speed, double end_speed, double accel)
 {
+#ifdef DEBUG_SPEED_CONTROL
     char str[50];
+#endif
     speed_params.accel = accel;
     speed_params.decel = accel;
 

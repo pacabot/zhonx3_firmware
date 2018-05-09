@@ -27,6 +27,7 @@
 /* Middleware declarations */
 #include "middleware/powerManagement/powerManagement.h"
 #include "middleware/controls/mainControl/mainControl.h"
+#include "middleware/line_sensors/line_sensors.h"
 
 /* Declarations for this module */
 #include "peripherals/callback/user_it_callback.h"
@@ -42,9 +43,6 @@ extern TIM_HandleTypeDef htim7;
 extern ADC_HandleTypeDef hadc1;
 extern ADC_HandleTypeDef hadc2;
 extern ADC_HandleTypeDef hadc3;
-
-/* Application declarations */
-#include "application/lineFollower/lineFollower.h"
 
 /* TIM callback --------------------------------------------------------------*/
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
@@ -93,7 +91,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
         }
         if (cnt % (int)(HI_TIME_FREQ / LINE_FOLLOWER_TIME_FREQ) == 0)
         {
-            lineFollower_IT();
+//            lineFollower_IT();
         }
         if (cnt % (int)(HI_TIME_FREQ / LOW_TIME_FREQ) == 0)
         {

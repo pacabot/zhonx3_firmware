@@ -18,21 +18,50 @@
 #define MAZE_SOLVER_E_SUCCESS  0
 #define MAZE_SOLVER_E_ERROR    MAKE_ERROR(MAZE_SOLVER_MODULE_ID, 1)
 
+#define BETWEEN(X,A,B) (((X) > (A)) && ((X) < (B)))
+
 
 //definition for numberation function
 /* --the value of CANT_GO can be understand like infinity weight-- */
 #define INFINITY_WEIGHT 0x7FFFFFFF
 
-//orientation define
-#define NORTH 0
-#define EAST 1
-#define SOUTH 2
-#define WEST 3
-//action define
-#define FORWARD 0
-#define RIGHT 1
-#define UTURN 2
-#define LEFT 3
+/**
+ * @enum direction
+ * @brief direction possible
+ *
+ * list all orientation that the robot can have
+ */
+enum direction
+{
+  north      = 0, /*!< front to the north               */
+  north_east = 1, /*!< front to the diagonal north east */
+  east       = 2, /*!< front to the east                */
+  south_east = 3, /*!< front to the diagonal south east */
+  south      = 4, /*!< front to the south               */
+  south_west = 5, /*!< front to the diagonal south east */
+  west       = 6, /*!< front to the west                */
+  north_west = 7, /*!< front to the diagonal north east */
+};
+
+/**
+ * @enum orientation
+ * @biren orientation that the robot can go
+ *
+ * list all the orientation that the robot can go when it do a move
+ */
+
+enum orientation
+{
+  forward  = 0, /*!< straight                   */
+  right45  = 1, /*!< start diag right move      */
+  right    = 2, /*!< right turn                 */
+  right135 = 3, /*!< start diag right back move */
+  uturn    = 4, /*!< uturn                      */
+  left135  = 5, /*!< start diag left back move  */
+  left     = 6, /*!< left turn                  */
+  left45   = 7  /*!< start diag left move       */
+};
+
 //wall state define
 #define NO_KNOWN 0
 #define WALL_PRESENCE 1
@@ -47,7 +76,7 @@
 #define PRINT_BLUETOOTH_MAZE
 #define PRINT_BLUETOOTH_MAZE_DURING_RUN
 #define PRINT_BLUETOOTH_BASIC_DEGUG
-#define PRINT_BLUETOOTH_ADVANCED_DEBUG
+//#define PRINT_BLUETOOTH_ADVANCED_DEBUG
 #define PRINT_WALLS_DETECTED
 
 #define END_OF_LIST 255
@@ -56,6 +85,7 @@
 
 #include <stdlib.h>
 #include "middleware/wall_sensors/wall_sensors.h"
+
 //Structures typedef
 typedef struct
 {
@@ -73,7 +103,7 @@ typedef struct
 
 typedef struct
 {
-    char orientation;
+    enum direction robot_direction;
     char midOfCell;
     coordinate coordinate_robot;
 }positionRobot;

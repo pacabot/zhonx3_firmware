@@ -39,7 +39,7 @@
 /* Middleware declarations */
 #include "middleware/wall_sensors/wall_sensors.h"
 #include "middleware/controls/pidController/pidController.h"
-#include "application/lineFollower/lineFollower.h"
+#include "middleware/line_sensors/line_sensors.h"
 
 /* Declarations for this module */
 
@@ -53,10 +53,11 @@
 
 /* global variables */
 line_follow_control_struct line_follow_control;
-line_follow_params_struct line_follow_params;
+//line_follow_params_struct line_follow_params;
 arm_pid_instance_f32 line_follow_pid_instance;
-int Line_follower_KP = 2000;
-int Line_follower_KD = 80000; //810
+int Line_follower_KP = 2;
+int Line_follower_KD = 80;
+
 
 int lineFollowControlInit(void)
 {
@@ -76,7 +77,7 @@ int lineFollowControlInit(void)
 
 int lineFollowControlLoop(void)
 {
-    line_follow_control.line_follow_error = line_follower.position;
+    line_follow_control.line_follow_error = getLinePos();
 
     line_follow_control.line_follow_command = (pidController(line_follow_control.line_follow_pid.instance,
                                                              line_follow_control.line_follow_error));

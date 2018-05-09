@@ -8,6 +8,7 @@
 /**************************************************************************/
 
 /* General declarations */
+#include <stm32f4xx_hal.h>
 #include "config/basetypes.h"
 #include "config/config.h"
 #include "config/errors.h"

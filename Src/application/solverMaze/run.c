@@ -5,12 +5,11 @@
  *      Author: Colin
  */
 
+#include "stm32f4xx_hal.h"
+
 #include "config/basetypes.h"
 
 #include "middleware/settings/settings.h"
-
-#ifndef codeblocks
-#include "stm32f4xx_hal.h"
 
 /*application include */
 #include "application/solverMaze/solverMaze.h"
@@ -33,7 +32,6 @@
 #include "peripherals/telemeters/telemeters.h"
 #include "peripherals/tone/tone.h"
 #include "peripherals/bluetooth/bluetooth.h"
-#endif
 
 int run(labyrinthe *maze, positionRobot *positionZhonx, coordinate start_coordinate, coordinate end_coordinate, int runType)
 {
@@ -83,7 +81,7 @@ int run(labyrinthe *maze, positionRobot *positionZhonx, coordinate start_coordin
     ssd1306Refresh();
     waitStart();
     ssd1306ClearScreen(MAIN_AREA);
-    ssd1306PrintfAtLine(40, 0, &Font_5x8, "SCAN...");
+    ssd1306PrintfAtLine(40, 0, &Font_5x8, "RUN...");
     ssd1306Refresh();
 
     runTime = HAL_GetTick();
