@@ -4,9 +4,13 @@ environment/project/ilg.gnuarmeclipse.managedbuild.cross.config.elf.debug.572021
 environment/project/ilg.gnuarmeclipse.managedbuild.cross.config.elf.debug.572021291.489728446.1662449982.1051290487.1889719589/PATH/value=/opt/stlink\:/opt/gcc-arm-none-eabi-5_2-2015q4/bin\:/opt/openocd/0.9.0-201505190955/bin
 environment/project/ilg.gnuarmeclipse.managedbuild.cross.config.elf.debug.572021291.489728446.1662449982.1051290487.1889719589/append=true
 environment/project/ilg.gnuarmeclipse.managedbuild.cross.config.elf.debug.572021291.489728446.1662449982.1051290487.1889719589/appendContributed=true
-environment/project/ilg.gnuarmeclipse.managedbuild.cross.config.elf.debug.572021291.489728446.1662449982.1051290487.2035339446/PATH/delimiter=\:
-environment/project/ilg.gnuarmeclipse.managedbuild.cross.config.elf.debug.572021291.489728446.1662449982.1051290487.2035339446/PATH/operation=replace
-environment/project/ilg.gnuarmeclipse.managedbuild.cross.config.elf.debug.572021291.489728446.1662449982.1051290487.2035339446/PATH/value=/bin\:/home/colin/bin\:/usr/local/bin\:/usr/bin\:/usr/local/games\:/usr/games
+environment/project/ilg.gnuarmeclipse.managedbuild.cross.config.elf.debug.572021291.489728446.1662449982.1051290487.2035339446.1132188098/PATH/delimiter=\:
+environment/project/ilg.gnuarmeclipse.managedbuild.cross.config.elf.debug.572021291.489728446.1662449982.1051290487.2035339446.1132188098/PATH/operation=replace
+environment/project/ilg.gnuarmeclipse.managedbuild.cross.config.elf.debug.572021291.489728446.1662449982.1051290487.2035339446.1132188098/PATH/value=/opt/stlink\:/opt/gcc-arm-none-eabi-5_2-2015q4/bin\:/opt/openocd/0.9.0-201505190955/bin
+environment/project/ilg.gnuarmeclipse.managedbuild.cross.config.elf.debug.572021291.489728446.1662449982.1051290487.2035339446.1132188098/append=true
+environment/project/ilg.gnuarmeclipse.managedbuild.cross.config.elf.debug.572021291.489728446.1662449982.1051290487.2035339446.1132188098/appendContributed=true
+environment/project/ilg.gnuarmeclipse.managedbuild.cross.config.elf.debug.572021291.489728446.1662449982.1051290487.2035339446.946092859/append=true
+environment/project/ilg.gnuarmeclipse.managedbuild.cross.config.elf.debug.572021291.489728446.1662449982.1051290487.2035339446.946092859/appendContributed=true
 environment/project/ilg.gnuarmeclipse.managedbuild.cross.config.elf.debug.572021291.489728446.1662449982.1051290487.2035339446/append=true
 environment/project/ilg.gnuarmeclipse.managedbuild.cross.config.elf.debug.572021291.489728446.1662449982.1051290487.2035339446/appendContributed=true
 environment/project/ilg.gnuarmeclipse.managedbuild.cross.config.elf.debug.572021291.489728446.1662449982/PATH/delimiter=\:

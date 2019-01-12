@@ -1,9 +1,11 @@
 # Les ligne commençant par '#' sont des commentaires.
 # Ignorer tous les fichiers eclipse
 .project
-!.prd/.project
 .cproject
+!.prd/.project
 !.prd/.cproject
+!.prd/.metadata/*
+!.prd/.settings/*
 /.settings/
 /.settings/*
 *.xml
