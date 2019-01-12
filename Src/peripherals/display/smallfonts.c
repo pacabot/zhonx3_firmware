@@ -1,6 +1,6 @@
 /**************************************************************************/
 /*!
- @file     smallfonts.h
+ @file     smallfonts.c
  @author   PLF (PACABOT)
  @date     26 March 2011
  @version  0.10

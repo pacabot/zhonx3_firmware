@@ -91,7 +91,7 @@
 #define ENCODER_RESOLUTION  	(2047.00)	//Number steps per revolution (IE512)
 
 #define STEPS_PER_WHEEL_REV		((ENCODER_RESOLUTION) * (GEAR_RATIO))	//Number steps per wheel revolution
-#define MM_PER_WHEEL_REV		((M_PI) * (WHEEL_DIAMETER))		//Number of millimeters per wheel revolution
+#define MM_PER_WHEEL_REV		((PI) * (WHEEL_DIAMETER))		//Number of millimeters per wheel revolution
 #define STEPS_PER_MM			((STEPS_PER_WHEEL_REV) / (MM_PER_WHEEL_REV))	//Number of steps per millimeter
 
 /**************************************************************************************/

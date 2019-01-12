@@ -116,7 +116,7 @@ void expanderSetLeds(char leds)
 
 char expanderJoyState(void)
 {
-    switch (~(getData() | 0xF0))
+    switch ((~getData()) & 0x0F)
     {
         case 4:
             //		bluetoothPrintf("Joystick UP\n");
