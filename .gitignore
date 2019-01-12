@@ -8,7 +8,6 @@
 !.prd/.settings/*
 /.settings/
 /.settings/*
-*.xml
 *.elf
 *.map
 
